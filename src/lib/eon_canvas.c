@@ -29,7 +29,6 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 	return e;
 }
 
-
 static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
 	/* just iterate over the list of dirty rectangles and intersect against the span */
@@ -45,6 +44,14 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	e = _eon_canvas_get(r);
 	if (!e) return EINA_FALSE;
 	if (e->curr.width == 0 || e->curr.height == 0) return EINA_FALSE;
+
+	if (e->curr.width != e->old.width || e->curr.height != e->old.height)
+	{
+		if (e->tiler)
+		{
+		}
+		/* create a new tiler */
+	}
 
 	return EINA_TRUE;
 }
