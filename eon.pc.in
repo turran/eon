@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Eon
+Description: Eon
+Requires: eina enesim
+Version: @VERSION@
+Libs: -L${libdir} -leon
+Cflags: -I${includedir}
