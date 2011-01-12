@@ -5,6 +5,9 @@
  *============================================================================*/
 typedef struct _Eon_Canvas_Child
 {
+	Ender *ender;
+	double old_x;
+	double old_y;
 	double x;
 	double y;
 } Eon_Canvas_Child;
@@ -18,7 +21,9 @@ typedef struct _Eon_Canvas_State
 typedef struct _Eon_Canvas
 {
 	Eina_Tiler *tiler;
+	Eina_List *children;
 	Eon_Canvas_State old, curr;
+	Enesim_Renderer *compound;
 } Eon_Canvas;
 
 static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
@@ -40,6 +45,8 @@ static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Eon_Canvas *e;
+	Eon_Canvas_Child *child;
+	Eina_List *l;
 
 	e = _eon_canvas_get(r);
 	if (!e) return EINA_FALSE;
@@ -47,11 +54,23 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 
 	if (e->curr.width != e->old.width || e->curr.height != e->old.height)
 	{
-		if (e->tiler)
-		{
-		}
+		if (e->tiler) eina_tiler_free(e->tiler);
 		/* create a new tiler */
+		e->tiler = eina_tiler_new(e->curr.width, e->curr.height);
 	}
+
+	/* set the coordinates on every child */
+	EINA_LIST_FOREACH (e->children, l, child)
+	{
+		Enesim_Renderer *renderer;
+
+		renderer = ender_renderer_get(child->ender);
+		enesim_renderer_origin_get(renderer, &child->old_x, &child->old_y);
+		enesim_renderer_origin_set(renderer, child->x, child->y);
+	}
+	if (!enesim_renderer_sw_setup(e->compound))
+		return EINA_FALSE;
+	*fill = enesim_renderer_sw_fill_get(e->compound);
 
 	return EINA_TRUE;
 }
@@ -59,9 +78,22 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 static void _eon_canvas_cleanup(Enesim_Renderer *r)
 {
 	Eon_Canvas *e;
+	Eon_Canvas_Child *child;
+	Eina_List *l;
 
 	e = _eon_canvas_get(r);
 	if (!e) return;
+
+	/* remove every dirty rectangle? */
+	if (e->tiler) eina_tiler_clear(e->tiler);
+	/* restore the coordinates on every child */
+	EINA_LIST_FOREACH (e->children, l, child)
+	{
+		Enesim_Renderer *renderer;
+
+		renderer = ender_renderer_get(child->ender);
+		enesim_renderer_origin_set(renderer, child->old_x, child->old_y);
+	}
 }
 
 static void _eon_canvas_free(Enesim_Renderer *r)
@@ -81,7 +113,10 @@ static void _eon_canvas_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	e = _eon_canvas_get(r);
 	if (!e) return;
 
-	/* we should calculate the current width/height */
+	rect->x = 0;
+	rect->y = 0;
+	rect->w = e->curr.width;
+	rect->h = e->curr.height;
 }
 
 static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
@@ -103,8 +138,29 @@ static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
 EAPI Enesim_Renderer * eon_canvas_new(void)
 {
 	Eon_Canvas *e;
+	Enesim_Renderer *thiz;
+	Enesim_Renderer_Flag flags;
+	Enesim_Renderer *compound;
 
-	e = _eon_canvas_get(r);
+	compound = enesim_renderer_compound_new();
+	if (!compound) goto compound_err;
+
+	e = calloc(1, sizeof(Eon_Canvas));
+	if (!e) goto alloc_err;
+
+	flags = ENESIM_RENDERER_FLAG_ARGB8888;
+	thiz = enesim_renderer_new(&_eon_canvas_descriptor, flags, e);
+	if (!thiz) goto renderer_err;
+
+	return thiz;
+
+
+renderer_err:
+	free(e);
+alloc_err:
+	enesim_renderer_delete(compound);
+compound_err:
+	return NULL;
 }
 
 /**
@@ -137,7 +193,11 @@ EAPI void eon_canvas_height_set(Enesim_Renderer *r, unsigned int height)
  */
 EAPI void eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
 {
+	Eon_Canvas *e;
 
+	e = _eon_canvas_get(r);
+	e->children = eina_list_append(e->children, child);
+	enesim_renderer_compound_layer_add(e->compound, ender_renderer_get(child), ENESIM_FILL);
 }
 
 /**
@@ -146,7 +206,8 @@ EAPI void eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
  */
 EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
 {
-
+	/* get the bounding box, transform to destination coordinates
+	 * check that is inside the pointer, trigger the event */
 }
 
 /**
@@ -155,5 +216,6 @@ EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
  */
 EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y)
 {
-
+	/* get the bounding box, transform to destination coordinates
+	 * check that is inside the pointer, trigger the event */
 }
