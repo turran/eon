@@ -1,0 +1,7 @@
+using enesim;
+
+namespace eon {
+	class canvas : renderer {
+
+	};
+};

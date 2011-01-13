@@ -40,6 +40,8 @@ AC_SUBST(create_shared_lib)
 # Common
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.5])
 PKG_CHECK_MODULES(ENDER, [ender >= 0.0.1])
+ENDER_DATADIR=$(pkg-config --variable=datadir ender)
+AC_SUBST(ENDER_DATADIR)
 PKG_CHECK_MODULES(EINA, [eina >= 1.0.0])
 
 EON_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS $ENDER_CFLAGS"
@@ -52,6 +54,7 @@ AC_SUBST(EON_LIBS)
 AC_OUTPUT([
 Makefile
 eon.pc
+data/Makefile
 src/Makefile
 src/lib/Makefile
 src/include/Makefile

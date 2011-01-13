@@ -63,10 +63,28 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	EINA_LIST_FOREACH (e->children, l, child)
 	{
 		Enesim_Renderer *renderer;
+		Enesim_Matrix matrix;
+		Enesim_Matrix_Type matrix_type;
+		Eina_Rectangle boundings;
 
 		renderer = ender_renderer_get(child->ender);
-		enesim_renderer_origin_get(renderer, &child->old_x, &child->old_y);
-		enesim_renderer_origin_set(renderer, child->x, child->y);
+		enesim_renderer_transformation_get(renderer, &matrix);
+		matrix_type = enesim_matrix_type_get(&matrix);
+		boundings = enesim_renderer_boundings(renderer);
+		if (matrix_type == ENESIM_MATRIX_IDENTITY)
+		{
+			/* just translate the origin, do a matrix set?
+			 * matrix compose? origin set?
+			 */
+			//enesim_renderer_origin_get(renderer, &child->old_x, &child->old_y);
+			//enesim_renderer_origin_set(renderer, child->x, child->y);
+		}
+		else
+		{
+			Enesim_Matrix translate;
+
+			/* multiply the current matrix to translate it to the final destination */
+		}
 	}
 	if (!enesim_renderer_sw_setup(e->compound))
 		return EINA_FALSE;
@@ -153,7 +171,6 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 	if (!thiz) goto renderer_err;
 
 	return thiz;
-
 
 renderer_err:
 	free(e);
