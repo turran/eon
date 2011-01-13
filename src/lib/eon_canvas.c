@@ -24,6 +24,7 @@ typedef struct _Eon_Canvas
 	Eina_List *children;
 	Eon_Canvas_State old, curr;
 	Enesim_Renderer *compound;
+	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Canvas;
 
 static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
@@ -36,8 +37,12 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 
 static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
+	Eon_Canvas *e;
+
+	e = _eon_canvas_get(r);
 	/* just iterate over the list of dirty rectangles and intersect against the span */
 	/* if it intersects render the child that is on that span from bottom to top */
+	e->fill_func(e->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -45,7 +50,7 @@ static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Eon_Canvas *e;
-	Eon_Canvas_Child *child;
+	Eon_Canvas_Child *ech;
 	Eina_List *l;
 
 	e = _eon_canvas_get(r);
@@ -60,35 +65,44 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	}
 
 	/* set the coordinates on every child */
-	EINA_LIST_FOREACH (e->children, l, child)
+	EINA_LIST_FOREACH (e->children, l, ech)
 	{
 		Enesim_Renderer *renderer;
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
 		Eina_Rectangle boundings;
 
-		renderer = ender_renderer_get(child->ender);
+		renderer = ender_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
-		boundings = enesim_renderer_boundings(renderer);
+		enesim_renderer_boundings(renderer, &boundings);
+		/* FIXME fix this */
+		enesim_renderer_rop_set(renderer, ENESIM_BLEND);
 		if (matrix_type == ENESIM_MATRIX_IDENTITY)
 		{
 			/* just translate the origin, do a matrix set?
 			 * matrix compose? origin set?
 			 */
-			//enesim_renderer_origin_get(renderer, &child->old_x, &child->old_y);
-			//enesim_renderer_origin_set(renderer, child->x, child->y);
+			enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
+			enesim_renderer_origin_set(renderer, ech->x, ech->y);
 		}
 		else
 		{
 			Enesim_Matrix translate;
 
 			/* multiply the current matrix to translate it to the final destination */
+			enesim_matrix_translate(&translate, -ech->x, -ech->y);
+			enesim_matrix_compose(&matrix, &translate, &matrix);
+			enesim_renderer_transformation_set(renderer, &matrix);
 		}
 	}
 	if (!enesim_renderer_sw_setup(e->compound))
+	{
+		printf("cannot setup the compund\n");
 		return EINA_FALSE;
-	*fill = enesim_renderer_sw_fill_get(e->compound);
+	}
+	e->fill_func = enesim_renderer_sw_fill_get(e->compound);
+	*fill = _canvas_draw;
 
 	return EINA_TRUE;
 }
@@ -96,7 +110,7 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 static void _eon_canvas_cleanup(Enesim_Renderer *r)
 {
 	Eon_Canvas *e;
-	Eon_Canvas_Child *child;
+	Eon_Canvas_Child *ech;
 	Eina_List *l;
 
 	e = _eon_canvas_get(r);
@@ -105,12 +119,25 @@ static void _eon_canvas_cleanup(Enesim_Renderer *r)
 	/* remove every dirty rectangle? */
 	if (e->tiler) eina_tiler_clear(e->tiler);
 	/* restore the coordinates on every child */
-	EINA_LIST_FOREACH (e->children, l, child)
+	EINA_LIST_FOREACH (e->children, l, ech)
 	{
 		Enesim_Renderer *renderer;
+		Enesim_Matrix matrix;
+		Enesim_Matrix_Type matrix_type;
 
-		renderer = ender_renderer_get(child->ender);
-		enesim_renderer_origin_set(renderer, child->old_x, child->old_y);
+		renderer = ender_renderer_get(ech->ender);
+		enesim_renderer_transformation_get(renderer, &matrix);
+		matrix_type = enesim_matrix_type_get(&matrix);
+		if (matrix_type == ENESIM_MATRIX_IDENTITY)
+		{
+			enesim_renderer_origin_set(renderer, ech->old_x, ech->old_y);
+		}
+		else
+		{
+			Enesim_Matrix translate;
+
+			/* multiply the current matrix to translate it to the final destination */
+		}
 	}
 }
 
@@ -162,9 +189,12 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 
 	compound = enesim_renderer_compound_new();
 	if (!compound) goto compound_err;
+	enesim_renderer_rop_set(compound, ENESIM_BLEND);
 
 	e = calloc(1, sizeof(Eon_Canvas));
 	if (!e) goto alloc_err;
+
+	e->compound = compound;
 
 	flags = ENESIM_RENDERER_FLAG_ARGB8888;
 	thiz = enesim_renderer_new(&_eon_canvas_descriptor, flags, e);
@@ -211,10 +241,13 @@ EAPI void eon_canvas_height_set(Enesim_Renderer *r, unsigned int height)
 EAPI void eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
 {
 	Eon_Canvas *e;
+	Eon_Canvas_Child *ech;
 
 	e = _eon_canvas_get(r);
-	e->children = eina_list_append(e->children, child);
-	enesim_renderer_compound_layer_add(e->compound, ender_renderer_get(child), ENESIM_FILL);
+	ech = calloc(1, sizeof(Eon_Canvas_Child));
+	ech->ender = child;
+	e->children = eina_list_append(e->children, ech);
+	enesim_renderer_compound_layer_add(e->compound, ender_renderer_get(child));
 }
 
 /**
@@ -223,8 +256,20 @@ EAPI void eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
  */
 EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
 {
+	Eon_Canvas *e;
+	Eon_Canvas_Child *ech;
+	Eina_List *l;
+
+	e = _eon_canvas_get(r);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
+	EINA_LIST_FOREACH (e->children, l, ech)
+	{
+		if (ech->ender == child)
+		{
+			ech->x = x;
+		}
+	}
 }
 
 /**
@@ -233,6 +278,18 @@ EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
  */
 EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y)
 {
+	Eon_Canvas *e;
+	Eon_Canvas_Child *ech;
+	Eina_List *l;
+
+	e = _eon_canvas_get(r);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
+	EINA_LIST_FOREACH (e->children, l, ech)
+	{
+		if (ech->ender == child)
+		{
+			ech->y = y;
+		}
+	}
 }
