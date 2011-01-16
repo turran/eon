@@ -32,7 +32,7 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 {
 	Eon_Canvas *e;
 
-	e = enesim_renderer_data_get(r);
+	e = eon_layout_data_get(r);
 	return e;
 }
 
@@ -196,7 +196,7 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 	e->compound = compound;
 
 	flags = ENESIM_RENDERER_FLAG_ARGB8888;
-	thiz = enesim_renderer_new(&_eon_canvas_descriptor, flags, e);
+	thiz = eon_layout_new(&_eon_canvas_descriptor, flags, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;

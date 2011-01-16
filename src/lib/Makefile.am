@@ -9,6 +9,7 @@ lib_LTLIBRARIES = libeon.la
 
 libeon_la_SOURCES = \
 eon_main.c \
+eon_layout.c \
 eon_canvas.c
 
 libeon_la_LIBADD = \
