@@ -1,4 +1,4 @@
-PROJECT_NAME           = Equanime
+PROJECT_NAME           = Eon
 PROJECT_NUMBER         =
 OUTPUT_DIRECTORY       = doc
 INPUT                  = ./src/lib ./src/include

@@ -16,6 +16,7 @@ typedef struct _Eon_Canvas_State
 {
 	unsigned int width;
 	unsigned int height;
+	Enesim_Color color;
 } Eon_Canvas_State;
 
 typedef struct _Eon_Canvas
@@ -76,8 +77,6 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_boundings(renderer, &boundings);
-		/* FIXME fix this */
-		enesim_renderer_rop_set(renderer, ENESIM_BLEND);
 		if (matrix_type == ENESIM_MATRIX_IDENTITY)
 		{
 			/* just translate the origin, do a matrix set?
@@ -292,4 +291,22 @@ EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y)
 			ech->y = y;
 		}
 	}
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_canvas_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
+{
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender *ender)
+{
+
 }
