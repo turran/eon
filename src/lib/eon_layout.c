@@ -16,7 +16,6 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 	e = enesim_renderer_data_get(r);
 	return e;
 }
-
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
