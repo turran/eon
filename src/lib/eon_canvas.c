@@ -97,7 +97,7 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	}
 	if (!enesim_renderer_sw_setup(e->compound))
 	{
-		printf("cannot setup the compund\n");
+		printf("cannot setup the compound\n");
 		return EINA_FALSE;
 	}
 	e->fill_func = enesim_renderer_sw_fill_get(e->compound);

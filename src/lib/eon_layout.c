@@ -6,6 +6,8 @@
 typedef struct _Eon_Layout
 {
 	Eina_Tiler *tiler;
+	Eina_List *obscure;
+	Eina_List *damage;
 	void *data;
 } Eon_Layout;
 
@@ -56,4 +58,38 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 
 	l = _eon_layout_get(r);
 	return l->data;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void eon_layout_obscure_add(Enesim_Renderer *r, Eina_Rectangle *obscure)
+{
+	Eon_Layout *l;
+
+	l = _eon_layout_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void eon_layout_damage_add(Enesim_Renderer *r, Eina_Rectangle *damage)
+{
+	Eon_Layout *l;
+
+	l = _eon_layout_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void eon_layout_render(Enesim_Renderer *r, Enesim_Surface *dst)
+{
+	/* iterate over the list of damages */
+	/* remove the obscures */
+	/* draw the layout */
+	/* cleanup the damages */
 }
