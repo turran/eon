@@ -48,6 +48,12 @@ renderer_err:
 	return NULL;
 }
 
+EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
+{
+	/* FIXME fix this */
+	return EINA_TRUE;
+}
+
 /**
  * To be documented
  * FIXME: To be fixed
