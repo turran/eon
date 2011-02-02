@@ -13,7 +13,7 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 {
 	Eon_Button *e;
 
-	e = enesim_renderer_data_get(r);
+	e = eon_widget_data_getr(r);
 	return e;
 }
 /*============================================================================*
@@ -43,3 +43,24 @@ renderer_err:
 	free(e);
 	return NULL;
 }
+
+EAPI void eon_button_text_set(Enesim_Renderer *r, const char *text)
+{
+	Eon_Button *button;
+
+	button = eon_button_get(r);
+	if (!button) return;
+
+	/* we should set the property to the escen */
+}
+
+EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
+{
+	Eon_Button *button;
+
+	button = eon_button_get(r);
+	if (!button) return;
+
+	/* we should set the property to the escen */
+}
+
