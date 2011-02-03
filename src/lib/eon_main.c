@@ -21,6 +21,7 @@
  *                                  Local                                     *
  *============================================================================*/
 static int _init = 0;
+static Escen *_theme = NULL;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -28,11 +29,8 @@ int eon_log = -1;
 
 Escen * eon_theme_get(void)
 {
-	static Escen *theme = NULL;
 
-	if (theme) return theme;
-	theme = escen_parser_load(PACKAGE_DATA_DIR "/themes/basic.escen");
-	return theme;
+	return _theme;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -46,6 +44,16 @@ int eon_init(void)
 		ender_init();
 		escen_init();
 		/* initialize the theme */
+		/* FIXME, eon init is called from the ender_parser_init, which
+		 * causes a recursion, avoid it */
+		_theme = escen_parser_load(PACKAGE_DATA_DIR "/themes/basic.escen");
+		if (!_theme)
+		{
+			escen_shutdown();
+			ender_shutdown();
+			enesim_shutdown();
+			eina_shutdown();
+		}
 		return --_init;
 	}
 	return _init;

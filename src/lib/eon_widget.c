@@ -113,11 +113,16 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	Enesim_Renderer *escen_renderer;
 	char theme[PATH_MAX];
 
+	escen = eon_theme_get();
+	if (!escen) {
+		return NULL;
+	}
+
 	e = calloc(1, sizeof(Eon_Widget));
 	EINA_MAGIC_SET(e, EON_WIDGET_MAGIC);
 	e->data = data;
+
 	/* get the flags from the theme */
-	escen = eon_theme_get();
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
 	escen_renderer = ender_renderer_get(escen_ender_ender_get(escen_ender));
