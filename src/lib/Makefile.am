@@ -1,5 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
+SUBDIRS = theme
+
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
 -I. \
@@ -10,11 +12,15 @@ lib_LTLIBRARIES = libeon.la
 libeon_la_SOURCES = \
 eon_main.c \
 eon_layout.c \
-eon_canvas.c
+eon_canvas.c \
+eon_widget.c \
+eon_button.c
 
 libeon_la_LIBADD = \
+theme/libtheme_basic.la \
 @EON_LIBS@
 
-libeon_la_DEPENDENCIES =
+libeon_la_DEPENDENCIES = \
+theme/libtheme_basic.la
 
 libeon_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

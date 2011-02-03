@@ -1,0 +1,15 @@
+using enesim;
+
+namespace eon {
+	class canvas : renderer {
+
+	};
+
+	abstract widget : renderer {
+
+	};
+
+	class button : widget {
+		string text;
+	};
+};

@@ -24,10 +24,12 @@ AC_PROG_LIBTOOL
 
 dnl Set PACKAGE_DATA_DIR in config.h.
 if test "x${prefix}" = "xNONE"; then
-  AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${ac_default_prefix}/share/${PACKAGE}", [Shared Data Directory])
+  PACKAGE_DATA_DIR="${ac_default_prefix}/share/${PACKAGE}"
 else
-  AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE}", [Shared Data Directory])
+  PACKAGE_DATA_DIR="${prefix}/share/${PACKAGE}"
 fi
+AC_SUBST(PACKAGE_DATA_DIR)
+AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${PACKAGE_DATA_DIR}", [Shared Data Directory])
 
 VMAJ=`echo $PACKAGE_VERSION | awk -F. '{printf("%s", $1);}'`
 VMIN=`echo $PACKAGE_VERSION | awk -F. '{printf("%s", $2);}'`
@@ -47,12 +49,13 @@ AC_SUBST(create_shared_lib)
 # Common
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.5])
 PKG_CHECK_MODULES(ENDER, [ender >= 0.0.1])
+PKG_CHECK_MODULES(ESCEN, [escen >= 0.0.1])
 ENDER_DATADIR=$(pkg-config --variable=datadir ender)
 AC_SUBST(ENDER_DATADIR)
 PKG_CHECK_MODULES(EINA, [eina >= 1.0.0])
 
-EON_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS $ENDER_CFLAGS"
-EON_LIBS="$EINA_LIBS $ENESIM_LIBS $ENDER_LIBS"
+EON_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS $ENDER_CFLAGS $ESCEN_CFLAGS"
+EON_LIBS="$EINA_LIBS $ENESIM_LIBS $ENDER_LIBS $ESCEN_LIBS"
 AC_SUBST(EON_CFLAGS)
 AC_SUBST(EON_LIBS)
 
@@ -62,8 +65,11 @@ AC_OUTPUT([
 Makefile
 eon.pc
 data/Makefile
+data/ender/Makefile
+data/theme/Makefile
 src/Makefile
 src/lib/Makefile
+src/lib/theme/Makefile
 src/include/Makefile
 ],[
 ])

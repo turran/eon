@@ -1,3 +1,20 @@
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "Eon.h"
 #include "eon_private.h"
 /*============================================================================*
@@ -13,7 +30,7 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 {
 	Eon_Button *e;
 
-	e = eon_widget_data_getr(r);
+	e = eon_widget_data_get(r);
 	return e;
 }
 /*============================================================================*
@@ -44,6 +61,10 @@ renderer_err:
 	return NULL;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_button_text_set(Enesim_Renderer *r, const char *text)
 {
 	Eon_Button *button;
@@ -52,8 +73,13 @@ EAPI void eon_button_text_set(Enesim_Renderer *r, const char *text)
 	if (!button) return;
 
 	/* we should set the property to the escen */
+	eon_widget_property_set(r, "text", text);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
 {
 	Eon_Button *button;
@@ -63,4 +89,3 @@ EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
 
 	/* we should set the property to the escen */
 }
-

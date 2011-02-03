@@ -1,0 +1,8 @@
+using enesim;
+
+namespace eon {
+	class basic_radio : renderer {
+		string label;
+		double selected;
+	};
+};

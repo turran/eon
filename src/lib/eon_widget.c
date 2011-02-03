@@ -1,12 +1,48 @@
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "Eon.h"
 #include "eon_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_WIDGET_MAGIC 0xe0400001
+#define EON_WIDGET_MAGIC_CHECK(d)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
+			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
+	} while(0)
+
+#define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC)) {\
+			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
+			return ret;\
+		}\
+	} while(0)
+
 typedef struct _Eon_Widget
 {
+	EINA_MAGIC;
 	void *data; /* the data provided by the widget types */
-	Escen_Ender *escen_ender;
+	Escen_Ender *escen_ender; /* the theme ender */
+	/* FIXME add a way to setup and cleanup an ender whenever
+	 * a widget ender is associated with a layout
+	 */
 } Eon_Widget;
 
 static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
@@ -14,6 +50,8 @@ static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 	Eon_Widget *e;
 
 	e = enesim_renderer_data_get(r);
+	EON_WIDGET_MAGIC_CHECK_RETURN(e, NULL);
+
 	return e;
 }
 /*----------------------------------------------------------------------------*
@@ -69,22 +107,22 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 {
 	Eon_Widget *e;
 	Enesim_Renderer *thiz;
-	Enesim_Renderer_Descriptor descriptor;
-	Enesim_Renderer_Flags flags;
+	Enesim_Renderer_Flag flags;
 	Escen *escen;
 	Escen_Ender *escen_ender;
 	Enesim_Renderer *escen_renderer;
+	char theme[PATH_MAX];
 
 	e = calloc(1, sizeof(Eon_Widget));
+	EINA_MAGIC_SET(e, EON_WIDGET_MAGIC);
 	e->data = data;
-
 	/* get the flags from the theme */
-	escen = escen_parser_load(PACKAGE_DATA_DIR "/theme.escen");
+	escen = eon_theme_get();
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
 	escen_renderer = ender_renderer_get(escen_ender_ender_get(escen_ender));
 	enesim_renderer_flags(escen_renderer, &flags);
-	thiz = enesim_renderer_new(descriptor, flags, e);
+	thiz = enesim_renderer_new(&_eon_widget_descriptor, flags, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;
@@ -100,7 +138,12 @@ renderer_err:
  */
 EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r)
 {
+	Eon_Widget *e;
 
+	e = enesim_renderer_data_get(r);
+	if (!EINA_MAGIC_CHECK(e, EON_WIDGET_MAGIC))
+		return EINA_FALSE;
+	return EINA_TRUE;
 }
 
 /**
@@ -116,6 +159,10 @@ EAPI void eon_widget_theme_set(Enesim_Renderer *r, const char *file)
 
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void * eon_widget_data_get(Enesim_Renderer *r)
 {
 	Eon_Widget *e;
@@ -124,4 +171,22 @@ EAPI void * eon_widget_data_get(Enesim_Renderer *r)
 	if (!e) return NULL;
 
 	return e->data;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
+{
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...)
+{
+
 }

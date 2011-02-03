@@ -1,0 +1,13 @@
+escen {
+	radio "radio" {
+		default {
+
+		};
+		state "selected" {
+			set { selected = 1 };
+		};
+		state "unselected" {
+			set { selected = 0 };
+		};
+	};
+};
