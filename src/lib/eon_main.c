@@ -29,7 +29,6 @@ int eon_log = -1;
 
 Escen * eon_theme_get(void)
 {
-
 	return _theme;
 }
 /*============================================================================*
@@ -43,12 +42,14 @@ int eon_init(void)
 		enesim_init();
 		ender_init();
 		escen_init();
+		eon_basic_init();
 		/* initialize the theme */
 		/* FIXME, eon init is called from the ender_parser_init, which
 		 * causes a recursion, avoid it */
 		_theme = escen_parser_load(PACKAGE_DATA_DIR "/themes/basic.escen");
 		if (!_theme)
 		{
+			eon_basic_shutdown();
 			escen_shutdown();
 			ender_shutdown();
 			enesim_shutdown();
@@ -63,6 +64,7 @@ void eon_shutdown(void)
 {
 	if (!_init == 1)
 	{
+		eon_basic_shutdown();
 		escen_shutdown();
 		ender_shutdown();
 		enesim_shutdown();

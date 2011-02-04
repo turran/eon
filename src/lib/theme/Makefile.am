@@ -9,5 +9,6 @@ AM_CPPFLAGS = \
 @EON_CFLAGS@
 
 libtheme_basic_la_SOURCES = \
+theme_basic.c \
 theme_basic_radio.c \
 theme_basic_button.c
