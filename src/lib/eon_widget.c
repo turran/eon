@@ -115,6 +115,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 
 	escen = eon_theme_get();
 	if (!escen) {
+		printf("no theme\n");
 		return NULL;
 	}
 
@@ -125,14 +126,18 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	/* get the flags from the theme */
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
+
 	escen_renderer = ender_renderer_get(escen_ender_ender_get(escen_ender));
 	enesim_renderer_flags(escen_renderer, &flags);
+
 	thiz = enesim_renderer_new(&_eon_widget_descriptor, flags, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;
 
 renderer_err:
+	/* free the escen_ender */
+ender_err:
 	free(e);
 	return NULL;
 }

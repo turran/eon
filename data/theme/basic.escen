@@ -1,13 +1,7 @@
 escen {
-	radio "radio" {
+	basic_button "button" {
 		default {
 
-		};
-		state "selected" {
-			set { selected = 1 };
-		};
-		state "unselected" {
-			set { selected = 0 };
 		};
 	};
 };

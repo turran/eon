@@ -5,4 +5,8 @@ namespace eon {
 		string label;
 		double selected;
 	};
+
+	class basic_button : renderer {
+		string text;
+	};
 };
