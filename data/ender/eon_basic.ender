@@ -7,6 +7,6 @@ namespace eon {
 	};
 
 	class basic_button : renderer {
-		string text;
+		string label;
 	};
 };

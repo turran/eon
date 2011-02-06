@@ -43,6 +43,7 @@ typedef struct _Eon_Widget
 	/* FIXME add a way to setup and cleanup an ender whenever
 	 * a widget ender is associated with a layout
 	 */
+	Enesim_Renderer_Sw_Fill fill;
 } Eon_Widget;
 
 static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
@@ -54,12 +55,31 @@ static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 
 	return e;
 }
+
+static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+{
+	Eon_Widget *ew;
+	Enesim_Renderer *er;
+
+	ew = _eon_widget_get(r);
+	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	ew->fill(er, x, y, len, dst);
+}
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
 static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
+	Eon_Widget *ew;
+	Enesim_Renderer *er;
+
+	ew = _eon_widget_get(r);
+	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
 	/* get the ender from the escen ender and get the fill function */
+	ew->fill = enesim_renderer_sw_fill_get(er);
+	if (!ew->fill) return EINA_FALSE;
+
+	*fill = _widget_draw;
 	return EINA_TRUE;
 }
 
@@ -76,14 +96,16 @@ static void _eon_widget_free(Enesim_Renderer *r)
 	Eon_Widget *ew;
 
 	ew = _eon_widget_get(r);
-
 }
 
 static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 {
 	Eon_Widget *ew;
+	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
+	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	enesim_renderer_boundings(er, rect);
 }
 
 static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
@@ -123,11 +145,14 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	EINA_MAGIC_SET(e, EON_WIDGET_MAGIC);
 	e->data = data;
 
-	/* get the flags from the theme */
+	/* TODO get the flags from the theme? we should add a flags callback on enesim */
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
+	e->escen_ender = escen_ender;
 
 	escen_renderer = ender_renderer_get(escen_ender_ender_get(escen_ender));
+	if (!escen_renderer) goto escen_renderer_err;
+
 	enesim_renderer_flags(escen_renderer, &flags);
 
 	thiz = enesim_renderer_new(&_eon_widget_descriptor, flags, e);
@@ -137,6 +162,8 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 
 renderer_err:
 	/* free the escen_ender */
+escen_renderer_err:
+
 ender_err:
 	free(e);
 	return NULL;
@@ -189,7 +216,12 @@ EAPI void * eon_widget_data_get(Enesim_Renderer *r)
  */
 EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 {
+	Eon_Widget *thiz;
+	Ender *ender;
 
+	thiz = _eon_widget_get(r);
+	ender = escen_ender_ender_get(thiz->escen_ender);
+	//ender_value_set(r, name, value);
 }
 
 /**
@@ -198,5 +230,8 @@ EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
  */
 EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...)
 {
+	Eon_Widget *e;
+
+	e = _eon_widget_get(r);
 
 }
