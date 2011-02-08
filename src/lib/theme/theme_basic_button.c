@@ -41,10 +41,20 @@ static void _button_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	Button *thiz;
 
 	thiz = _button_get(r);
-	printf("rendering?\n");
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 
+static void _button_update_rectangle(Button *thiz)
+{
+	Eina_Rectangle boundings;
+
+	/* add 5px of padding to the text */
+	/* set the size of the rectangle based on the size of the string */
+	enesim_renderer_boundings(thiz->text, &boundings);
+	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w + 2);
+	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h + 2);
+	//enesim_renderer_origin_set(thiz->text, 0, 5);
+}
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -53,6 +63,13 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	Button *thiz;
 
 	thiz = _button_get(r);
+	_button_update_rectangle(thiz);
+
+	if (!enesim_renderer_sw_setup(thiz->compound))
+	{
+		printf("not available to setup yet\n");
+		return EINA_FALSE;
+	}
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
 	if (!thiz->fill) return EINA_FALSE;
 
@@ -97,6 +114,10 @@ static Enesim_Renderer_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Enesim_Renderer * eon_basic_button_new(void)
 {
 	Enesim_Renderer *r;
@@ -123,10 +144,16 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 
 	/* setup the initial state */
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
+	enesim_renderer_shape_fill_color_set(thiz->rectangle, 0xffff0000);
+	enesim_renderer_shape_outline_color_set(thiz->rectangle, 0xff881010);
+	enesim_renderer_shape_outline_weight_set(thiz->rectangle, 1);
+	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->text);
+	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
+	etex_span_color_set(thiz->text, 0xff000000);
 
 	return r;
-
 
 renderer_err:
 	enesim_renderer_delete(thiz->rectangle);
@@ -139,20 +166,50 @@ compound_err:
 	return NULL;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_button_foreground_color_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	enesim_renderer_shape_fill_color_set(thiz->rectangle, color);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_label_set(Enesim_Renderer *r, char *str)
 {
 	Button *thiz;
-	Eina_Rectangle boundings;
 
 	thiz = _button_get(r);
 	etex_span_text_set(thiz->text, str);
-	printf("setting the string\n");
-	/* whenever we change the string, setup the size of the
-	 * rectangle
-	 */
-	enesim_renderer_boundings(thiz->text, &boundings);
-	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w + 2);
-	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.h + 2);
-	enesim_renderer_shape_draw_moed_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_button_font_set(Enesim_Renderer *r, const char *file)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	etex_span_font_set(thiz->text, file);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_button_font_size_set(Enesim_Renderer *r, int size)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	etex_span_size_set(thiz->text, size);
+}

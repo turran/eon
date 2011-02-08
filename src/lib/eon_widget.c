@@ -75,6 +75,12 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 
 	ew = _eon_widget_get(r);
 	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	printf("trying to setup\n");
+	if (!enesim_renderer_sw_setup(er))
+	{
+		printf("not available to setup yet\n");
+		return EINA_FALSE;
+	}
 	/* get the ender from the escen ender and get the fill function */
 	ew->fill = enesim_renderer_sw_fill_get(er);
 	if (!ew->fill) return EINA_FALSE;
@@ -133,6 +139,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	Escen *escen;
 	Escen_Ender *escen_ender;
 	Enesim_Renderer *escen_renderer;
+	Escen_State *escen_state;
 	char theme[PATH_MAX];
 
 	escen = eon_theme_get();
@@ -152,6 +159,9 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 
 	escen_renderer = ender_renderer_get(escen_ender_ender_get(escen_ender));
 	if (!escen_renderer) goto escen_renderer_err;
+	/* Set the default state in case it has one */
+	escen_state = escen_ender_state_get(escen_ender, "default");
+	escen_ender_state_set(escen_ender, escen_state);
 
 	enesim_renderer_flags(escen_renderer, &flags);
 
@@ -214,24 +224,24 @@ EAPI void * eon_widget_data_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
+EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, Ender_Value *value)
 {
 	Eon_Widget *thiz;
 	Ender *ender;
 
 	thiz = _eon_widget_get(r);
 	ender = escen_ender_ender_get(thiz->escen_ender);
-	//ender_value_set(r, name, value);
+	ender_value_set_simple(ender, name, value);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...)
+EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, Ender_Value *value)
 {
 	Eon_Widget *e;
 
 	e = _eon_widget_get(r);
-
+	printf("TODO\n");
 }

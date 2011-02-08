@@ -11,5 +11,7 @@ namespace eon {
 
 	class button : widget {
 		string label;
+		string font;
+		int font_size;
 	};
 };

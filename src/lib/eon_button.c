@@ -68,13 +68,13 @@ renderer_err:
 EAPI void eon_button_label_set(Enesim_Renderer *r, const char *text)
 {
 	Eon_Button *button;
+	Ender_Value value;
 
 	button = _eon_button_get(r);
 	if (!button) return;
 
-	/* we should set the property to the escen */
-	printf("setting the label 1\n");
-	eon_widget_property_set(r, "label", text);
+	value.string = text;
+	eon_widget_property_set(r, "label", &value);
 }
 
 /**
@@ -89,4 +89,36 @@ EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
 	if (!button) return;
 
 	/* we should set the property to the escen */
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_button_font_set(Enesim_Renderer *r, const char *file)
+{
+	Eon_Button *button;
+	Ender_Value value;
+
+	button = _eon_button_get(r);
+	if (!button) return;
+
+	value.string = file;
+	eon_widget_property_set(r, "font", &value);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_button_font_size_set(Enesim_Renderer *r, int size)
+{
+	Eon_Button *button;
+	Ender_Value value;
+
+	button = _eon_button_get(r);
+	if (!button) return;
+
+	value.int32 = size;
+	eon_widget_property_set(r, "font_size", &value);
 }
