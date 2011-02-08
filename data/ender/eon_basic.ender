@@ -2,8 +2,8 @@ using enesim;
 
 namespace eon {
 	class basic_radio : renderer {
-		string label;
-		double selected;
+		int selected;
+		argb color;
 	};
 
 	class basic_button : renderer {
@@ -11,4 +11,5 @@ namespace eon {
 		string font;
 		int font_size;
 	};
+
 };

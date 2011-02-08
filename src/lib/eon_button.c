@@ -28,10 +28,10 @@ typedef struct _Eon_Button
 
 static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 {
-	Eon_Button *e;
+	Eon_Button *thiz;
 
-	e = eon_widget_data_get(r);
-	return e;
+	thiz = eon_widget_data_get(r);
+	return thiz;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -45,19 +45,19 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
  */
 EAPI Enesim_Renderer * eon_button_new(void)
 {
-	Eon_Button *e;
-	Enesim_Renderer *thiz;
+	Eon_Button *thiz;
+	Enesim_Renderer *r;
 
-	e = calloc(1, sizeof(Eon_Button));
-	if (!e) return NULL;
+	thiz = calloc(1, sizeof(Eon_Button));
+	if (!thiz) return NULL;
 
-	thiz = eon_widget_new("button", e);
-	if (!thiz) goto renderer_err;
+	r = eon_widget_new("button", thiz);
+	if (!r) goto renderer_err;
 
-	return thiz;
+	return r;
 
 renderer_err:
-	free(e);
+	free(thiz);
 	return NULL;
 }
 
@@ -67,11 +67,11 @@ renderer_err:
  */
 EAPI void eon_button_label_set(Enesim_Renderer *r, const char *text)
 {
-	Eon_Button *button;
+	Eon_Button *thiz;
 	Ender_Value value;
 
-	button = _eon_button_get(r);
-	if (!button) return;
+	thiz = _eon_button_get(r);
+	if (!thiz) return;
 
 	value.string = text;
 	eon_widget_property_set(r, "label", &value);
@@ -83,10 +83,10 @@ EAPI void eon_button_label_set(Enesim_Renderer *r, const char *text)
  */
 EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
 {
-	Eon_Button *button;
+	Eon_Button *thiz;
 
-	button = _eon_button_get(r);
-	if (!button) return;
+	thiz = _eon_button_get(r);
+	if (!thiz) return;
 
 	/* we should set the property to the escen */
 }
@@ -97,11 +97,11 @@ EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
  */
 EAPI void eon_button_font_set(Enesim_Renderer *r, const char *file)
 {
-	Eon_Button *button;
+	Eon_Button *thiz;
 	Ender_Value value;
 
-	button = _eon_button_get(r);
-	if (!button) return;
+	thiz = _eon_button_get(r);
+	if (!thiz) return;
 
 	value.string = file;
 	eon_widget_property_set(r, "font", &value);
@@ -113,11 +113,11 @@ EAPI void eon_button_font_set(Enesim_Renderer *r, const char *file)
  */
 EAPI void eon_button_font_size_set(Enesim_Renderer *r, int size)
 {
-	Eon_Button *button;
+	Eon_Button *thiz;
 	Ender_Value value;
 
-	button = _eon_button_get(r);
-	if (!button) return;
+	thiz = _eon_button_get(r);
+	if (!thiz) return;
 
 	value.int32 = size;
 	eon_widget_property_set(r, "font_size", &value);
