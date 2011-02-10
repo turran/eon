@@ -20,15 +20,15 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Button
+typedef struct _Eon_Radio
 {
 	char *text;
 	Ender *external;
-} Eon_Button;
+} Eon_Radio;
 
-static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
+static inline Eon_Radio * _eon_radio_get(Enesim_Renderer *r)
 {
-	Eon_Button *thiz;
+	Eon_Radio *thiz;
 
 	thiz = eon_widget_data_get(r);
 	return thiz;
@@ -43,15 +43,15 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_button_new(void)
+EAPI Enesim_Renderer * eon_radio_new(void)
 {
-	Eon_Button *thiz;
+	Eon_Radio *thiz;
 	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Eon_Button));
+	thiz = calloc(1, sizeof(Eon_Radio));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new("button", thiz);
+	r = eon_widget_new("radio", thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -65,28 +65,14 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_button_label_set(Enesim_Renderer *r, const char *text)
+EAPI void eon_radio_label_set(Enesim_Renderer *r, const char *text)
 {
-	Eon_Button *thiz;
+	Eon_Radio *thiz;
 	Ender_Value value;
 
-	thiz = _eon_button_get(r);
+	thiz = _eon_radio_get(r);
 	if (!thiz) return;
 
 	value.string = text;
 	eon_widget_property_set(r, "label", &value);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
-{
-	Eon_Button *thiz;
-
-	thiz = _eon_button_get(r);
-	if (!thiz) return;
-
-	/* we should set the property to the escen */
 }

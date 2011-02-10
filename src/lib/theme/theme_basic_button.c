@@ -53,7 +53,7 @@ static void _button_update_rectangle(Button *thiz)
 	enesim_renderer_boundings(thiz->text, &boundings);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w + 2);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h + 2);
-	//enesim_renderer_origin_set(thiz->text, 0, 5);
+	//enesim_renderer_origin_set(thiz->text, 5, 5);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -61,10 +61,13 @@ static void _button_update_rectangle(Button *thiz)
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Button *thiz;
+	double ox, oy;
 
 	thiz = _button_get(r);
 	_button_update_rectangle(thiz);
-
+	/* set common properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
 		printf("not available to setup yet\n");
@@ -144,14 +147,11 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 
 	/* setup the initial state */
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
-	enesim_renderer_shape_fill_color_set(thiz->rectangle, 0xffff0000);
-	enesim_renderer_shape_outline_color_set(thiz->rectangle, 0xff881010);
 	enesim_renderer_shape_outline_weight_set(thiz->rectangle, 1);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->text);
 	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
-	etex_span_color_set(thiz->text, 0xff000000);
 
 	return r;
 
@@ -182,6 +182,18 @@ EAPI void eon_basic_button_foreground_color_set(Enesim_Renderer *r, Enesim_Color
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	enesim_renderer_shape_outline_color_set(thiz->rectangle, color);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_label_set(Enesim_Renderer *r, char *str)
 {
 	Button *thiz;
@@ -201,6 +213,19 @@ EAPI void eon_basic_button_font_set(Enesim_Renderer *r, const char *file)
 	thiz = _button_get(r);
 	etex_span_font_set(thiz->text, file);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_button_font_color_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	etex_span_color_set(thiz->text, color);
+}
+
 
 /**
  * To be documented

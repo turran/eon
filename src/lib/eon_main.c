@@ -72,3 +72,14 @@ void eon_shutdown(void)
 	}
 	_init--;
 }
+
+/**
+ *
+ */
+EAPI void eon_version(unsigned int *major, unsigned int *minor, unsigned int *micro)
+{
+	if (major) *major = VERSION_MAJOR;
+	if (minor) *minor = VERSION_MINOR;
+	if (micro) *micro = VERSION_MICRO;
+}
+

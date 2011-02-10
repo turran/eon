@@ -14,7 +14,9 @@ eon_main.c \
 eon_layout.c \
 eon_canvas.c \
 eon_widget.c \
-eon_button.c
+eon_button.c \
+eon_radio.c \
+eon_label.c
 
 libeon_la_LIBADD = \
 theme/libtheme_basic.la \

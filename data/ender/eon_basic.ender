@@ -8,8 +8,14 @@ namespace eon {
 
 	class basic_button : renderer {
 		string label;
+		argb foreground_color;
+		argb border_color;
 		string font;
 		int font_size;
+		argb font_color;
 	};
 
+	class basic_checkbox : renderer {
+		int size;
+	};
 };

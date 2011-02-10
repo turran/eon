@@ -1,86 +1,123 @@
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
-
-typedef struct _Radio
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
+typedef struct _Template
 {
 	Enesim_Renderer *compound;
 	Enesim_Renderer_Sw_Fill fill;
-} Radio;
+} Template;
 
-static inline Radio * _radio_get(Enesim_Renderer *r)
+static inline Template * _template_get(Enesim_Renderer *r)
 {
-	Radio *rad;
+	Template *thiz;
 
-	rad = enesim_renderer_data_get(r);
-	return rad;
+	thiz = enesim_renderer_data_get(r);
+	return thiz;
 }
 
-static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+static void _template_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
-	Radio *rad;
+	Template *thiz;
 
-	rad = _radio_get(r);
-	rad->fill(rad->compound, x, y, len, dst);
+	thiz = _template_get(r);
+	thiz->fill(thiz->compound, x, y, len, dst);
 }
-
-static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+/*----------------------------------------------------------------------------*
+ *                      The Enesim's renderer interface                       *
+ *----------------------------------------------------------------------------*/
+static Eina_Bool _template_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
-	Radio *rad;
+	Template *thiz;
 
-	rad = _radio_get(r);
-	rad->fill = enesim_renderer_sw_fill_get(rad->compound);
-	if (!rad->fill) return EINA_FALSE;
+	thiz = _template_get(r);
+	if (!enesim_renderer_sw_setup(thiz->compound))
+		return EINA_FALSE;
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
+	if (!thiz->fill) return EINA_FALSE;
 
-	*fill = _radio_draw;
+	*fill = _template_draw;
 
 	return EINA_TRUE;
 }
 
-static void _radio_cleanup(Enesim_Renderer *r)
+static void _template_cleanup(Enesim_Renderer *r)
 {
-	Radio *rad;
+	Template *thiz;
 
-	rad = _radio_get(r);
-	enesim_renderer_sw_cleanup(rad->compound);
+	thiz = _template_get(r);
+	enesim_renderer_sw_cleanup(thiz->compound);
 }
 
-static void _radio_free(Enesim_Renderer *r)
+static void _template_free(Enesim_Renderer *r)
 {
-	Radio *rad;
+	Template *thiz;
 
-	rad = _radio_get(r);
-	if (rad->compound)
-		enesim_renderer_delete(rad->compound);
-	free(rad);
+	thiz = _template_get(r);
+	if (thiz->compound)
+		enesim_renderer_delete(thiz->compound);
+	free(thiz);
+}
+
+static void _template_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
+{
+	Button *thiz;
+
+	thiz = _template_get(r);
+	enesim_renderer_boundings(thiz->compound, boundings);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
-	.sw_setup = _radio_setup,
-	.sw_cleanup = _radio_cleanup,
-	.free = _radio_free,
+	.sw_setup = _template_setup,
+	.sw_cleanup = _template_cleanup,
+	.boundings = _template_boundings,
+	.free = _template_free,
 };
-
-
-EAPI Enesim_Renderer * eon_basic_radio_new(void)
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Enesim_Renderer * eon_basic_template_new(void)
 {
-	Enesim_Renderer *thiz, *r;
+	Enesim_Renderer *r;
 	Enesim_Renderer_Flag flags;
-	Radio *rad;
+	Template *thiz;
 
-	rad = calloc(1, sizeof(Radio));
-	if (!rad) return NULL;
+	thiz = calloc(1, sizeof(Template));
+	if (!thiz) return NULL;
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
-	rad->compound = r;
+	thiz->compound = r;
 
-	thiz = enesim_renderer_new(&_descriptor, flags, rad);
-	if (!thiz) goto renderer_err;
+	r = enesim_renderer_new(&_descriptor, flags, thiz);
+	if (!r) goto renderer_err;
 
-	return thiz;
+	return r;
 renderer_err:
-	enesim_renderer_delete(rad->compound);
+	enesim_renderer_delete(thiz->compound);
 compound_err:
-	free(rad);
+	free(thiz);
 	return NULL;
 }

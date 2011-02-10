@@ -72,10 +72,13 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 {
 	Eon_Widget *ew;
 	Enesim_Renderer *er;
+	double ox, oy;
 
 	ew = _eon_widget_get(r);
 	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
-	printf("trying to setup\n");
+	/* setup common properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(er, ox, oy);
 	if (!enesim_renderer_sw_setup(er))
 	{
 		printf("not available to setup yet\n");

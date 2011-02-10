@@ -53,7 +53,6 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	/* set the common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->outter_circle, ox, oy);
-	enesim_renderer_origin_set(thiz->inner_circle, ox, oy);
 	/* get the fill function */
 	if (!enesim_renderer_sw_setup(thiz->outter_circle))
 	{
@@ -117,18 +116,20 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	if (!r) goto outter_err;
 	thiz->outter_circle = r;
 	enesim_renderer_flags(r, &flags);
-	enesim_renderer_circle_radius_set(r, 10);
+	enesim_renderer_circle_radius_set(r, 8);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_outline_weight_set(r, 2);
 
 	r = enesim_renderer_circle_new();
 	if (!r) goto inner_err;
 	thiz->inner_circle = r;
-	enesim_renderer_circle_radius_set(r, 7);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_circle_radius_set(r, 8);
+	enesim_renderer_shape_outline_weight_set(r, 3);
+	enesim_renderer_shape_outline_color_set(r, 0xffffffff);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	/* TODO set the initial state calling the function */
-	enesim_renderer_shape_fill_renderer_set(thiz->outter_circle, thiz->inner_circle);
+	//printf("inner %p outter %p\n", thiz->inner_circle, thiz->outter_circle);
 
 	r = enesim_renderer_new(&_descriptor, flags, thiz);
 	if (!r) goto renderer_err;
@@ -155,12 +156,13 @@ EAPI void eon_basic_radio_selected_set(Enesim_Renderer *r, int selected)
 	thiz->selected = selected;
 	if (selected)
 	{
-		enesim_renderer_shape_draw_mode_set(thiz->outter_circle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+		enesim_renderer_shape_fill_renderer_set(thiz->outter_circle, thiz->inner_circle);
+		enesim_renderer_shape_fill_color_set(thiz->outter_circle, 0xffffffff);
 	}
 	else
 	{
-		enesim_renderer_shape_draw_mode_set(thiz->outter_circle, ENESIM_SHAPE_DRAW_MODE_STROKE);
 		enesim_renderer_shape_fill_renderer_set(thiz->outter_circle, NULL);
+		enesim_renderer_shape_fill_color_set(thiz->outter_circle, 0xffffffff);
 	}
 }
 
@@ -173,6 +175,7 @@ EAPI void eon_basic_radio_color_set(Enesim_Renderer *r, Enesim_Color color)
 	Radio *thiz;
 
 	thiz = _radio_get(r);
+	printf("setting the color\n");
 	enesim_renderer_shape_outline_color_set(thiz->outter_circle, color);
 	enesim_renderer_shape_fill_color_set(thiz->inner_circle, color);
 }
