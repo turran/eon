@@ -17,5 +17,6 @@ namespace eon {
 
 	class basic_checkbox : renderer {
 		int size;
+		int selected;
 	};
 };

@@ -27,6 +27,7 @@ typedef struct _Checkbox
 	Enesim_Renderer *compound;
 	Enesim_Renderer_Sw_Fill fill;
 	unsigned int size;
+	Eina_Bool selected;
 } Checkbox;
 
 static inline Checkbox * _checkbox_get(Enesim_Renderer *r)
@@ -42,7 +43,7 @@ static void _checkbox_draw(Enesim_Renderer *r, int x, int y, unsigned int len, u
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	thiz->fill(thiz->box, x, y, len, dst);
+	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -52,8 +53,8 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fi
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	if (!enesim_renderer_sw_setup(thiz->box)) return EINA_FALSE;
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->box);
+	if (!enesim_renderer_sw_setup(thiz->compound)) return EINA_FALSE;
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
 	if (!thiz->fill) return EINA_FALSE;
 
 	*fill = _checkbox_draw;
@@ -66,7 +67,7 @@ static void _checkbox_cleanup(Enesim_Renderer *r)
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	enesim_renderer_sw_cleanup(thiz->box);
+	enesim_renderer_sw_cleanup(thiz->compound);
 }
 
 static void _checkbox_free(Enesim_Renderer *r)
@@ -74,8 +75,8 @@ static void _checkbox_free(Enesim_Renderer *r)
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	if (thiz->box)
-		enesim_renderer_delete(thiz->box);
+	if (thiz->compound)
+		enesim_renderer_delete(thiz->compound);
 	free(thiz);
 }
 
@@ -84,7 +85,7 @@ static void _checkbox_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	enesim_renderer_boundings(thiz->box, boundings);
+	enesim_renderer_boundings(thiz->compound, boundings);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
@@ -117,6 +118,7 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	if (!r) goto path_err;
 	thiz->check = r;
 	enesim_renderer_shape_fill_color_set(r, 0xff000000);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto rectangle_err;
@@ -124,12 +126,15 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	enesim_renderer_shape_outline_weight_set(r, 2);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_outline_color_set(r, 0xff000000);
-	enesim_renderer_shape_fill_renderer_set(r, thiz->check);
+	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
 	r = enesim_renderer_new(&_descriptor, flags, thiz);
 	if (!r) goto renderer_err;
 
+	/* set the initial state */
+	enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
 	return r;
+
 renderer_err:
 	enesim_renderer_delete(thiz->box);
 rectangle_err:
@@ -164,3 +169,23 @@ EAPI void eon_basic_checkbox_size_set(Enesim_Renderer *r, unsigned int size)
 	enesim_renderer_path_line_to(thiz->check, size * 0.1, size * 0.45);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
+{
+	Checkbox *thiz;
+
+	thiz = _checkbox_get(r);
+	if (thiz->selected == selected)
+		return;
+
+	enesim_renderer_compound_clear(thiz->compound);
+	enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
+	if (selected)
+	{
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->check);
+	}
+	thiz->selected = selected;
+}

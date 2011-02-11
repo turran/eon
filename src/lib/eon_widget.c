@@ -46,6 +46,15 @@ typedef struct _Eon_Widget
 	Enesim_Renderer_Sw_Fill fill;
 } Eon_Widget;
 
+
+/* placeholder for virtual functions every widget
+ * should implement
+ */
+typedef struct _Eon_Widget_Descriptor
+{
+
+} Eon_Widget_Descriptor;
+
 static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 {
 	Eon_Widget *e;
@@ -206,7 +215,6 @@ EAPI void eon_widget_theme_set(Enesim_Renderer *r, const char *file)
 	 * and set this, get the correct escen_ender and set
 	 * the current state
 	 */
-
 }
 
 /**
