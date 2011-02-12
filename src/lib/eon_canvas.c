@@ -183,7 +183,6 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 {
 	Eon_Canvas *e;
 	Enesim_Renderer *thiz;
-	Enesim_Renderer_Flag flags;
 	Enesim_Renderer *compound;
 
 	compound = enesim_renderer_compound_new();
@@ -195,8 +194,7 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 
 	e->compound = compound;
 
-	flags = ENESIM_RENDERER_FLAG_ARGB8888;
-	thiz = eon_layout_new(&_eon_canvas_descriptor, flags, e);
+	thiz = eon_layout_new(&_eon_canvas_descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;

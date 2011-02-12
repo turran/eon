@@ -59,6 +59,7 @@ static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 {
 	Eon_Widget *e;
 
+	if (!r) return NULL;
 	e = enesim_renderer_data_get(r);
 	EON_WIDGET_MAGIC_CHECK_RETURN(e, NULL);
 
@@ -126,6 +127,16 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	enesim_renderer_boundings(er, rect);
 }
 
+static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *er;
+
+	thiz = _eon_widget_get(r);
+	er = ender_renderer_get(escen_ender_ender_get(thiz->escen_ender));
+	enesim_renderer_flags(er, flags);
+}
+
 static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
 	.sw_setup = _eon_widget_setup,
 	.sw_cleanup = _eon_widget_cleanup,
@@ -147,7 +158,6 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 {
 	Eon_Widget *e;
 	Enesim_Renderer *thiz;
-	Enesim_Renderer_Flag flags;
 	Escen *escen;
 	Escen_Ender *escen_ender;
 	Enesim_Renderer *escen_renderer;
@@ -164,7 +174,6 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	EINA_MAGIC_SET(e, EON_WIDGET_MAGIC);
 	e->data = data;
 
-	/* TODO get the flags from the theme? we should add a flags callback on enesim */
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
 	e->escen_ender = escen_ender;
@@ -175,9 +184,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	escen_state = escen_ender_state_get(escen_ender, "default");
 	escen_ender_state_set(escen_ender, escen_state);
 
-	enesim_renderer_flags(escen_renderer, &flags);
-
-	thiz = enesim_renderer_new(&_eon_widget_descriptor, flags, e);
+	thiz = enesim_renderer_new(&_eon_widget_descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;

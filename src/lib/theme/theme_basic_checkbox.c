@@ -104,7 +104,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 {
 	Enesim_Renderer *r;
-	Enesim_Renderer_Flag flags;
 	Checkbox *thiz;
 
 	thiz = calloc(1, sizeof(Checkbox));
@@ -128,7 +127,7 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	enesim_renderer_shape_outline_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
-	r = enesim_renderer_new(&_descriptor, flags, thiz);
+	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	/* set the initial state */

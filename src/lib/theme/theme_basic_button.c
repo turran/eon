@@ -124,7 +124,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_button_new(void)
 {
 	Enesim_Renderer *r;
-	Enesim_Renderer_Flag flags;
 	Button *thiz;
 
 	thiz = calloc(1, sizeof(Button));
@@ -142,7 +141,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	if (!r) goto rectangle_err;
 	thiz->rectangle = r;
 
-	r = enesim_renderer_new(&_descriptor, flags, thiz);
+	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	/* setup the initial state */

@@ -29,7 +29,6 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
  * FIXME: To be fixed
  */
 EAPI Enesim_Renderer * eon_layout_new(Enesim_Renderer_Descriptor *descriptor,
-		Enesim_Renderer_Flag flags,
 		void *data)
 {
 	Eon_Layout *e;
@@ -38,7 +37,7 @@ EAPI Enesim_Renderer * eon_layout_new(Enesim_Renderer_Descriptor *descriptor,
 	e = calloc(1, sizeof(Eon_Layout));
 	e->data = data;
 
-	thiz = enesim_renderer_new(descriptor, flags, e);
+	thiz = enesim_renderer_new(descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;

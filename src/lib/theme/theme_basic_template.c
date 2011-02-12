@@ -79,16 +79,25 @@ static void _template_free(Enesim_Renderer *r)
 
 static void _template_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
 {
-	Button *thiz;
+	Template *thiz;
 
 	thiz = _template_get(r);
 	enesim_renderer_boundings(thiz->compound, boundings);
+}
+
+static void _template_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
+{
+	Template *thiz;
+
+	thiz = _template_get(r);
+	enesim_renderer_flags(thiz->compound, flags);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
 	.sw_setup = _template_setup,
 	.sw_cleanup = _template_cleanup,
 	.boundings = _template_boundings,
+	.flags = _template_flags,
 	.free = _template_free,
 };
 /*============================================================================*
@@ -101,7 +110,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_template_new(void)
 {
 	Enesim_Renderer *r;
-	Enesim_Renderer_Flag flags;
 	Template *thiz;
 
 	thiz = calloc(1, sizeof(Template));
@@ -111,7 +119,7 @@ EAPI Enesim_Renderer * eon_basic_template_new(void)
 	if (!r) goto compound_err;
 	thiz->compound = r;
 
-	r = enesim_renderer_new(&_descriptor, flags, thiz);
+	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

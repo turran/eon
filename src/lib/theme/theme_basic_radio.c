@@ -106,7 +106,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_radio_new(void)
 {
 	Enesim_Renderer *r;
-	Enesim_Renderer_Flag flags;
 	Radio *thiz;
 
 	thiz = calloc(1, sizeof(Radio));
@@ -115,7 +114,6 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	r = enesim_renderer_circle_new();
 	if (!r) goto outter_err;
 	thiz->outter_circle = r;
-	enesim_renderer_flags(r, &flags);
 	enesim_renderer_circle_radius_set(r, 8);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_outline_weight_set(r, 2);
@@ -131,7 +129,7 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	/* TODO set the initial state calling the function */
 	//printf("inner %p outter %p\n", thiz->inner_circle, thiz->outter_circle);
 
-	r = enesim_renderer_new(&_descriptor, flags, thiz);
+	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

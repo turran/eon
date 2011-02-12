@@ -101,7 +101,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_label_new(void)
 {
 	Enesim_Renderer *r;
-	Enesim_Renderer_Flag flags;
 	Label *thiz;
 
 	thiz = calloc(1, sizeof(Label));
@@ -111,7 +110,7 @@ EAPI Enesim_Renderer * eon_basic_label_new(void)
 	if (!r) goto compound_err;
 	thiz->compound = r;
 
-	r = enesim_renderer_new(&_descriptor, flags, thiz);
+	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
