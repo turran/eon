@@ -57,13 +57,13 @@ typedef struct _Eon_Widget_Descriptor
 
 static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 {
-	Eon_Widget *e;
+	Eon_Widget *thiz;
 
 	if (!r) return NULL;
-	e = enesim_renderer_data_get(r);
-	EON_WIDGET_MAGIC_CHECK_RETURN(e, NULL);
+	thiz = enesim_renderer_data_get(r);
+	EON_WIDGET_MAGIC_CHECK_RETURN(thiz, NULL);
 
-	return e;
+	return thiz;
 }
 
 static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
@@ -204,10 +204,10 @@ ender_err:
  */
 EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r)
 {
-	Eon_Widget *e;
+	Eon_Widget *thiz;
 
-	e = enesim_renderer_data_get(r);
-	if (!EINA_MAGIC_CHECK(e, EON_WIDGET_MAGIC))
+	thiz = enesim_renderer_data_get(r);
+	if (!EINA_MAGIC_CHECK(thiz, EON_WIDGET_MAGIC))
 		return EINA_FALSE;
 	return EINA_TRUE;
 }
