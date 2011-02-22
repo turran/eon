@@ -51,9 +51,9 @@ static void _button_update_rectangle(Button *thiz)
 	/* add 5px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
 	enesim_renderer_boundings(thiz->text, &boundings);
-	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w + 2);
-	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h + 2);
-	//enesim_renderer_origin_set(thiz->text, 5, 5);
+	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w + 6);
+	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h + 6);
+	enesim_renderer_origin_set(thiz->text, 3, 3);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
