@@ -39,8 +39,8 @@ typedef struct _Eon_Layout
 {
 	EINA_MAGIC;
 	Eina_Tiler *tiler;
-	Eina_List *obscure;
-	Eina_List *damage;
+	Eina_Array *obscure;
+	Eina_Array *damage;
 	void *data;
 } Eon_Layout;
 
@@ -100,6 +100,16 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 	l = _eon_layout_get(r);
 	return l->data;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void eon_layout_redraw_get(Enesim_Renderer *r, Eina_List **redraws)
+{
+	/* get every damage from the tiler */
+	/* remove the obscures */
+	/* return that list */
+}
 
 /**
  * To be documented
@@ -121,4 +131,5 @@ void eon_layout_damage_add(Enesim_Renderer *r, Eina_Rectangle *damage)
 	Eon_Layout *l;
 
 	l = _eon_layout_get(r);
+	/* add the rectangle to the tiler */
 }
