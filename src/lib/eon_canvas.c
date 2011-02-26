@@ -56,7 +56,11 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 
 	e = _eon_canvas_get(r);
 	if (!e) return EINA_FALSE;
-	if (e->curr.width == 0 || e->curr.height == 0) return EINA_FALSE;
+	if (e->curr.width == 0 || e->curr.height == 0)
+	{
+		DBG("Invalid size %dx%d", e->curr.width, e->curr.height);
+		return EINA_FALSE;
+	}
 
 	if (e->curr.width != e->old.width || e->curr.height != e->old.height)
 	{
@@ -97,7 +101,7 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	}
 	if (!enesim_renderer_sw_setup(e->compound))
 	{
-		printf("cannot setup the compound\n");
+		DBG("Cannot setup the compound renderer");
 		return EINA_FALSE;
 	}
 	e->fill_func = enesim_renderer_sw_fill_get(e->compound);

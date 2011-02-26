@@ -39,11 +39,12 @@ int eon_init(void)
 	if (!_init++)
 	{
 		eina_init();
+		eon_log = eina_log_domain_register("eon", NULL);
 		enesim_init();
 		ender_init();
 		escen_init();
 		eon_basic_init();
-		/* initialize the theme */
+/* initialize the theme */
 		/* FIXME, eon init is called from the ender_parser_init, which
 		 * causes a recursion, avoid it */
 		_theme = escen_parser_load(PACKAGE_DATA_DIR "/themes/basic.escen");
@@ -53,6 +54,7 @@ int eon_init(void)
 			escen_shutdown();
 			ender_shutdown();
 			enesim_shutdown();
+			eina_log_domain_unregister(eon_log);
 			eina_shutdown();
 		}
 		return --_init;
@@ -68,6 +70,7 @@ void eon_shutdown(void)
 		escen_shutdown();
 		ender_shutdown();
 		enesim_shutdown();
+		eina_log_domain_unregister(eon_log);
 		eina_shutdown();
 	}
 	_init--;
