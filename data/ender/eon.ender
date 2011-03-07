@@ -1,11 +1,26 @@
 using enesim;
 
 namespace eon {
-	class canvas : renderer {
+	abstract element : renderer {
+		uint min_width;
+		uint min_height;
+		uint max_width;
+		uint max_height;
+	};
 
+	abstract layout : renderer {
+		[ender] children;
 	};
 
 	abstract widget : renderer {
+
+	};
+
+	class stack : layout {
+
+	};
+
+	class canvas : layout {
 
 	};
 

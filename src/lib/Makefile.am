@@ -10,13 +10,15 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libeon.la
 
 libeon_la_SOURCES = \
-eon_main.c \
-eon_layout.c \
-eon_canvas.c \
-eon_widget.c \
 eon_button.c \
+eon_canvas.c \
+eon_element.c \
+eon_label.c \
+eon_layout.c \
+eon_main.c \
 eon_radio.c \
-eon_label.c
+eon_stack.c \
+eon_widget.c
 
 libeon_la_LIBADD = \
 theme/libtheme_basic.la \

@@ -1,4 +1,4 @@
-/* EON - Canvas and Toolkit library
+/* EON - Stack and Toolkit library
  * Copyright (C) 2008-2009 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
@@ -20,45 +20,44 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Canvas_Child
+typedef struct _Eon_Stack_Child
 {
 	Ender *ender;
 	double old_x;
 	double old_y;
 	double x;
 	double y;
-} Eon_Canvas_Child;
+} Eon_Stack_Child;
 
-typedef struct _Eon_Canvas_State
+typedef struct _Eon_Stack_State
 {
 	unsigned int width;
 	unsigned int height;
-	Enesim_Color color;
-} Eon_Canvas_State;
+	Eon_Stack_Direction direction;
+} Eon_Stack_State;
 
-typedef struct _Eon_Canvas
+typedef struct _Eon_Stack
 {
-	Eina_Tiler *tiler;
 	Eina_List *children;
-	Eon_Canvas_State old, curr;
+	Eon_Stack_State old, curr;
 	Enesim_Renderer *background;
 	Enesim_Renderer *compound;
 	Enesim_Renderer_Sw_Fill fill_func;
-} Eon_Canvas;
+} Eon_Stack;
 
-static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
+static inline Eon_Stack * _eon_stack_get(Enesim_Renderer *r)
 {
-	Eon_Canvas *e;
+	Eon_Stack *e;
 
 	e = eon_layout_data_get(r);
 	return e;
 }
 
-static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+static void _stack_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
-	Eon_Canvas *e;
+	Eon_Stack *e;
 
-	e = _eon_canvas_get(r);
+	e = _eon_stack_get(r);
 	/* just iterate over the list of dirty rectangles and intersect against the span */
 	/* if it intersects render the child that is on that span from bottom to top */
 	e->fill_func(e->compound, x, y, len, dst);
@@ -66,27 +65,16 @@ static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *ech;
+	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
 	Eina_List *l;
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_stack_get(r);
 	if (!thiz) return EINA_FALSE;
-	if (thiz->curr.width == 0 || thiz->curr.height == 0)
-	{
-		DBG("Invalid size %dx%d", thiz->curr.width, thiz->curr.height);
+	if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
 		return EINA_FALSE;
-	}
-
-	if (thiz->curr.width != thiz->old.width || thiz->curr.height != thiz->old.height)
-	{
-		if (thiz->tiler) eina_tiler_free(thiz->tiler);
-		/* create a new tiler */
-		thiz->tiler = eina_tiler_new(thiz->curr.width, thiz->curr.height);
-	}
-	/* TODO handle the background */
 	/* set the coordinates on every child */
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
@@ -123,22 +111,20 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		return EINA_FALSE;
 	}
 	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
-	*fill = _canvas_draw;
+	*fill = _stack_draw;
 
 	return EINA_TRUE;
 }
 
-static void _eon_canvas_cleanup(Enesim_Renderer *r)
+static void _eon_stack_cleanup(Enesim_Renderer *r)
 {
-	Eon_Canvas *e;
-	Eon_Canvas_Child *ech;
+	Eon_Stack *e;
+	Eon_Stack_Child *ech;
 	Eina_List *l;
 
-	e = _eon_canvas_get(r);
+	e = _eon_stack_get(r);
 	if (!e) return;
 
-	/* remove every dirty rectangle? */
-	if (e->tiler) eina_tiler_clear(e->tiler);
 	/* restore the coordinates on every child */
 	EINA_LIST_FOREACH (e->children, l, ech)
 	{
@@ -162,21 +148,21 @@ static void _eon_canvas_cleanup(Enesim_Renderer *r)
 	}
 }
 
-static void _eon_canvas_free(Enesim_Renderer *r)
+static void _eon_stack_free(Enesim_Renderer *r)
 {
-	Eon_Canvas *e;
+	Eon_Stack *e;
 
-	e = _eon_canvas_get(r);
+	e = _eon_stack_get(r);
 	if (!e) return;
 
 	free(e);
 }
 
-static void _eon_canvas_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
+static void _eon_stack_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 {
-	Eon_Canvas *e;
+	Eon_Stack *e;
 
-	e = _eon_canvas_get(r);
+	e = _eon_stack_get(r);
 	if (!e) return;
 
 	rect->x = 0;
@@ -185,38 +171,36 @@ static void _eon_canvas_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	rect->h = e->curr.height;
 }
 
-static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
-	.sw_setup = _eon_canvas_setup,
-	.sw_cleanup = _eon_canvas_cleanup,
-	.boundings = _eon_canvas_boundings,
-	.free = _eon_canvas_free,
+static Enesim_Renderer_Descriptor _eon_stack_renderer_descriptor = {
+	.sw_setup = _eon_stack_setup,
+	.sw_cleanup = _eon_stack_cleanup,
+	.boundings = _eon_stack_boundings,
+	.free = _eon_stack_free,
 };
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
-static void _eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
+static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 {
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *ech;
+	Eon_Stack *thiz;
+	Eon_Stack_Child *thiz_child;
 
-	thiz = _eon_canvas_get(r);
-	ech = calloc(1, sizeof(Eon_Canvas_Child));
-	ech->ender = child;
-	thiz->children = eina_list_append(thiz->children, ech);
+	thiz = _eon_stack_get(r);
+	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
+	thiz_child->ender = child;
+	thiz->children = eina_list_append(thiz->children, thiz_child);
 	enesim_renderer_compound_layer_add(thiz->compound, ender_renderer_get(child));
 }
 
-static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender *child)
+static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
 {
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *thiz_child;
-
-	thiz = _eon_canvas_get(r);
+	Eon_Stack *thiz;
+	Eon_Stack_Child *thiz_child;
 }
 
-static Eon_Layout_Descriptor _eon_canvas_layout_descriptor = {
-	.child_add = _eon_canvas_child_add,
-	.child_remove = _eon_canvas_child_remove,
+static Eon_Layout_Descriptor _eon_stack_layout_descriptor = {
+	.child_add = _eon_stack_child_add,
+	.child_remove = _eon_stack_child_remove,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -228,13 +212,13 @@ static Eon_Layout_Descriptor _eon_canvas_layout_descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_canvas_new(void)
+EAPI Enesim_Renderer * eon_stack_new(void)
 {
-	Eon_Canvas *e;
+	Eon_Stack *e;
 	Enesim_Renderer *thiz;
 	Enesim_Renderer *r;
 
-	e = calloc(1, sizeof(Eon_Canvas));
+	e = calloc(1, sizeof(Eon_Stack));
 	if (!e) return NULL;
 
 	r = enesim_renderer_compound_new();
@@ -249,8 +233,8 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 	enesim_renderer_rop_set(r, ENESIM_FILL);
 	e->background = r;
 
-	thiz = eon_layout_new(&_eon_canvas_layout_descriptor,
-			&_eon_canvas_descriptor, e);
+	thiz = eon_layout_new(&_eon_stack_layout_descriptor,
+			&_eon_stack_renderer_descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;
@@ -264,92 +248,7 @@ compound_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_width_set(Enesim_Renderer *r, unsigned int width)
-{
-	Eon_Canvas *e;
-
-	e = _eon_canvas_get(r);
-	e->curr.width = width;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_height_set(Enesim_Renderer *r, unsigned int height)
-{
-	Eon_Canvas *e;
-
-	e = _eon_canvas_get(r);
-	e->curr.height = height;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
-{
-	Eon_Canvas *e;
-	Eon_Canvas_Child *ech;
-	Eina_List *l;
-
-	e = _eon_canvas_get(r);
-	/* get the bounding box, transform to destination coordinates
-	 * check that is inside the pointer, trigger the event */
-	EINA_LIST_FOREACH (e->children, l, ech)
-	{
-		if (ech->ender == child)
-		{
-			ech->x = x;
-		}
-	}
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y)
-{
-	Eon_Canvas *e;
-	Eon_Canvas_Child *ech;
-	Eina_List *l;
-
-	e = _eon_canvas_get(r);
-	/* get the bounding box, transform to destination coordinates
-	 * check that is inside the pointer, trigger the event */
-	EINA_LIST_FOREACH (e->children, l, ech)
-	{
-		if (ech->ender == child)
-		{
-			ech->y = y;
-		}
-	}
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Eon_Canvas *thiz;
-
-	thiz = _eon_canvas_get(r);
-	/* TODO we need to redraw the whole canvas here */
-	enesim_renderer_background_color_set(thiz->background, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender *ender)
+EAPI void eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction direction)
 {
 
 }
