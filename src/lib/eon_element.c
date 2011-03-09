@@ -20,6 +20,21 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_ELEMENT_MAGIC 0xe0400002
+#define EON_ELEMENT_MAGIC_CHECK(d)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
+			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
+	} while(0)
+
+#define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)) {\
+			EINA_MAGIC_FAIL(d, EON_ELEMENT_MAGIC);\
+			return ret;\
+		}\
+	} while(0)
+
 typedef struct _Eon_Element
 {
 	EINA_MAGIC;
@@ -35,6 +50,7 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 	Eon_Element *thiz;
 
 	thiz = enesim_renderer_data_get(r);
+	EON_ELEMENT_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
 }
@@ -48,6 +64,7 @@ Enesim_Renderer * eon_element_new(Enesim_Renderer_Descriptor *descriptor,
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Element));
+	EINA_MAGIC_SET(thiz, EON_ELEMENT_MAGIC);
 	thiz->data = data;
 
 	r = enesim_renderer_new(descriptor, thiz);
@@ -70,6 +87,19 @@ void * eon_element_data_get(Enesim_Renderer *r)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool eon_is_element(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = eon_element_data_get(r);
+	if (!EINA_MAGIC_CHECK(thiz, EON_ELEMENT_MAGIC))
+		return EINA_FALSE;
+	return EINA_TRUE;
+}
 /**
  * To be documented
  * FIXME: To be fixed

@@ -76,6 +76,10 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
 		return EINA_FALSE;
 	/* set the coordinates on every child */
+	/* the way to setting the actual size is based on min-size, max-size
+	 * and the boundings for an eon element or only the boundings
+	 * for an enesim renderer
+	 */
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *renderer;
@@ -190,6 +194,9 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
 	enesim_renderer_compound_layer_add(thiz->compound, ender_renderer_get(child));
+	/* TODO whenever a child is added, register a callback for a property
+	 * change, if it is called then we need to do the setup again
+	 */
 }
 
 static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
@@ -248,7 +255,28 @@ compound_err:
 	return NULL;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction direction)
 {
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	thiz->curr.direction = direction;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_direction_get(Enesim_Renderer *r, Eon_Stack_Direction *direction)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	if (direction) *direction = thiz->curr.direction;
 
 }
+
