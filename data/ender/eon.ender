@@ -9,7 +9,7 @@ namespace eon {
 	};
 
 	abstract layout : renderer {
-		[ender] children;
+		[ender] child;
 	};
 
 	abstract widget : renderer {
