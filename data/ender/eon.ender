@@ -21,8 +21,8 @@ namespace eon {
 	};
 
 	class canvas : layout {
-		rel int x;
-		rel int y;
+		rel int child_x;
+		rel int child_y;
 	};
 
 	class button : widget {

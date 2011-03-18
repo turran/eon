@@ -95,7 +95,7 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		Enesim_Matrix_Type matrix_type;
 		Eina_Rectangle boundings;
 
-		renderer = ender_renderer_get(ech->ender);
+		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_boundings(renderer, &boundings);
@@ -146,7 +146,7 @@ static void _eon_canvas_cleanup(Enesim_Renderer *r)
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
 
-		renderer = ender_renderer_get(ech->ender);
+		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		if (matrix_type == ENESIM_MATRIX_IDENTITY)
@@ -203,7 +203,7 @@ static void _eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
 	ech = calloc(1, sizeof(Eon_Canvas_Child));
 	ech->ender = child;
 	thiz->children = eina_list_append(thiz->children, ech);
-	enesim_renderer_compound_layer_add(thiz->compound, ender_renderer_get(child));
+	enesim_renderer_compound_layer_add(thiz->compound, ender_element_renderer_get(child));
 }
 
 static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender *child)

@@ -72,7 +72,7 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	er = ender_element_renderer_get(escen_ender_ender_get(ew->escen_ender));
 	ew->fill(er, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
@@ -85,7 +85,7 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	double ox, oy;
 
 	ew = _eon_widget_get(r);
-	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	er = ender_element_renderer_get(escen_ender_ender_get(ew->escen_ender));
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(er, ox, oy);
@@ -123,7 +123,7 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-	er = ender_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	er = ender_element_renderer_get(escen_ender_ender_get(ew->escen_ender));
 	enesim_renderer_boundings(er, rect);
 }
 
@@ -133,7 +133,7 @@ static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 	Enesim_Renderer *er;
 
 	thiz = _eon_widget_get(r);
-	er = ender_renderer_get(escen_ender_ender_get(thiz->escen_ender));
+	er = ender_element_renderer_get(escen_ender_ender_get(thiz->escen_ender));
 	enesim_renderer_flags(er, flags);
 }
 
@@ -178,7 +178,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	if (!escen_ender) goto renderer_err;
 	e->escen_ender = escen_ender;
 
-	escen_renderer = ender_renderer_get(escen_ender_ender_get(escen_ender));
+	escen_renderer = ender_element_renderer_get(escen_ender_ender_get(escen_ender));
 	if (!escen_renderer) goto escen_renderer_err;
 	/* Set the default state in case it has one */
 	escen_state = escen_ender_state_get(escen_ender, "default");

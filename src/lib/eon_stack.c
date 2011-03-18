@@ -87,7 +87,7 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 		Enesim_Matrix_Type matrix_type;
 		Eina_Rectangle boundings;
 
-		renderer = ender_renderer_get(ech->ender);
+		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_boundings(renderer, &boundings);
@@ -136,7 +136,7 @@ static void _eon_stack_cleanup(Enesim_Renderer *r)
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
 
-		renderer = ender_renderer_get(ech->ender);
+		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		if (matrix_type == ENESIM_MATRIX_IDENTITY)
@@ -193,7 +193,7 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
-	enesim_renderer_compound_layer_add(thiz->compound, ender_renderer_get(child));
+	enesim_renderer_compound_layer_add(thiz->compound, ender_element_renderer_get(child));
 	/* TODO whenever a child is added, register a callback for a property
 	 * change, if it is called then we need to do the setup again
 	 */
