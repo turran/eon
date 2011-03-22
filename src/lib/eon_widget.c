@@ -249,7 +249,7 @@ EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, Ender_Va
 
 	thiz = _eon_widget_get(r);
 	ender = escen_ender_ender_get(thiz->escen_ender);
-	ender_value_set_simple(ender, name, value);
+	ender_element_value_set_simple(ender, name, value);
 }
 
 /**

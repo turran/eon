@@ -23,6 +23,8 @@ namespace eon {
 	class canvas : layout {
 		rel int child_x;
 		rel int child_y;
+		uint width;
+		uint height;
 	};
 
 	class button : widget {
