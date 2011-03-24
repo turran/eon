@@ -1,37 +1,37 @@
-using enesim;
+using "enesim";
 
-namespace eon {
-	abstract element : renderer {
+namespace "eon" {
+	abstract "element" : "renderer" {
 		uint min_width;
 		uint min_height;
 		uint max_width;
 		uint max_height;
 	};
 
-	abstract layout : renderer {
+	abstract "layout" : "renderer" {
 		[ender] child;
 	};
 
-	abstract widget : renderer {
+	abstract "widget" : "renderer" {
 
 	};
 
-	class stack : layout {
+	class "stack" : "layout" {
 
 	};
 
-	class canvas : layout {
+	class "canvas" : "layout" {
 		rel int child_x;
 		rel int child_y;
 		uint width;
 		uint height;
 	};
 
-	class button : widget {
+	class "button" : "widget" {
 		string label;
 	};
 
-	class radio : widget {
+	class "radio" : "widget" {
 		string label;
 	};
 };

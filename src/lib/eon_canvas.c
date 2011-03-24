@@ -299,6 +299,7 @@ EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
 	Eina_List *l;
 
 	e = _eon_canvas_get(r);
+	printf("setting child x %g\n", x);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
 	EINA_LIST_FOREACH (e->children, l, ech)
