@@ -68,11 +68,9 @@ renderer_err:
 EAPI void eon_radio_label_set(Enesim_Renderer *r, const char *text)
 {
 	Eon_Radio *thiz;
-	Ender_Value value;
 
 	thiz = _eon_radio_get(r);
 	if (!thiz) return;
 
-	value.string = text;
-	eon_widget_property_set(r, "label", &value);
+	eon_widget_property_set(r, "label", text);
 }

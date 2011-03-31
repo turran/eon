@@ -67,11 +67,9 @@ renderer_err:
 EAPI void eon_label_text_set(Enesim_Renderer *r, const char *text)
 {
 	Eon_Label *thiz;
-	Ender_Value value;
 
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	value.string = text;
-	eon_widget_property_set(r, "text", &value);
+	eon_widget_property_set(r, "text", text);
 }

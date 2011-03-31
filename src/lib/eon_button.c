@@ -77,13 +77,11 @@ renderer_err:
 EAPI void eon_button_label_set(Enesim_Renderer *r, const char *text)
 {
 	Eon_Button *thiz;
-	Ender_Value value;
 
 	thiz = _eon_button_get(r);
 	if (!thiz) return;
 
-	value.string = text;
-	eon_widget_property_set(r, "label", &value);
+	eon_widget_property_set(r, "label", text);
 }
 
 /**

@@ -242,14 +242,17 @@ EAPI void * eon_widget_data_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, Ender_Value *value)
+EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 {
 	Eon_Widget *thiz;
 	Ender *ender;
+	va_list va_args;
 
 	thiz = _eon_widget_get(r);
 	ender = escen_ender_ender_get(thiz->escen_ender);
-	ender_element_value_set_simple(ender, name, value);
+	va_start(va_args, name);
+	ender_element_value_set_valist(ender, name, va_args);
+	va_end(va_args);
 }
 
 /**
