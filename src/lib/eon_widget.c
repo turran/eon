@@ -40,6 +40,7 @@ typedef struct _Eon_Widget
 	EINA_MAGIC;
 	void *data; /* the data provided by the widget types */
 	Escen_Ender *escen_ender; /* the theme ender */
+	Escen_Ender_Instance *eei;
 	/* FIXME add a way to setup and cleanup an ender whenever
 	 * a widget ender is associated with a layout
 	 */
@@ -72,7 +73,7 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	ew->fill(er, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
@@ -85,7 +86,7 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	double ox, oy;
 
 	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(er, ox, oy);
@@ -123,7 +124,7 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_ender_get(ew->escen_ender));
+	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	enesim_renderer_boundings(er, rect);
 }
 
@@ -133,7 +134,7 @@ static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 	Enesim_Renderer *er;
 
 	thiz = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_ender_get(thiz->escen_ender));
+	er = ender_element_renderer_get(escen_ender_instance_ender_get(thiz->eei));
 	enesim_renderer_flags(er, flags);
 }
 
@@ -157,11 +158,11 @@ static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
 EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 {
 	Eon_Widget *e;
-	Enesim_Renderer *thiz;
 	Escen *escen;
 	Escen_Ender *escen_ender;
-	Enesim_Renderer *escen_renderer;
 	Escen_State *escen_state;
+	Enesim_Renderer *thiz;
+	Enesim_Renderer *escen_renderer;
 	char theme[PATH_MAX];
 
 	escen = eon_theme_get();
@@ -177,12 +178,12 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
 	e->escen_ender = escen_ender;
-
-	escen_renderer = ender_element_renderer_get(escen_ender_ender_get(escen_ender));
+	e->eei = escen_ender_instance_get(e->escen_ender);
+	escen_renderer = ender_element_renderer_get(escen_ender_instance_ender_get(e->eei));
 	if (!escen_renderer) goto escen_renderer_err;
 	/* Set the default state in case it has one */
 	escen_state = escen_ender_state_get(escen_ender, "default");
-	escen_ender_state_set(escen_ender, escen_state);
+	escen_ender_instance_state_set(e->eei, escen_state);
 
 	thiz = enesim_renderer_new(&_eon_widget_descriptor, e);
 	if (!thiz) goto renderer_err;
@@ -249,7 +250,7 @@ EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 	va_list va_args;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_ender_get(thiz->escen_ender);
+	ender = escen_ender_instance_ender_get(thiz->eei);
 	va_start(va_args, name);
 	ender_element_value_set_valist(ender, name, va_args);
 	va_end(va_args);

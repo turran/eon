@@ -21,8 +21,8 @@ namespace "eon" {
 	};
 
 	class "canvas" : "layout" {
-		rel int child_x;
-		rel int child_y;
+		rel double child_x;
+		rel double child_y;
 		uint width;
 		uint height;
 	};
