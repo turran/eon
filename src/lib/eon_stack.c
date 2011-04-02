@@ -25,8 +25,8 @@ typedef struct _Eon_Stack_Child
 	Ender *ender;
 	double old_x;
 	double old_y;
-	double x;
-	double y;
+	Eon_Horizontal_Alignment halign;
+	Eon_Vertical_Alignment valign;
 } Eon_Stack_Child;
 
 typedef struct _Eon_Stack_State
@@ -70,6 +70,8 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
 	Eina_List *l;
+	double last_x = 0;
+	double last_y = 0;
 
 	thiz = _eon_stack_get(r);
 	if (!thiz) return EINA_FALSE;
@@ -91,23 +93,22 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_boundings(renderer, &boundings);
+		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
+
 		if (matrix_type == ENESIM_MATRIX_IDENTITY)
 		{
 			/* just translate the origin, do a matrix set?
 			 * matrix compose? origin set?
 			 */
-			enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
-			enesim_renderer_origin_set(renderer, ech->x, ech->y);
 		}
 		else
 		{
-			Enesim_Matrix translate;
-
-			/* multiply the current matrix to translate it to the final destination */
-			enesim_matrix_translate(&translate, -ech->x, -ech->y);
-			enesim_matrix_compose(&matrix, &translate, &matrix);
-			enesim_renderer_transformation_set(renderer, &matrix);
 		}
+		last_x = -boundings.x - last_x;
+		last_y = -boundings.y;
+		enesim_renderer_origin_set(renderer, last_x, last_y);
+		last_x = last_x + boundings.w;
+		last_y = last_y + boundings.h;
 	}
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
@@ -259,6 +260,30 @@ compound_err:
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void eon_stack_width_set(Enesim_Renderer *r, unsigned int width)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	thiz->curr.width = width;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_height_set(Enesim_Renderer *r, unsigned int height)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	thiz->curr.height = height;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction direction)
 {
 	Eon_Stack *thiz;
@@ -278,5 +303,51 @@ EAPI void eon_stack_direction_get(Enesim_Renderer *r, Eon_Stack_Direction *direc
 	thiz = _eon_stack_get(r);
 	if (direction) *direction = thiz->curr.direction;
 
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender *child,
+		Eon_Horizontal_Alignment alignment)
+{
+	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
+	Eina_List *l;
+
+	thiz = _eon_stack_get(r);
+	/* get the bounding box, transform to destination coordinates
+	 * check that is inside the pointer, trigger the event */
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		if (ech->ender == child)
+		{
+			ech->halign = alignment;
+		}
+	}
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender *child,
+		Eon_Vertical_Alignment alignment)
+{
+	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
+	Eina_List *l;
+
+	thiz = _eon_stack_get(r);
+	/* get the bounding box, transform to destination coordinates
+	 * check that is inside the pointer, trigger the event */
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		if (ech->ender == child)
+		{
+			ech->valign = alignment;
+		}
+	}
 }
 

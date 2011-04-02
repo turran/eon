@@ -222,7 +222,7 @@ EAPI void eon_basic_button_font_color_set(Enesim_Renderer *r, Enesim_Color color
 	Button *thiz;
 
 	thiz = _button_get(r);
-	etex_span_color_set(thiz->text, color);
+	enesim_renderer_color_set(thiz->text, color);
 }
 
 

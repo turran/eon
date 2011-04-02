@@ -292,6 +292,28 @@ EAPI void eon_canvas_height_set(Enesim_Renderer *r, unsigned int height)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void eon_canvas_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Eon_Canvas *thiz;
+
+	thiz = _eon_canvas_get(r);
+	/* TODO we need to redraw the whole canvas here */
+	enesim_renderer_background_color_set(thiz->background, color);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender *ender)
+{
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
 {
 	Eon_Canvas *e;
@@ -299,7 +321,6 @@ EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
 	Eina_List *l;
 
 	e = _eon_canvas_get(r);
-	printf("setting child x %g\n", x);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
 	EINA_LIST_FOREACH (e->children, l, ech)
@@ -333,24 +354,4 @@ EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y)
 	}
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Eon_Canvas *thiz;
 
-	thiz = _eon_canvas_get(r);
-	/* TODO we need to redraw the whole canvas here */
-	enesim_renderer_background_color_set(thiz->background, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender *ender)
-{
-
-}
