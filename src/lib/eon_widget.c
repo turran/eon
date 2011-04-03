@@ -106,9 +106,11 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 static void _eon_widget_cleanup(Enesim_Renderer *r)
 {
 	Eon_Widget *ew;
+	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-
+	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
+	enesim_renderer_sw_cleanup(er);
 }
 
 static void _eon_widget_free(Enesim_Renderer *r)

@@ -17,7 +17,11 @@ namespace "eon" {
 	};
 
 	class "stack" : "layout" {
-
+		rel int child_vertical_alignment;
+		rel int child_horizontal_alignment;
+		int direction;
+		uint width;
+		uint height;
 	};
 
 	class "canvas" : "layout" {

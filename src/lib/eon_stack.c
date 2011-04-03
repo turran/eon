@@ -62,32 +62,21 @@ static void _stack_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	/* if it intersects render the child that is on that span from bottom to top */
 	e->fill_func(e->compound, x, y, len, dst);
 }
-/*----------------------------------------------------------------------------*
- *                      The Enesim's renderer interface                       *
- *----------------------------------------------------------------------------*/
-static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+
+static void _stack_horizontal_arrange(Eon_Stack *thiz)
 {
-	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
 	Eina_List *l;
 	double last_x = 0;
-	double last_y = 0;
 
-	thiz = _eon_stack_get(r);
-	if (!thiz) return EINA_FALSE;
-	if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
-		return EINA_FALSE;
-	/* set the coordinates on every child */
-	/* the way to setting the actual size is based on min-size, max-size
-	 * and the boundings for an eon element or only the boundings
-	 * for an enesim renderer
-	 */
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *renderer;
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
 		Eina_Rectangle boundings;
+		double y;
+		double x;
 
 		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
@@ -95,105 +84,129 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 		enesim_renderer_boundings(renderer, &boundings);
 		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
 
-		if (matrix_type == ENESIM_MATRIX_IDENTITY)
+		x = -boundings.x + last_x;
+		switch (ech->valign)
 		{
-			/* just translate the origin, do a matrix set?
-			 * matrix compose? origin set?
-			 */
+			case EON_VERTICAL_ALIGNMENT_TOP:
+			y = -boundings.y;
+			break;
+
+			case EON_VERTICAL_ALIGNMENT_BOTTOM:
+			y = -boundings.y + thiz->curr.height - boundings.h;
+			break;
+
+			case EON_VERTICAL_ALIGNMENT_CENTER:
+			y = -boundings.y + (thiz->curr.height / 2) - (boundings.h / 2);
+			break;
+
 		}
-		else
-		{
-		}
-		if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
-		{
-			double y;
-
-			last_x = -boundings.x + last_x;
-			switch (ech->valign)
-			{
-				case EON_VERTICAL_ALIGNMENT_TOP:
-				y = -boundings.y;
-				break;
-
-				case EON_VERTICAL_ALIGNMENT_BOTTOM:
-				y = -boundings.y + thiz->curr.height - boundings.h;
-				break;
-
-				case EON_VERTICAL_ALIGNMENT_CENTER:
-				y = -boundings.y + (thiz->curr.height - last_y) / 2 - boundings.h / 2;
-				break;
-
-			}
-			enesim_renderer_origin_set(renderer, last_x, y);
-			last_x = boundings.w;
-			last_y += boundings.h;
-		}
-		else
-		{
-			double x;
-
-			last_y = -boundings.y + last_y;
-			switch (ech->halign)
-			{
-				case EON_HORIZONTAL_ALIGNMENT_LEFT:
-				x = -boundings.x;
-				break;
-
-				case EON_HORIZONTAL_ALIGNMENT_RIGHT:
-				x = -boundings.x + thiz->curr.width - boundings.w;
-				break;
-
-				case EON_HORIZONTAL_ALIGNMENT_CENTER:
-				x = -boundings.x + (thiz->curr.width - last_x) / 2 - boundings.w / 2;
-				break;
-
-			}
-			enesim_renderer_origin_set(renderer, x, last_y);
-			last_y = boundings.h;
-			last_x += boundings.w;
-		}
+		enesim_renderer_origin_set(renderer, x, y);
+		last_x += boundings.w;
 	}
-	if (!enesim_renderer_sw_setup(thiz->compound))
-	{
-		DBG("Cannot setup the compound renderer");
-		return EINA_FALSE;
-	}
-	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
-	*fill = _stack_draw;
-
-	return EINA_TRUE;
 }
 
-static void _eon_stack_cleanup(Enesim_Renderer *r)
+static void _stack_vertical_arrange(Eon_Stack *thiz)
 {
-	Eon_Stack *e;
 	Eon_Stack_Child *ech;
 	Eina_List *l;
+	double last_y = 0;
 
-	e = _eon_stack_get(r);
-	if (!e) return;
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		Enesim_Renderer *renderer;
+		Enesim_Matrix matrix;
+		Enesim_Matrix_Type matrix_type;
+		Eina_Rectangle boundings;
+		double y;
+		double x;
+
+		renderer = ender_element_renderer_get(ech->ender);
+		enesim_renderer_transformation_get(renderer, &matrix);
+		matrix_type = enesim_matrix_type_get(&matrix);
+		enesim_renderer_boundings(renderer, &boundings);
+		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
+
+		y = -boundings.y  + last_y;
+		switch (ech->halign)
+		{
+			case EON_HORIZONTAL_ALIGNMENT_LEFT:
+			x = -boundings.x;
+			break;
+
+			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+			x = -boundings.x + thiz->curr.width - boundings.w;
+			break;
+
+			case EON_HORIZONTAL_ALIGNMENT_CENTER:
+			x = -boundings.x + (thiz->curr.width / 2) - (boundings.w / 2);
+			break;
+
+		}
+		enesim_renderer_origin_set(renderer, x, y);
+		last_y += boundings.h;
+	}
+}
+/*----------------------------------------------------------------------------*
+ *                      The Enesim's renderer interface                       *
+ *----------------------------------------------------------------------------*/
+static void _eon_stack_cleanup(Enesim_Renderer *r)
+{
+	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
+	Eina_List *l;
+	double ox, oy;
+
+	thiz = _eon_stack_get(r);
+	if (!thiz) return;
 
 	/* restore the coordinates on every child */
-	EINA_LIST_FOREACH (e->children, l, ech)
+	enesim_renderer_sw_cleanup(thiz->compound);
+
+	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *renderer;
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
 
 		renderer = ender_element_renderer_get(ech->ender);
-		enesim_renderer_transformation_get(renderer, &matrix);
-		matrix_type = enesim_matrix_type_get(&matrix);
-		if (matrix_type == ENESIM_MATRIX_IDENTITY)
-		{
-		}
-		else
-		{
-			Enesim_Matrix translate;
-
-			/* multiply the current matrix to translate it to the final destination */
-		}
+		//enesim_renderer_transformation_get(renderer, &matrix);
+		//matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_origin_set(renderer, ech->old_x, ech->old_y);
 	}
+}
+
+static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+{
+	Eon_Stack *thiz;
+	double ox, oy;
+
+	thiz = _eon_stack_get(r);
+	if (!thiz) return EINA_FALSE;
+	if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
+		return EINA_FALSE;
+	/* setup common properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	/* set the coordinates on every child */
+	/* the way to setting the actual size is based on min-size, max-size
+	 * and the boundings for an eon element or only the boundings
+	 * for an enesim renderer
+	 */
+	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
+		_stack_horizontal_arrange(thiz);
+	else
+		_stack_vertical_arrange(thiz);
+
+	if (!enesim_renderer_sw_setup(thiz->compound))
+	{
+		DBG("Cannot setup the compound renderer");
+		_eon_stack_cleanup(r);
+		return EINA_FALSE;
+	}
+	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
+	*fill = _stack_draw;
+
+	return EINA_TRUE;
 }
 
 static void _eon_stack_free(Enesim_Renderer *r)

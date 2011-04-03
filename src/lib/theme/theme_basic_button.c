@@ -65,7 +65,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 
 	thiz = _button_get(r);
 	_button_update_rectangle(thiz);
-	/* set common properties */
+	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	if (!enesim_renderer_sw_setup(thiz->compound))
@@ -86,6 +86,8 @@ static void _button_cleanup(Enesim_Renderer *r)
 	Button *thiz;
 
 	thiz = _button_get(r);
+	printf("button cleanup\n");
+	/* cleanup common properties */
 	enesim_renderer_sw_cleanup(thiz->compound);
 }
 
