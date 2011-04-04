@@ -85,9 +85,13 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 static double _eon_widget_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
+	Ender *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender_element_value_get(ender, "max_width", &v, NULL);
+	return v < thiz->max_width ? v : thiz->max_width;
 }
 
 static void _eon_widget_max_width_set(Enesim_Renderer *r, double width)
@@ -101,9 +105,13 @@ static void _eon_widget_max_width_set(Enesim_Renderer *r, double width)
 static double _eon_widget_min_width_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
+	Ender *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender_element_value_get(ender, "min_width", &v, NULL);
+	return v > thiz->min_width ? v : thiz->min_width;
 }
 
 static void _eon_widget_min_width_set(Enesim_Renderer *r, double width)
@@ -117,10 +125,13 @@ static void _eon_widget_min_width_set(Enesim_Renderer *r, double width)
 static double _eon_widget_max_height_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
+	Ender *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
-
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender_element_value_get(ender, "max_height", &v, NULL);
+	return v < thiz->max_height ? v : thiz->max_height;
 }
 
 static void _eon_widget_max_height_set(Enesim_Renderer *r, double height)
@@ -134,10 +145,13 @@ static void _eon_widget_max_height_set(Enesim_Renderer *r, double height)
 static double _eon_widget_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
+	Ender *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
-
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender_element_value_get(ender, "min_height", &v, NULL);
+	return v > thiz->min_height ? v : thiz->min_height;
 }
 
 static void _eon_widget_min_height_set(Enesim_Renderer *r, double height)
@@ -293,7 +307,7 @@ EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
 
-	thiz = enesim_renderer_data_get(r);
+	thiz = eon_element_data_get(r);
 	if (!EINA_MAGIC_CHECK(thiz, EON_WIDGET_MAGIC))
 		return EINA_FALSE;
 	return EINA_TRUE;
@@ -346,10 +360,15 @@ EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, Ender_Value *value)
+EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...)
 {
-	Eon_Widget *e;
+	Eon_Widget *thiz;
+	Ender *ender;
+	va_list va_args;
 
-	e = _eon_widget_get(r);
-	printf("TODO\n");
+	thiz = _eon_widget_get(r);
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	va_start(va_args, name);
+	ender_element_value_get_valist(ender, name, va_args);
+	va_end(va_args);
 }

@@ -15,6 +15,7 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#include "Eon.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
 /*============================================================================*
@@ -30,10 +31,10 @@ typedef struct _Radio
 
 static inline Radio * _radio_get(Enesim_Renderer *r)
 {
-	Radio *rad;
+	Radio *thiz;
 
-	rad = enesim_renderer_data_get(r);
-	return rad;
+	thiz = eon_theme_widget_data_get(r);
+	return thiz;
 }
 
 static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
@@ -43,7 +44,13 @@ static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	rad = _radio_get(r);
 	rad->fill(rad->outter_circle, x, y, len, dst);
 }
-
+/*----------------------------------------------------------------------------*
+ *                      The Eon's theme widget interface                      *
+ *----------------------------------------------------------------------------*/
+static Eon_Theme_Widget_Descriptor _twdescriptor;
+/*----------------------------------------------------------------------------*
+ *                      The Enesim's renderer interface                       *
+ *----------------------------------------------------------------------------*/
 static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Radio *thiz;
@@ -129,7 +136,7 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	/* TODO set the initial state calling the function */
 	//printf("inner %p outter %p\n", thiz->inner_circle, thiz->outter_circle);
 
-	r = enesim_renderer_new(&_descriptor, thiz);
+	r = eon_theme_widget_new(&_twdescriptor, &_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

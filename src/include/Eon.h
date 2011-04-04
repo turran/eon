@@ -76,6 +76,28 @@ EAPI void eon_stack_height_set(Enesim_Renderer *r, unsigned int height);
 
 /**
  * @}
+ * @{
+ */
+
+typedef struct _Eon_Theme_Widget_Descriptor
+{
+	double (*max_width_get)(Enesim_Renderer *r);
+	double (*max_height_get)(Enesim_Renderer *r);
+	double (*min_width_get)(Enesim_Renderer *r);
+	double (*min_height_get)(Enesim_Renderer *r);
+} Eon_Theme_Widget_Descriptor;
+
+EAPI Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *twdescriptor,
+		Enesim_Renderer_Descriptor *descriptor,
+		void *data);
+EAPI void * eon_theme_widget_data_get(Enesim_Renderer *r);
+EAPI void eon_theme_widget_max_width_get(Enesim_Renderer *r, double *width);
+EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height);
+EAPI void eon_theme_widget_min_width_get(Enesim_Renderer *r, double *width);
+EAPI void eon_theme_widget_min_height_get(Enesim_Renderer *r, double *height);
+
+/**
+ * @}
  */
 
 #endif

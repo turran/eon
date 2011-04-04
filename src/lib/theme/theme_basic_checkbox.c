@@ -15,6 +15,7 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#include "Eon.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
 /*============================================================================*
@@ -34,7 +35,7 @@ static inline Checkbox * _checkbox_get(Enesim_Renderer *r)
 {
 	Checkbox *thiz;
 
-	thiz = enesim_renderer_data_get(r);
+	thiz = eon_theme_widget_data_get(r);
 	return thiz;
 }
 
@@ -45,6 +46,10 @@ static void _checkbox_draw(Enesim_Renderer *r, int x, int y, unsigned int len, u
 	thiz = _checkbox_get(r);
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
+/*----------------------------------------------------------------------------*
+ *                      The Eon's theme widget interface                      *
+ *----------------------------------------------------------------------------*/
+static Eon_Theme_Widget_Descriptor _twdescriptor;
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -127,7 +132,7 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	enesim_renderer_shape_outline_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
-	r = enesim_renderer_new(&_descriptor, thiz);
+	r = eon_theme_widget_new(&_twdescriptor, &_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	/* set the initial state */

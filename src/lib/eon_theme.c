@@ -20,66 +20,31 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static int _init = 0;
+static Eina_Bool _init = EINA_FALSE;
+static Escen *_theme = NULL;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-int eon_log = -1;
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- *
- */
-EAPI int eon_init(void)
+Escen * eon_theme_get(void)
 {
-	if (!_init++)
+	return _theme;
+}
+
+Eina_Bool eon_theme_init(void)
+{
+	if (!_init)
 	{
-		eina_init();
-		eon_log = eina_log_domain_register("eon", NULL);
-		enesim_init();
-		ender_init();
-		escen_init();
-		eon_basic_init();
-		/* initialize the theme */
-		if (eon_theme_init())
-		{
-			eon_basic_shutdown();
-			escen_shutdown();
-			ender_shutdown();
-			enesim_shutdown();
-			eina_log_domain_unregister(eon_log);
-			eina_shutdown();
-		}
-		return --_init;
+		_theme = escen_parser_load(PACKAGE_DATA_DIR "/themes/basic.escen");
+		if (!_theme) return EINA_FALSE;
+		_init = EINA_TRUE;
 	}
 	return _init;
 }
 
-/**
- *
- */
-EAPI void eon_shutdown(void)
+void eon_theme_shutdown(void)
 {
-	if (!_init == 1)
+	if (_init)
 	{
-		eon_basic_shutdown();
-		escen_shutdown();
-		ender_shutdown();
-		enesim_shutdown();
-		eina_log_domain_unregister(eon_log);
-		eina_shutdown();
+		_init = EINA_FALSE;
 	}
-	_init--;
 }
-
-/**
- *
- */
-EAPI void eon_version(unsigned int *major, unsigned int *minor, unsigned int *micro)
-{
-	if (major) *major = VERSION_MAJOR;
-	if (minor) *minor = VERSION_MINOR;
-	if (micro) *micro = VERSION_MICRO;
-}
-

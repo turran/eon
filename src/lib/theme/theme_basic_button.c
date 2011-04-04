@@ -15,6 +15,7 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#include "Eon.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
 /*============================================================================*
@@ -32,7 +33,7 @@ static inline Button * _button_get(Enesim_Renderer *r)
 {
 	Button *thiz;
 
-	thiz = enesim_renderer_data_get(r);
+	thiz = eon_theme_widget_data_get(r);
 	return thiz;
 }
 
@@ -55,6 +56,10 @@ static void _button_update_rectangle(Button *thiz)
 	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h + 6);
 	enesim_renderer_origin_set(thiz->text, 3, 3);
 }
+/*----------------------------------------------------------------------------*
+ *                      The Eon's theme widget interface                      *
+ *----------------------------------------------------------------------------*/
+static Eon_Theme_Widget_Descriptor _twdescriptor;
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -142,7 +147,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	if (!r) goto rectangle_err;
 	thiz->rectangle = r;
 
-	r = enesim_renderer_new(&_descriptor, thiz);
+	r = eon_theme_widget_new(&_twdescriptor, &_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	/* setup the initial state */

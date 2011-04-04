@@ -18,6 +18,8 @@ eon_layout.c \
 eon_main.c \
 eon_radio.c \
 eon_stack.c \
+eon_theme.c \
+eon_theme_widget.c \
 eon_widget.c
 
 libeon_la_LIBADD = \

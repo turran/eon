@@ -1,12 +1,15 @@
 using "enesim";
 
 namespace "eon" {
-	class "basic_radio" : "renderer" {
+	class "basic_label" : "theme_widget" {
+	};
+
+	class "basic_radio" : "theme_widget" {
 		int selected;
 		argb color;
 	};
 
-	class "basic_button" : "renderer" {
+	class "basic_button" : "theme_widget" {
 		string label;
 		argb foreground_color;
 		argb border_color;
@@ -15,7 +18,7 @@ namespace "eon" {
 		argb font_color;
 	};
 
-	class "basic_checkbox" : "renderer" {
+	class "basic_checkbox" : "theme_widget" {
 		int size;
 		int selected;
 	};
