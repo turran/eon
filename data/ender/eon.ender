@@ -2,17 +2,21 @@ using "enesim";
 
 namespace "eon" {
 	abstract "element" : "renderer" {
-		uint min_width;
-		uint min_height;
-		uint max_width;
-		uint max_height;
+		double min_width;
+		double min_height;
+		double max_width;
+		double max_height;
+		double width;
+		double height;
+		double actual_width;
+		double actual_height;
 	};
 
-	abstract "layout" : "renderer" {
+	abstract "layout" : "element" {
 		[ender] child;
 	};
 
-	abstract "widget" : "renderer" {
+	abstract "widget" : "element" {
 
 	};
 

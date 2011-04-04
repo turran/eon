@@ -18,10 +18,10 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l);
  * @{
  */
 
-EAPI void eon_element_min_width_get(Enesim_Renderer *r, unsigned int width);
-EAPI void eon_element_min_width_set(Enesim_Renderer *r, unsigned int *width);
-EAPI void eon_element_min_height_set(Enesim_Renderer *r, unsigned int height);
-EAPI void eon_element_min_height_get(Enesim_Renderer *r, unsigned int *height);
+EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width);
+EAPI void eon_element_min_width_set(Enesim_Renderer *r, double width);
+EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height);
+EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height);
 
 /**
  * @}

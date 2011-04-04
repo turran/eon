@@ -1,0 +1,5 @@
+Add support for max width, max height, min width and min height
+Add a property of width and height to describe the desired width and height of an element, can be NaN to define it as resize
+Add a property of actualwidth/height (RO) that describes the actual width of an element
+The boundings of an element are always the origin_x, origin_y, actualwidth/height
+A theme element *must* have width and height property that describe the real width and height of the object

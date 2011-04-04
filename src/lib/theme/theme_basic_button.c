@@ -86,7 +86,6 @@ static void _button_cleanup(Enesim_Renderer *r)
 	Button *thiz;
 
 	thiz = _button_get(r);
-	printf("button cleanup\n");
 	/* cleanup common properties */
 	enesim_renderer_sw_cleanup(thiz->compound);
 }

@@ -81,7 +81,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz)
 		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
-		enesim_renderer_boundings(renderer, &boundings);
+		enesim_renderer_translated_boundings(renderer, &boundings);
 		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
 
 		x = -boundings.x + last_x;
@@ -123,10 +123,10 @@ static void _stack_vertical_arrange(Eon_Stack *thiz)
 		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
-		enesim_renderer_boundings(renderer, &boundings);
+		enesim_renderer_translated_boundings(renderer, &boundings);
 		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
 
-		y = -boundings.y  + last_y;
+		y = -boundings.y + last_y;
 		switch (ech->halign)
 		{
 			case EON_HORIZONTAL_ALIGNMENT_LEFT:
@@ -239,6 +239,35 @@ static Enesim_Renderer_Descriptor _eon_stack_renderer_descriptor = {
 	.free = _eon_stack_free,
 };
 /*----------------------------------------------------------------------------*
+ *                         The Eon's element interface                        *
+ *----------------------------------------------------------------------------*/
+static double _eon_stack_min_width_get(Enesim_Renderer *r)
+{
+
+}
+
+static void _eon_stack_min_width_set(Enesim_Renderer *r, double height)
+{
+
+}
+
+static double _eon_stack_min_height_get(Enesim_Renderer *r)
+{
+
+}
+
+static void _eon_stack_min_height_set(Enesim_Renderer *r, double height)
+{
+
+}
+
+static Eon_Element_Descriptor _eon_stack_element_descriptor = {
+	.min_width_get = _eon_stack_min_width_get,
+	.min_width_set = _eon_stack_min_width_set,
+	.min_height_get = _eon_stack_min_height_get,
+	.min_height_set = _eon_stack_min_height_set,
+};
+/*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
 static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
@@ -298,6 +327,7 @@ EAPI Enesim_Renderer * eon_stack_new(void)
 	e->background = r;
 
 	thiz = eon_layout_new(&_eon_stack_layout_descriptor,
+			&_eon_stack_element_descriptor,
 			&_eon_stack_renderer_descriptor, e);
 	if (!thiz) goto renderer_err;
 

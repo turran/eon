@@ -45,8 +45,11 @@ typedef struct _Eon_Widget
 	 * a widget ender is associated with a layout
 	 */
 	Enesim_Renderer_Sw_Fill fill;
+	double max_width;
+	double max_height;
+	double min_width;
+	double min_height;
 } Eon_Widget;
-
 
 /* placeholder for virtual functions every widget
  * should implement
@@ -61,7 +64,7 @@ static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 	Eon_Widget *thiz;
 
 	if (!r) return NULL;
-	thiz = enesim_renderer_data_get(r);
+	thiz = eon_element_data_get(r);
 	EON_WIDGET_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
@@ -76,6 +79,85 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	ew->fill(er, x, y, len, dst);
 }
+/*----------------------------------------------------------------------------*
+ *                         The Eon's element interface                        *
+ *----------------------------------------------------------------------------*/
+static double _eon_widget_max_width_get(Enesim_Renderer *r)
+{
+	Eon_Widget *thiz;
+	double v;
+
+	thiz = _eon_widget_get(r);
+}
+
+static void _eon_widget_max_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	thiz->max_width = width;
+}
+
+static double _eon_widget_min_width_get(Enesim_Renderer *r)
+{
+	Eon_Widget *thiz;
+	double v;
+
+	thiz = _eon_widget_get(r);
+}
+
+static void _eon_widget_min_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	thiz->min_width = width;
+}
+
+static double _eon_widget_max_height_get(Enesim_Renderer *r)
+{
+	Eon_Widget *thiz;
+	double v;
+
+	thiz = _eon_widget_get(r);
+
+}
+
+static void _eon_widget_max_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	thiz->max_height = height;
+}
+
+static double _eon_widget_min_height_get(Enesim_Renderer *r)
+{
+	Eon_Widget *thiz;
+	double v;
+
+	thiz = _eon_widget_get(r);
+
+}
+
+static void _eon_widget_min_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	thiz->min_height = height;
+}
+
+static Eon_Element_Descriptor _eon_widget_element_descriptor = {
+	.max_width_get = _eon_widget_max_width_get,
+	.max_width_set = _eon_widget_max_width_set,
+	.min_width_get = _eon_widget_min_width_get,
+	.min_width_set = _eon_widget_min_width_set,
+	.max_height_get = _eon_widget_max_height_get,
+	.max_height_set = _eon_widget_max_height_set,
+	.min_height_get = _eon_widget_min_height_get,
+	.min_height_set = _eon_widget_min_height_set,
+};
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -146,7 +228,6 @@ static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
 	.boundings = _eon_widget_boundings,
 	.free = _eon_widget_free,
 };
-
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -176,6 +257,8 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	e = calloc(1, sizeof(Eon_Widget));
 	EINA_MAGIC_SET(e, EON_WIDGET_MAGIC);
 	e->data = data;
+	e->max_width = DBL_MIN;
+	e->min_width = 0;
 
 	escen_ender = escen_ender_get(escen, name);
 	if (!escen_ender) goto renderer_err;
@@ -187,7 +270,8 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	escen_state = escen_ender_state_get(escen_ender, "default");
 	escen_ender_instance_state_set(e->eei, escen_state);
 
-	thiz = enesim_renderer_new(&_eon_widget_descriptor, e);
+	thiz = eon_element_new(&_eon_widget_element_descriptor,
+			&_eon_widget_descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;

@@ -192,6 +192,35 @@ static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
 	.free = _eon_canvas_free,
 };
 /*----------------------------------------------------------------------------*
+ *                         The Eon's element interface                        *
+ *----------------------------------------------------------------------------*/
+static double _eon_canvas_min_width_get(Enesim_Renderer *r)
+{
+
+}
+
+static void _eon_canvas_min_width_set(Enesim_Renderer *r, double height)
+{
+
+}
+
+static double _eon_canvas_min_height_get(Enesim_Renderer *r)
+{
+
+}
+
+static void _eon_canvas_min_height_set(Enesim_Renderer *r, double height)
+{
+
+}
+
+static Eon_Element_Descriptor _eon_canvas_element_descriptor = {
+	.min_width_get = _eon_canvas_min_width_get,
+	.min_width_set = _eon_canvas_min_width_set,
+	.min_height_get = _eon_canvas_min_height_get,
+	.min_height_set = _eon_canvas_min_height_set,
+};
+/*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
 static void _eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
@@ -250,6 +279,7 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 	e->background = r;
 
 	thiz = eon_layout_new(&_eon_canvas_layout_descriptor,
+			&_eon_canvas_element_descriptor,
 			&_eon_canvas_descriptor, e);
 	if (!thiz) goto renderer_err;
 

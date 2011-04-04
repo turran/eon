@@ -60,6 +60,7 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
  *                                 Global                                     *
  *============================================================================*/
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
+		Eon_Element_Descriptor *edescriptor,
 		Enesim_Renderer_Descriptor *descriptor,
 		void *data)
 {
@@ -71,7 +72,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
 	thiz->data = data;
 	thiz->descriptor = ldescriptor;
 
-	r = eon_element_new(descriptor, thiz);
+	r = eon_element_new(edescriptor, descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
