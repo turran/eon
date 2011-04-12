@@ -20,6 +20,7 @@ eon_radio.c \
 eon_stack.c \
 eon_theme.c \
 eon_theme_widget.c \
+eon_theme_label.c \
 eon_widget.c
 
 libeon_la_LIBADD = \

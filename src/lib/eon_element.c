@@ -41,6 +41,10 @@ typedef struct _Eon_Element
 	Eon_Element_Descriptor *descriptor;
 	double width;
 	double height;
+	double max_width;
+	double max_height;
+	double min_width;
+	double min_height;
 	double actual_width;
 	double actual_height;
 	void *data;
@@ -69,6 +73,10 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,
 	EINA_MAGIC_SET(thiz, EON_ELEMENT_MAGIC);
 	thiz->data = data;
 	thiz->descriptor = edescriptor;
+	thiz->actual_width = -1;
+	thiz->actual_height = -1;
+	thiz->max_width = thiz->max_height = DBL_MAX;
+	thiz->min_width = thiz->min_height = 0;
 	//thiz->width = nan("char-sequence");
 	//thiz->height = nan("char-sequence");
 
@@ -99,7 +107,7 @@ void eon_element_actual_width_set(Enesim_Renderer *r, double width)
 	thiz->actual_width = width;
 }
 
-void eon_element_actual_heighth_set(Enesim_Renderer *r, double height)
+void eon_element_actual_height_set(Enesim_Renderer *r, double height)
 {
 	Eon_Element *thiz;
 
@@ -209,13 +217,13 @@ EAPI void eon_element_width_set(Enesim_Renderer *r, double width)
 EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width)
 {
 	Eon_Element *thiz;
+	double v = 0;
 
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	if (thiz->descriptor->min_width_get)
-		*width = thiz->descriptor->min_width_get(r);
-	else
-		*width = 0;
+		v = thiz->descriptor->min_width_get(r);
+	*width = v > thiz->min_width ? v : thiz->min_width;
 }
 
 /**
@@ -229,8 +237,7 @@ EAPI void eon_element_min_width_set(Enesim_Renderer *r, double width)
 	if (!width) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	if (thiz->descriptor->min_width_set)
-		thiz->descriptor->min_width_set(r, width);
+	thiz->min_width = width;
 }
 
 /**
@@ -243,8 +250,7 @@ EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height)
 
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	if (thiz->descriptor->min_height_set)
-		thiz->descriptor->min_height_set(r, height);
+	thiz->min_height = height;
 }
 
 /**
@@ -254,14 +260,14 @@ EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height)
 EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height)
 {
 	Eon_Element *thiz;
+	double v = 0;
 
 	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	if (thiz->descriptor->min_height_get)
-		*height = thiz->descriptor->min_height_get(r);
-	else
-		*height = 0;
+		v = thiz->descriptor->min_height_get(r);
+	*height = v > thiz->min_height ? v : thiz->min_height;
 }
 
 /**
@@ -271,13 +277,13 @@ EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height)
 EAPI void eon_element_max_width_get(Enesim_Renderer *r, double *width)
 {
 	Eon_Element *thiz;
+	double v = DBL_MAX;
 
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	if (thiz->descriptor->max_width_get)
-		*width = thiz->descriptor->max_width_get(r);
-	else
-		*width = 0;
+		v = thiz->descriptor->max_width_get(r);
+	*width = v < thiz->max_width ? v : thiz->max_width;
 }
 
 /**
@@ -291,8 +297,7 @@ EAPI void eon_element_max_width_set(Enesim_Renderer *r, double width)
 	if (!width) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	if (thiz->descriptor->max_width_set)
-		thiz->descriptor->max_width_set(r, width);
+	thiz->max_width = width;
 }
 
 /**
@@ -303,10 +308,10 @@ EAPI void eon_element_max_height_set(Enesim_Renderer *r, double height)
 {
 	Eon_Element *thiz;
 
+	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	if (thiz->descriptor->max_height_set)
-		thiz->descriptor->max_height_set(r, height);
+	thiz->max_height = height;
 }
 
 /**
@@ -316,12 +321,12 @@ EAPI void eon_element_max_height_set(Enesim_Renderer *r, double height)
 EAPI void eon_element_max_height_get(Enesim_Renderer *r, double *height)
 {
 	Eon_Element *thiz;
+	double v = DBL_MAX;
 
 	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	if (thiz->descriptor->max_height_get)
-		*height = thiz->descriptor->max_height_get(r);
-	else
-		*height = 0;
+		v = thiz->descriptor->max_height_get(r);
+	*height = v < thiz->max_height ? v : thiz->max_height;
 }

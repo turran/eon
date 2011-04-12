@@ -1,7 +1,8 @@
 using "enesim";
+using "eon";
 
 namespace "eon" {
-	class "basic_label" : "theme_widget" {
+	class "basic_label" : "theme_label" {
 	};
 
 	class "basic_radio" : "theme_widget" {

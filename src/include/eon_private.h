@@ -6,7 +6,9 @@
 #endif
 
 #include "Escen.h"
+#include "Etex.h"
 
+#include <math.h>
 #include <float.h>
 
 /* The debugging facility */
@@ -18,13 +20,9 @@ extern int eon_log;
 typedef struct _Eon_Element_Descriptor
 {
 	double (*min_width_get)(Enesim_Renderer *r);
-	void (*min_width_set)(Enesim_Renderer *r, double d);
 	double (*min_height_get)(Enesim_Renderer *r);
-	void (*min_height_set)(Enesim_Renderer *r, double d);
 	double (*max_width_get)(Enesim_Renderer *r);
-	void (*max_width_set)(Enesim_Renderer *r, double d);
 	double (*max_height_get)(Enesim_Renderer *r);
-	void (*max_height_set)(Enesim_Renderer *r, double d);
 } Eon_Element_Descriptor;
 
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,

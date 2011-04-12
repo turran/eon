@@ -194,31 +194,7 @@ static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static double _eon_canvas_min_width_get(Enesim_Renderer *r)
-{
-
-}
-
-static void _eon_canvas_min_width_set(Enesim_Renderer *r, double height)
-{
-
-}
-
-static double _eon_canvas_min_height_get(Enesim_Renderer *r)
-{
-
-}
-
-static void _eon_canvas_min_height_set(Enesim_Renderer *r, double height)
-{
-
-}
-
 static Eon_Element_Descriptor _eon_canvas_element_descriptor = {
-	.min_width_get = _eon_canvas_min_width_get,
-	.min_width_set = _eon_canvas_min_width_set,
-	.min_height_get = _eon_canvas_min_height_get,
-	.min_height_set = _eon_canvas_min_height_set,
 };
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
@@ -292,30 +268,6 @@ background_err:
 compound_err:
 	free(e);
 	return NULL;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_width_set(Enesim_Renderer *r, unsigned int width)
-{
-	Eon_Canvas *e;
-
-	e = _eon_canvas_get(r);
-	e->curr.width = width;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_height_set(Enesim_Renderer *r, unsigned int height)
-{
-	Eon_Canvas *e;
-
-	e = _eon_canvas_get(r);
-	e->curr.height = height;
 }
 
 /**

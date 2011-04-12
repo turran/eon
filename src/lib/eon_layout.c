@@ -82,6 +82,47 @@ renderer_err:
 	return NULL;
 }
 
+void eon_layout_actual_size_get(Enesim_Renderer *r, double *width, double *height)
+{
+	/* whenever we are the topmost, the use must have set the
+	 * the width and height of the object
+	 */
+	if (eon_layout_is_topmost(r))
+	{
+		eon_element_width_get(r, width);
+		eon_element_height_get(r, height);
+	}
+	else
+	{
+		eon_element_actual_width_get(r, width);
+		eon_element_actual_height_get(r, height);
+	}
+}
+
+void eon_layout_actual_width_get(Enesim_Renderer *r, double *width)
+{
+	if (eon_layout_is_topmost(r))
+	{
+		eon_element_width_get(r, width);
+	}
+	else
+	{
+		eon_element_actual_width_get(r, width);
+	}
+}
+
+void eon_layout_actual_height_get(Enesim_Renderer *r, double *height)
+{
+	if (eon_layout_is_topmost(r))
+	{
+		eon_element_height_get(r, height);
+	}
+	else
+	{
+		eon_element_actual_height_get(r, height);
+	}
+}
+
 Eina_Bool eon_layout_state_setup(Enesim_Renderer *r, unsigned int width,
 		unsigned int height)
 {
@@ -140,6 +181,7 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 	thiz = _eon_layout_get(r);
 	return thiz->data;
 }
+
 /**
  * To be documented
  * FIXME: To be fixed
@@ -172,6 +214,22 @@ void eon_layout_damage_add(Enesim_Renderer *r, Eina_Rectangle *damage)
 
 	thiz = _eon_layout_get(r);
 	/* add the rectangle to the tiler */
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r)
+{
+	Ender *ender, *parent;
+
+	if (!eon_is_layout(r)) return EINA_FALSE;
+	ender = ender_element_renderer_from(r);
+	if (!ender) return EINA_TRUE;
+	parent = ender_element_parent_get(ender);
+	if (!parent) return EINA_TRUE;
+	else return EINA_FALSE;
 }
 
 /**

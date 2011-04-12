@@ -18,6 +18,13 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l);
  * @{
  */
 
+EAPI Eina_Bool eon_is_element(Enesim_Renderer *r);
+EAPI void eon_element_actual_height_get(Enesim_Renderer *r, double *height);
+EAPI void eon_element_actual_width_get(Enesim_Renderer *r, double *width);
+EAPI void eon_element_height_get(Enesim_Renderer *r, double *height);
+EAPI void eon_element_height_set(Enesim_Renderer *r, double height);
+EAPI void eon_element_width_get(Enesim_Renderer *r, double *width);
+EAPI void eon_element_width_set(Enesim_Renderer *r, double width);
 EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_element_min_width_set(Enesim_Renderer *r, double width);
 EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height);
@@ -28,6 +35,7 @@ EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height);
  * @{
  */
 
+Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r);
 EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child);
 EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child);
 EAPI void eon_layout_redraw_get(Enesim_Renderer *r, Eina_List **redraws);
@@ -78,6 +86,14 @@ EAPI void eon_stack_height_set(Enesim_Renderer *r, unsigned int height);
  * @}
  * @{
  */
+EAPI Enesim_Renderer * eon_label_new(void);
+EAPI void eon_label_text_set(Enesim_Renderer *r, const char *text);
+EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text);
+
+/**
+ * @}
+ * @{
+ */
 
 typedef struct _Eon_Theme_Widget_Descriptor
 {
@@ -95,6 +111,37 @@ EAPI void eon_theme_widget_max_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height);
 EAPI void eon_theme_widget_min_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_theme_widget_min_height_get(Enesim_Renderer *r, double *height);
+
+typedef struct _Eon_Theme_Label_Descriptor
+{
+	/* font name */
+	void (*font_set)(Enesim_Renderer *r, const char *font);
+	const char * (*font_get)(Enesim_Renderer *r);
+	/* font size */
+	void (*size_set)(Enesim_Renderer *r, int size);
+	int (*size_get)(Enesim_Renderer *r);
+	/* text */
+	void (*text_set)(Enesim_Renderer *r, const char *str);
+	const char * (*text_get)(Enesim_Renderer *r);
+	/* ellipsize */
+	void (*ellipsize_set)(Enesim_Renderer *r, Eina_Bool enable);
+	Eina_Bool (*ellipsize_get)(Enesim_Renderer *r);
+} Eon_Theme_Label_Descriptor;
+
+EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *tldescriptor,
+		Eon_Theme_Widget_Descriptor *twdescriptor,
+		Enesim_Renderer_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_label(Enesim_Renderer *r);
+EAPI void * eon_theme_label_data_get(Enesim_Renderer *r);
+EAPI void eon_theme_label_font_set(Enesim_Renderer *r, const char *str);
+EAPI void eon_theme_label_font_get(Enesim_Renderer *r, const char **str);
+EAPI void eon_theme_label_size_set(Enesim_Renderer *r, int size);
+EAPI void eon_theme_label_size_get(Enesim_Renderer *r, int *size);
+EAPI void eon_theme_label_text_set(Enesim_Renderer *r, const char *text);
+EAPI void eon_theme_label_text_get(Enesim_Renderer *r, const char **text);
+EAPI void eon_theme_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable);
+EAPI void eon_theme_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enable);
 
 /**
  * @}

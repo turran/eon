@@ -123,7 +123,7 @@ EAPI void eon_theme_widget_max_width_get(Enesim_Renderer *r, double *width)
 	if (thiz->descriptor->max_width_get)
 		*width = thiz->descriptor->max_width_get(r);
 	else
-		*width = 0;
+		*width = DBL_MAX;
 }
 
 /**
@@ -140,5 +140,5 @@ EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height)
 	if (thiz->descriptor->max_height_get)
 		*height = thiz->descriptor->max_height_get(r);
 	else
-		*height = 0;
+		*height = DBL_MAX;
 }

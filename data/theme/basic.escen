@@ -9,6 +9,13 @@ escen {
 		};
 	};
 
+	basic_label "label" {
+		default {
+			set { size = 16; };
+			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
+		};
+	};
+
 	basic_radio "radio" {
 		default {
 			set { color = 0xff000000; };

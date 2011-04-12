@@ -22,7 +22,6 @@
  *============================================================================*/
 typedef struct _Eon_Label
 {
-	char *text;
 } Eon_Label;
 
 static inline Eon_Label * _eon_label_get(Enesim_Renderer *r)
@@ -73,3 +72,70 @@ EAPI void eon_label_text_set(Enesim_Renderer *r, const char *text)
 
 	eon_widget_property_set(r, "text", text);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text)
+{
+	Eon_Label *thiz;
+
+	thiz = _eon_label_get(r);
+	if (!thiz) return;
+
+	eon_widget_property_get(r, "text", text);
+}
+
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
+{
+	Eon_Label *thiz;
+
+	thiz = _eon_label_get(r);
+
+	eon_widget_property_set(r, "ellipsize", enable);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enabled)
+{
+	Eon_Label *thiz;
+
+	thiz = _eon_label_get(r);
+
+	eon_widget_property_get(r, "ellipsize", enabled);
+}
+
+#if 0
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_label_text_direction_set(Enesim_Renderer *r, Etex_Direction direction)
+{
+	Eon_Label *thiz;
+
+	thiz = _eon_label_get(r);
+	eon_widget_property_set(r, "direction", direction);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_label_text_direction_get(Enesim_Renderer *r, Etex_Direction *direction)
+{
+	Eon_Label *thiz;
+
+	thiz = _eon_label_get(r);
+	eon_widget_property_get(r, "direction", direction);
+}
+#endif

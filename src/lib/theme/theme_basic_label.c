@@ -23,7 +23,7 @@
  *============================================================================*/
 typedef struct _Label
 {
-	Enesim_Renderer *compound;
+	Enesim_Renderer *text;
 	Enesim_Renderer_Sw_Fill fill;
 } Label;
 
@@ -31,7 +31,7 @@ static inline Label * _label_get(Enesim_Renderer *r)
 {
 	Label *thiz;
 
-	thiz = eon_theme_widget_data_get(r);
+	thiz = eon_theme_label_data_get(r);
 	return thiz;
 }
 
@@ -40,8 +40,73 @@ static void _label_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	Label *thiz;
 
 	thiz = _label_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
+	thiz->fill(thiz->text, x, y, len, dst);
 }
+/*----------------------------------------------------------------------------*
+ *                      The Eon's theme label interface                       *
+ *----------------------------------------------------------------------------*/
+static void _label_font_set(Enesim_Renderer *r, const char *name)
+{
+	Label *thiz;
+
+	thiz = _label_get(r);
+	etex_span_font_set(thiz->text, name);
+}
+
+static const char * _label_font_get(Enesim_Renderer *r)
+{
+	Label *thiz;
+	const char *name;
+
+	thiz = _label_get(r);
+	etex_span_font_get(thiz->text, &name);
+	return name;
+}
+
+static void _label_size_set(Enesim_Renderer *r, int size)
+{
+	Label *thiz;
+
+	thiz = _label_get(r);
+	etex_span_size_set(thiz->text, size);
+}
+
+static int _label_size_get(Enesim_Renderer *r)
+{
+	Label *thiz;
+	int size;
+
+	thiz = _label_get(r);
+	etex_span_size_get(thiz->text, &size);
+	return size;
+}
+
+static void _label_text_set(Enesim_Renderer *r, const char *str)
+{
+	Label *thiz;
+
+	thiz = _label_get(r);
+	etex_span_text_set(thiz->text, str);
+}
+
+static const char * _label_text_get(Enesim_Renderer *r)
+{
+	Label *thiz;
+	const char *str;
+
+	thiz = _label_get(r);
+	etex_span_text_get(thiz->text, &str);
+	return str;
+}
+
+static Eon_Theme_Label_Descriptor _tldescriptor = {
+	.text_set = _label_text_set,
+	.text_get = _label_text_get,
+	.size_set = _label_size_set,
+	.size_get = _label_size_get,
+	.font_set = _label_font_set,
+	.font_get = _label_font_get,
+};
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme widget interface                      *
  *----------------------------------------------------------------------------*/
@@ -52,12 +117,16 @@ static Eon_Theme_Widget_Descriptor _twdescriptor;
 static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Label *thiz;
+	double ox, oy;
 
 	thiz = _label_get(r);
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(thiz->text, ox, oy);
+	if (!enesim_renderer_sw_setup(thiz->text))
 		return EINA_FALSE;
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->text);
+	if (!thiz->fill)
+		return EINA_FALSE;
 
 	*fill = _label_draw;
 
@@ -69,7 +138,7 @@ static void _label_cleanup(Enesim_Renderer *r)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	enesim_renderer_sw_cleanup(thiz->compound);
+	enesim_renderer_sw_cleanup(thiz->text);
 }
 
 static void _label_free(Enesim_Renderer *r)
@@ -77,8 +146,8 @@ static void _label_free(Enesim_Renderer *r)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	if (thiz->compound)
-		enesim_renderer_delete(thiz->compound);
+	if (thiz->text)
+		enesim_renderer_delete(thiz->text);
 	free(thiz);
 }
 
@@ -87,7 +156,7 @@ static void _label_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	enesim_renderer_boundings(thiz->compound, boundings);
+	enesim_renderer_boundings(thiz->text, boundings);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
@@ -111,18 +180,17 @@ EAPI Enesim_Renderer * eon_basic_label_new(void)
 	thiz = calloc(1, sizeof(Label));
 	if (!thiz) return NULL;
 
-	r = enesim_renderer_compound_new();
-	if (!r) goto compound_err;
-	thiz->compound = r;
+	r = etex_span_new();
+	if (!r) goto etex_err;
+	thiz->text = r;
 
-	r = eon_theme_widget_new(&_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_label_new(&_tldescriptor, &_twdescriptor, &_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
 renderer_err:
-	enesim_renderer_delete(thiz->compound);
-compound_err:
+	enesim_renderer_delete(thiz->text);
+etex_err:
 	free(thiz);
 	return NULL;
 }
-
