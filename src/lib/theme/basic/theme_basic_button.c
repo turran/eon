@@ -119,7 +119,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	.boundings = _button_boundings,
 	.free = _button_free,
 };
-
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -147,7 +146,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	if (!r) goto rectangle_err;
 	thiz->rectangle = r;
 
-	r = eon_theme_widget_new(&_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_button_new(&_twdescriptor, &_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	/* setup the initial state */

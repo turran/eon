@@ -20,14 +20,15 @@ eon_radio.c \
 eon_stack.c \
 eon_theme.c \
 eon_theme_widget.c \
+eon_theme_button.c \
 eon_theme_label.c \
 eon_widget.c
 
 libeon_la_LIBADD = \
-theme/libtheme_basic.la \
+theme/libtheme.la \
 @EON_LIBS@
 
 libeon_la_DEPENDENCIES = \
-theme/libtheme_basic.la
+theme/libtheme.la
 
 libeon_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

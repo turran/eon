@@ -36,6 +36,7 @@ Eina_Bool eon_theme_init(void)
 	{
 		_theme = escen_parser_load(PACKAGE_DATA_DIR "/themes/basic.escen");
 		if (!_theme) return EINA_FALSE;
+		/* TODO once we have the theme loaded, append the datadir to the paths */
 		_init = EINA_TRUE;
 	}
 	return _init;

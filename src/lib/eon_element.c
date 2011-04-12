@@ -77,8 +77,8 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,
 	thiz->actual_height = -1;
 	thiz->max_width = thiz->max_height = DBL_MAX;
 	thiz->min_width = thiz->min_height = 0;
-	//thiz->width = nan("char-sequence");
-	//thiz->height = nan("char-sequence");
+	thiz->width = -1;
+	thiz->height = -1;
 
 	r = enesim_renderer_new(descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -125,6 +125,16 @@ void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height
 	thiz->actual_width = width;
 	thiz->actual_height = height;
 }
+
+void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *height)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	*width = thiz->actual_width;
+	*height = thiz->actual_height;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -136,7 +146,7 @@ EAPI Eina_Bool eon_is_element(Enesim_Renderer *r)
 {
 	Eon_Element *thiz;
 
-	thiz = eon_element_data_get(r);
+	thiz = enesim_renderer_data_get(r);
 	if (!EINA_MAGIC_CHECK(thiz, EON_ELEMENT_MAGIC))
 		return EINA_FALSE;
 	return EINA_TRUE;

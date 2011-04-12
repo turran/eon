@@ -1,16 +1,14 @@
 MAINTAINERCLEANFILES = \
 Makefile.in
 
-noinst_LTLIBRARIES = libtheme_basic.la
+SUBDIRS = basic
 
-AM_CPPFLAGS = \
--I$(top_srcdir)/src/include \
--I. \
-@EON_CFLAGS@
+noinst_LTLIBRARIES = libtheme.la
 
-libtheme_basic_la_SOURCES = \
-theme_basic.c \
-theme_basic_radio.c \
-theme_basic_button.c \
-theme_basic_checkbox.c \
-theme_basic_label.c
+libtheme_la_DEPENDENCIES = \
+basic/libtheme_basic.la
+
+libtheme_la_LIBADD = \
+basic/libtheme_basic.la
+
+libtheme_la_SOURCES =

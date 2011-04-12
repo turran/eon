@@ -142,6 +142,7 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	double ox, oy;
 
 	ew = _eon_widget_get(r);
+	printf("setting up the widget %p\n", r);
 	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
@@ -183,9 +184,9 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	double aw, ah;
 
 	thiz = _eon_widget_get(r);
-	eon_element_actual_width_get(r, &aw);
-	eon_element_actual_height_get(r, &ah);
+	eon_element_actual_size_get(r, &aw, &ah);
 	/* There's no layout, or the layout didnt set an active width/height */
+	printf("widget boundings %p\n", r);
 	if (aw < 0 || ah < 0)
 	{
 		double min, max, set;
@@ -273,6 +274,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 			&_eon_widget_descriptor, e);
 	if (!thiz) goto renderer_err;
 
+	printf("creating new widget %p %s\n", thiz, name);
 	return thiz;
 
 renderer_err:

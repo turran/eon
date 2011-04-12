@@ -74,6 +74,7 @@ data/theme/Makefile
 src/Makefile
 src/lib/Makefile
 src/lib/theme/Makefile
+src/lib/theme/basic/Makefile
 src/include/Makefile
 ],[
 ])

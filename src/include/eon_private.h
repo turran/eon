@@ -28,6 +28,8 @@ typedef struct _Eon_Element_Descriptor
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,
 		Enesim_Renderer_Descriptor *descriptor,
 		void *data);
+void * eon_element_data_get(Enesim_Renderer *r);
+
 
 typedef struct _Eon_Layout_Descriptor
 {

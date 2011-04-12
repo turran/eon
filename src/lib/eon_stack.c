@@ -70,7 +70,10 @@ static void _stack_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double 
 
 	r = ender_element_renderer_get(ech->ender);
 	if (!eon_is_element(r))
+	{
+		printf("child %p is not an element\n", r);
 		return;
+	}
 
 	eon_element_width_get(r, &set);
 	if (set < 0)
@@ -110,7 +113,7 @@ static void _stack_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double 
 			h = h < min ? min : h;
 		}
 	}
-	printf("actual size setting %g %g\n", w, h);
+	printf("stack setting child %p size %g %g\n", r, w, h);
 	eon_element_actual_size_set(r, w, h);
 }
 
@@ -236,6 +239,7 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	thiz = _eon_stack_get(r);
 	if (!thiz) return EINA_FALSE;
 
+	printf("setting up the stack %p\n", r);
 	/* the idea on a layout setup is the set the actual width and height
 	 * of every child before calling the setup of each child
 	 */
@@ -265,6 +269,7 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
 	*fill = _stack_draw;
 
+	printf("end setting up the stack %p\n", r);
 	return EINA_TRUE;
 }
 
@@ -292,6 +297,7 @@ static void _eon_stack_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	rect->y = 0;
 	rect->w = lrint(w);
 	rect->h = lrint(h);
+	printf("stack %p boundings %g %g\n", r, w, h);
 }
 
 static Enesim_Renderer_Descriptor _eon_stack_renderer_descriptor = {
@@ -381,12 +387,15 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
+	Enesim_Renderer *r_child;
 
 	thiz = _eon_stack_get(r);
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
-	enesim_renderer_compound_layer_add(thiz->compound, ender_element_renderer_get(child));
+	r_child = ender_element_renderer_get(child);
+	enesim_renderer_compound_layer_add(thiz->compound, r_child);
+	printf("child %p added to stack %p\n", r_child, r);
 	/* TODO whenever a child is added, register a callback for a property
 	 * change, if it is called then we need to do the setup again
 	 */

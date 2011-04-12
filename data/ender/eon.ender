@@ -51,6 +51,10 @@ namespace "eon" {
 		double max_height;
 	};
 
+	abstract "theme_button" : "theme_widget" {
+		renderer content;
+	};
+
 	abstract "theme_label" : "theme_widget" {
 		int ellipsize;
 		string text;

@@ -10,7 +10,7 @@ namespace "eon" {
 		argb color;
 	};
 
-	class "basic_button" : "theme_widget" {
+	class "basic_button" : "theme_button" {
 		string label;
 		argb foreground_color;
 		argb border_color;
