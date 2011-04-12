@@ -33,7 +33,7 @@ static inline Button * _button_get(Enesim_Renderer *r)
 {
 	Button *thiz;
 
-	thiz = eon_theme_widget_data_get(r);
+	thiz = eon_theme_button_data_get(r);
 	return thiz;
 }
 
