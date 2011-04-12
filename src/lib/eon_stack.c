@@ -61,6 +61,59 @@ static void _stack_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	e->fill_func(e->compound, x, y, len, dst);
 }
 
+static void _stack_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double aw, double ah)
+{
+	Enesim_Renderer *r;
+	double w, h;
+	double min, max, set;
+	double acw, ach;
+
+	r = ender_element_renderer_get(ech->ender);
+	if (!eon_is_element(r))
+		return;
+
+	eon_element_width_get(r, &set);
+	if (set < 0)
+	{
+		w = aw;
+	}
+	else
+	{
+		if (set <= aw)
+		{
+			w = set;
+		}
+		else
+		{
+			eon_element_min_width_get(r, &min);
+			eon_element_max_width_get(r, &max);
+			w = set > max ? max : set;
+			w = w < min ? min : w;
+		}
+	}
+	eon_element_height_get(r, &set);
+	if (set < 0)
+	{
+		h = ah;
+	}
+	else
+	{
+		if (set <= ah)
+		{
+			h = set;
+		}
+		else
+		{
+			eon_element_min_height_get(r, &min);
+			eon_element_max_height_get(r, &max);
+			h = set > max ? max : set;
+			h = h < min ? min : h;
+		}
+	}
+	printf("actual size setting %g %g\n", w, h);
+	eon_element_actual_size_set(r, w, h);
+}
+
 static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 {
 	Eon_Stack_Child *ech;
@@ -99,6 +152,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_x += boundings.w;
+		_stack_child_size_set(thiz, ech, aw, ah);
 	}
 }
 
@@ -141,6 +195,7 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_y += boundings.h;
+		_stack_child_size_set(thiz, ech, aw, ah);
 	}
 }
 /*----------------------------------------------------------------------------*

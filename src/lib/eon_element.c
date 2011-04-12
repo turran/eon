@@ -115,6 +115,16 @@ void eon_element_actual_height_set(Enesim_Renderer *r, double height)
 	if (!thiz) return;
 	thiz->actual_height = height;
 }
+
+void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->actual_width = width;
+	thiz->actual_height = height;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
