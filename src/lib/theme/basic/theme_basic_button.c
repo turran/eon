@@ -18,6 +18,7 @@
 #include "Eon.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
+#include <float.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -59,7 +60,50 @@ static void _button_update_rectangle(Button *thiz)
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme widget interface                      *
  *----------------------------------------------------------------------------*/
-static Eon_Theme_Widget_Descriptor _twdescriptor;
+static double _button_min_width_get(Enesim_Renderer *r)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	return 6;
+}
+
+static double _button_max_width_get(Enesim_Renderer *r)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	/* TODO get the contents and get the min_width
+	 * from it plus the padding
+	 */
+	return DBL_MAX;
+}
+
+static double _button_min_height_get(Enesim_Renderer *r)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	return 6;
+}
+
+static double _button_max_height_get(Enesim_Renderer *r)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	/* TODO get the contents and get the min_width
+	 * from it plus the padding
+	 */
+	return DBL_MAX;
+}
+
+static Eon_Theme_Widget_Descriptor _twdescriptor = {
+	.max_width_get = _button_max_width_get,
+	.max_height_get = _button_max_height_get,
+	.min_width_get = _button_min_width_get,
+	.min_height_get = _button_min_height_get,
+};
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -229,7 +273,6 @@ EAPI void eon_basic_button_font_color_set(Enesim_Renderer *r, Enesim_Color color
 	thiz = _button_get(r);
 	enesim_renderer_color_set(thiz->text, color);
 }
-
 
 /**
  * To be documented
