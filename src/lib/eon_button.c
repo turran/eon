@@ -22,8 +22,7 @@
  *============================================================================*/
 typedef struct _Eon_Button
 {
-	char *text;
-	Ender *external;
+	Ender *content;
 } Eon_Button;
 
 static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
@@ -74,26 +73,28 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_button_label_set(Enesim_Renderer *r, const char *text)
+EAPI void eon_button_content_set(Enesim_Renderer *r, Ender *content)
 {
 	Eon_Button *thiz;
+	Enesim_Renderer *rcontent;
 
 	thiz = _eon_button_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "label", text);
+	rcontent = ender_element_renderer_get(content);
+	eon_widget_property_set(r, "content", rcontent);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_button_image_set(Enesim_Renderer *r, const char *file)
+EAPI void eon_button_content_get(Enesim_Renderer *r, const Ender **content)
 {
 	Eon_Button *thiz;
 
 	thiz = _eon_button_get(r);
 	if (!thiz) return;
 
-	/* we should set the property to the escen */
+	*content = thiz->content;
 }

@@ -26,9 +26,12 @@ typedef struct _Button
 {
 	Enesim_Renderer *rectangle;
 	Enesim_Renderer *compound;
-	Enesim_Renderer *text;
+	Enesim_Renderer *content;
 	Enesim_Renderer_Sw_Fill fill;
 } Button;
+
+static const int horizontal_padding = 10;
+static const int vertical_padding = 3;
 
 static inline Button * _button_get(Enesim_Renderer *r)
 {
@@ -50,12 +53,16 @@ static void _button_update_rectangle(Button *thiz)
 {
 	Eina_Rectangle boundings;
 
-	/* add 5px of padding to the text */
+	/* add 6px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
-	enesim_renderer_boundings(thiz->text, &boundings);
-	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w + 6);
-	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h + 6);
-	enesim_renderer_origin_set(thiz->text, 3, 3);
+	enesim_renderer_boundings(thiz->content, &boundings);
+	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w +
+			horizontal_padding * 2);
+	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h +
+			vertical_padding * 2);
+	/* always center */
+	enesim_renderer_origin_set(thiz->content, horizontal_padding,
+			vertical_padding);
 }
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme widget interface                      *
@@ -63,38 +70,68 @@ static void _button_update_rectangle(Button *thiz)
 static double _button_min_width_get(Enesim_Renderer *r)
 {
 	Button *thiz;
+	Enesim_Renderer *content;
+	/* the padding */
+	double min_width = horizontal_padding * 2;
 
 	thiz = _button_get(r);
-	return 6;
+	eon_theme_button_content_get(r, &content);
+	if (!content)
+		goto end;
+	if (eon_is_element(content))
+	{
+		double cmin_width;
+
+		eon_element_min_width_get(content, &cmin_width);
+		min_width += cmin_width;
+	}
+	else
+	{
+		Eina_Rectangle boundings;
+
+		enesim_renderer_boundings(content, &boundings);
+		min_width += boundings.w;
+	}
+end:
+	return min_width;
 }
 
 static double _button_max_width_get(Enesim_Renderer *r)
 {
-	Button *thiz;
-
-	thiz = _button_get(r);
-	/* TODO get the contents and get the min_width
-	 * from it plus the padding
-	 */
 	return DBL_MAX;
 }
 
 static double _button_min_height_get(Enesim_Renderer *r)
 {
 	Button *thiz;
+	Enesim_Renderer *content;
+	/* the padding */
+	double min_height = vertical_padding * 2;
 
 	thiz = _button_get(r);
-	return 6;
+	eon_theme_button_content_get(r, &content);
+	if (!content)
+		goto end;
+	if (eon_is_element(content))
+	{
+		double cmin_height;
+
+		eon_element_min_height_get(content, &cmin_height);
+		min_height += cmin_height;
+	}
+	else
+	{
+		Eina_Rectangle boundings;
+
+		enesim_renderer_boundings(content, &boundings);
+		min_height += boundings.h;
+	}
+end:
+	return min_height;
 }
 
 static double _button_max_height_get(Enesim_Renderer *r)
 {
-	Button *thiz;
-
-	thiz = _button_get(r);
-	/* TODO get the contents and get the min_width
-	 * from it plus the padding
-	 */
 	return DBL_MAX;
 }
 
@@ -110,13 +147,31 @@ static Eon_Theme_Widget_Descriptor _twdescriptor = {
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Button *thiz;
+	Enesim_Renderer *content;
 	double ox, oy;
 
 	thiz = _button_get(r);
-	_button_update_rectangle(thiz);
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	/* setup the layers now */
+	eon_theme_button_content_get(r, &content);
+	if (!content)
+	{
+		printf("button no content\n");
+		return EINA_FALSE;
+	}
+	if (thiz->content != content)
+	{
+		enesim_renderer_compound_clear(thiz->compound);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
+		enesim_renderer_compound_layer_add(thiz->compound, content);
+		/* FIXME at the cleanup we should restore this */
+		enesim_renderer_rop_set(content, ENESIM_BLEND);
+		thiz->content = content;
+	}
+	_button_update_rectangle(thiz);
+
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
 		printf("not available to setup yet\n");
@@ -182,32 +237,21 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	if (!r) goto compound_err;
 	thiz->compound = r;
 
-	r = etex_span_new();
-	if (!r) goto etex_err;
-	thiz->text = r;
-
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto rectangle_err;
 	thiz->rectangle = r;
-
-	r = eon_theme_button_new(&_twdescriptor, &_descriptor, thiz);
-	if (!r) goto renderer_err;
-
 	/* setup the initial state */
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
 	enesim_renderer_shape_outline_weight_set(thiz->rectangle, 1);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->text);
-	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
+	r = eon_theme_button_new(&_twdescriptor, &_descriptor, thiz);
+	if (!r) goto renderer_err;
 
 	return r;
 
 renderer_err:
 	enesim_renderer_delete(thiz->rectangle);
 rectangle_err:
-	enesim_renderer_delete(thiz->text);
-etex_err:
 	enesim_renderer_delete(thiz->compound);
 compound_err:
 	free(thiz);
@@ -236,52 +280,4 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
 
 	thiz = _button_get(r);
 	enesim_renderer_shape_outline_color_set(thiz->rectangle, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_button_label_set(Enesim_Renderer *r, char *str)
-{
-	Button *thiz;
-
-	thiz = _button_get(r);
-	etex_span_text_set(thiz->text, str);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_button_font_set(Enesim_Renderer *r, const char *file)
-{
-	Button *thiz;
-
-	thiz = _button_get(r);
-	etex_span_font_set(thiz->text, file);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_button_font_color_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Button *thiz;
-
-	thiz = _button_get(r);
-	enesim_renderer_color_set(thiz->text, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_button_font_size_set(Enesim_Renderer *r, int size)
-{
-	Button *thiz;
-
-	thiz = _button_get(r);
-	etex_span_size_set(thiz->text, size);
 }

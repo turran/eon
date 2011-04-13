@@ -20,8 +20,24 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_THEME_BUTTON_MAGIC 0xe0410002
+#define EON_THEME_BUTTON_MAGIC_CHECK(d)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_THEME_BUTTON_MAGIC))\
+			EINA_MAGIC_FAIL(d, EON_THEME_BUTTON_MAGIC);\
+	} while(0)
+
+#define EON_THEME_BUTTON_MAGIC_CHECK_RETURN(d, ret)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_THEME_BUTTON_MAGIC)) {\
+			EINA_MAGIC_FAIL(d, EON_THEME_BUTTON_MAGIC);\
+			return ret;\
+		}\
+	} while(0)
+
 typedef struct _Eon_Theme_Button
 {
+	EINA_MAGIC;
 	/* properties */
 	Enesim_Renderer *content;
 	/* private */
@@ -34,6 +50,8 @@ static inline Eon_Theme_Button * _eon_theme_button_get(Enesim_Renderer *r)
 	Eon_Theme_Button *thiz;
 
 	thiz = eon_theme_widget_data_get(r);
+	EON_THEME_BUTTON_MAGIC_CHECK_RETURN(thiz, NULL);
+
 	return thiz;
 }
 /*============================================================================*
@@ -56,6 +74,7 @@ EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Widget_Descriptor *twdescr
 	/* first check the label descriptors */
 
 	thiz = calloc(1, sizeof(Eon_Theme_Button));
+	EINA_MAGIC_SET(thiz, EON_THEME_BUTTON_MAGIC);
 	thiz->data = data;
 	thiz->twdescriptor = twdescriptor;
 	r = eon_theme_widget_new(twdescriptor, descriptor, thiz);
@@ -99,6 +118,7 @@ EAPI void eon_theme_button_content_set(Enesim_Renderer *r, Enesim_Renderer *cont
 	Eon_Theme_Button *thiz;
 
 	thiz = _eon_theme_button_get(r);
+	printf("setting content = %p %p\n", r, content);
 	thiz->content = content;
 }
 
@@ -111,5 +131,6 @@ EAPI void eon_theme_button_content_get(Enesim_Renderer *r, Enesim_Renderer **con
 	Eon_Theme_Button *thiz;
 
 	thiz = _eon_theme_button_get(r);
+	printf("getting content %p %p\n", r, thiz->content);
 	*content = thiz->content;
 }

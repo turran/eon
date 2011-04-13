@@ -240,11 +240,11 @@ static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
  */
 EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 {
-	Eon_Widget *e;
+	Eon_Widget *thiz;
 	Escen *escen;
 	Escen_Ender *escen_ender;
 	Escen_State *escen_state;
-	Enesim_Renderer *thiz;
+	Enesim_Renderer *r;
 	Enesim_Renderer *escen_renderer;
 	char theme[PATH_MAX];
 
@@ -254,35 +254,35 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 		return NULL;
 	}
 
-	e = calloc(1, sizeof(Eon_Widget));
-	EINA_MAGIC_SET(e, EON_WIDGET_MAGIC);
-	e->data = data;
+	thiz = calloc(1, sizeof(Eon_Widget));
+	EINA_MAGIC_SET(thiz, EON_WIDGET_MAGIC);
+	thiz->data = data;
 
 	escen_ender = escen_ender_get(escen, name);
-	if (!escen_ender) goto renderer_err;
-	e->escen_ender = escen_ender;
-	e->eei = escen_ender_instance_get(e->escen_ender);
+	if (!escen_ender) goto ender_err;
+	thiz->escen_ender = escen_ender;
+	thiz->eei = escen_ender_instance_get(thiz->escen_ender);
 
-	escen_renderer = ender_element_renderer_get(escen_ender_instance_ender_get(e->eei));
+	escen_renderer = ender_element_renderer_get(escen_ender_instance_ender_get(thiz->eei));
 	if (!escen_renderer) goto escen_renderer_err;
 
 	/* Set the default state in case it has one */
 	escen_state = escen_ender_state_get(escen_ender, "default");
-	escen_ender_instance_state_set(e->eei, escen_state);
+	escen_ender_instance_state_set(thiz->eei, escen_state);
 
-	thiz = eon_element_new(&_eon_widget_element_descriptor,
-			&_eon_widget_descriptor, e);
-	if (!thiz) goto renderer_err;
+	r = eon_element_new(&_eon_widget_element_descriptor,
+			&_eon_widget_descriptor, thiz);
+	if (!r) goto renderer_err;
 
-	printf("creating new widget %p %s\n", thiz, name);
-	return thiz;
+	printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
+	return r;
 
 renderer_err:
 	/* free the escen_ender */
 escen_renderer_err:
 
 ender_err:
-	free(e);
+	free(thiz);
 	return NULL;
 }
 
