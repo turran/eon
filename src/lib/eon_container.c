@@ -20,34 +20,19 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_THEME_BUTTON_MAGIC 0xe0410003
-#define EON_THEME_BUTTON_MAGIC_CHECK(d)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_THEME_BUTTON_MAGIC))\
-			EINA_MAGIC_FAIL(d, EON_THEME_BUTTON_MAGIC);\
-	} while(0)
-
-#define EON_THEME_BUTTON_MAGIC_CHECK_RETURN(d, ret)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_THEME_BUTTON_MAGIC)) {\
-			EINA_MAGIC_FAIL(d, EON_THEME_BUTTON_MAGIC);\
-			return ret;\
-		}\
-	} while(0)
-
-typedef struct _Eon_Theme_Button
+typedef struct _Eon_Container
 {
-	EINA_MAGIC;
+	/* properties */
+	Ender *content;
+	/* private */
 	void *data;
-} Eon_Theme_Button;
+} Eon_Container;
 
-static inline Eon_Theme_Button * _eon_theme_button_get(Enesim_Renderer *r)
+static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
 {
-	Eon_Theme_Button *thiz;
+	Eon_Container *thiz;
 
-	thiz = eon_theme_container_data_get(r);
-	EON_THEME_BUTTON_MAGIC_CHECK_RETURN(thiz, NULL);
-
+	thiz = eon_widget_data_get(r);
 	return thiz;
 }
 /*============================================================================*
@@ -60,17 +45,16 @@ static inline Eon_Theme_Button * _eon_theme_button_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Widget_Descriptor *twdescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
-		void *data)
+EAPI Enesim_Renderer * eon_container_new(const char *name, void *data)
 {
-	Eon_Theme_Button *thiz;
+	Eon_Container *thiz;
 	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Eon_Theme_Button));
-	EINA_MAGIC_SET(thiz, EON_THEME_BUTTON_MAGIC);
+	thiz = calloc(1, sizeof(Eon_Container));
+	if (!thiz) return NULL;
 	thiz->data = data;
-	r = eon_theme_container_new(twdescriptor, descriptor, thiz);
+
+	r = eon_widget_new(name, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -84,20 +68,43 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool eon_is_theme_button(Enesim_Renderer *r)
+EAPI void * eon_container_data_get(Enesim_Renderer *r)
 {
-	Eon_Theme_Button *thiz;
-	return EINA_TRUE;
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return NULL;
+	return thiz->data;
+}
+
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_container_content_set(Enesim_Renderer *r, Ender *content)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *rcontent;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return;
+
+	rcontent = ender_element_renderer_get(content);
+	eon_widget_property_set(r, "content", rcontent);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void * eon_theme_button_data_get(Enesim_Renderer *r)
+EAPI void eon_container_content_get(Enesim_Renderer *r, const Ender **content)
 {
-	Eon_Theme_Button *thiz;
+	Eon_Container *thiz;
 
-	thiz = _eon_theme_button_get(r);
-	return thiz->data;
+	thiz = _eon_container_get(r);
+	if (!thiz) return;
+
+	*content = thiz->content;
 }
+

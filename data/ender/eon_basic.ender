@@ -5,7 +5,7 @@ namespace "eon" {
 	class "basic_label" : "theme_label" {
 	};
 
-	class "basic_radio" : "theme_widget" {
+	class "basic_radio" : "theme_radio" {
 		int selected;
 		argb color;
 	};
@@ -15,8 +15,13 @@ namespace "eon" {
 		argb border_color;
 	};
 
-	class "basic_checkbox" : "theme_widget" {
+	class "basic_checkbox" : "theme_checkbox" {
 		int size;
 		int selected;
+	};
+
+	class "basic_progressbar" : "theme_progressbar" {
+		int width;
+		int height;
 	};
 };

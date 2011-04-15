@@ -31,12 +31,18 @@ namespace "eon" {
 		rel double child_y;
 	};
 
-	class "button" : "widget" {
+	abstract "container" : "widget" {
 		ender content;
 	};
 
-	class "radio" : "widget" {
-		string label;
+	class "button" : "container" {
+	};
+
+	class "radio" : "container" {
+		string group_name;
+	};
+
+	class "checkbox" : "container" {
 	};
 
 	class "label" : "widget" {
@@ -51,8 +57,20 @@ namespace "eon" {
 		double max_height;
 	};
 
-	abstract "theme_button" : "theme_widget" {
+	abstract "theme_container" : "theme_widget" {
 		renderer content;
+	};
+
+	abstract "theme_button" : "theme_container" {
+	};
+
+	abstract "theme_radio" : "theme_container" {
+	};
+
+	abstract "theme_checkbox" : "theme_container" {
+	};
+
+	abstract "theme_progressbar" : "theme_widget" {
 	};
 
 	abstract "theme_label" : "theme_widget" {

@@ -18,24 +18,30 @@
 #include "Eon.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
+#include <float.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 typedef struct _Checkbox
 {
+	/* properties */
+	unsigned int size;
+	Eina_Bool selected;
+	/* private */
+	Enesim_Renderer *content;
 	Enesim_Renderer *box;
 	Enesim_Renderer *check;
 	Enesim_Renderer *compound;
 	Enesim_Renderer_Sw_Fill fill;
-	unsigned int size;
-	Eina_Bool selected;
 } Checkbox;
+
+const static int checkbox_to_content_padding = 10;
 
 static inline Checkbox * _checkbox_get(Enesim_Renderer *r)
 {
 	Checkbox *thiz;
 
-	thiz = eon_theme_widget_data_get(r);
+	thiz = eon_theme_checkbox_data_get(r);
 	return thiz;
 }
 
@@ -49,15 +55,119 @@ static void _checkbox_draw(Enesim_Renderer *r, int x, int y, unsigned int len, u
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme widget interface                      *
  *----------------------------------------------------------------------------*/
-static Eon_Theme_Widget_Descriptor _twdescriptor;
+static double _checkbox_min_width_get(Enesim_Renderer *r)
+{
+	Checkbox *thiz;
+	Enesim_Renderer *content;
+	double min_width;
+
+	thiz = _checkbox_get(r);
+	min_width = thiz->size;
+	eon_theme_container_content_get(r, &content);
+	if (!content)
+		goto end;
+	
+	/* the padding */
+	min_width += checkbox_to_content_padding;
+	if (eon_is_element(content))
+	{
+		double cmin_width;
+
+		eon_element_min_width_get(content, &cmin_width);
+		min_width += cmin_width;
+	}
+	else
+	{
+		Eina_Rectangle boundings;
+
+		enesim_renderer_boundings(content, &boundings);
+		min_width += boundings.w;
+	}
+end:
+	return min_width;
+}
+
+static double _checkbox_max_width_get(Enesim_Renderer *r)
+{
+	return DBL_MAX;
+}
+
+static double _checkbox_min_height_get(Enesim_Renderer *r)
+{
+	Checkbox *thiz;
+	Enesim_Renderer *content;
+	double min_height;
+
+	thiz = _checkbox_get(r);
+	min_height = thiz->size;
+	eon_theme_container_content_get(r, &content);
+	if (!content)
+		goto end;
+	if (eon_is_element(content))
+	{
+		double cmin_height;
+
+		eon_element_min_height_get(content, &cmin_height);
+		min_height += cmin_height;
+	}
+	else
+	{
+		Eina_Rectangle boundings;
+
+		enesim_renderer_boundings(content, &boundings);
+		min_height += boundings.h;
+	}
+end:
+	return min_height;
+}
+
+static double _checkbox_max_height_get(Enesim_Renderer *r)
+{
+	return DBL_MAX;
+}
+
+static Eon_Theme_Widget_Descriptor _twdescriptor = {
+	.max_width_get = _checkbox_max_width_get,
+	.max_height_get = _checkbox_max_height_get,
+	.min_width_get = _checkbox_min_width_get,
+	.min_height_get = _checkbox_min_height_get,
+};
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
 static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Checkbox *thiz;
+	Enesim_Renderer *content;
+	double ox, oy;
 
 	thiz = _checkbox_get(r);
+	/* set the common properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	/* setup the layers now */
+	eon_theme_container_content_get(r, &content);
+	if (!content)
+	{
+		printf("checkbox no content\n");
+		return EINA_FALSE;
+	}
+	if (thiz->content != content)
+	{
+		enesim_renderer_compound_clear(thiz->compound);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
+		if (thiz->selected)
+		{
+			enesim_renderer_compound_layer_add(thiz->compound, thiz->check);
+		}
+		enesim_renderer_compound_layer_add(thiz->compound, content);
+		/* FIXME at the cleanup we should restore this */
+		enesim_renderer_rop_set(content, ENESIM_BLEND);
+		thiz->content = content;
+	}
+	enesim_renderer_origin_set(thiz->content, thiz->size +
+			checkbox_to_content_padding, 0);
+
 	if (!enesim_renderer_sw_setup(thiz->compound)) return EINA_FALSE;
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
 	if (!thiz->fill) return EINA_FALSE;
@@ -132,11 +242,9 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	enesim_renderer_shape_outline_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
-	r = eon_theme_widget_new(&_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_checkbox_new(&_twdescriptor, &_descriptor, thiz);
 	if (!r) goto renderer_err;
 
-	/* set the initial state */
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
 	return r;
 
 renderer_err:
@@ -185,11 +293,5 @@ EAPI void eon_basic_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected
 	if (thiz->selected == selected)
 		return;
 
-	enesim_renderer_compound_clear(thiz->compound);
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
-	if (selected)
-	{
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->check);
-	}
 	thiz->selected = selected;
 }

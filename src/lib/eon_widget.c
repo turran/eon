@@ -139,14 +139,19 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 {
 	Eon_Widget *ew;
 	Enesim_Renderer *er;
+	Enesim_Color color;
 	double ox, oy;
 
 	ew = _eon_widget_get(r);
-	printf("setting up the widget %p\n", r);
 	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(er, ox, oy);
+	/* FIXME if the user changes the color of the widget, the theme should
+	 * reflect that value
+	 */
+	enesim_renderer_color_get(r, &color);
+	enesim_renderer_color_set(er, color);
 	if (!enesim_renderer_sw_setup(er))
 	{
 		printf("not available to setup yet\n");
@@ -246,6 +251,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	Escen_State *escen_state;
 	Enesim_Renderer *r;
 	Enesim_Renderer *escen_renderer;
+	Enesim_Color color;
 	char theme[PATH_MAX];
 
 	escen = eon_theme_get();
@@ -269,12 +275,16 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	/* Set the default state in case it has one */
 	escen_state = escen_ender_state_get(escen_ender, "default");
 	escen_ender_instance_state_set(thiz->eei, escen_state);
-
 	r = eon_element_new(&_eon_widget_element_descriptor,
 			&_eon_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
 
+	/* Set the default properties from the state */
+	enesim_renderer_color_get(escen_renderer, &color);
+	enesim_renderer_color_set(r, color);
+	/* Whenever the state changes, we must set the common properties again */
 	printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
+
 	return r;
 
 renderer_err:

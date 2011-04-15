@@ -254,4 +254,9 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
 
 	thiz = _eon_layout_get(r);
 	thiz->descriptor->child_add(r, child);
+	/* TODO whenever a child is appended to a layout
+	 * call the init of it (on init you should register
+	 * the callbacks, etc) just in case the ender
+	 * is of type element (or widget?)
+	 */
 }

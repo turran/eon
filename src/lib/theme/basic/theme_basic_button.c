@@ -24,6 +24,8 @@
  *============================================================================*/
 typedef struct _Button
 {
+	/* properties */
+	/* private */
 	Enesim_Renderer *rectangle;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
@@ -53,6 +55,10 @@ static void _button_update_rectangle(Button *thiz)
 {
 	Eina_Rectangle boundings;
 
+	/* FIXME instead of getting the boundings, we should get the
+	 * actual width or actual height in case the content
+	 * is an eon element
+	 */
 	/* add 6px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
 	enesim_renderer_boundings(thiz->content, &boundings);
@@ -75,7 +81,7 @@ static double _button_min_width_get(Enesim_Renderer *r)
 	double min_width = horizontal_padding * 2;
 
 	thiz = _button_get(r);
-	eon_theme_button_content_get(r, &content);
+	eon_theme_container_content_get(r, &content);
 	if (!content)
 		goto end;
 	if (eon_is_element(content))
@@ -109,7 +115,7 @@ static double _button_min_height_get(Enesim_Renderer *r)
 	double min_height = vertical_padding * 2;
 
 	thiz = _button_get(r);
-	eon_theme_button_content_get(r, &content);
+	eon_theme_container_content_get(r, &content);
 	if (!content)
 		goto end;
 	if (eon_is_element(content))
@@ -155,7 +161,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	/* setup the layers now */
-	eon_theme_button_content_get(r, &content);
+	eon_theme_container_content_get(r, &content);
 	if (!content)
 	{
 		printf("button no content\n");

@@ -9,7 +9,7 @@ escen {
 	basic_label "label" {
 		default {
 			set { size = 13; };
-			set { color = 0xff7b776b; };
+			set { color = 0xff888888; };
 			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
 		};
 	};
@@ -17,6 +17,21 @@ escen {
 	basic_radio "radio" {
 		default {
 			set { color = 0xff000000; };
+			set { selected = 0; };
+		};
+
+		state "selected" {
+			set { selected = 1; };
+		};
+
+		state "unselected" {
+			set { selected = 0; };
+		};
+	};
+
+	basic_checkbox "checkbox" {
+		default {
+			set { size = 16; };
 			set { selected = 0; };
 		};
 

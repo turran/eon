@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,14 +22,13 @@
  *============================================================================*/
 typedef struct _Eon_Button
 {
-	Ender *content;
 } Eon_Button;
 
 static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 {
 	Eon_Button *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_container_data_get(r);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
@@ -59,7 +58,7 @@ EAPI Enesim_Renderer * eon_button_new(void)
 	thiz = calloc(1, sizeof(Eon_Button));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new("button", thiz);
+	r = eon_container_new("button", thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -67,34 +66,4 @@ EAPI Enesim_Renderer * eon_button_new(void)
 renderer_err:
 	free(thiz);
 	return NULL;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_button_content_set(Enesim_Renderer *r, Ender *content)
-{
-	Eon_Button *thiz;
-	Enesim_Renderer *rcontent;
-
-	thiz = _eon_button_get(r);
-	if (!thiz) return;
-
-	rcontent = ender_element_renderer_get(content);
-	eon_widget_property_set(r, "content", rcontent);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_button_content_get(Enesim_Renderer *r, const Ender **content)
-{
-	Eon_Button *thiz;
-
-	thiz = _eon_button_get(r);
-	if (!thiz) return;
-
-	*content = thiz->content;
 }
