@@ -21,7 +21,8 @@ namespace "eon" {
 	};
 
 	class "basic_progressbar" : "theme_progressbar" {
-		int width;
-		int height;
+		argb dark_color;
+		argb light_color;
+		double value;
 	};
 };

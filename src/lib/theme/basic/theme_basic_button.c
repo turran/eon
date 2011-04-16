@@ -51,21 +51,18 @@ static void _button_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 
-static void _button_update_rectangle(Button *thiz)
+static void _button_update_rectangle(Enesim_Renderer *r)
 {
-	Eina_Rectangle boundings;
+	Button *thiz;
+	double width, height;
 
-	/* FIXME instead of getting the boundings, we should get the
-	 * actual width or actual height in case the content
-	 * is an eon element
-	 */
+	thiz = _button_get(r);
 	/* add 6px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
-	enesim_renderer_boundings(thiz->content, &boundings);
-	enesim_renderer_rectangle_width_set(thiz->rectangle, boundings.w +
-			horizontal_padding * 2);
-	enesim_renderer_rectangle_height_set(thiz->rectangle, boundings.h +
-			vertical_padding * 2);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
+	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
+	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
 	/* always center */
 	enesim_renderer_origin_set(thiz->content, horizontal_padding,
 			vertical_padding);
@@ -160,6 +157,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	printf("button origin is %g %g\n", ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
 	if (!content)
@@ -176,7 +174,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 		enesim_renderer_rop_set(content, ENESIM_BLEND);
 		thiz->content = content;
 	}
-	_button_update_rectangle(thiz);
+	_button_update_rectangle(r);
 
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{

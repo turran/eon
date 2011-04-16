@@ -18,6 +18,7 @@ eon_label.c \
 eon_layout.c \
 eon_main.c \
 eon_checkbox.c \
+eon_progressbar.c \
 eon_radio.c \
 eon_stack.c \
 eon_theme.c \

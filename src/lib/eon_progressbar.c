@@ -24,7 +24,6 @@ typedef struct _Eon_Progressbar
 {
 	/* properties */
 	/* private */
-	void *data;
 } Eon_Progressbar;
 
 static inline Eon_Progressbar * _eon_progressbar_get(Enesim_Renderer *r)
@@ -51,7 +50,6 @@ EAPI Enesim_Renderer * eon_progressbar_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Progressbar));
 	if (!thiz) return NULL;
-	thiz->data = data;
 
 	r = eon_widget_new("progressbar", thiz);
 	if (!r) goto renderer_err;
@@ -61,17 +59,4 @@ EAPI Enesim_Renderer * eon_progressbar_new(void)
 renderer_err:
 	free(thiz);
 	return NULL;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void * eon_progressbar_data_get(Enesim_Renderer *r)
-{
-	Eon_Progressbar *thiz;
-
-	thiz = _eon_progressbar_get(r);
-	if (!thiz) return NULL;
-	return thiz->data;
 }

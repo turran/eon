@@ -78,6 +78,26 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
+static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Widget *thiz;
+	Ender *ender;
+
+	thiz = _eon_widget_get(r);
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender_element_value_set(ender, "width", width, NULL);
+}
+
+static void _eon_widget_actual_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Widget *thiz;
+	Ender *ender;
+
+	thiz = _eon_widget_get(r);
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender_element_value_set(ender, "height", height, NULL);
+}
+
 static double _eon_widget_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
@@ -127,6 +147,8 @@ static double _eon_widget_min_height_get(Enesim_Renderer *r)
 }
 
 static Eon_Element_Descriptor _eon_widget_element_descriptor = {
+	.actual_width_set = _eon_widget_actual_width_set,
+	.actual_height_set = _eon_widget_actual_height_set,
 	.max_width_get = _eon_widget_max_width_get,
 	.min_width_get = _eon_widget_min_width_get,
 	.max_height_get = _eon_widget_max_height_get,
@@ -141,6 +163,7 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	Enesim_Renderer *er;
 	Enesim_Color color;
 	double ox, oy;
+	double width, height;
 
 	ew = _eon_widget_get(r);
 	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
@@ -152,6 +175,16 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	 */
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(er, color);
+#if 0
+	/* set the width and height to the widget */
+	/* FIXME if this is working, maybe we should just remove the callbacks
+	 * from eon_element?
+	 */
+	eon_element_actual_size_get(r, &width, &height);
+	printf("actual size get %g %g\n", width, height);
+	eon_theme_widget_width_set(er, width);
+	eon_theme_widget_height_set(er, height);
+#endif
 	if (!enesim_renderer_sw_setup(er))
 	{
 		printf("not available to setup yet\n");
@@ -191,7 +224,6 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	thiz = _eon_widget_get(r);
 	eon_element_actual_size_get(r, &aw, &ah);
 	/* There's no layout, or the layout didnt set an active width/height */
-	printf("widget boundings %p\n", r);
 	if (aw < 0 || ah < 0)
 	{
 		double min, max, set;
@@ -199,22 +231,22 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 		eon_element_min_width_get(r, &min);
 		eon_element_max_width_get(r, &max);
 		eon_element_width_get(r, &set);
-		aw = aw > max ? max : aw;
-		aw = set < min ? min : set;
-		printf("w: %g %g %g\n", min, set, max);
+		aw = set > max ? max : set;
+		aw = aw < min ? min : aw;
+		//printf("w: %g %g %g\n", min, set, max);
 
 		eon_element_min_height_get(r, &min);
 		eon_element_max_height_get(r, &max);
 		eon_element_height_get(r, &set);
-		ah = ah > max ? max : ah;
-		ah = set < min ? min : set;
-		printf("h: %g %g %g\n", min, set, max);
+		ah = set > max ? max : set;
+		ah = ah < min ? min : ah;
+		//printf("h: %g %g %g\n", min, set, max);
 	}
 	rect->x = 0;
 	rect->y = 0;
 	rect->w = lrint(aw);
 	rect->h = lrint(ah);
-	printf("widget %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
+	printf("widget boundings %p %d %d %d %d\n", r, rect->x, rect->y, rect->w, rect->h);
 }
 
 static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
@@ -283,7 +315,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	enesim_renderer_color_get(escen_renderer, &color);
 	enesim_renderer_color_set(r, color);
 	/* Whenever the state changes, we must set the common properties again */
-	printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
+	//printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
 
 	return r;
 

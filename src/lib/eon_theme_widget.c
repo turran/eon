@@ -22,6 +22,10 @@
  *============================================================================*/
 typedef struct _Eon_Theme_Widget
 {
+	/* properties */
+	double width;
+	double height;
+	/* private */
 	Eon_Theme_Widget_Descriptor *descriptor;
 	void *data;
 } Eon_Theme_Widget;
@@ -142,3 +146,56 @@ EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height)
 	else
 		*height = DBL_MAX;
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (!thiz) return;
+	thiz->width = width;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (!thiz) return;
+	*width = thiz->width;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (!thiz) return;
+	thiz->height = height;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (!thiz) return;
+	*height = thiz->height;
+}
+

@@ -61,11 +61,11 @@ static void _stack_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	e->fill_func(e->compound, x, y, len, dst);
 }
 
-static void _stack_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double aw, double ah)
+static void _stack_vertical_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double aw, double *ah)
 {
 	Enesim_Renderer *r;
+	double set;
 	double w, h;
-	double min, max, set;
 	double acw, ach;
 
 	r = ender_element_renderer_get(ech->ender);
@@ -83,6 +83,68 @@ static void _stack_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double 
 	else
 	{
 		if (set <= aw)
+		{
+			w = set;
+		}
+		else
+		{
+			double min, max;
+
+			eon_element_min_width_get(r, &min);
+			eon_element_max_width_get(r, &max);
+			w = set > max ? max : set;
+			w = w < min ? min : w;
+		}
+	}
+	eon_element_height_get(r, &set);
+	if (set < 0)
+	{
+		eon_element_min_height_get(r, &h);
+	}
+	else
+	{
+		if (set <= *ah)
+		{
+			h = set;
+		}
+		else
+		{
+			double min, max;
+
+			eon_element_min_height_get(r, &min);
+			eon_element_max_height_get(r, &max);
+			h = set > max ? max : set;
+			h = h < min ? min : h;
+		}
+	}
+	printf("1 stack vertical setting child %p size %g %g\n", r, w, h);
+	eon_element_actual_size_set(r, w, h);
+	*ah -= h;
+}
+
+static void _stack_horizontal_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech,
+		double *aw, double ah)
+{
+	Enesim_Renderer *r;
+	double w, h;
+	double min, max, set;
+	double acw, ach;
+
+	r = ender_element_renderer_get(ech->ender);
+	if (!eon_is_element(r))
+	{
+		printf("child %p is not an element\n", r);
+		return;
+	}
+
+	eon_element_width_get(r, &set);
+	if (set < 0)
+	{
+		eon_element_min_width_get(r, &w);
+	}
+	else
+	{
+		if (set <= *aw)
 		{
 			w = set;
 		}
@@ -113,8 +175,9 @@ static void _stack_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double 
 			h = h < min ? min : h;
 		}
 	}
-	printf("stack setting child %p size %g %g\n", r, w, h);
+	printf("1 stack horizontal setting child %p size %g %g\n", r, w, h);
 	eon_element_actual_size_set(r, w, h);
+	*aw -= w;
 }
 
 static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
@@ -132,6 +195,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		double y;
 		double x;
 
+		_stack_horizontal_child_size_set(thiz, ech, &aw, ah);
 		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
@@ -155,7 +219,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_x += boundings.w;
-		_stack_child_size_set(thiz, ech, aw, ah);
+		printf("setting child x to %g\n", x);
 	}
 }
 
@@ -174,10 +238,12 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		double y;
 		double x;
 
+		_stack_vertical_child_size_set(thiz, ech, aw, &ah);
 		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_translated_boundings(renderer, &boundings);
+		printf("2 boundings = %d %d %d %d\n", boundings.x, boundings.y, boundings.w, boundings.h);
 		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
 
 		y = -boundings.y + last_y;
@@ -198,7 +264,7 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_y += boundings.h;
-		_stack_child_size_set(thiz, ech, aw, ah);
+		printf("3 setting child y to %g\n", y);
 	}
 }
 /*----------------------------------------------------------------------------*
@@ -309,7 +375,7 @@ static Enesim_Renderer_Descriptor _eon_stack_renderer_descriptor = {
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-/* the min width of a stack is the maximum min width of every child */
+/* the min width of a stack is the sum of the min widths of every child */
 static double _eon_stack_min_width_get(Enesim_Renderer *r)
 {
 	Eon_Stack *thiz;
@@ -337,9 +403,9 @@ static double _eon_stack_min_width_get(Enesim_Renderer *r)
 			enesim_renderer_boundings(renderer, &boundings);
 			w = boundings.w;
 		}
-		if (w > min_width)
-			min_width = w;
+		min_width += w;
 	}
+
 	return min_width;
 }
 
@@ -370,9 +436,9 @@ static double _eon_stack_min_height_get(Enesim_Renderer *r)
 			enesim_renderer_boundings(renderer, &boundings);
 			h = boundings.h;
 		}
-		if (h > min_height)
-			min_height = h;
+		min_height += h;
 	}
+
 	return min_height;
 }
 

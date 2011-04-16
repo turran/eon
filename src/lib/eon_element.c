@@ -105,6 +105,8 @@ void eon_element_actual_width_set(Enesim_Renderer *r, double width)
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->actual_width = width;
+	if (thiz->descriptor->actual_width_set)
+		thiz->descriptor->actual_width_set(r, width);
 }
 
 void eon_element_actual_height_set(Enesim_Renderer *r, double height)
@@ -114,6 +116,8 @@ void eon_element_actual_height_set(Enesim_Renderer *r, double height)
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->actual_height = height;
+	if (thiz->descriptor->actual_height_set)
+		thiz->descriptor->actual_height_set(r, height);
 }
 
 void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height)
@@ -124,6 +128,10 @@ void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height
 	if (!thiz) return;
 	thiz->actual_width = width;
 	thiz->actual_height = height;
+	if (thiz->descriptor->actual_width_set)
+		thiz->descriptor->actual_width_set(r, width);
+	if (thiz->descriptor->actual_height_set)
+		thiz->descriptor->actual_height_set(r, height);
 }
 
 void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *height)

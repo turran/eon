@@ -19,6 +19,8 @@ extern int eon_log;
 
 typedef struct _Eon_Element_Descriptor
 {
+	void (*actual_width_set)(Enesim_Renderer *r, double width);
+	void (*actual_height_set)(Enesim_Renderer *r, double height);
 	double (*min_width_get)(Enesim_Renderer *r);
 	double (*min_height_get)(Enesim_Renderer *r);
 	double (*max_width_get)(Enesim_Renderer *r);
