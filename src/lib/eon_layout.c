@@ -56,6 +56,13 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 
 	return thiz;
 }
+
+static void _child_changed(Ender *child, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+
+	thiz = data;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -84,7 +91,7 @@ renderer_err:
 
 void eon_layout_actual_size_get(Enesim_Renderer *r, double *width, double *height)
 {
-	/* whenever we are the topmost, the use must have set the
+	/* whenever we are the topmost, the user must have set the
 	 * the width and height of the object
 	 */
 	if (eon_layout_is_topmost(r))
@@ -223,13 +230,18 @@ void eon_layout_damage_add(Enesim_Renderer *r, Eina_Rectangle *damage)
 Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r)
 {
 	Ender *ender, *parent;
+	Eina_Bool ret = EINA_FALSE;
 
-	if (!eon_is_layout(r)) return EINA_FALSE;
+	if (!eon_is_layout(r)) goto end;
 	ender = ender_element_renderer_from(r);
-	if (!ender) return EINA_TRUE;
+	if (!ender) goto end;
 	parent = ender_element_parent_get(ender);
-	if (!parent) return EINA_TRUE;
-	else return EINA_FALSE;
+	if (parent) goto end;
+	ret = EINA_TRUE;
+
+end:
+	printf("layout is topmost = %d\n", ret);
+	return ret;
 }
 
 /**
@@ -242,6 +254,7 @@ EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child)
 
 	thiz = _eon_layout_get(r);
 	thiz->descriptor->child_remove(r, child);
+	ender_event_listener_remove(child, "Mutation", _child_changed);
 }
 
 /**
@@ -251,9 +264,16 @@ EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child)
 EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
 {
 	Eon_Layout *thiz;
+	Ender *curr_parent;
 
 	thiz = _eon_layout_get(r);
+	curr_parent = ender_element_parent_get(child);
+	if (curr_parent)
+	{
+		//ender_element_value_remove(curr_parent, "child", child, NULL);
+	}
 	thiz->descriptor->child_add(r, child);
+	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
 	/* TODO whenever a child is appended to a layout
 	 * call the init of it (on init you should register
 	 * the callbacks, etc) just in case the ender
