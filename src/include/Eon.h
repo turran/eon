@@ -8,6 +8,7 @@
  * @{
  */
 typedef struct _Eon_Input Eon_Input;
+
 EAPI Eon_Input * eon_input_new(void);
 EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 		unsigned int x, unsigned int y);
