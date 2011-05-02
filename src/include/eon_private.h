@@ -37,6 +37,7 @@ typedef struct _Eon_Layout_Descriptor
 {
 	void (*child_add)(Enesim_Renderer *r, Ender *child);
 	void (*child_remove)(Enesim_Renderer *r, Ender *child);
+	Ender * (*child_at)(Enesim_Renderer *r, double x, double y);
 } Eon_Layout_Descriptor;
 
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,

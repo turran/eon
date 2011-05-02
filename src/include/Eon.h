@@ -19,6 +19,23 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l);
  * @{
  */
 
+typedef struct _Eon_Event_Mouse_Move
+{
+} Eon_Event_Mouse_Move;
+
+typedef struct _Eon_Event_Mouse_In
+{
+} Eon_Event_Mouse_In;
+
+typedef struct _Eon_Event_Mouse_Out
+{
+} Eon_Event_Mouse_Out;
+
+/**
+ * @}
+ * @{
+ */
+
 EAPI Eina_Bool eon_is_element(Enesim_Renderer *r);
 EAPI void eon_element_actual_height_get(Enesim_Renderer *r, double *height);
 EAPI void eon_element_actual_width_get(Enesim_Renderer *r, double *width);

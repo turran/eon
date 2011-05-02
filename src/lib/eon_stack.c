@@ -25,6 +25,8 @@ typedef struct _Eon_Stack_Child
 	Ender *ender;
 	double old_x;
 	double old_y;
+	double curr_x;
+	double curr_y;
 	Eon_Horizontal_Alignment halign;
 	Eon_Vertical_Alignment valign;
 } Eon_Stack_Child;
@@ -220,6 +222,8 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		enesim_renderer_origin_set(renderer, x, y);
 		last_x += boundings.w;
 		printf("setting child x to %g\n", x);
+		ech->curr_x = x;
+		ech->curr_y = y;
 	}
 }
 
@@ -265,6 +269,8 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		enesim_renderer_origin_set(renderer, x, y);
 		last_y += boundings.h;
 		printf("3 setting child y to %g\n", y);
+		ech->curr_x = x;
+		ech->curr_y = y;
 	}
 }
 /*----------------------------------------------------------------------------*
@@ -409,6 +415,7 @@ static double _eon_stack_min_width_get(Enesim_Renderer *r)
 	return min_width;
 }
 
+/* the min height of a stack is the sum of the min widths of every child */
 static double _eon_stack_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Stack *thiz;
@@ -449,6 +456,23 @@ static Eon_Element_Descriptor _eon_stack_element_descriptor = {
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
+static void _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
+{
+	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
+	Eina_List *l;
+
+	thiz = _eon_stack_get(r);
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		printf("looking for a child at %g %g\n", x, y);
+		/* TODO still need the width and height */
+		if (x >= ech->curr_x && y >= ech->curr_y)
+			return ech;
+	}
+	return NULL;
+}
+
 static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 {
 	Eon_Stack *thiz;
@@ -476,6 +500,7 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
 static Eon_Layout_Descriptor _eon_stack_layout_descriptor = {
 	.child_add = _eon_stack_child_add,
 	.child_remove = _eon_stack_child_remove,
+	.child_at = _eon_stack_child_at,
 };
 /*============================================================================*
  *                                 Global                                     *

@@ -53,8 +53,9 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 	r = ender_element_renderer_get(l);
 	if (!eon_is_layout(r))
 		return;
-	if (!ei->pointer.inside)
-		return;
+	/* FIXME SDL eon_ecore does not send an in/out event */
+	//if (!ei->pointer.inside)
+	//	return;
 
 	px = ei->pointer.x;
 	py = ei->pointer.y;
@@ -76,7 +77,8 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 		/* send move */
 		if (child)
 		{
-			/* TODO dispatch mouse move envet */
+			Eon_Event_Mouse_Move ev;
+			ender_event_dispatch(child, "MouseMove", &ev);
 		}
 	}
 	else
@@ -84,12 +86,14 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 		/* send out event on i->r */
 		if (ei->pointer.last)
 		{
-			/* TODO dispatch mouse out envet */
+			Eon_Event_Mouse_Out ev;
+			ender_event_dispatch(child, "MouseOut", &ev);
 		}
 		/* send in event on r */
 		if (child)
 		{
-			/* TODO dispatch mouse in envet */
+			Eon_Event_Mouse_In ev;
+			ender_event_dispatch(child, "MouseIn", &ev);
 		}
 	}
 	/* update the current inside */
@@ -100,6 +104,7 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
  */
 EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l)
 {
+	Eon_Event_Mouse_In ev;
 	Ender *child;
 	Enesim_Renderer *r;
 
@@ -113,12 +118,14 @@ EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l)
 	if (!child)
 		return;
 	/* TODO send the event */
+	ender_event_dispatch(child, "MouseIn", &ev);
 }
 /**
  *
  */
 EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
 {
+	Eon_Event_Mouse_Out ev;
 	Ender *child;
 	Enesim_Renderer *r;
 
@@ -132,5 +139,6 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
 	if (!child)
 		return;
 	/* TODO send the event */
+	ender_event_dispatch(child, "MouseOut", &ev);
 }
 

@@ -270,7 +270,7 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
 	curr_parent = ender_element_parent_get(child);
 	if (curr_parent)
 	{
-		//ender_element_value_remove(curr_parent, "child", child, NULL);
+		ender_element_value_remove(curr_parent, "child", child, NULL);
 	}
 	thiz->descriptor->child_add(r, child);
 	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
@@ -287,12 +287,25 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
  */
 EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, unsigned int y)
 {
-	Eina_Rectangle area;
+	Eon_Layout *thiz;
+	Enesim_Matrix matrix;
+	Enesim_Matrix_Type mtype;
+	double rx, ry;
 
-	eina_rectangle_coords_from(&area, x, y, 1, 1);
-	/* transform the are to the layout coordinate space */
-	/* iterate over the childs and get the one that intersects
-	 * the area
-	 */
+	thiz = _eon_layout_get(r);
+	enesim_renderer_transformation_get(r, &matrix);
+	enesim_matrix_type_get(&matrix);
+	if (mtype != ENESIM_MATRIX_IDENTITY)
+	{
+		enesim_matrix_point_transform(&matrix, x, y, &rx, &ry);
+	}
+	else
+	{
+		rx = x;
+		ry = y;
+	}
+	if (!thiz->descriptor->child_at)
+		return NULL;
+	return thiz->descriptor->child_at(r, rx, ry);
 }
 
