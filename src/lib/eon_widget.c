@@ -281,6 +281,7 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	Escen *escen;
 	Escen_Ender *escen_ender;
 	Escen_State *escen_state;
+	Ender *ender;
 	Enesim_Renderer *r;
 	Enesim_Renderer *escen_renderer;
 	Enesim_Color color;
@@ -301,7 +302,8 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	thiz->escen_ender = escen_ender;
 	thiz->eei = escen_ender_instance_get(thiz->escen_ender);
 
-	escen_renderer = ender_element_renderer_get(escen_ender_instance_ender_get(thiz->eei));
+	ender = escen_ender_instance_ender_get(thiz->eei);
+	escen_renderer = ender_element_renderer_get(ender);
 	if (!escen_renderer) goto escen_renderer_err;
 
 	/* Set the default state in case it has one */
@@ -314,6 +316,8 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	/* Set the default properties from the state */
 	enesim_renderer_color_get(escen_renderer, &color);
 	enesim_renderer_color_set(r, color);
+
+	/* Add default event handlers: mouse move, mouse in, mouse out, etc */
 	/* Whenever the state changes, we must set the common properties again */
 	//printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
 

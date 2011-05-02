@@ -40,6 +40,7 @@ Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r);
 EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child);
 EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child);
 EAPI void eon_layout_redraw_get(Enesim_Renderer *r, Eina_List **redraws);
+EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, unsigned int y);
 
 /**
  * @}

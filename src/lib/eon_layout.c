@@ -280,3 +280,19 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
 	 * is of type element (or widget?)
 	 */
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, unsigned int y)
+{
+	Eina_Rectangle area;
+
+	eina_rectangle_coords_from(&area, x, y, 1, 1);
+	/* transform the are to the layout coordinate space */
+	/* iterate over the childs and get the one that intersects
+	 * the area
+	 */
+}
+
