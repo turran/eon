@@ -456,11 +456,12 @@ static Eon_Element_Descriptor _eon_stack_element_descriptor = {
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
-static void _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
+static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
 	Eina_List *l;
+	Ender *child = NULL;
 
 	thiz = _eon_stack_get(r);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
@@ -468,9 +469,13 @@ static void _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 		printf("looking for a child at %g %g\n", x, y);
 		/* TODO still need the width and height */
 		if (x >= ech->curr_x && y >= ech->curr_y)
-			return ech;
+		{
+			child = ech->ender;
+			break;
+		}
 	}
-	return NULL;
+	printf("returning %p\n", child);
+	return child;
 }
 
 static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
