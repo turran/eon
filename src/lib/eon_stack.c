@@ -39,6 +39,7 @@ typedef struct _Eon_Stack_State
 typedef struct _Eon_Stack
 {
 	Eina_List *children;
+	Eina_Bool relayout;
 	Eon_Stack_State old, curr;
 	Enesim_Renderer *background;
 	Enesim_Renderer *compound;
@@ -273,6 +274,19 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		ech->curr_y = y;
 	}
 }
+
+static void _stack_relayout(Enesim_Renderer *r, Eon_Stack *thiz)
+{
+	double aw, ah;
+	/* the idea on a layout setup is the set the actual width and height
+	 * of every child before calling the setup of each child
+	 */
+	eon_layout_actual_size_get(r, &aw, &ah);
+	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
+		_stack_horizontal_arrange(thiz, aw, ah);
+	else
+		_stack_vertical_arrange(thiz, aw, ah);
+}
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -300,43 +314,37 @@ static void _eon_stack_cleanup(Enesim_Renderer *r)
 		//matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_origin_set(renderer, ech->old_x, ech->old_y);
 	}
+	thiz->relayout = EINA_FALSE;
 }
 
 static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Eon_Stack *thiz;
 	double ox, oy;
-	double aw, ah;
 
 	thiz = _eon_stack_get(r);
 	if (!thiz) return EINA_FALSE;
 
 	printf("setting up the stack %p\n", r);
-	/* the idea on a layout setup is the set the actual width and height
-	 * of every child before calling the setup of each child
-	 */
-	eon_layout_actual_size_get(r, &aw, &ah);
-
-	//if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
-	//	return EINA_FALSE;
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	/* set the coordinates on every child */
-	/* the way to setting the actual size is based on min-size, max-size
-	 * and the boundings for an eon element or only the boundings
-	 * for an enesim renderer
-	 */
-	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
-		_stack_horizontal_arrange(thiz, aw, ah);
-	else
-		_stack_vertical_arrange(thiz, aw, ah);
-
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!thiz->relayout)
 	{
-		DBG("Cannot setup the compound renderer");
-		_eon_stack_cleanup(r);
-		return EINA_FALSE;
+		//if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
+		//	return EINA_FALSE;
+		/* set the coordinates on every child */
+		/* the way to setting the actual size is based on min-size, max-size
+		 * and the boundings for an eon element or only the boundings
+		 * for an enesim renderer
+		 */
+		_stack_relayout(r, thiz);
+		if (!enesim_renderer_sw_setup(thiz->compound))
+		{
+			DBG("Cannot setup the compound renderer");
+			_eon_stack_cleanup(r);
+			return EINA_FALSE;
+		}
 	}
 	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
 	*fill = _stack_draw;
@@ -470,8 +478,26 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 		/* TODO still need the width and height */
 		if (x >= ech->curr_x && y >= ech->curr_y)
 		{
-			child = ech->ender;
-			break;
+			Enesim_Renderer *r;
+			double aw, ah;
+
+			r = ender_element_renderer_get(ech->ender);
+			if (eon_is_element(r))
+			{
+				eon_element_actual_size_get(r, &aw, &ah);
+			}
+			else
+			{
+				Eina_Rectangle bounds;
+				enesim_renderer_boundings(r, &bounds);
+				aw = bounds.w;
+				ah = bounds.h;
+			}
+			if (x <= ech->curr_x + aw && y <= ech->curr_y + ah)
+			{
+				child = ech->ender;
+				break;
+			}
 		}
 	}
 	printf("returning %p\n", child);
@@ -522,6 +548,10 @@ EAPI Enesim_Renderer * eon_stack_new(void)
 	Eon_Stack *e;
 	Enesim_Renderer *thiz;
 	Enesim_Renderer *r;
+#if 1
+	const int color[] = { 0xffffffff, 0xff00ff00, 0xff00ffff };
+	static int i = 0;
+#endif
 
 	e = calloc(1, sizeof(Eon_Stack));
 	if (!e) return NULL;
@@ -533,7 +563,12 @@ EAPI Enesim_Renderer * eon_stack_new(void)
 
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
+
+#if 1
+	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
+#else
 	enesim_renderer_background_color_set(r, 0xffffffff);
+#endif
 	enesim_renderer_compound_layer_add(e->compound, r);
 	enesim_renderer_rop_set(r, ENESIM_FILL);
 	e->background = r;

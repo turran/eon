@@ -17,6 +17,11 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/* TODO Whenever we decide how to add callbacks to eon_elements that must be called
+ * at the beginning, like a mouse_in,out,down for a button, etc, every
+ * laout should propagate the look_at, so the child is actually returned
+ * not the layout
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

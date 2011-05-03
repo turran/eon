@@ -87,7 +87,7 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 		if (ei->pointer.last)
 		{
 			Eon_Event_Mouse_Out ev;
-			ender_event_dispatch(child, "MouseOut", &ev);
+			ender_event_dispatch(ei->pointer.last, "MouseOut", &ev);
 		}
 		/* send in event on r */
 		if (child)
