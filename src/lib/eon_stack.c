@@ -494,10 +494,12 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 				ah = bounds.h;
 			}
 			if (x <= ech->curr_x + aw && y <= ech->curr_y + ah)
-			{
-				child = ech->ender;
-				break;
-			}
+				/* now check if the renderer is really at that coordinate */
+				if (enesim_renderer_is_inside(r, x, y))
+				{
+					child = ech->ender;
+					break;
+				}
 		}
 	}
 	printf("returning %p\n", child);

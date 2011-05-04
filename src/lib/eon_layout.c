@@ -293,6 +293,7 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
 EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, unsigned int y)
 {
 	Eon_Layout *thiz;
+	Ender *child;
 	Enesim_Matrix matrix;
 	Enesim_Matrix_Type mtype;
 	double rx, ry;
@@ -311,6 +312,18 @@ EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, u
 	}
 	if (!thiz->descriptor->child_at)
 		return NULL;
-	return thiz->descriptor->child_at(r, rx, ry);
+	child = thiz->descriptor->child_at(r, rx, ry);
+	if (child)
+	{
+		Enesim_Renderer *rchild; // FIXME add a better way to know the type
+
+		rchild = ender_element_renderer_get(child);
+		if (eon_is_layout(rchild))
+		{
+			// transform the coordinates again?
+			return eon_layout_child_get_at_coord(rchild, (int)rx, (int)ry);
+		}
+	}
+	return child;
 }
 
