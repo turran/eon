@@ -21,6 +21,25 @@
  *                                  Local                                     *
  *============================================================================*/
 static int _init = 0;
+
+static void _destructor_callback(Ender *e, void *data)
+{
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	if (!eon_is_element(r))
+		return;
+}
+
+static void _constructor_callback(Ender *e, void *data)
+{
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	if (!eon_is_element(r))
+		return;
+	eon_element_initialize(e);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -39,13 +58,15 @@ EAPI int eon_init(void)
 		eon_log = eina_log_domain_register("eon", NULL);
 		enesim_init();
 		ender_init();
+		ender_element_new_listener_add(_constructor_callback, NULL);
 		escen_init();
 		eon_basic_init();
 		/* initialize the theme */
-		if (eon_theme_init())
+		if (!eon_theme_init())
 		{
 			eon_basic_shutdown();
 			escen_shutdown();
+			ender_element_new_listener_remove(_constructor_callback, NULL);
 			ender_shutdown();
 			enesim_shutdown();
 			eina_log_domain_unregister(eon_log);
@@ -65,6 +86,7 @@ EAPI void eon_shutdown(void)
 	{
 		eon_basic_shutdown();
 		escen_shutdown();
+		ender_element_new_listener_remove(_constructor_callback, NULL);
 		ender_shutdown();
 		enesim_shutdown();
 		eina_log_domain_unregister(eon_log);

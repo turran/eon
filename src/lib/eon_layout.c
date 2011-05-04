@@ -176,6 +176,7 @@ EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
 {
 	Eon_Layout *thiz;
 
+	if (!eon_is_element(r)) return EINA_FALSE;
 	thiz = eon_element_data_get(r);
 	if (!EINA_MAGIC_CHECK(thiz, EON_LAYOUT_MAGIC))
 		return EINA_FALSE;

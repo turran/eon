@@ -47,7 +47,7 @@ typedef struct _Eon_Widget
 	Enesim_Renderer_Sw_Fill fill;
 } Eon_Widget;
 
-/* placeholder for virtual functions every widget
+/* TODO placeholder for virtual functions every widget
  * should implement
  */
 typedef struct _Eon_Widget_Descriptor
@@ -75,9 +75,46 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
 	ew->fill(er, x, y, len, dst);
 }
+
+static void _widget_mouse_in(Ender *e, const char *event_name, void *event_data, void *data)
+{
+	Enesim_Renderer *r;
+	Eon_Widget *thiz;
+	Escen_State *new_state;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_widget_get(r);
+	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_in");
+	if (!new_state) return;
+
+	printf("setting the mouse in state\n");
+	escen_ender_instance_state_set(thiz->eei, new_state);
+}
+
+static void _widget_mouse_out(Ender *e, const char *event_name, void *event_data, void *data)
+{
+	Enesim_Renderer *r;
+	Eon_Widget *thiz;
+	Escen_State *new_state;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_widget_get(r);
+	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_out");
+	if (!new_state) return;
+
+	printf("setting the mouse out state\n");
+	escen_ender_instance_state_set(thiz->eei, new_state);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
+static void _eon_widget_initialize(Ender *ender)
+{
+	/* register every needed callback */
+	ender_event_listener_add(ender, "MouseIn", _widget_mouse_in, NULL);
+	ender_event_listener_add(ender, "MouseOut", _widget_mouse_out, NULL);
+}
+
 static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
 {
 	Eon_Widget *thiz;
@@ -147,6 +184,7 @@ static double _eon_widget_min_height_get(Enesim_Renderer *r)
 }
 
 static Eon_Element_Descriptor _eon_widget_element_descriptor = {
+	.initialize = _eon_widget_initialize,
 	.actual_width_set = _eon_widget_actual_width_set,
 	.actual_height_set = _eon_widget_actual_height_set,
 	.max_width_get = _eon_widget_max_width_get,

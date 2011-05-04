@@ -472,9 +472,9 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 	Ender *child = NULL;
 
 	thiz = _eon_stack_get(r);
+	//printf("stack looking for a child at %g %g\n", x, y);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
-		printf("looking for a child at %g %g\n", x, y);
 		/* TODO still need the width and height */
 		if (x >= ech->curr_x && y >= ech->curr_y)
 		{
@@ -502,7 +502,8 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 				}
 		}
 	}
-	printf("returning %p\n", child);
+	//printf("returning %p\n", child);
+
 	return child;
 }
 

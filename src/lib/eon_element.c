@@ -62,6 +62,17 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_element_initialize(Ender *ender)
+{
+	Eon_Element *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(ender);
+	thiz = _eon_element_get(r);
+	if (thiz->descriptor->initialize)
+		thiz->descriptor->initialize(ender);
+}
+
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,
 		Enesim_Renderer_Descriptor *descriptor,
 		void *data)

@@ -1,7 +1,12 @@
 escen {
 	basic_button "button" {
-		default {
+		default : "mouse_out" {
 			set { foreground_color = 0xff222222; };
+			set { border_color = 0xff4f4f4f; };
+		};
+
+		state "mouse_in" {
+			set { foreground_color = 0xff555555; };
 			set { border_color = 0xff4f4f4f; };
 		};
 	};
