@@ -308,8 +308,11 @@ EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, u
 	}
 	else
 	{
-		rx = x;
-		ry = y;
+		double ox, oy;
+
+		enesim_renderer_origin_get(r, &ox, &oy);
+		rx = x - ox;
+		ry = y - oy;
 	}
 	if (!thiz->descriptor->child_at)
 		return NULL;

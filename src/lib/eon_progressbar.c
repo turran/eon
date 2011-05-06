@@ -60,3 +60,30 @@ renderer_err:
 	free(thiz);
 	return NULL;
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_progressbar_value_get(Enesim_Renderer *r, double *value)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return;
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_progressbar_value_set(Enesim_Renderer *r, double value)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return;
+
+	eon_widget_property_set(r, "value", value, NULL);
+}
