@@ -27,7 +27,7 @@
 typedef struct _Progressbar
 {
 	/* properties */
-	double value;
+	double progression;
 	Enesim_Color light;
 	Enesim_Color dark;
 	/* private */
@@ -89,7 +89,7 @@ static void _progressbar_update_size(Enesim_Renderer *r)
 	t.zx = 0;               t.zy = 0;                t.zz = 1;
 	enesim_renderer_transformation_set(thiz->background.shade, &t);
 
-	width = width * thiz->value;
+	width = width * thiz->progression;
 	enesim_renderer_rectangle_width_set(thiz->shape.bar, width);
 	enesim_renderer_rectangle_height_set(thiz->shape.bar, height);
 }
@@ -306,13 +306,13 @@ void eon_basic_progressbar_dark_color_set(Enesim_Renderer *r, Enesim_Color color
 /**
  *
  */
-void eon_basic_progressbar_value_set(Enesim_Renderer *r, double value)
+void eon_basic_progressbar_progression_set(Enesim_Renderer *r, double progression)
 {
 	Progressbar *thiz;
 
 	thiz = _progressbar_get(r);
-	if (value > 1) value = 1;
-	else if (value < 0) value = 0;
+	if (progression > 1) progression = 1;
+	else if (progression < 0) progression = 0;
 
-	thiz->value = value;
+	thiz->progression = progression;
 }

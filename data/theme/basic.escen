@@ -36,7 +36,7 @@ escen {
 
 	basic_progressbar "progressbar" {
 		default {
-			set { value = 0.5; };
+			set { progression = 0.5; };
 		};
 	};
 

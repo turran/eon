@@ -65,9 +65,9 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_progressbar_value_get(Enesim_Renderer *r, double *value)
+EAPI void eon_progressbar_progression_get(Enesim_Renderer *r, double *progression)
 {
-	Eon_Container *thiz;
+	Eon_Progressbar *thiz;
 
 	thiz = _eon_container_get(r);
 	if (!thiz) return;
@@ -78,12 +78,12 @@ EAPI void eon_progressbar_value_get(Enesim_Renderer *r, double *value)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_progressbar_value_set(Enesim_Renderer *r, double value)
+EAPI void eon_progressbar_progression_set(Enesim_Renderer *r, double progression)
 {
-	Eon_Container *thiz;
+	Eon_Progressbar *thiz;
 
 	thiz = _eon_container_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "value", value, NULL);
+	eon_widget_property_set(r, "progression", progression, NULL);
 }
