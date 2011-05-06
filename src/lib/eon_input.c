@@ -53,9 +53,11 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 	r = ender_element_renderer_get(l);
 	if (!eon_is_layout(r))
 		return;
-	/* FIXME SDL eon_ecore does not send an in/out event */
-	//if (!ei->pointer.inside)
-	//	return;
+	/* SDL eon_ecore does not send an in/out event */
+	if (!ei->pointer.inside)
+	{
+		eon_input_feed_mouse_in(ei, l);
+	}
 
 	px = ei->pointer.x;
 	py = ei->pointer.y;
@@ -64,7 +66,10 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 
 	if (ei->pointer.grabbed)
 	{
-		/* TODO dispatch mouse move event */
+		Eon_Event_Mouse_Move ev;
+
+		ender_event_dispatch(ei->pointer.grabbed, "MouseMove", &ev);
+
 		return;
 	}
 	/* TODO handle the subcanvas
@@ -129,12 +134,12 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
 	Ender *child;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(l);
 	if (!eon_is_layout(r))
 		return;
 	if (!ei->pointer.inside)
 		return;
 	ei->pointer.inside = EINA_FALSE;
+	r = ender_element_renderer_get(l);
 	child = eon_layout_child_get_at_coord(r, ei->pointer.x, ei->pointer.y);
 	if (!child)
 		return;
@@ -142,3 +147,47 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
 	ender_event_dispatch(child, "MouseOut", &ev);
 }
 
+EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender *l)
+{
+	Eon_Event_Mouse_Down ev;
+	Ender *child;
+	Enesim_Renderer *r;
+
+	if (!ei->pointer.inside)
+		return;
+	r = ender_element_renderer_get(l);
+	child = eon_layout_child_get_at_coord(r, ei->pointer.x, ei->pointer.y);
+	if (!child)
+		return;
+	/* store the coordinates where the mouse buton down was done to
+	 * trigger the click later
+	 */
+	ei->pointer.grabbed = child;
+	ei->pointer.downx = ei->pointer.x;
+	ei->pointer.downy = ei->pointer.y;
+	ender_event_dispatch(child, "MouseDown", &ev);
+}
+
+EAPI void eon_input_feed_mouse_up(Eon_Input *i)
+{
+	Eon_Event_Mouse_Up ev;
+	Ender *child;
+
+	/* send the event to the grabbed object */
+	child = i->pointer.grabbed;
+	if (!child)
+		return;
+
+	ender_event_dispatch(child, "MouseUp", &ev);
+	/* in case the down coordinates are the same as the current coordinates
+	 * send a click event
+	 */
+	if ((i->pointer.downx == i->pointer.x) &&
+			 (i->pointer.downy == i->pointer.y))
+	{
+		Eon_Event_Mouse_Click ev_click;
+
+		ender_event_dispatch(child, "MouseClick", &ev_click);
+	}
+	i->pointer.grabbed = NULL;
+}

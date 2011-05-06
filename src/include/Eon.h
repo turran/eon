@@ -14,10 +14,25 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 		unsigned int x, unsigned int y);
 EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l);
 EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l);
+EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender *l);
+EAPI void eon_input_feed_mouse_up(Eon_Input *i);
+
 /**
  * @}
  * @{
  */
+
+typedef struct _Eon_Event_Mouse_Click
+{
+} Eon_Event_Mouse_Click;
+
+typedef struct _Eon_Event_Mouse_Up
+{
+} Eon_Event_Mouse_Up;
+
+typedef struct _Eon_Event_Mouse_Down
+{
+} Eon_Event_Mouse_Down;
 
 typedef struct _Eon_Event_Mouse_Move
 {
