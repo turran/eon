@@ -318,7 +318,6 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	Eon_Widget *thiz;
 	Escen *escen;
 	Escen_Ender *escen_ender;
-	Escen_State *escen_state;
 	Ender *ender;
 	Enesim_Renderer *r;
 	Enesim_Renderer *escen_renderer;
@@ -344,9 +343,6 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	escen_renderer = ender_element_renderer_get(ender);
 	if (!escen_renderer) goto escen_renderer_err;
 
-	/* Set the default state in case it has one */
-	escen_state = escen_ender_state_get(escen_ender, "default");
-	escen_ender_instance_state_set(thiz->eei, escen_state);
 	r = eon_element_new(&_eon_widget_element_descriptor,
 			&_eon_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
