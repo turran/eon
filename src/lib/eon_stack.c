@@ -74,7 +74,7 @@ static void _stack_vertical_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech
 	r = ender_element_renderer_get(ech->ender);
 	if (!eon_is_element(r))
 	{
-		printf("child %p is not an element\n", r);
+		//printf("child %p is not an element\n", r);
 		return;
 	}
 
@@ -120,7 +120,7 @@ static void _stack_vertical_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech
 			h = h < min ? min : h;
 		}
 	}
-	printf("1 stack vertical setting child %p size %g %g\n", r, w, h);
+	//printf("1 stack vertical setting child %p size %g %g\n", r, w, h);
 	eon_element_actual_size_set(r, w, h);
 	*ah -= h;
 }
@@ -136,7 +136,7 @@ static void _stack_horizontal_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *e
 	r = ender_element_renderer_get(ech->ender);
 	if (!eon_is_element(r))
 	{
-		printf("child %p is not an element\n", r);
+		//printf("child %p is not an element\n", r);
 		return;
 	}
 
@@ -178,7 +178,7 @@ static void _stack_horizontal_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *e
 			h = h < min ? min : h;
 		}
 	}
-	printf("1 stack horizontal setting child %p size %g %g\n", r, w, h);
+	//printf("1 stack horizontal setting child %p size %g %g\n", r, w, h);
 	eon_element_actual_size_set(r, w, h);
 	*aw -= w;
 }
@@ -222,7 +222,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_x += boundings.w;
-		printf("setting child x to %g\n", x);
+		//printf("setting child x to %g\n", x);
 		ech->curr_x = x;
 		ech->curr_y = y;
 	}
@@ -248,7 +248,7 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		enesim_renderer_transformation_get(renderer, &matrix);
 		matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_translated_boundings(renderer, &boundings);
-		printf("2 boundings = %d %d %d %d\n", boundings.x, boundings.y, boundings.w, boundings.h);
+		//printf("2 boundings = %d %d %d %d\n", boundings.x, boundings.y, boundings.w, boundings.h);
 		enesim_renderer_origin_get(renderer, &ech->old_x, &ech->old_y);
 
 		y = -boundings.y + last_y;
@@ -269,7 +269,7 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_y += boundings.h;
-		printf("3 setting child y to %g\n", y);
+		//printf("3 setting child y to %g\n", y);
 		ech->curr_x = x;
 		ech->curr_y = y;
 	}
@@ -325,7 +325,7 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	thiz = _eon_stack_get(r);
 	if (!thiz) return EINA_FALSE;
 
-	printf("setting up the stack %p\n", r);
+	//printf("setting up the stack %p\n", r);
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
@@ -349,7 +349,7 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
 	*fill = _stack_draw;
 
-	printf("end setting up the stack %p\n", r);
+	//printf("end setting up the stack %p\n", r);
 	return EINA_TRUE;
 }
 
@@ -377,7 +377,7 @@ static void _eon_stack_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	rect->y = 0;
 	rect->w = lrint(w);
 	rect->h = lrint(h);
-	printf("stack %p boundings %g %g\n", r, w, h);
+	//printf("stack %p boundings %g %g\n", r, w, h);
 }
 
 static Enesim_Renderer_Descriptor _eon_stack_renderer_descriptor = {

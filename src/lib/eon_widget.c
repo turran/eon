@@ -87,7 +87,6 @@ static void _widget_mouse_in(Ender *e, const char *event_name, void *event_data,
 	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_in");
 	if (!new_state) return;
 
-	printf("setting the mouse in state\n");
 	escen_ender_instance_state_set(thiz->eei, new_state);
 }
 
@@ -102,7 +101,6 @@ static void _widget_mouse_out(Ender *e, const char *event_name, void *event_data
 	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_out");
 	if (!new_state) return;
 
-	printf("setting the mouse out state\n");
 	escen_ender_instance_state_set(thiz->eei, new_state);
 }
 /*----------------------------------------------------------------------------*
@@ -284,7 +282,7 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	rect->y = 0;
 	rect->w = lrint(aw);
 	rect->h = lrint(ah);
-	printf("widget boundings %p %d %d %d %d\n", r, rect->x, rect->y, rect->w, rect->h);
+	//printf("widget boundings %p %d %d %d %d\n", r, rect->x, rect->y, rect->w, rect->h);
 }
 
 static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)

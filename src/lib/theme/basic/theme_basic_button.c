@@ -157,7 +157,6 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	printf("button origin is %g %g\n", ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
 	if (!content)

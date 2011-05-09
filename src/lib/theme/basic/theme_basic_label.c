@@ -125,7 +125,6 @@ static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_origin_set(thiz->text, ox, oy);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
-	printf("setting color %08x\n", color);
 	if (!enesim_renderer_sw_setup(thiz->text))
 		return EINA_FALSE;
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->text);

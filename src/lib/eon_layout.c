@@ -246,7 +246,7 @@ Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r)
 	ret = EINA_TRUE;
 
 end:
-	printf("layout is topmost = %d\n", ret);
+	//printf("layout is topmost = %d\n", ret);
 	return ret;
 }
 
