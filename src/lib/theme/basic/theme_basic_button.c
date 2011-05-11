@@ -90,7 +90,7 @@ static double _button_min_width_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
 		min_width += boundings.w;
@@ -124,7 +124,7 @@ static double _button_min_height_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
 		min_height += boundings.h;
@@ -207,7 +207,7 @@ static void _button_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _button_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
+static void _button_boundings(Enesim_Renderer *r, Enesim_Rectangle *boundings)
 {
 	Button *thiz;
 

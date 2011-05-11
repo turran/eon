@@ -49,7 +49,7 @@ static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 	eon_theme_label_ellipsize_get(r, &ellipsized);
 	if (ellipsized)
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 		const char *font;
 		const char *text;
 		char *ellipsized_text;
@@ -82,7 +82,7 @@ static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(r, &boundings);
 		return boundings.w;
@@ -92,7 +92,7 @@ static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 static double _eon_theme_label_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	Eina_Rectangle boundings;
+	Enesim_Rectangle boundings;
 
 	thiz = _eon_theme_label_get(r);
 	enesim_renderer_boundings(r, &boundings);
@@ -102,7 +102,7 @@ static double _eon_theme_label_max_width_get(Enesim_Renderer *r)
 static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	Eina_Rectangle boundings;
+	Enesim_Rectangle boundings;
 
 	thiz = _eon_theme_label_get(r);
 	enesim_renderer_boundings(r, &boundings);
@@ -112,7 +112,7 @@ static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
 static double _eon_theme_label_max_height_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	Eina_Rectangle boundings;
+	Enesim_Rectangle boundings;
 
 	thiz = _eon_theme_label_get(r);
 	enesim_renderer_boundings(r, &boundings);
@@ -126,7 +126,7 @@ static void _eon_theme_label_ellipsize_set(Enesim_Renderer *r,
 		Eina_Bool ellipsize)
 {
 	Eon_Theme_Label *thiz;
-	
+
 	thiz = _eon_theme_label_get(r);
 	thiz->ellipsized = ellipsize;
 }
@@ -134,7 +134,7 @@ static void _eon_theme_label_ellipsize_set(Enesim_Renderer *r,
 static Eina_Bool _eon_theme_label_ellipsize_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	
+
 	thiz = _eon_theme_label_get(r);
 	return thiz->ellipsized;
 }

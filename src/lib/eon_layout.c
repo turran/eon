@@ -28,8 +28,8 @@
 #define EON_LAYOUT_MAGIC 0xe0400002
 #define EON_LAYOUT_MAGIC_CHECK(d)\
 	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
-			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
+		if (!EINA_MAGIC_CHECK(d, EON_LAYOUT_MAGIC))\
+			EINA_MAGIC_FAIL(d, EON_LAYOUT_MAGIC);\
 	} while(0)
 
 #define EON_LAYOUT_MAGIC_CHECK_RETURN(d, ret)\
@@ -178,8 +178,13 @@ EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
 
 	if (!eon_is_element(r)) return EINA_FALSE;
 	thiz = eon_element_data_get(r);
-	if (!EINA_MAGIC_CHECK(thiz, EON_LAYOUT_MAGIC))
+	/* FIXME looks like compiling with flag  > -O0 gives
+	 * a bad behaviour
+	 */
+	//printf("ok %08x\n", thiz->__magic);
+	if (!EINA_MAGIC_CHECK(thiz, EON_LAYOUT_MAGIC)) {
 		return EINA_FALSE;
+	}
 	return EINA_TRUE;
 }
 
@@ -291,7 +296,26 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, unsigned int y)
+EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y)
+{
+	Eon_Layout *thiz;
+	Ender *child;
+
+	thiz = _eon_layout_get(r);
+	if (!thiz) return NULL;
+
+	printf("%p\n", thiz);
+	if (!thiz->descriptor->child_at)
+		return NULL;
+	return thiz->descriptor->child_at(r, x, y);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r,
+		unsigned int x, unsigned int y)
 {
 	Eon_Layout *thiz;
 	Ender *child;
@@ -300,6 +324,7 @@ EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, u
 	double rx, ry;
 
 	thiz = _eon_layout_get(r);
+	/* first from the destination coordinates get the origin coordinates */
 	enesim_renderer_transformation_get(r, &matrix);
 	enesim_matrix_type_get(&matrix);
 	if (mtype != ENESIM_MATRIX_IDENTITY)
@@ -313,21 +338,7 @@ EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, unsigned int x, u
 		enesim_renderer_origin_get(r, &ox, &oy);
 		rx = x - ox;
 		ry = y - oy;
+		printf("changing %p %d %d - %g %g\n", r, x, y, rx, ry);
 	}
-	if (!thiz->descriptor->child_at)
-		return NULL;
-	child = thiz->descriptor->child_at(r, rx, ry);
-	if (child)
-	{
-		Enesim_Renderer *rchild; // FIXME add a better way to know the type
-
-		rchild = ender_element_renderer_get(child);
-		if (eon_is_layout(rchild))
-		{
-			// transform the coordinates again?
-			return eon_layout_child_get_at_coord(rchild, (int)rx, (int)ry);
-		}
-	}
-	return child;
+	return eon_layout_child_get_at_coord(r, rx, ry);
 }
-

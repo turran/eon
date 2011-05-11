@@ -154,7 +154,7 @@ static void _label_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _label_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
+static void _label_boundings(Enesim_Renderer *r, Enesim_Rectangle *boundings)
 {
 	Label *thiz;
 

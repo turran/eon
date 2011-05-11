@@ -48,10 +48,10 @@ typedef struct _Eon_Stack
 
 static inline Eon_Stack * _eon_stack_get(Enesim_Renderer *r)
 {
-	Eon_Stack *e;
+	Eon_Stack *thiz;
 
-	e = eon_layout_data_get(r);
-	return e;
+	thiz = eon_layout_data_get(r);
+	return thiz;
 }
 
 static void _stack_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
@@ -194,7 +194,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		Enesim_Renderer *renderer;
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 		double y;
 		double x;
 
@@ -239,7 +239,7 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		Enesim_Renderer *renderer;
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 		double y;
 		double x;
 
@@ -364,7 +364,7 @@ static void _eon_stack_free(Enesim_Renderer *r)
 }
 
 /* TODO this code might be the same among every layout */
-static void _eon_stack_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
+static void _eon_stack_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 {
 	Eon_Stack *thiz;
 	double w, h;
@@ -375,8 +375,8 @@ static void _eon_stack_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	eon_layout_actual_size_get(r, &w, &h);
 	rect->x = 0;
 	rect->y = 0;
-	rect->w = lrint(w);
-	rect->h = lrint(h);
+	rect->w = w;
+	rect->h = h;
 	//printf("stack %p boundings %g %g\n", r, w, h);
 }
 
@@ -412,7 +412,7 @@ static double _eon_stack_min_width_get(Enesim_Renderer *r)
 		}
 		else
 		{
-			Eina_Rectangle boundings;
+			Enesim_Rectangle boundings;
 
 			enesim_renderer_boundings(renderer, &boundings);
 			w = boundings.w;
@@ -446,7 +446,7 @@ static double _eon_stack_min_height_get(Enesim_Renderer *r)
 		}
 		else
 		{
-			Eina_Rectangle boundings;
+			Enesim_Rectangle boundings;
 
 			enesim_renderer_boundings(renderer, &boundings);
 			h = boundings.h;
@@ -472,34 +472,45 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 	Ender *child = NULL;
 
 	thiz = _eon_stack_get(r);
+	if (!thiz) return NULL;
 	//printf("stack looking for a child at %g %g\n", x, y);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
-		/* TODO still need the width and height */
-		if (x >= ech->curr_x && y >= ech->curr_y)
-		{
-			Enesim_Renderer *r;
-			double aw, ah;
+		Enesim_Renderer *rchild;
+		double child_x, child_y;
+		double child_w, child_h;
 
-			r = ender_element_renderer_get(ech->ender);
-			if (eon_is_element(r))
+		child_x = x - ech->curr_x;
+		if (child_x < 0) continue;
+		child_y = y - ech->curr_y;
+		if (child_y < 0) continue;
+		
+		/* TODO still need the width and height */
+		rchild = ender_element_renderer_get(ech->ender);
+		if (eon_is_element(rchild))
+		{
+			eon_element_actual_size_get(rchild, &child_w, &child_h);
+		}
+		else
+		{
+			Enesim_Rectangle bounds;
+			enesim_renderer_boundings(rchild, &bounds);
+			child_w = bounds.w;
+			child_h = bounds.h;
+		}
+		if (child_x <= child_w && child_y <= child_h)
+		{
+			if (eon_is_layout(rchild))
 			{
-				eon_element_actual_size_get(r, &aw, &ah);
+				printf("inside a layout %p %g %g\n", rchild, child_x, child_y);
+				return eon_layout_child_get_at_coord(rchild, child_x, child_y);
 			}
-			else
+			/* now check if the renderer is really at that coordinate */
+			else if (enesim_renderer_is_inside(rchild, child_x, child_y))
 			{
-				Eina_Rectangle bounds;
-				enesim_renderer_boundings(r, &bounds);
-				aw = bounds.w;
-				ah = bounds.h;
+				child = ech->ender;
+				break;
 			}
-			if (x <= ech->curr_x + aw && y <= ech->curr_y + ah)
-				/* now check if the renderer is really at that coordinate */
-				if (enesim_renderer_is_inside(r, x, y))
-				{
-					child = ech->ender;
-					break;
-				}
 		}
 	}
 	//printf("returning %p\n", child);
@@ -529,6 +540,22 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
+	Eina_List *l, *l_next;
+
+	thiz = _eon_stack_get(r);
+	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, thiz_child)
+	{
+		if (thiz_child->ender == child)
+		{
+			Enesim_Renderer *r_child;
+
+			thiz->children = eina_list_remove_list(thiz->children, l);
+			r_child = ender_element_renderer_get(thiz_child->ender);
+			enesim_renderer_compound_layer_remove(thiz->compound, r_child);
+			break;
+		}
+	}
+
 }
 
 static Eon_Layout_Descriptor _eon_stack_layout_descriptor = {

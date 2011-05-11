@@ -20,7 +20,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_ELEMENT_MAGIC 0xe0400002
+#define EON_ELEMENT_MAGIC 0xe0400001
 #define EON_ELEMENT_MAGIC_CHECK(d)\
 	do {\
 		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
@@ -166,6 +166,7 @@ EAPI Eina_Bool eon_is_element(Enesim_Renderer *r)
 	Eon_Element *thiz;
 
 	thiz = enesim_renderer_data_get(r);
+	if (!thiz) return EINA_FALSE;
 	if (!EINA_MAGIC_CHECK(thiz, EON_ELEMENT_MAGIC))
 		return EINA_FALSE;
 	return EINA_TRUE;

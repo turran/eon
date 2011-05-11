@@ -65,7 +65,7 @@ static double _radio_min_width_get(Enesim_Renderer *r)
 	eon_theme_container_content_get(r, &content);
 	if (!content)
 		goto end;
-	
+
 	/* the padding */
 	min_width += radio_to_content_padding;
 	if (eon_is_element(content))
@@ -77,7 +77,7 @@ static double _radio_min_width_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
 		min_width += boundings.w;
@@ -110,7 +110,7 @@ static double _radio_min_height_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
 		min_height += boundings.h;
@@ -182,7 +182,7 @@ static void _radio_cleanup(Enesim_Renderer *r)
 	enesim_renderer_sw_cleanup(thiz->compound);
 }
 
-static void _radio_boundings(Enesim_Renderer *r, Eina_Rectangle *bounds)
+static void _radio_boundings(Enesim_Renderer *r, Enesim_Rectangle *bounds)
 {
 	Radio *thiz;
 

@@ -93,7 +93,7 @@ static Eina_Bool _eon_canvas_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		Enesim_Renderer *renderer;
 		Enesim_Matrix matrix;
 		Enesim_Matrix_Type matrix_type;
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		renderer = ender_element_renderer_get(ech->ender);
 		enesim_renderer_transformation_get(renderer, &matrix);
@@ -172,7 +172,7 @@ static void _eon_canvas_free(Enesim_Renderer *r)
 	free(e);
 }
 
-static void _eon_canvas_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
+static void _eon_canvas_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 {
 	Eon_Canvas *e;
 

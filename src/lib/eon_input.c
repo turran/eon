@@ -76,7 +76,7 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 	 * if mouse in an object and canvas(obj) != canvas => in canvas(obj) ?
 	 * if mouse out an object and canvas(obj) != canvas => out canvas(obj) ?
 	 */
-	child = eon_layout_child_get_at_coord(r, x, y);
+	child = eon_layout_child_get_at_destination_coord(r, x, y);
 	if (child == ei->pointer.last)
 	{
 		/* send move */
@@ -119,7 +119,7 @@ EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l)
 	if (ei->pointer.inside)
 		return;
 	ei->pointer.inside = EINA_TRUE;
-	child = eon_layout_child_get_at_coord(r, ei->pointer.x, ei->pointer.y);
+	child = eon_layout_child_get_at_destination_coord(r, ei->pointer.x, ei->pointer.y);
 	if (!child)
 		return;
 	/* TODO send the event */
@@ -140,7 +140,7 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
 		return;
 	ei->pointer.inside = EINA_FALSE;
 	r = ender_element_renderer_get(l);
-	child = eon_layout_child_get_at_coord(r, ei->pointer.x, ei->pointer.y);
+	child = eon_layout_child_get_at_destination_coord(r, ei->pointer.x, ei->pointer.y);
 	if (!child)
 		return;
 	/* TODO send the event */
@@ -156,7 +156,7 @@ EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender *l)
 	if (!ei->pointer.inside)
 		return;
 	r = ender_element_renderer_get(l);
-	child = eon_layout_child_get_at_coord(r, ei->pointer.x, ei->pointer.y);
+	child = eon_layout_child_get_at_destination_coord(r, ei->pointer.x, ei->pointer.y);
 	if (!child)
 		return;
 	/* store the coordinates where the mouse buton down was done to

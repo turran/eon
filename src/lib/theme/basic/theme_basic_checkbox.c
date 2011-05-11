@@ -66,7 +66,7 @@ static double _checkbox_min_width_get(Enesim_Renderer *r)
 	eon_theme_container_content_get(r, &content);
 	if (!content)
 		goto end;
-	
+
 	/* the padding */
 	min_width += checkbox_to_content_padding;
 	if (eon_is_element(content))
@@ -78,7 +78,7 @@ static double _checkbox_min_width_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
 		min_width += boundings.w;
@@ -112,7 +112,7 @@ static double _checkbox_min_height_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Eina_Rectangle boundings;
+		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
 		min_height += boundings.h;
@@ -195,7 +195,7 @@ static void _checkbox_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _checkbox_boundings(Enesim_Renderer *r, Eina_Rectangle *boundings)
+static void _checkbox_boundings(Enesim_Renderer *r, Enesim_Rectangle *boundings)
 {
 	Checkbox *thiz;
 

@@ -20,7 +20,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_WIDGET_MAGIC 0xe0400001
+#define EON_WIDGET_MAGIC 0xe0400003
 #define EON_WIDGET_MAGIC_CHECK(d)\
 	do {\
 		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
@@ -251,7 +251,7 @@ static void _eon_widget_free(Enesim_Renderer *r)
 	ew = _eon_widget_get(r);
 }
 
-static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
+static void _eon_widget_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 {
 	Eon_Widget *thiz;
 	Enesim_Renderer *er;
@@ -280,8 +280,8 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Eina_Rectangle *rect)
 	}
 	rect->x = 0;
 	rect->y = 0;
-	rect->w = lrint(aw);
-	rect->h = lrint(ah);
+	rect->w = aw;
+	rect->h = ah;
 	//printf("widget boundings %p %d %d %d %d\n", r, rect->x, rect->y, rect->w, rect->h);
 }
 
