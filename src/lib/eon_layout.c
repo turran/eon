@@ -25,7 +25,6 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_LAYOUT_MAGIC 0xe0400002
 #define EON_LAYOUT_MAGIC_CHECK(d)\
 	do {\
 		if (!EINA_MAGIC_CHECK(d, EON_LAYOUT_MAGIC))\
@@ -92,6 +91,14 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
 renderer_err:
 	free(thiz);
 	return NULL;
+}
+
+void * eon_layout_data_get(Enesim_Renderer *r)
+{
+	Eon_Layout *thiz;
+
+	thiz = _eon_layout_get(r);
+	return thiz->data;
 }
 
 void eon_layout_actual_size_get(Enesim_Renderer *r, double *width, double *height)
@@ -192,18 +199,6 @@ EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-void * eon_layout_data_get(Enesim_Renderer *r)
-{
-	Eon_Layout *thiz;
-
-	thiz = _eon_layout_get(r);
-	return thiz->data;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
 void eon_layout_redraw_get(Enesim_Renderer *r, Eina_List **redraws)
 {
 	/* get every damage from the tiler */
@@ -290,6 +285,19 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
 	 * the callbacks, etc) just in case the ender
 	 * is of type element (or widget?)
 	 */
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_layout_child_clear(Enesim_Renderer *r)
+{
+	Eon_Layout *thiz;
+
+	thiz = _eon_layout_get(r);
+	thiz->descriptor->child_clear(r);
+	//ender_event_listener_remove(child, "Mutation", _child_changed);
 }
 
 /**

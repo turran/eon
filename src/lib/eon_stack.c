@@ -222,7 +222,7 @@ static void _stack_horizontal_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_x += boundings.w;
-		//printf("setting child x to %g\n", x);
+		printf("setting child x to %g\n", x);
 		ech->curr_x = x;
 		ech->curr_y = y;
 	}
@@ -269,7 +269,7 @@ static void _stack_vertical_arrange(Eon_Stack *thiz, double aw, double ah)
 		}
 		enesim_renderer_origin_set(renderer, x, y);
 		last_y += boundings.h;
-		//printf("3 setting child y to %g\n", y);
+		printf("3 setting child y to %g\n", y);
 		ech->curr_x = x;
 		ech->curr_y = y;
 	}
@@ -286,6 +286,7 @@ static void _stack_relayout(Enesim_Renderer *r, Eon_Stack *thiz)
 		_stack_horizontal_arrange(thiz, aw, ah);
 	else
 		_stack_vertical_arrange(thiz, aw, ah);
+	thiz->relayout = EINA_FALSE;
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -314,7 +315,6 @@ static void _eon_stack_cleanup(Enesim_Renderer *r)
 		//matrix_type = enesim_matrix_type_get(&matrix);
 		enesim_renderer_origin_set(renderer, ech->old_x, ech->old_y);
 	}
-	thiz->relayout = EINA_FALSE;
 }
 
 static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -329,7 +329,7 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	if (!thiz->relayout)
+	if (thiz->relayout)
 	{
 		//if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
 		//	return EINA_FALSE;
@@ -339,14 +339,31 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 		 * for an enesim renderer
 		 */
 		_stack_relayout(r, thiz);
-		if (!enesim_renderer_sw_setup(thiz->compound))
+	}
+	else
+	{
+		Eina_List *l;
+		Eon_Stack_Child *ech;
+
+		/* just set the new coordinates on every child */
+		EINA_LIST_FOREACH (thiz->children, l, ech)
 		{
-			DBG("Cannot setup the compound renderer");
-			_eon_stack_cleanup(r);
-			return EINA_FALSE;
+			Enesim_Renderer *r_child;
+
+			r_child = ender_element_renderer_get(ech->ender);
+			enesim_renderer_origin_set(r_child, ech->curr_x, ech->curr_y);
 		}
 	}
+
+	if (!enesim_renderer_sw_setup(thiz->compound))
+	{
+		DBG("Cannot setup the compound renderer");
+		_eon_stack_cleanup(r);
+		return EINA_FALSE;
+	}
+
 	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
+	if (!thiz->fill_func) return EINA_FALSE;
 	*fill = _stack_draw;
 
 	//printf("end setting up the stack %p\n", r);
@@ -534,6 +551,7 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 	/* TODO whenever a child is added, register a callback for a property
 	 * change, if it is called then we need to do the setup again
 	 */
+	thiz->relayout = EINA_TRUE;
 }
 
 static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
@@ -552,14 +570,29 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
 			thiz->children = eina_list_remove_list(thiz->children, l);
 			r_child = ender_element_renderer_get(thiz_child->ender);
 			enesim_renderer_compound_layer_remove(thiz->compound, r_child);
+			thiz->relayout = EINA_TRUE;
 			break;
 		}
 	}
+}
 
+static void _eon_stack_child_clear(Enesim_Renderer *r)
+{
+	Eon_Stack *thiz;
+	Eon_Stack_Child *thiz_child;
+	Eina_List *l, *l_next;
+
+	thiz = _eon_stack_get(r);
+	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, thiz_child)
+	{
+		eon_layout_child_remove(r, thiz_child->ender);
+	}
+	thiz->relayout = EINA_TRUE;
 }
 
 static Eon_Layout_Descriptor _eon_stack_layout_descriptor = {
 	.child_add = _eon_stack_child_add,
+	.child_clear = _eon_stack_child_clear,
 	.child_remove = _eon_stack_child_remove,
 	.child_at = _eon_stack_child_at,
 };
@@ -629,6 +662,7 @@ EAPI void eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction direct
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.direction = direction;
+	//thiz->relayout = EINA_TRUE;
 }
 
 /**
@@ -661,6 +695,7 @@ EAPI void eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender *ch
 		if (ech->ender == child)
 		{
 			ech->halign = alignment;
+			//thiz->relayout = EINA_TRUE;
 		}
 	}
 }
@@ -682,6 +717,7 @@ EAPI void eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender *chil
 		if (ech->ender == child)
 		{
 			ech->valign = alignment;
+			//thiz->relayout = EINA_TRUE;
 		}
 	}
 }

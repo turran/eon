@@ -38,14 +38,16 @@ static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_container_new(const char *name, void *data)
+void * eon_container_data_get(Enesim_Renderer *r)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return NULL;
+	return thiz->data;
+}
+
+Enesim_Renderer * eon_container_new(const char *name, void *data)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
@@ -64,20 +66,9 @@ renderer_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void * eon_container_data_get(Enesim_Renderer *r)
-{
-	Eon_Container *thiz;
-
-	thiz = _eon_container_get(r);
-	if (!thiz) return NULL;
-	return thiz->data;
-}
-
-
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
 /**
  * To be documented
  * FIXME: To be fixed
