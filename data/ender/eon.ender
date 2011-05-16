@@ -46,6 +46,7 @@ namespace "eon" {
 	};
 
 	class "progressbar" : "widget" {
+		double progression;
 	};
 
 	class "label" : "widget" {
