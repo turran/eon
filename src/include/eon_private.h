@@ -61,6 +61,12 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
 		void *data);
 void * eon_layout_data_get(Enesim_Renderer *r);
 
+/* toggle */
+typedef struct _Eon_Toggle_Descriptor
+{
+
+} Eon_Toggle_Descriptor;
+
 /* widget */
 typedef struct _Eon_Widget_Descriptor
 {

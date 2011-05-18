@@ -85,18 +85,10 @@ static void _stack_vertical_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech
 	}
 	else
 	{
-		if (set <= aw)
+		eon_element_real_width_get(r, &w);
+		if (w > aw)
 		{
-			w = set;
-		}
-		else
-		{
-			double min, max;
-
-			eon_element_min_width_get(r, &min);
-			eon_element_max_width_get(r, &max);
-			w = set > max ? max : set;
-			w = w < min ? min : w;
+			w = aw;
 		}
 	}
 	eon_element_height_get(r, &set);
@@ -140,25 +132,12 @@ static void _stack_horizontal_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *e
 		return;
 	}
 
-	eon_element_width_get(r, &set);
-	if (set < 0)
+	eon_element_real_width_get(r, &w);
+	if (w > *aw)
 	{
-		eon_element_min_width_get(r, &w);
+		w = *aw;
 	}
-	else
-	{
-		if (set <= *aw)
-		{
-			w = set;
-		}
-		else
-		{
-			eon_element_min_width_get(r, &min);
-			eon_element_max_width_get(r, &max);
-			w = set > max ? max : set;
-			w = w < min ? min : w;
-		}
-	}
+
 	eon_element_height_get(r, &set);
 	if (set < 0)
 	{
@@ -434,7 +413,9 @@ static double _eon_stack_min_width_get(Enesim_Renderer *r)
 			enesim_renderer_boundings(renderer, &boundings);
 			w = boundings.w;
 		}
-		min_width += w;
+		/* FIXME the min width depends on the direction */
+		if (w > min_width)
+			min_width = w;
 	}
 
 	return min_width;
@@ -468,7 +449,9 @@ static double _eon_stack_min_height_get(Enesim_Renderer *r)
 			enesim_renderer_boundings(renderer, &boundings);
 			h = boundings.h;
 		}
-		min_height += h;
+		/* FIXME the min height depends on the direction */
+		if (h > min_height)
+			min_height = h;
 	}
 
 	return min_height;

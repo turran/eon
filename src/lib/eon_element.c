@@ -153,6 +153,46 @@ void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *heig
 	*width = thiz->actual_width;
 	*height = thiz->actual_height;
 }
+
+void eon_element_real_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+	double rw;
+	double min, set, max;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+
+	set = thiz->width;
+	eon_element_min_width_get(r, &min);
+	eon_element_max_width_get(r, &max);
+	rw = set > max ? max : set;
+	rw = rw < min ? min : rw;
+
+	//printf("real width = %g (%g %g %g)\n", rw, min, set, max);
+	*width = rw;
+}
+
+void eon_element_real_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+	double rh;
+	double min, set, max;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+
+
+	thiz = _eon_element_get(r);
+	set = thiz->height;
+	eon_element_min_width_get(r, &min);
+	eon_element_max_width_get(r, &max);
+	rh = set > max ? max : set;
+	rh = rh < min ? min : rh;
+
+	//printf("real height = %g (%g %g %g)\n", rh, min, set, max);
+	*height = rh;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

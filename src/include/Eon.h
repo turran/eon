@@ -62,6 +62,10 @@ EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_element_min_width_set(Enesim_Renderer *r, double width);
 EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height);
 EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height);
+EAPI void eon_element_max_width_get(Enesim_Renderer *r, double *width);
+EAPI void eon_element_max_width_set(Enesim_Renderer *r, double width);
+EAPI void eon_element_max_height_set(Enesim_Renderer *r, double height);
+EAPI void eon_element_max_height_get(Enesim_Renderer *r, double *height);
 
 /**
  * @}
