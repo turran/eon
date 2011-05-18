@@ -501,7 +501,7 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 		if (child_x < 0) continue;
 		child_y = y - ech->curr_y;
 		if (child_y < 0) continue;
-		
+
 		/* TODO still need the width and height */
 		rchild = ender_element_renderer_get(ech->ender);
 		if (eon_is_element(rchild))
@@ -552,6 +552,7 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 	 * change, if it is called then we need to do the setup again
 	 */
 	thiz->relayout = EINA_TRUE;
+	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
 }
 
 static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
@@ -611,7 +612,7 @@ EAPI Enesim_Renderer * eon_stack_new(void)
 	Eon_Stack *e;
 	Enesim_Renderer *thiz;
 	Enesim_Renderer *r;
-#if 1
+#if 0
 	const int color[] = { 0xffffffff, 0xff00ff00, 0xff00ffff };
 	static int i = 0;
 #endif
@@ -627,7 +628,7 @@ EAPI Enesim_Renderer * eon_stack_new(void)
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
 
-#if 1
+#if 0
 	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
 #else
 	enesim_renderer_background_color_set(r, 0xffffffff);

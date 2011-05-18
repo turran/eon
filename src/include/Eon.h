@@ -121,6 +121,14 @@ EAPI void eon_stack_height_set(Enesim_Renderer *r, unsigned int height);
  * @}
  * @{
  */
+
+EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected);
+EAPI void eon_radio_selected_get(Enesim_Renderer *r, Eina_Bool *selected);
+
+/**
+ * @}
+ * @{
+ */
 EAPI Enesim_Renderer * eon_label_new(void);
 EAPI void eon_label_text_set(Enesim_Renderer *r, const char *text);
 EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text);

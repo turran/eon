@@ -20,50 +20,42 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Progressbar
+typedef struct _Eon_Toggle
 {
-	/* properties */
+	Eon_Toggle_Descriptor *descriptor;
 	/* private */
-} Eon_Progressbar;
+	void *data;
+} Eon_Toggle;
 
-static inline Eon_Progressbar * _eon_progressbar_get(Enesim_Renderer *r)
+static inline Eon_Toggle * _eon_toggle_get(Enesim_Renderer *r)
 {
-	Eon_Progressbar *thiz;
+	Eon_Toggle *thiz;
 
 	thiz = eon_widget_data_get(r);
 	return thiz;
 }
-/*----------------------------------------------------------------------------*
- *                         The Eon's widget interface                        *
- *----------------------------------------------------------------------------*/
-static void _eon_progressbar_initialize(Ender *ender)
-{
-	/* register every needed callback */
-}
-
-static Eon_Widget_Descriptor _eon_progressbar_widget_descriptor = {
-	.initialize = _eon_progressbar_initialize,
-	.name = "progressbar",
-};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_progressbar_new(void)
+void * eon_toggle_data_get(Enesim_Renderer *r)
 {
-	Eon_Progressbar *thiz;
+	Eon_Toggle *thiz;
+
+	thiz = _eon_toggle_get(r);
+	if (!thiz) return NULL;
+	return thiz->data;
+}
+
+Enesim_Renderer * eon_toggle_new(Eon_Widget_Descriptor *descriptor, void *data)
+{
+	Eon_Toggle *thiz;
 	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Eon_Progressbar));
+	thiz = calloc(1, sizeof(Eon_Toggle));
 	if (!thiz) return NULL;
+	thiz->data = data;
 
-	r = eon_widget_new(&_eon_progressbar_widget_descriptor, thiz);
+	r = eon_widget_new(descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -73,29 +65,36 @@ renderer_err:
 	return NULL;
 }
 
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_progressbar_progression_get(Enesim_Renderer *r, double *progression)
+EAPI void eon_toggle_toggled_set(Enesim_Renderer *r, Ender *toggled)
 {
-	Eon_Progressbar *thiz;
+	Eon_Toggle *thiz;
+	Enesim_Renderer *rtoggled;
 
-	thiz = _eon_progressbar_get(r);
+	thiz = _eon_toggle_get(r);
 	if (!thiz) return;
 
+	eon_widget_property_set(r, "toggled", toggled, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_progressbar_progression_set(Enesim_Renderer *r, double progression)
+EAPI void eon_toggle_toggled_get(Enesim_Renderer *r, const Ender **toggled)
 {
-	Eon_Progressbar *thiz;
+	Eon_Toggle *thiz;
 
-	thiz = _eon_progressbar_get(r);
+	thiz = _eon_toggle_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "progression", progression, NULL);
+	eon_widget_property_get(r, "toggled", toggled, NULL);
 }
+
+

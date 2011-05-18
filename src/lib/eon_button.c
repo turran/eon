@@ -34,12 +34,17 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
-static void _button_setup(Ender *e)
+static void _eon_button_initialize(Ender *e)
 {
 	/* register every event needed for a button
 	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
 	 */
 }
+
+static Eon_Widget_Descriptor _eon_button_widget_descriptor = {
+	.initialize = _eon_button_initialize,
+	.name = "button",
+};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -58,7 +63,7 @@ EAPI Enesim_Renderer * eon_button_new(void)
 	thiz = calloc(1, sizeof(Eon_Button));
 	if (!thiz) return NULL;
 
-	r = eon_container_new("button", thiz);
+	r = eon_container_new(&_eon_button_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

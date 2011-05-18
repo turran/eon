@@ -37,6 +37,7 @@
 typedef struct _Eon_Widget
 {
 	EINA_MAGIC;
+	Eon_Widget_Descriptor *descriptor;
 	void *data; /* the data provided by the widget types */
 	Escen_Ender *escen_ender; /* the theme ender */
 	Escen_Ender_Instance *eei;
@@ -45,14 +46,6 @@ typedef struct _Eon_Widget
 	 */
 	Enesim_Renderer_Sw_Fill fill;
 } Eon_Widget;
-
-/* TODO placeholder for virtual functions every widget
- * should implement
- */
-typedef struct _Eon_Widget_Descriptor
-{
-
-} Eon_Widget_Descriptor;
 
 static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 {
@@ -107,9 +100,17 @@ static void _widget_mouse_out(Ender *e, const char *event_name, void *event_data
  *----------------------------------------------------------------------------*/
 static void _eon_widget_initialize(Ender *ender)
 {
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+
+
+	r = ender_element_renderer_get(ender);
+	thiz = _eon_widget_get(r);
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseIn", _widget_mouse_in, NULL);
 	ender_event_listener_add(ender, "MouseOut", _widget_mouse_out, NULL);
+	if (thiz->descriptor->initialize)
+		thiz->descriptor->initialize(ender);
 }
 
 static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
@@ -303,6 +304,23 @@ static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Escen_Ender_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+
+	return thiz->eei;
+}
+
+Escen_Ender * eon_widget_theme_get(Enesim_Renderer *r)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+
+	return thiz->escen_ender;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -310,7 +328,7 @@ static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
+EAPI Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 {
 	Eon_Widget *thiz;
 	Escen *escen;
@@ -330,8 +348,9 @@ EAPI Enesim_Renderer * eon_widget_new(const char *name, void *data)
 	thiz = calloc(1, sizeof(Eon_Widget));
 	EINA_MAGIC_SET(thiz, EON_WIDGET_MAGIC);
 	thiz->data = data;
+	thiz->descriptor = descriptor;
 
-	escen_ender = escen_ender_get(escen, name);
+	escen_ender = escen_ender_get(escen, descriptor->name);
 	if (!escen_ender) goto ender_err;
 	thiz->escen_ender = escen_ender;
 	thiz->eei = escen_ender_instance_get(thiz->escen_ender);

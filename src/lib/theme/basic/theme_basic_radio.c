@@ -59,7 +59,7 @@ static double _radio_min_width_get(Enesim_Renderer *r)
 {
 	Radio *thiz;
 	Enesim_Renderer *content;
-	double min_width = circle_radius * 2;
+	double min_width = circle_radius * 2 + 2;
 
 	thiz = _radio_get(r);
 	eon_theme_container_content_get(r, &content);
@@ -106,14 +106,16 @@ static double _radio_min_height_get(Enesim_Renderer *r)
 		double cmin_height;
 
 		eon_element_min_height_get(content, &cmin_height);
-		min_height += cmin_height;
+		if (cmin_height > min_height)
+			min_height = cmin_height;
 	}
 	else
 	{
 		Enesim_Rectangle boundings;
 
 		enesim_renderer_boundings(content, &boundings);
-		min_height += boundings.h;
+		if (boundings.w > min_height)
+			min_height = boundings.h;
 	}
 end:
 	return min_height;

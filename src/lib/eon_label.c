@@ -31,6 +31,12 @@ static inline Eon_Label * _eon_label_get(Enesim_Renderer *r)
 	thiz = eon_widget_data_get(r);
 	return thiz;
 }
+/*----------------------------------------------------------------------------*
+ *                         The Eon's widget interface                        *
+ *----------------------------------------------------------------------------*/
+static Eon_Widget_Descriptor _eon_label_widget_descriptor = {
+	.name = "label",
+};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -49,7 +55,7 @@ EAPI Enesim_Renderer * eon_label_new(void)
 	thiz = calloc(1, sizeof(Eon_Label));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new("label", thiz);
+	r = eon_widget_new(&_eon_label_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

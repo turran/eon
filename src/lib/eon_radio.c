@@ -26,6 +26,8 @@ typedef struct _Eon_Radio
 	char *group_name;
 } Eon_Radio;
 
+static Eina_Hash *_groups = NULL;
+
 static inline Eon_Radio * _eon_radio_get(Enesim_Renderer *r)
 {
 	Eon_Radio *thiz;
@@ -34,7 +36,40 @@ static inline Eon_Radio * _eon_radio_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static Eina_Hash *_groups = NULL;
+static void _radio_mouse_click(Ender *e, const char *event_name, void *event_data, void *data)
+{
+	Escen_Ender *theme;
+	Escen_State *new_state;
+	Enesim_Renderer *r;
+
+	/* TODO Whenever the mouse is clicked, we should know if by clicking on x, y
+	 * we actually need to change the state of the radio button
+	 */
+	r = ender_element_renderer_get(e);
+	theme = eon_widget_theme_get(r);
+	new_state = escen_ender_state_get(theme, "selected");
+	if (new_state)
+	{
+		Escen_Ender_Instance *eei;
+		eei = eon_widget_theme_instance_get(r);
+		escen_ender_instance_state_set(eei, new_state);
+	}
+	eon_radio_selected_set(r, EINA_TRUE);
+	/* TODO trigger the selected event */
+}
+/*----------------------------------------------------------------------------*
+ *                         The Eon's widget interface                        *
+ *----------------------------------------------------------------------------*/
+static void _eon_radio_initialize(Ender *ender)
+{
+	/* register every needed callback */
+	ender_event_listener_add(ender, "MouseClick", _radio_mouse_click, NULL);
+}
+
+static Eon_Widget_Descriptor _eon_radio_widget_descriptor = {
+	.initialize = _eon_radio_initialize,
+	.name = "radio",
+};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -53,7 +88,7 @@ EAPI Enesim_Renderer * eon_radio_new(void)
 	thiz = calloc(1, sizeof(Eon_Radio));
 	if (!thiz) return NULL;
 
-	r = eon_container_new("radio", thiz);
+	r = eon_container_new(&_eon_radio_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -112,3 +147,52 @@ EAPI void eon_radio_group_name_get(Enesim_Renderer *r, const char **group)
 
 	*group = thiz->group_name;
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
+{
+	Eon_Radio *thiz;
+
+	thiz = _eon_radio_get(r);
+	if (!thiz) return;
+
+	eon_widget_property_set(r, "selected", selected, NULL);
+	if (selected)
+	{
+		Enesim_Renderer *other_radio;
+		Eina_List *radios;
+		Eina_List *l;
+
+		radios = eina_hash_find(_groups, thiz->group_name);
+		if (!radios) return;
+
+		/* TODO we could optimize this to not iterate over
+		 * the list trying to find the current selected
+		 * just store it
+		 */
+		EINA_LIST_FOREACH(radios, l, other_radio)
+		{
+			Eina_Bool other_selected;
+
+			if (other_radio == r) continue;
+
+			eon_radio_selected_get(other_radio, &other_selected);
+			if (other_selected)
+				eon_radio_selected_set(other_radio, EINA_FALSE);	
+		}
+	}
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_radio_selected_get(Enesim_Renderer *r, Eina_Bool *selected)
+{
+	*selected = EINA_TRUE;
+	//eon_widget_property_get(r, "selected", selected, NULL);
+}
+

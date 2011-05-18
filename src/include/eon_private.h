@@ -62,12 +62,20 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
 void * eon_layout_data_get(Enesim_Renderer *r);
 
 /* widget */
-Enesim_Renderer * eon_widget_new(const char *name, void *data);
+typedef struct _Eon_Widget_Descriptor
+{
+	void (*initialize)(Ender *ender);
+	const char *name;
+} Eon_Widget_Descriptor;
+
+Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data);
 void * eon_widget_data_get(Enesim_Renderer *r);
+Escen_Ender_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r);
+Escen_Ender * eon_widget_theme_get(Enesim_Renderer *r);
 
 /* container */
 void * eon_container_data_get(Enesim_Renderer *r);
-Enesim_Renderer * eon_container_new(const char *name, void *data);
+Enesim_Renderer * eon_container_new(Eon_Widget_Descriptor *descriptor, void *data);
 
 #endif
 

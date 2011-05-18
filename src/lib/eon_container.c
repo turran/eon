@@ -47,7 +47,7 @@ void * eon_container_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-Enesim_Renderer * eon_container_new(const char *name, void *data)
+Enesim_Renderer * eon_container_new(Eon_Widget_Descriptor *descriptor, void *data)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
@@ -56,7 +56,7 @@ Enesim_Renderer * eon_container_new(const char *name, void *data)
 	if (!thiz) return NULL;
 	thiz->data = data;
 
-	r = eon_widget_new(name, thiz);
+	r = eon_widget_new(descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
