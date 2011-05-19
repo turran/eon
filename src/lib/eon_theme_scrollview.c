@@ -20,35 +20,36 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Scrollview
-{
-	/* properties */
-	double x_position;
-	double y_position;
-	/* private */
-} Eon_Scrollview;
+#define EON_THEME_SCROLLVIEW_MAGIC 0xe0410003
+#define EON_THEME_SCROLLVIEW_MAGIC_CHECK(d)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_THEME_SCROLLVIEW_MAGIC))\
+			EINA_MAGIC_FAIL(d, EON_THEME_SCROLLVIEW_MAGIC);\
+	} while(0)
 
-static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
-{
-	Eon_Button *thiz;
+#define EON_THEME_SCROLLVIEW_MAGIC_CHECK_RETURN(d, ret)\
+	do {\
+		if (!EINA_MAGIC_CHECK(d, EON_THEME_SCROLLVIEW_MAGIC)) {\
+			EINA_MAGIC_FAIL(d, EON_THEME_SCROLLVIEW_MAGIC);\
+			return ret;\
+		}\
+	} while(0)
 
-	thiz = eon_container_data_get(r);
+typedef struct _Eon_Theme_Scrollview
+{
+	EINA_MAGIC;
+	void *data;
+} Eon_Theme_Scrollview;
+
+static inline Eon_Theme_Scrollview * _eon_theme_scrollview_get(Enesim_Renderer *r)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = eon_theme_container_data_get(r);
+	EON_THEME_SCROLLVIEW_MAGIC_CHECK_RETURN(thiz, NULL);
+
 	return thiz;
 }
-/*----------------------------------------------------------------------------*
- *                        The Eon's widget interface                          *
- *----------------------------------------------------------------------------*/
-static void _eon_scrollview_initialize(Ender *e)
-{
-	/* register every event needed for a scrollview
-	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
-	 */
-}
-
-static Eon_Widget_Descriptor _eon_scrollview_widget_descriptor = {
-	.initialize = _eon_scrollview_initialize,
-	.name = "scrollview",
-};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -59,15 +60,17 @@ static Eon_Widget_Descriptor _eon_scrollview_widget_descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_scrollview_new(void)
+EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Widget_Descriptor *twdescriptor,
+		Enesim_Renderer_Descriptor *descriptor,
+		void *data)
 {
-	Eon_Scrollview *thiz;
+	Eon_Theme_Scrollview *thiz;
 	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Eon_Scrollview));
-	if (!thiz) return NULL;
-
-	r = eon_container_new(&_eon_scrollview_widget_descriptor, thiz);
+	thiz = calloc(1, sizeof(Eon_Theme_Scrollview));
+	EINA_MAGIC_SET(thiz, EON_THEME_SCROLLVIEW_MAGIC);
+	thiz->data = data;
+	r = eon_theme_container_new(twdescriptor, descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -81,47 +84,21 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
+EAPI Eina_Bool eon_is_theme_scrollview(Enesim_Renderer *r)
 {
-	Eon_Scrollview *thiz;
-
-	thiz = _eon_scrollview_get(r);
-	thiz->x_position = x;
+	Eon_Theme_Scrollview *thiz;
+	return EINA_TRUE;
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
+EAPI void * eon_theme_scrollview_data_get(Enesim_Renderer *r)
 {
-	Eon_Scrollview *thiz;
+	Eon_Theme_Scrollview *thiz;
 
-	thiz = _eon_scrollview_get(r);
-	*x = thiz->x_position;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
-{
-	Eon_Scrollview *thiz;
-
-	thiz = _eon_scrollview_get(r);
-	thiz->y_position = y;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_scrollview_x_position_get(Enesim_Renderer *r, double *y)
-{
-	Eon_Scrollview *thiz;
-
-	thiz = _eon_scrollview_get(r);
-	*y = thiz->y_position;
+	thiz = _eon_theme_scrollview_get(r);
+	return thiz->data;
 }
 
