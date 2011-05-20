@@ -262,27 +262,13 @@ static void _eon_widget_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 	/* There's no layout, or the layout didnt set an active width/height */
 	if (aw < 0 || ah < 0)
 	{
-		double min, max, set;
-
-		eon_element_min_width_get(r, &min);
-		eon_element_max_width_get(r, &max);
-		eon_element_width_get(r, &set);
-		aw = set > max ? max : set;
-		aw = aw < min ? min : aw;
-		//printf("w: %g %g %g\n", min, set, max);
-
-		eon_element_min_height_get(r, &min);
-		eon_element_max_height_get(r, &max);
-		eon_element_height_get(r, &set);
-		ah = set > max ? max : set;
-		ah = ah < min ? min : ah;
-		//printf("h: %g %g %g\n", min, set, max);
+		eon_element_real_width_get(r, &aw);
+		eon_element_real_height_get(r, &ah);
 	}
 	rect->x = 0;
 	rect->y = 0;
 	rect->w = aw;
 	rect->h = ah;
-	//printf("widget boundings %p %d %d %d %d\n", r, rect->x, rect->y, rect->w, rect->h);
 }
 
 static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
