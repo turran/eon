@@ -328,7 +328,7 @@ EAPI Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *d
 	escen_ender = escen_ender_get(escen, descriptor->name);
 	if (!escen_ender) goto ender_err;
 	thiz->escen_ender = escen_ender;
-	thiz->eei = escen_ender_instance_get(thiz->escen_ender);
+	thiz->eei = escen_ender_instance_new(thiz->escen_ender);
 
 	ender = escen_ender_instance_ender_get(thiz->eei);
 	escen_renderer = ender_element_renderer_get(ender);
