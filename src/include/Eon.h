@@ -142,6 +142,19 @@ EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text);
  * @{
  */
 
+typedef struct _Eon_Theme_Element_Descriptor
+{
+	double (*max_width_get)(Enesim_Renderer *r);
+	double (*max_height_get)(Enesim_Renderer *r);
+	double (*min_width_get)(Enesim_Renderer *r);
+	double (*min_height_get)(Enesim_Renderer *r);
+} Eon_Theme_Element_Descriptor;
+
+/**
+ * @}
+ * @{
+ */
+
 typedef struct _Eon_Theme_Widget_Descriptor
 {
 	double (*max_width_get)(Enesim_Renderer *r);

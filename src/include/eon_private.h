@@ -18,9 +18,26 @@
 extern int eon_log;
 
 /* The magic numbers for easy tracking */
+#define EON_MAGIC_CHECK(d, magic)			\
+	do {						\
+		if (!EINA_MAGIC_CHECK(d, magic))	\
+			EINA_MAGIC_FAIL(d, magic);	\
+	} while(0)
+
+#define EON_MAGIC_CHECK_RETURN(d, magic, ret)	\
+	do {						\
+		if (!EINA_MAGIC_CHECK(d, magic)) {	\
+			EINA_MAGIC_FAIL(d, magic);	\
+			return ret;			\
+		}					\
+	} while(0)
+
+/* element inheritance */
 #define EON_ELEMENT_MAGIC 0xe0400001
 #define EON_LAYOUT_MAGIC 0xe0400002
 #define EON_WIDGET_MAGIC 0xe0400003
+/* theme inheritance */
+#define EON_THEME_ELEMENT_MAGIC 0xe041001
 
 /* theme */
 Escen * eon_theme_get(void);

@@ -20,23 +20,12 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_ELEMENT_MAGIC_CHECK(d)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
-			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
-	} while(0)
-
-#define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)) {\
-			EINA_MAGIC_FAIL(d, EON_ELEMENT_MAGIC);\
-			return ret;\
-		}\
-	} while(0)
+#define EON_ELEMENT_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)
+#define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 
 typedef struct _Eon_Element
 {
-	EINA_MAGIC;
+	EINA_MAGIC
 	Eon_Element_Descriptor *descriptor;
 	double width;
 	double height;

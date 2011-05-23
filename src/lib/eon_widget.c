@@ -20,23 +20,12 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_WIDGET_MAGIC_CHECK(d)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC))\
-			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
-	} while(0)
-
-#define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_WIDGET_MAGIC)) {\
-			EINA_MAGIC_FAIL(d, EON_WIDGET_MAGIC);\
-			return ret;\
-		}\
-	} while(0)
+#define EON_WIDGET_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_WIDGET_MAGIC)
+#define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_WIDGET_MAGIC, ret)
 
 typedef struct _Eon_Widget
 {
-	EINA_MAGIC;
+	EINA_MAGIC
 	Eon_Widget_Descriptor *descriptor;
 	void *data; /* the data provided by the widget types */
 	Escen_Ender *escen_ender; /* the theme ender */

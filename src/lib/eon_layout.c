@@ -25,19 +25,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_LAYOUT_MAGIC_CHECK(d)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_LAYOUT_MAGIC))\
-			EINA_MAGIC_FAIL(d, EON_LAYOUT_MAGIC);\
-	} while(0)
-
-#define EON_LAYOUT_MAGIC_CHECK_RETURN(d, ret)\
-	do {\
-		if (!EINA_MAGIC_CHECK(d, EON_LAYOUT_MAGIC)) {\
-			EINA_MAGIC_FAIL(d, EON_LAYOUT_MAGIC);\
-			return ret;\
-		}\
-	} while(0)
+#define EON_LAYOUT_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_LAYOUT_MAGIC)
+#define EON_LAYOUT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_LAYOUT_MAGIC, ret)
 
 typedef struct _Eon_Layout
 {
