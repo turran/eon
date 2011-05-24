@@ -27,6 +27,19 @@ escen {
 
 		state "selected" {
 			set { selected = 1; };
+			animate {
+				property = color;
+				key {
+					value = 0x00000000;
+					time = 0.1;
+					type = 1;
+				};
+				key {
+					value = 0xff000000;
+					time = 1;
+					type = 1;
+				};
+			};
 		};
 
 		state "unselected" {
