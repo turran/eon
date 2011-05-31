@@ -64,7 +64,7 @@ static void _progressbar_update_size(Enesim_Renderer *r)
 {
 	Progressbar *thiz;
 	Enesim_Matrix t;
-	float sa, ca;
+	double sa, ca;
 	double width, height;
 
 	thiz = _progressbar_get(r);
