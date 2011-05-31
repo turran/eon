@@ -239,8 +239,8 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	thiz->shape.bar = r;
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_rectangle_corner_radius_set(r, 5);
-	enesim_renderer_shape_outline_weight_set(r, 2);
-	enesim_renderer_shape_outline_color_set(r, 0xffa1ff38);
+	enesim_renderer_shape_stroke_weight_set(r, 2);
+	enesim_renderer_shape_stroke_color_set(r, 0xffa1ff38);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->shape.background);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
@@ -249,8 +249,8 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	thiz->shape.rectangle = r;
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_rectangle_corner_radius_set(r, 5);
-	enesim_renderer_shape_outline_weight_set(r, 2);
-	enesim_renderer_shape_outline_color_set(r, 0xff000000);
+	enesim_renderer_shape_stroke_weight_set(r, 2);
+	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->shape.bar);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
@@ -287,7 +287,7 @@ void eon_basic_progressbar_light_color_set(Enesim_Renderer *r, Enesim_Color colo
 	enesim_renderer_stripes_even_color_set(r1, color);
 
 	r1 = thiz->shape.bar;
-	enesim_renderer_shape_outline_color_set(r1, color);
+	enesim_renderer_shape_stroke_color_set(r1, color);
 }
 
 /**

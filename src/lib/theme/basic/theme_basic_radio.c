@@ -233,14 +233,14 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	enesim_renderer_origin_set(r, circle_radius, circle_radius);
 	enesim_renderer_circle_radius_set(r, circle_radius);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
-	enesim_renderer_shape_outline_weight_set(r, 2);
+	enesim_renderer_shape_stroke_weight_set(r, 2);
 
 	r = enesim_renderer_circle_new();
 	if (!r) goto inner_err;
 	thiz->inner_circle = r;
 	enesim_renderer_circle_radius_set(r, circle_radius);
-	enesim_renderer_shape_outline_weight_set(r, 3);
-	enesim_renderer_shape_outline_color_set(r, 0xffffffff);
+	enesim_renderer_shape_stroke_weight_set(r, 3);
+	enesim_renderer_shape_stroke_color_set(r, 0xffffffff);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = eon_theme_radio_new(&_twdescriptor, &_descriptor, thiz);
@@ -289,6 +289,6 @@ EAPI void eon_basic_radio_color_set(Enesim_Renderer *r, Enesim_Color color)
 	Radio *thiz;
 
 	thiz = _radio_get(r);
-	enesim_renderer_shape_outline_color_set(thiz->outter_circle, color);
+	enesim_renderer_shape_stroke_color_set(thiz->outter_circle, color);
 	enesim_renderer_shape_fill_color_set(thiz->inner_circle, color);
 }

@@ -237,9 +237,9 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto rectangle_err;
 	thiz->box = r;
-	enesim_renderer_shape_outline_weight_set(r, 2);
+	enesim_renderer_shape_stroke_weight_set(r, 2);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
-	enesim_renderer_shape_outline_color_set(r, 0xff000000);
+	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
 	r = eon_theme_checkbox_new(&_twdescriptor, &_descriptor, thiz);

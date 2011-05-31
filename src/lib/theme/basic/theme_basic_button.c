@@ -244,7 +244,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	if (!r) goto rectangle_err;
 	thiz->rectangle = r;
 	/* setup the initial state */
-	enesim_renderer_shape_outline_weight_set(thiz->rectangle, 1);
+	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = eon_theme_button_new(&_twdescriptor, &_descriptor, thiz);
@@ -282,5 +282,5 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
 	Button *thiz;
 
 	thiz = _button_get(r);
-	enesim_renderer_shape_outline_color_set(thiz->rectangle, color);
+	enesim_renderer_shape_stroke_color_set(thiz->rectangle, color);
 }
