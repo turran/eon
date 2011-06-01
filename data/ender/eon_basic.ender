@@ -6,23 +6,23 @@ namespace "eon" {
 	};
 
 	class "basic_radio" : "theme_radio" {
-		int selected;
-		argb color;
+		int "selected";
+		color "color";
 	};
 
 	class "basic_button" : "theme_button" {
-		argb foreground_color;
-		argb border_color;
+		color "foreground_color";
+		color "border_color";
 	};
 
 	class "basic_checkbox" : "theme_checkbox" {
-		int size;
-		int selected;
+		int "size";
+		int "selected";
 	};
 
 	class "basic_progressbar" : "theme_progressbar" {
-		argb dark_color;
-		argb light_color;
-		double progression;
+		color "dark_color";
+		color "light_color";
+		double "progression";
 	};
 };

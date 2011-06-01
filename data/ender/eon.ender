@@ -2,18 +2,18 @@ using "enesim";
 
 namespace "eon" {
 	abstract "element" : "renderer" {
-		double min_width;
-		double min_height;
-		double max_width;
-		double max_height;
-		double width;
-		double height;
-		double actual_width;
-		double actual_height;
+		double "min_width";
+		double "min_height";
+		double "max_width";
+		double "max_height";
+		double "width";
+		double "height";
+		double "actual_width";
+		double "actual_height";
 	};
 
 	abstract "layout" : "element" {
-		[ender] child;
+		[ender] "child";
 	};
 
 	abstract "widget" : "element" {
@@ -21,51 +21,51 @@ namespace "eon" {
 	};
 
 	class "stack" : "layout" {
-		rel int child_vertical_alignment;
-		rel int child_horizontal_alignment;
-		int direction;
+		rel int "child_vertical_alignment";
+		rel int "child_horizontal_alignment";
+		int "direction";
 	};
 
 	class "canvas" : "layout" {
-		rel double child_x;
-		rel double child_y;
+		rel double "child_x";
+		rel double "child_y";
 	};
 
 	abstract "container" : "widget" {
-		ender content;
+		ender "content";
 	};
 
 	class "button" : "container" {
 	};
 
 	class "radio" : "container" {
-		string group_name;
-		int selected;
+		string "group_name";
+		int "selected";
 	};
 
 	class "checkbox" : "container" {
 	};
 
 	class "progressbar" : "widget" {
-		double progression;
+		double "progression";
 	};
 
 	class "label" : "widget" {
-		int ellipsize;
-		string text;
+		int "ellipsize";
+		string "text";
 	};
 
 	abstract "theme_widget" : "renderer" {
-		double min_width;
-		double max_width;
-		double min_height;
-		double max_height;
-		double width;
-		double height;
+		double "min_width";
+		double "max_width";
+		double "min_height";
+		double "max_height";
+		double "width";
+		double "height";
 	};
 
 	abstract "theme_container" : "theme_widget" {
-		renderer content;
+		renderer "content";
 	};
 
 	abstract "theme_button" : "theme_container" {
@@ -81,9 +81,9 @@ namespace "eon" {
 	};
 
 	abstract "theme_label" : "theme_widget" {
-		int ellipsize;
-		string text;
-		string font;
-		int size;
+		int "ellipsize";
+		string "text";
+		string "font";
+		int "size";
 	};
 };
