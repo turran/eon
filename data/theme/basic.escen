@@ -32,12 +32,12 @@ escen {
 				key {
 					value = 0x00000000;
 					time = 0.1;
-					type = 1;
+					type = LINEAR;
 				};
 				key {
 					value = 0xff000000;
 					time = 1;
-					type = 1;
+					type = LINEAR;
 				};
 			};
 		};
