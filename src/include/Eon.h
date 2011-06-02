@@ -10,11 +10,11 @@
 typedef struct _Eon_Input Eon_Input;
 
 EAPI Eon_Input * eon_input_new(void);
-EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
+EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
 		unsigned int x, unsigned int y);
-EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l);
-EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l);
-EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender *l);
+EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l);
+EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l);
+EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l);
 EAPI void eon_input_feed_mouse_up(Eon_Input *i);
 
 /**
@@ -73,11 +73,11 @@ EAPI void eon_element_max_height_get(Enesim_Renderer *r, double *height);
  */
 
 Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r);
-EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child);
-EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child);
+EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child);
+EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child);
 EAPI void eon_layout_redraw_get(Enesim_Renderer *r, Eina_List **redraws);
-EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y);
-EAPI Ender * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r, unsigned int x, unsigned int y);
+EAPI Ender_Element * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y);
+EAPI Ender_Element * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r, unsigned int x, unsigned int y);
 
 /**
  * @}
@@ -87,8 +87,8 @@ EAPI Ender * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r, unsig
 EAPI Enesim_Renderer * eon_canvas_new(void);
 EAPI void eon_canvas_width_set(Enesim_Renderer *r, unsigned int width);
 EAPI void eon_canvas_height_set(Enesim_Renderer *r, unsigned int height);
-EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x);
-EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y);
+EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, double x);
+EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, double y);
 
 /**
  * @}

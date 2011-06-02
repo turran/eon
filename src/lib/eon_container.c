@@ -23,7 +23,7 @@
 typedef struct _Eon_Container
 {
 	/* properties */
-	Ender *content;
+	Ender_Element *content;
 	/* private */
 	void *data;
 } Eon_Container;
@@ -73,7 +73,7 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_container_content_set(Enesim_Renderer *r, Ender *content)
+EAPI void eon_container_content_set(Enesim_Renderer *r, Ender_Element *content)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *rcontent;
@@ -90,7 +90,7 @@ EAPI void eon_container_content_set(Enesim_Renderer *r, Ender *content)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_container_content_get(Enesim_Renderer *r, const Ender **content)
+EAPI void eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)
 {
 	Eon_Container *thiz;
 

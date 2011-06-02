@@ -15,8 +15,8 @@ struct _Eon_Input
 		unsigned int px;
 		unsigned int py;
 		Eina_Bool inside;
-		Ender *grabbed;
-		Ender *last;
+		Ender_Element *grabbed;
+		Ender_Element *last;
 	} pointer;
 	/* TODO keep the last modifiers */
 	struct
@@ -43,10 +43,10 @@ EAPI Eon_Input * eon_input_new(void)
 /**
  *
  */
-EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
+EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
 		unsigned int x, unsigned int y)
 {
-	Ender *child;
+	Ender_Element *child;
 	Enesim_Renderer *r;
 	unsigned int px, py;
 
@@ -107,10 +107,10 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender *l,
 /**
  *
  */
-EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l)
+EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l)
 {
 	Eon_Event_Mouse_In ev;
-	Ender *child;
+	Ender_Element *child;
 	Enesim_Renderer *r;
 
 	r = ender_element_renderer_get(l);
@@ -128,10 +128,10 @@ EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender *l)
 /**
  *
  */
-EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
+EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l)
 {
 	Eon_Event_Mouse_Out ev;
-	Ender *child;
+	Ender_Element *child;
 	Enesim_Renderer *r;
 
 	if (!eon_is_layout(r))
@@ -147,10 +147,10 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender *l)
 	ender_event_dispatch(child, "MouseOut", &ev);
 }
 
-EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender *l)
+EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l)
 {
 	Eon_Event_Mouse_Down ev;
-	Ender *child;
+	Ender_Element *child;
 	Enesim_Renderer *r;
 
 	if (!ei->pointer.inside)
@@ -171,7 +171,7 @@ EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender *l)
 EAPI void eon_input_feed_mouse_up(Eon_Input *i)
 {
 	Eon_Event_Mouse_Up ev;
-	Ender *child;
+	Ender_Element *child;
 
 	/* send the event to the grabbed object */
 	child = i->pointer.grabbed;

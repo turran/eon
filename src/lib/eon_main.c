@@ -22,7 +22,7 @@
  *============================================================================*/
 static int _init = 0;
 
-static void _destructor_callback(Ender *e, void *data)
+static void _destructor_callback(Ender_Element *e, void *data)
 {
 	Enesim_Renderer *r;
 
@@ -31,7 +31,7 @@ static void _destructor_callback(Ender *e, void *data)
 		return;
 }
 
-static void _constructor_callback(Ender *e, void *data)
+static void _constructor_callback(Ender_Element *e, void *data)
 {
 	Enesim_Renderer *r;
 

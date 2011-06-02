@@ -48,7 +48,7 @@ void eon_theme_shutdown(void);
 /* element */
 typedef struct _Eon_Element_Descriptor
 {
-	void (*initialize)(Ender *ender);
+	void (*initialize)(Ender_Element *ender);
 	void (*actual_width_set)(Enesim_Renderer *r, double width);
 	void (*actual_height_set)(Enesim_Renderer *r, double height);
 	double (*min_width_get)(Enesim_Renderer *r);
@@ -61,15 +61,15 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,
 		Enesim_Renderer_Descriptor *descriptor,
 		void *data);
 void * eon_element_data_get(Enesim_Renderer *r);
-void eon_element_initialize(Ender *ender);
+void eon_element_initialize(Ender_Element *ender);
 
 /* layout */
 typedef struct _Eon_Layout_Descriptor
 {
-	void (*child_add)(Enesim_Renderer *r, Ender *child);
-	void (*child_remove)(Enesim_Renderer *r, Ender *child);
+	void (*child_add)(Enesim_Renderer *r, Ender_Element *child);
+	void (*child_remove)(Enesim_Renderer *r, Ender_Element *child);
 	void (*child_clear)(Enesim_Renderer *r);
-	Ender * (*child_at)(Enesim_Renderer *r, double x, double y);
+	Ender_Element * (*child_at)(Enesim_Renderer *r, double x, double y);
 } Eon_Layout_Descriptor;
 
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
@@ -87,7 +87,7 @@ typedef struct _Eon_Toggle_Descriptor
 /* widget */
 typedef struct _Eon_Widget_Descriptor
 {
-	void (*initialize)(Ender *ender);
+	void (*initialize)(Ender_Element *ender);
 	const char *name;
 } Eon_Widget_Descriptor;
 

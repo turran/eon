@@ -36,7 +36,7 @@ static inline Eon_Progressbar * _eon_progressbar_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_progressbar_initialize(Ender *ender)
+static void _eon_progressbar_initialize(Ender_Element *ender)
 {
 	/* register every needed callback */
 }

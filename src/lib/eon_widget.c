@@ -53,11 +53,11 @@ static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
+	er = ender_element_renderer_get(escen_instance_ender_get(ew->eei));
 	ew->fill(er, x, y, len, dst);
 }
 
-static void _widget_mouse_in(Ender *e, const char *event_name, void *event_data, void *data)
+static void _widget_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Enesim_Renderer *r;
 	Eon_Widget *thiz;
@@ -68,10 +68,10 @@ static void _widget_mouse_in(Ender *e, const char *event_name, void *event_data,
 	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_in");
 	if (!new_state) return;
 
-	escen_ender_instance_state_set(thiz->eei, new_state);
+	escen_instance_state_set(thiz->eei, new_state);
 }
 
-static void _widget_mouse_out(Ender *e, const char *event_name, void *event_data, void *data)
+static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Enesim_Renderer *r;
 	Eon_Widget *thiz;
@@ -82,12 +82,12 @@ static void _widget_mouse_out(Ender *e, const char *event_name, void *event_data
 	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_out");
 	if (!new_state) return;
 
-	escen_ender_instance_state_set(thiz->eei, new_state);
+	escen_instance_state_set(thiz->eei, new_state);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_widget_initialize(Ender *ender)
+static void _eon_widget_initialize(Ender_Element *ender)
 {
 	Eon_Widget *thiz;
 	Enesim_Renderer *r;
@@ -105,31 +105,31 @@ static void _eon_widget_initialize(Ender *ender)
 static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_set(ender, "width", width, NULL);
 }
 
 static void _eon_widget_actual_height_set(Enesim_Renderer *r, double height)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_set(ender, "height", height, NULL);
 }
 
 static double _eon_widget_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_get(ender, "max_width", &v, NULL);
 	return v;
 }
@@ -137,11 +137,11 @@ static double _eon_widget_max_width_get(Enesim_Renderer *r)
 static double _eon_widget_min_width_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_get(ender, "min_width", &v, NULL);
 	return v;
 }
@@ -149,11 +149,11 @@ static double _eon_widget_min_width_get(Enesim_Renderer *r)
 static double _eon_widget_max_height_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_get(ender, "max_height", &v, NULL);
 	return v;
 }
@@ -161,11 +161,11 @@ static double _eon_widget_max_height_get(Enesim_Renderer *r)
 static double _eon_widget_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 	double v;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_get(ender, "min_height", &v, NULL);
 	return v;
 }
@@ -191,7 +191,7 @@ static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	double width, height;
 
 	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
+	er = ender_element_renderer_get(escen_instance_ender_get(ew->eei));
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(er, ox, oy);
@@ -229,7 +229,7 @@ static void _eon_widget_cleanup(Enesim_Renderer *r)
 	Enesim_Renderer *er;
 
 	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_instance_ender_get(ew->eei));
+	er = ender_element_renderer_get(escen_instance_ender_get(ew->eei));
 	enesim_renderer_sw_cleanup(er);
 }
 
@@ -266,7 +266,7 @@ static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 	Enesim_Renderer *er;
 
 	thiz = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_ender_instance_ender_get(thiz->eei));
+	er = ender_element_renderer_get(escen_instance_ender_get(thiz->eei));
 	enesim_renderer_flags(er, flags);
 }
 
@@ -308,7 +308,7 @@ EAPI Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *d
 	Eon_Widget *thiz;
 	Escen *escen;
 	Escen_Ender *escen_ender;
-	Ender *ender;
+	Ender_Element *ender;
 	Enesim_Renderer *r;
 	Enesim_Renderer *escen_renderer;
 	Enesim_Color color;
@@ -328,9 +328,9 @@ EAPI Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *d
 	escen_ender = escen_ender_get(escen, descriptor->name);
 	if (!escen_ender) goto ender_err;
 	thiz->escen_ender = escen_ender;
-	thiz->eei = escen_ender_instance_new(thiz->escen_ender);
+	thiz->eei = escen_instance_new(thiz->escen_ender);
 
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	escen_renderer = ender_element_renderer_get(ender);
 	if (!escen_renderer) goto escen_renderer_err;
 
@@ -404,11 +404,11 @@ EAPI void * eon_widget_data_get(Enesim_Renderer *r)
 EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 	va_list va_args;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	va_start(va_args, name);
 	ender_element_value_set_valist(ender, name, va_args);
 	va_end(va_args);
@@ -421,11 +421,11 @@ EAPI void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 EAPI void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...)
 {
 	Eon_Widget *thiz;
-	Ender *ender;
+	Ender_Element *ender;
 	va_list va_args;
 
 	thiz = _eon_widget_get(r);
-	ender = escen_ender_instance_ender_get(thiz->eei);
+	ender = escen_instance_ender_get(thiz->eei);
 	va_start(va_args, name);
 	ender_element_value_get_valist(ender, name, va_args);
 	va_end(va_args);

@@ -22,7 +22,7 @@
  *============================================================================*/
 typedef struct _Eon_Canvas_Child
 {
-	Ender *ender;
+	Ender_Element *ender;
 	double old_x;
 	double old_y;
 	double x;
@@ -199,7 +199,7 @@ static Eon_Element_Descriptor _eon_canvas_element_descriptor = {
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
-static void _eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
+static void _eon_canvas_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
@@ -211,7 +211,7 @@ static void _eon_canvas_child_add(Enesim_Renderer *r, Ender *child)
 	enesim_renderer_compound_layer_add(thiz->compound, ender_element_renderer_get(child));
 }
 
-static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender *child)
+static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *thiz_child;
@@ -287,7 +287,7 @@ EAPI void eon_canvas_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender *ender)
+EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender_Element *ender)
 {
 
 }
@@ -296,7 +296,7 @@ EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender *ender)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
+EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, double x)
 {
 	Eon_Canvas *e;
 	Eon_Canvas_Child *ech;
@@ -318,7 +318,7 @@ EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender *child, double x)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender *child, double y)
+EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, double y)
 {
 	Eon_Canvas *e;
 	Eon_Canvas_Child *ech;

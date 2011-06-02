@@ -50,7 +50,7 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_element_initialize(Ender *ender)
+void eon_element_initialize(Ender_Element *ender)
 {
 	Eon_Element *thiz;
 	Enesim_Renderer *r;

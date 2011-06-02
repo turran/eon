@@ -22,7 +22,7 @@
  *============================================================================*/
 typedef struct _Eon_Stack_Child
 {
-	Ender *ender;
+	Ender_Element *ender;
 	double old_x;
 	double old_y;
 	double curr_x;
@@ -269,7 +269,7 @@ static void _stack_relayout(Enesim_Renderer *r, Eon_Stack *thiz)
 }
 
 /* if some child changed some property just relayout */
-static void _stack_child_changed(Ender *e, const char *event_name, void *event_data, void *data)
+static void _stack_child_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Enesim_Renderer *r = data;
 	Eon_Stack *thiz;
@@ -474,12 +474,12 @@ static Eon_Element_Descriptor _eon_stack_element_descriptor = {
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
-static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
+static Ender_Element * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
 	Eina_List *l;
-	Ender *child = NULL;
+	Ender_Element *child = NULL;
 
 	thiz = _eon_stack_get(r);
 	if (!thiz) return NULL;
@@ -528,7 +528,7 @@ static Ender * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
 	return child;
 }
 
-static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
+static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
@@ -549,7 +549,7 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender *child)
 	ender_event_listener_add(child, "Mutation", _stack_child_changed, r);
 }
 
-static void _eon_stack_child_remove(Enesim_Renderer *r, Ender *child)
+static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
@@ -679,7 +679,7 @@ EAPI void eon_stack_direction_get(Enesim_Renderer *r, Eon_Stack_Direction *direc
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender *child,
+EAPI void eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender_Element *child,
 		Eon_Horizontal_Alignment alignment)
 {
 	Eon_Stack *thiz;
@@ -701,7 +701,7 @@ EAPI void eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender *ch
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender *child,
+EAPI void eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender_Element *child,
 		Eon_Vertical_Alignment alignment)
 {
 	Eon_Stack *thiz;

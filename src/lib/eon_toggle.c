@@ -72,7 +72,7 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_toggle_toggled_set(Enesim_Renderer *r, Ender *toggled)
+EAPI void eon_toggle_toggled_set(Enesim_Renderer *r, Ender_Element *toggled)
 {
 	Eon_Toggle *thiz;
 	Enesim_Renderer *rtoggled;
@@ -87,7 +87,7 @@ EAPI void eon_toggle_toggled_set(Enesim_Renderer *r, Ender *toggled)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_toggle_toggled_get(Enesim_Renderer *r, const Ender **toggled)
+EAPI void eon_toggle_toggled_get(Enesim_Renderer *r, const Ender_Element **toggled)
 {
 	Eon_Toggle *thiz;
 

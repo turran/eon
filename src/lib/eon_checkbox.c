@@ -36,12 +36,12 @@ static inline Eon_Checkbox * _eon_checkbox_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                        *
  *----------------------------------------------------------------------------*/
-static void _checkbox_mouse_click(Ender *e, const char *event_name, void *event_data, void *data)
+static void _checkbox_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 
 }
 
-static void _eon_checkbox_initialize(Ender *ender)
+static void _eon_checkbox_initialize(Ender_Element *ender)
 {
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseClick", _checkbox_mouse_click, NULL);

@@ -50,7 +50,7 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _child_changed(Ender *child, const char *event_name, void *event_data, void *data)
+static void _child_changed(Ender_Element *child, const char *event_name, void *event_data, void *data)
 {
 	Eon_Layout *thiz;
 
@@ -224,7 +224,7 @@ void eon_layout_damage_add(Enesim_Renderer *r, Eina_Rectangle *damage)
  */
 Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r)
 {
-	Ender *ender, *parent;
+	Ender_Element *ender, *parent;
 	Eina_Bool ret = EINA_FALSE;
 
 	if (!eon_is_layout(r)) goto end;
@@ -243,7 +243,7 @@ end:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child)
+EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Layout *thiz;
 
@@ -256,10 +256,10 @@ EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender *child)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender *child)
+EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Layout *thiz;
-	Ender *curr_parent;
+	Ender_Element *curr_parent;
 
 	thiz = _eon_layout_get(r);
 	curr_parent = ender_element_parent_get(child);
@@ -293,10 +293,10 @@ EAPI void eon_layout_child_clear(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y)
+EAPI Ender_Element * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y)
 {
 	Eon_Layout *thiz;
-	Ender *child;
+	Ender_Element *child;
 
 	thiz = _eon_layout_get(r);
 	if (!thiz) return NULL;
@@ -311,11 +311,11 @@ EAPI Ender * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double 
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ender * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r,
+EAPI Ender_Element * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r,
 		unsigned int x, unsigned int y)
 {
 	Eon_Layout *thiz;
-	Ender *child;
+	Ender_Element *child;
 	Enesim_Matrix matrix;
 	Enesim_Matrix_Type mtype;
 	double rx, ry;

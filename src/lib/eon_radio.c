@@ -36,7 +36,7 @@ static inline Eon_Radio * _eon_radio_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _radio_mouse_click(Ender *e, const char *event_name, void *event_data, void *data)
+static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Escen_Ender *theme;
 	Escen_State *new_state;
@@ -52,7 +52,7 @@ static void _radio_mouse_click(Ender *e, const char *event_name, void *event_dat
 	{
 		Escen_Ender_Instance *eei;
 		eei = eon_widget_theme_instance_get(r);
-		escen_ender_instance_state_set(eei, new_state);
+		escen_instance_state_set(eei, new_state);
 	}
 	eon_radio_selected_set(r, EINA_TRUE);
 	/* TODO trigger the selected event */
@@ -60,7 +60,7 @@ static void _radio_mouse_click(Ender *e, const char *event_name, void *event_dat
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_radio_initialize(Ender *ender)
+static void _eon_radio_initialize(Ender_Element *ender)
 {
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseClick", _radio_mouse_click, NULL);

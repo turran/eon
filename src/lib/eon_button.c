@@ -34,7 +34,7 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_button_initialize(Ender *e)
+static void _eon_button_initialize(Ender_Element *e)
 {
 	/* register every event needed for a button
 	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
