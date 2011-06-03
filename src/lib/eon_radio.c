@@ -50,7 +50,7 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
 	new_state = escen_ender_state_get(theme, "selected");
 	if (new_state)
 	{
-		Escen_Ender_Instance *eei;
+		Escen_Instance *eei;
 		eei = eon_widget_theme_instance_get(r);
 		escen_instance_state_set(eei, new_state);
 	}

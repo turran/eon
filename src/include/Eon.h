@@ -125,9 +125,25 @@ EAPI void eon_stack_height_set(Enesim_Renderer *r, unsigned int height);
  * @}
  * @{
  */
+EAPI void eon_container_content_set(Enesim_Renderer *r, Ender_Element *content);
+EAPI void eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content);
 
+/**
+ * @}
+ * @{
+ */
+
+EAPI Enesim_Renderer * eon_radio_new(void);
+EAPI void eon_radio_group_name_set(Enesim_Renderer *r, const char *group);
+EAPI void eon_radio_group_name_get(Enesim_Renderer *r, const char **group);
 EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected);
 EAPI void eon_radio_selected_get(Enesim_Renderer *r, Eina_Bool *selected);
+
+/**
+ * @}
+ * @{
+ */
+EAPI Enesim_Renderer * eon_button_new(void);
 
 /**
  * @}

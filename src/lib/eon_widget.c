@@ -29,7 +29,7 @@ typedef struct _Eon_Widget
 	Eon_Widget_Descriptor *descriptor;
 	void *data; /* the data provided by the widget types */
 	Escen_Ender *escen_ender; /* the theme ender */
-	Escen_Ender_Instance *eei;
+	Escen_Instance *eei;
 	/* FIXME add a way to setup and cleanup an ender whenever
 	 * a widget ender is associated with a layout
 	 */
@@ -79,6 +79,15 @@ static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *ev
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
+	if (escen_instance_current_state_finalized(thiz->eei))
+	{
+		printf("state finalized, setting the new one\n");
+	}
+	else
+	{
+		printf("state didnt finalize, not setting a new one\n");
+		return;
+	}
 	new_state = escen_ender_state_get(thiz->escen_ender, "mouse_out");
 	if (!new_state) return;
 
@@ -279,7 +288,7 @@ static Enesim_Renderer_Descriptor _eon_widget_descriptor = {
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Escen_Ender_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r)
+Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
 
