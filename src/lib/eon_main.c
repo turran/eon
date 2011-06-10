@@ -57,7 +57,7 @@ EAPI int eon_init(void)
 		eina_init();
 		eon_log = eina_log_domain_register("eon", NULL);
 		enesim_init();
-		ender_init();
+		ender_init(NULL, NULL);
 		ender_element_new_listener_add(_constructor_callback, NULL);
 		escen_init();
 		eon_basic_init();
