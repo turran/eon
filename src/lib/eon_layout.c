@@ -323,7 +323,7 @@ EAPI Ender_Element * eon_layout_child_get_at_destination_coord(Enesim_Renderer *
 	thiz = _eon_layout_get(r);
 	/* first from the destination coordinates get the origin coordinates */
 	enesim_renderer_transformation_get(r, &matrix);
-	enesim_matrix_type_get(&matrix);
+	mtype = enesim_matrix_type_get(&matrix);
 	if (mtype != ENESIM_MATRIX_IDENTITY)
 	{
 		enesim_matrix_point_transform(&matrix, x, y, &rx, &ry);

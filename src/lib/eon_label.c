@@ -76,7 +76,7 @@ EAPI void eon_label_text_set(Enesim_Renderer *r, const char *text)
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "text", text);
+	eon_widget_property_set(r, "text", text, NULL);
 }
 
 /**
@@ -90,7 +90,7 @@ EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text)
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_get(r, "text", text);
+	eon_widget_property_get(r, "text", text, NULL);
 }
 
 
@@ -104,7 +104,7 @@ EAPI void eon_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
 
 	thiz = _eon_label_get(r);
 
-	eon_widget_property_set(r, "ellipsize", enable);
+	eon_widget_property_set(r, "ellipsize", enable, NULL);
 }
 
 /**
@@ -117,7 +117,7 @@ EAPI void eon_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enabled)
 
 	thiz = _eon_label_get(r);
 
-	eon_widget_property_get(r, "ellipsize", enabled);
+	eon_widget_property_get(r, "ellipsize", enabled, NULL);
 }
 
 #if 0
