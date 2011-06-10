@@ -304,14 +304,9 @@ void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 	Ender_Element *ender;
 	va_list va_args;
 
-	printf("1 name = %p\n", name);
 	thiz = _eon_widget_get(r);
-	printf("2 name = %p\n", name);
-	printf("widget = %p %p\n", r, thiz);
 	ender = escen_instance_ender_get(thiz->eei);
-	printf("3 name = %p\n", name);
 	va_start(va_args, name);
-	printf("4 name = %p\n", name);
 	ender_element_value_set_valist(ender, name, va_args);
 	va_end(va_args);
 }
@@ -396,7 +391,6 @@ EAPI Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *d
 	/* Whenever the state changes, we must set the common properties again */
 	//printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
 
-	printf("widget = %p %p\n", r, thiz);
 	return r;
 
 renderer_err:
