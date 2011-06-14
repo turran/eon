@@ -149,7 +149,6 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	eon_theme_container_content_get(r, &content);
 	if (!content)
 	{
-		printf("radio no content\n");
 		return EINA_FALSE;
 	}
 	if (thiz->content != content)
@@ -169,7 +168,10 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		return EINA_FALSE;
 	}
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
+	if (!thiz->fill)
+	{
+		return EINA_FALSE;
+	}
 
 	*fill = _radio_draw;
 
