@@ -90,69 +90,76 @@ static void _eon_element_free(Enesim_Renderer *r)
 {
 	Eon_Element *thiz;
 
+	thiz = _eon_element_get(r);
+	if (thiz->free)
+		thiz->free(r);
+	free(thiz);
+
 }
-#if 0
-static Eina_Bool _eon_widget_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+
+static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
-	Eon_Widget *ew;
-	Enesim_Renderer *er;
+	Eon_Element *thiz;
 	Enesim_Color color;
 	double ox, oy;
 	double width, height;
 
-	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_instance_ender_get(ew->eei));
+	thiz = _eon_element_get(r);
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(er, ox, oy);
-	/* FIXME if the user changes the color of the widget, the theme should
+	enesim_renderer_origin_set(thiz->theme_renderer, ox, oy);
+	/* FIXME if the user changes the color of the element, the theme should
 	 * reflect that value
 	 */
 	enesim_renderer_color_get(r, &color);
-	enesim_renderer_color_set(er, color);
+	enesim_renderer_color_set(thiz->theme_renderer, color);
 #if 0
-	/* set the width and height to the widget */
+	/* set the width and height to the element */
 	/* FIXME if this is working, maybe we should just remove the callbacks
 	 * from eon_element?
 	 */
 	eon_element_actual_size_get(r, &width, &height);
 	printf("actual size get %g %g\n", width, height);
-	eon_theme_widget_width_set(er, width);
-	eon_theme_widget_height_set(er, height);
+	eon_theme_element_width_set(er, width);
+	eon_theme_element_height_set(er, height);
 #endif
-	if (!enesim_renderer_sw_setup(er))
+	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
 	{
 		printf("not available to setup yet\n");
 		return EINA_FALSE;
 	}
 	/* get the ender from the escen ender and get the fill function */
-	ew->fill = enesim_renderer_sw_fill_get(er);
-	if (!ew->fill) return EINA_FALSE;
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->theme_renderer);
+	if (!thiz->fill) return EINA_FALSE;
 
-	*fill = _widget_draw;
+	*fill = _element_draw;
 	return EINA_TRUE;
 }
 
-static void _eon_widget_cleanup(Enesim_Renderer *r)
+static void _eon_element_sw_cleanup(Enesim_Renderer *r)
 {
-	Eon_Widget *ew;
-	Enesim_Renderer *er;
+	Eon_Element *thiz;
 
-	ew = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_instance_ender_get(ew->eei));
-	enesim_renderer_sw_cleanup(er);
+	thiz = _eon_element_get(r);
+	enesim_renderer_sw_cleanup(thiz->theme_renderer);
 }
 
-static void _eon_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
+static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 {
-	Eon_Widget *thiz;
-	Enesim_Renderer *er;
+	Eon_Element *thiz;
 
-	thiz = _eon_widget_get(r);
-	er = ender_element_renderer_get(escen_instance_ender_get(thiz->eei));
-	enesim_renderer_flags(er, flags);
+	thiz = _eon_element_get(r);
+	enesim_renderer_flags(thiz->theme_renderer, flags);
 }
-#endif
+
+static Enesim_Renderer_Descriptor _descriptor = {
+	.boundings = _eon_element_boundings,
+	.flags = _eon_element_flags,
+	.free = _eon_element_free,
+	.sw_setup = _eon_element_sw_setup,
+	.sw_cleanup = _eon_element_sw_cleanup,
+};
+
 #if 0
 static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
 {
@@ -192,8 +199,6 @@ Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r)
 	return thiz->eei;
 }
 
-
-
 #endif
 /*============================================================================*
  *                                 Global                                     *
@@ -213,7 +218,26 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Element *thiz;
+	Escen *theme_escen;
+	Escen_Ender *theme_ender;
+	Escen_Instance *theme_instance;
+	Ender_Element *theme_element;
+	Enesim_Renderer *theme_renderer;
 	Enesim_Renderer *r;
+	Enesim_Color color;
+
+	theme_escen = eon_theme_get();
+	if (!theme_escen) {
+		printf("no theme\n");
+		return NULL;
+	}
+
+	theme_ender = escen_ender_get(theme_escen, descriptor->name);
+	if (!theme_ender) return NULL;
+
+	theme_instance = escen_instance_new(theme_ender);
+	theme_element = escen_instance_ender_get(theme_instance);
+	theme_renderer = ender_element_renderer_get(theme_element);
 
 	thiz = calloc(1, sizeof(Eon_Element));
 	EINA_MAGIC_SET(thiz, EON_ELEMENT_MAGIC);
@@ -224,60 +248,17 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->min_width = thiz->min_height = 0;
 	thiz->width = -1;
 	thiz->height = -1;
-#if 0
-	Eon_Widget *thiz;
-	Escen *escen;
-	Escen_Ender *escen_ender;
-	Ender_Element *ender;
-	Enesim_Renderer *r;
-	Enesim_Renderer *escen_renderer;
-	Enesim_Color color;
-	char theme[PATH_MAX];
 
-	escen = eon_theme_get();
-	if (!escen) {
-		printf("no theme\n");
-		return NULL;
-	}
+	thiz->theme_renderer = theme_renderer;
+	thiz->theme_ender = theme_ender;
+	thiz->theme_instance = theme_instance;
 
-	thiz = calloc(1, sizeof(Eon_Widget));
-	EINA_MAGIC_SET(thiz, EON_WIDGET_MAGIC);
-	thiz->data = data;
-	thiz->descriptor = descriptor;
-
-	escen_ender = escen_ender_get(escen, descriptor->name);
-	if (!escen_ender) goto ender_err;
-	thiz->escen_ender = escen_ender;
-	thiz->eei = escen_instance_new(thiz->escen_ender);
-
-	ender = escen_instance_ender_get(thiz->eei);
-	escen_renderer = ender_element_renderer_get(ender);
-	if (!escen_renderer) goto escen_renderer_err;
-
-	r = eon_element_new(&_eon_widget_element_descriptor,
-			&_eon_widget_descriptor, thiz);
+	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	/* Set the default properties from the state */
-	enesim_renderer_color_get(escen_renderer, &color);
+	enesim_renderer_color_get(theme_renderer, &color);
 	enesim_renderer_color_set(r, color);
-
-	/* Add default event handlers: mouse move, mouse in, mouse out, etc */
-	/* Whenever the state changes, we must set the common properties again */
-	//printf("creating new widget %p %s with theme %p\n", r, name, escen_renderer);
-
-renderer_err:
-	/* free the escen_ender */
-escen_renderer_err:
-
-ender_err:
-	free(thiz);
-	return NULL;
-#endif
-
-
-	r = enesim_renderer_new(descriptor, thiz);
-	if (!r) goto renderer_err;
 
 	return r;
 
