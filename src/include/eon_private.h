@@ -102,5 +102,10 @@ void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...);
 void * eon_container_data_get(Enesim_Renderer *r);
 Enesim_Renderer * eon_container_new(Eon_Widget_Descriptor *descriptor, void *data);
 
+/* theme */
+#include "private/eon_theme_element_private.h"
+#include "private/eon_theme_widget_private.h"
+#include "private/eon_theme_container_private.h"
+
 #endif
 

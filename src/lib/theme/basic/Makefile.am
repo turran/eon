@@ -14,5 +14,6 @@ theme_basic_radio.c \
 theme_basic_button.c \
 theme_basic_checkbox.c \
 theme_basic_label.c \
+theme_basic_layout.c \
 theme_basic_progressbar.c \
 theme_basic_scrollview.c

@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,42 +20,47 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Theme_Widget
+typedef struct _Eon_Theme_Layout
 {
+	EINA_MAGIC;
 	/* properties */
 	/* private */
 	void *data;
 	Enesim_Renderer_Delete free;
-} Eon_Theme_Widget;
+} Eon_Theme_Layout;
 
-static inline Eon_Theme_Widget * _eon_theme_widget_get(Enesim_Renderer *r)
+static inline Eon_Theme_Layout * _eon_theme_button_get(Enesim_Renderer *r)
 {
-	Eon_Theme_Widget *thiz;
+	Eon_Theme_Layout *thiz;
 
-	thiz = eon_theme_element_data_get(r);
+	thiz = eon_theme_container_data_get(r);
 
 	return thiz;
 }
 
-static void _eon_theme_widget_free(Enesim_Renderer *r)
+static void _eon_theme_button_free(Enesim_Renderer *r)
 {
-	Eon_Theme_Widget *thiz;
+	Eon_Theme_Layout *thiz;
 
-	thiz = _eon_theme_widget_get(r);
+	thiz = _eon_theme_button_get(r);
 	if (thiz->free) thiz->free(r);
 	free(thiz);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descriptor,
 		void *data)
 {
-	Eon_Theme_Widget *thiz;
+	Eon_Theme_Layout *thiz;
 	Eon_Theme_Element_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Eon_Theme_Widget));
+	thiz = calloc(1, sizeof(Eon_Theme_Layout));
 	thiz->data = data;
 	thiz->free = descriptor->free;
 
@@ -65,7 +70,7 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 	pdescriptor.min_height_get = descriptor->min_height_get;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
-	pdescriptor.free = _eon_theme_widget_free;
+	pdescriptor.free = _eon_theme_button_free;
 
 	r = eon_theme_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
@@ -77,29 +82,21 @@ renderer_err:
 	return NULL;
 }
 
-void * eon_theme_widget_data_get(Enesim_Renderer *r)
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void * eon_theme_layout_data_get(Enesim_Renderer *r)
 {
-	Eon_Theme_Widget *thiz;
 
-	thiz = _eon_theme_widget_get(r);
-	return thiz->data;
 }
 
-Eina_Bool eon_is_theme_widget(Enesim_Renderer *r)
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool eon_is_theme_layout(Enesim_Renderer *r)
 {
-	Eon_Theme_Widget *thiz;
 
-	if (!eon_is_theme_element(r))
-		return EINA_FALSE;
-	thiz = eon_theme_element_data_get(r);
-	if (!thiz) return EINA_FALSE;
-#if 0
-	if (!EINA_MAGIC_CHECK(thiz, EON_THEME_ELEMENT_MAGIC))
-		return EINA_FALSE;
-#endif
-	return EINA_TRUE;
 }
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
 

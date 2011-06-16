@@ -53,7 +53,7 @@ static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	rad->fill(rad->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
- *                      The Eon's theme widget interface                      *
+ *                          The Radio theme interface                         *
  *----------------------------------------------------------------------------*/
 static double _radio_min_width_get(Enesim_Renderer *r)
 {
@@ -126,15 +126,6 @@ static double _radio_max_height_get(Enesim_Renderer *r)
 	return DBL_MAX;
 }
 
-static Eon_Theme_Widget_Descriptor _twdescriptor = {
-	.max_width_get = _radio_max_width_get,
-	.max_height_get = _radio_max_height_get,
-	.min_width_get = _radio_min_width_get,
-	.min_height_get = _radio_min_height_get,
-};
-/*----------------------------------------------------------------------------*
- *                      The Enesim's renderer interface                       *
- *----------------------------------------------------------------------------*/
 static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Radio *thiz;
@@ -186,14 +177,6 @@ static void _radio_cleanup(Enesim_Renderer *r)
 	enesim_renderer_sw_cleanup(thiz->compound);
 }
 
-static void _radio_boundings(Enesim_Renderer *r, Enesim_Rectangle *bounds)
-{
-	Radio *thiz;
-
-	thiz = _radio_get(r);
-	enesim_renderer_boundings(thiz->compound, bounds);
-}
-
 static void _radio_free(Enesim_Renderer *r)
 {
 	Radio *rad;
@@ -208,10 +191,13 @@ static void _radio_free(Enesim_Renderer *r)
 	free(rad);
 }
 
-static Enesim_Renderer_Descriptor _descriptor = {
+static Eon_Theme_Radio_Descriptor _descriptor = {
+	.max_width_get = _radio_max_width_get,
+	.max_height_get = _radio_max_height_get,
+	.min_width_get = _radio_min_width_get,
+	.min_height_get = _radio_min_height_get,
 	.sw_setup = _radio_setup,
 	.sw_cleanup = _radio_cleanup,
-	.boundings = _radio_boundings,
 	.free = _radio_free,
 };
 /*============================================================================*
@@ -245,7 +231,7 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	enesim_renderer_shape_stroke_color_set(r, 0xffffffff);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
-	r = eon_theme_radio_new(&_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_radio_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -264,7 +250,7 @@ compound_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_radio_selected_set(Enesim_Renderer *r, int selected)
+EAPI void eon_basic_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 {
 	Radio *thiz;
 

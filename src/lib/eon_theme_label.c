@@ -22,12 +22,20 @@
  *============================================================================*/
 typedef struct _Eon_Theme_Label
 {
-	Eon_Theme_Label_Descriptor *descriptor;
-	Eon_Theme_Widget_Descriptor *twdescriptor;
+	/* the label interface */
+	Eon_Theme_Label_Font_Set font_set;
+	Eon_Theme_Label_Font_Get font_get;
+	Eon_Theme_Label_Size_Set size_set;
+	Eon_Theme_Label_Size_Get size_get;
+	Eon_Theme_Label_Text_Set text_set;
+	Eon_Theme_Label_Text_Get text_get;
+	Eon_Theme_Label_Ellipsize_Set ellipsize_set;
+	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
 	/* data needed for our own callbacks */
 	Enesim_Renderer *text;
 	Eina_Bool ellipsized;
 	void *data;
+	Enesim_Renderer_Delete free;
 } Eon_Theme_Label;
 
 static inline Eon_Theme_Label * _eon_theme_label_get(Enesim_Renderer *r)
@@ -37,8 +45,17 @@ static inline Eon_Theme_Label * _eon_theme_label_get(Enesim_Renderer *r)
 	thiz = eon_theme_widget_data_get(r);
 	return thiz;
 }
+
+static void _eon_theme_label_free(Enesim_Renderer *r)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(r);
+	if (thiz->free) thiz->free(r);
+	free(thiz);
+}
 /*----------------------------------------------------------------------------*
- *                      The Eon's theme widget interface                      *
+ *                      The Eon's theme label interface                       *
  *----------------------------------------------------------------------------*/
 static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 {
@@ -118,9 +135,6 @@ static double _eon_theme_label_max_height_get(Enesim_Renderer *r)
 	enesim_renderer_boundings(r, &boundings);
 	return boundings.h;
 }
-/*----------------------------------------------------------------------------*
- *                      The Eon's theme label interface                       *
- *----------------------------------------------------------------------------*/
 /* FIXME do we actually need this? */
 static void _eon_theme_label_ellipsize_set(Enesim_Renderer *r,
 		Eina_Bool ellipsize)
@@ -148,36 +162,87 @@ static Eina_Bool _eon_theme_label_ellipsize_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *tldescriptor,
-		Eon_Theme_Widget_Descriptor *twdescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
-		void *data)
+EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descriptor, void *data)
 {
 	Eon_Theme_Label *thiz;
+	Eon_Theme_Widget_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
 	/* first check the label descriptors */
+	if (!descriptor->text_set)
+	{
+		return NULL;
+	}
+	if (!descriptor->text_get)
+	{
+		return NULL;
+	}
+	if (!descriptor->font_set)
+	{
+		return NULL;
+	}
+	if (!descriptor->font_get)
+	{
+		return NULL;
+	}
+	if (!descriptor->size_set)
+	{
+		return NULL;
+	}
+	if (!descriptor->size_get)
+	{
+		return NULL;
+	}
 
 	thiz = calloc(1, sizeof(Eon_Theme_Label));
 	thiz->data = data;
-	thiz->descriptor = tldescriptor;
+	thiz->free = descriptor->free;
+	/* the label interface */
+	thiz->text_get = descriptor->text_get;
+	thiz->text_set = descriptor->text_set;
+	thiz->font_get = descriptor->font_get;
+	thiz->font_set = descriptor->font_set;
+	thiz->size_get = descriptor->size_get;
+	thiz->size_set = descriptor->size_set;
 	/* set default values */
-	if (!tldescriptor->ellipsize_set || !tldescriptor->ellipsize_get)
+	if (!descriptor->ellipsize_set || !descriptor->ellipsize_get)
 	{
-		tldescriptor->ellipsize_set = _eon_theme_label_ellipsize_set;
-		tldescriptor->ellipsize_get = _eon_theme_label_ellipsize_get;
+		thiz->ellipsize_set = _eon_theme_label_ellipsize_set;
+		thiz->ellipsize_get = _eon_theme_label_ellipsize_get;
 	}
-	if (!twdescriptor->min_width_get)
-		twdescriptor->min_width_get = _eon_theme_label_min_width_get;
-	if (!twdescriptor->max_width_get)
-		twdescriptor->max_width_get = _eon_theme_label_max_width_get;
-	if (!twdescriptor->min_height_get)
-		twdescriptor->min_height_get = _eon_theme_label_min_height_get;
-	if (!twdescriptor->max_height_get)
-		twdescriptor->max_height_get = _eon_theme_label_max_height_get;
+	else
+	{
+		thiz->ellipsize_set = descriptor->ellipsize_set;
+		thiz->ellipsize_get = descriptor->ellipsize_get;
+	}
 
-	thiz->twdescriptor = twdescriptor;
-	r = eon_theme_widget_new(twdescriptor, descriptor, thiz);
+	/* the widget interface */
+	if (!descriptor->min_width_get)
+		pdescriptor.min_width_get = _eon_theme_label_min_width_get;
+	else
+		pdescriptor.min_width_get = descriptor->min_width_get;
+
+	if (!descriptor->max_width_get)
+		pdescriptor.max_width_get = _eon_theme_label_max_width_get;
+	else
+		pdescriptor.max_width_get = descriptor->max_width_get;
+
+	if (!descriptor->min_height_get)
+		pdescriptor.min_height_get = _eon_theme_label_min_height_get;
+	else
+		pdescriptor.min_height_get = descriptor->min_height_get;
+
+	if (!descriptor->max_height_get)
+		pdescriptor.max_height_get = _eon_theme_label_max_height_get;
+	else
+		pdescriptor.max_height_get = descriptor->max_height_get;
+
+	/* now the needed enesim functions */
+	pdescriptor.sw_setup = descriptor->sw_setup;
+	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.free = _eon_theme_label_free;
+
+	r = eon_theme_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -218,7 +283,7 @@ EAPI void eon_theme_label_font_get(Enesim_Renderer *r, const char **str)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	*str = thiz->descriptor->font_get(r);
+	*str = thiz->font_get(r);
 }
 
 /**
@@ -230,7 +295,7 @@ EAPI void eon_theme_label_font_set(Enesim_Renderer *r, const char *str)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	thiz->descriptor->font_set(r, str);
+	thiz->font_set(r, str);
 }
 
 /**
@@ -242,7 +307,7 @@ EAPI void eon_theme_label_size_get(Enesim_Renderer *r, int *size)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	*size = thiz->descriptor->size_get(r);
+	*size = thiz->size_get(r);
 }
 
 /**
@@ -254,7 +319,7 @@ EAPI void eon_theme_label_size_set(Enesim_Renderer *r, int size)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	thiz->descriptor->size_set(r, size);
+	thiz->size_set(r, size);
 }
 
 /**
@@ -266,7 +331,7 @@ EAPI void eon_theme_label_ellipsized_text_get(Enesim_Renderer *r, const char **s
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	*str = thiz->descriptor->text_get(r);
+	*str = thiz->text_get(r);
 }
 
 /**
@@ -278,7 +343,7 @@ EAPI void eon_theme_label_text_get(Enesim_Renderer *r, const char **str)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	*str = thiz->descriptor->text_get(r);
+	*str = thiz->text_get(r);
 }
 
 /**
@@ -290,7 +355,7 @@ EAPI void eon_theme_label_text_set(Enesim_Renderer *r, const char *str)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	thiz->descriptor->text_set(r, str);
+	thiz->text_set(r, str);
 }
 
 /**
@@ -302,7 +367,7 @@ EAPI void eon_theme_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enable)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	*enable = thiz->descriptor->ellipsize_get(r);
+	*enable = thiz->ellipsize_get(r);
 }
 
 /**
@@ -314,5 +379,5 @@ EAPI void eon_theme_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	thiz->descriptor->ellipsize_set(r, enable);
+	thiz->ellipsize_set(r, enable);
 }

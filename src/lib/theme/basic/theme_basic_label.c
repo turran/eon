@@ -99,21 +99,6 @@ static const char * _label_text_get(Enesim_Renderer *r)
 	return str;
 }
 
-static Eon_Theme_Label_Descriptor _tldescriptor = {
-	.text_set = _label_text_set,
-	.text_get = _label_text_get,
-	.size_set = _label_size_set,
-	.size_get = _label_size_get,
-	.font_set = _label_font_set,
-	.font_get = _label_font_get,
-};
-/*----------------------------------------------------------------------------*
- *                      The Eon's theme widget interface                      *
- *----------------------------------------------------------------------------*/
-static Eon_Theme_Widget_Descriptor _twdescriptor;
-/*----------------------------------------------------------------------------*
- *                      The Enesim's renderer interface                       *
- *----------------------------------------------------------------------------*/
 static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Label *thiz;
@@ -126,10 +111,14 @@ static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
 	if (!enesim_renderer_sw_setup(thiz->text))
+	{
 		return EINA_FALSE;
+	}
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->text);
 	if (!thiz->fill)
+	{
 		return EINA_FALSE;
+	}
 
 	*fill = _label_draw;
 
@@ -154,18 +143,15 @@ static void _label_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _label_boundings(Enesim_Renderer *r, Enesim_Rectangle *boundings)
-{
-	Label *thiz;
-
-	thiz = _label_get(r);
-	enesim_renderer_boundings(thiz->text, boundings);
-}
-
-static Enesim_Renderer_Descriptor _descriptor = {
+static Eon_Theme_Label_Descriptor _descriptor = {
+	.text_set = _label_text_set,
+	.text_get = _label_text_get,
+	.size_set = _label_size_set,
+	.size_get = _label_size_get,
+	.font_set = _label_font_set,
+	.font_get = _label_font_get,
 	.sw_setup = _label_setup,
 	.sw_cleanup = _label_cleanup,
-	.boundings = _label_boundings,
 	.free = _label_free,
 };
 /*============================================================================*
@@ -187,7 +173,7 @@ EAPI Enesim_Renderer * eon_basic_label_new(void)
 	if (!r) goto etex_err;
 	thiz->text = r;
 
-	r = eon_theme_label_new(&_tldescriptor, &_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_label_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

@@ -55,13 +55,16 @@ namespace "eon" {
 		string "text";
 	};
 
-	abstract "theme_widget" : "renderer" {
+	abstract "theme_element" : "renderer" {
 		double "min_width";
 		double "max_width";
 		double "min_height";
 		double "max_height";
 		double "width";
 		double "height";
+	};
+
+	abstract "theme_widget" : "theme_element" {
 	};
 
 	abstract "theme_container" : "theme_widget" {

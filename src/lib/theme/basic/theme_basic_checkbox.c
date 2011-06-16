@@ -53,7 +53,7 @@ static void _checkbox_draw(Enesim_Renderer *r, int x, int y, unsigned int len, u
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
- *                      The Eon's theme widget interface                      *
+ *                       The Checkbox theme interface                         *
  *----------------------------------------------------------------------------*/
 static double _checkbox_min_width_get(Enesim_Renderer *r)
 {
@@ -126,15 +126,6 @@ static double _checkbox_max_height_get(Enesim_Renderer *r)
 	return DBL_MAX;
 }
 
-static Eon_Theme_Widget_Descriptor _twdescriptor = {
-	.max_width_get = _checkbox_max_width_get,
-	.max_height_get = _checkbox_max_height_get,
-	.min_width_get = _checkbox_min_width_get,
-	.min_height_get = _checkbox_min_height_get,
-};
-/*----------------------------------------------------------------------------*
- *                      The Enesim's renderer interface                       *
- *----------------------------------------------------------------------------*/
 static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Checkbox *thiz;
@@ -195,18 +186,13 @@ static void _checkbox_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _checkbox_boundings(Enesim_Renderer *r, Enesim_Rectangle *boundings)
-{
-	Checkbox *thiz;
-
-	thiz = _checkbox_get(r);
-	enesim_renderer_boundings(thiz->compound, boundings);
-}
-
-static Enesim_Renderer_Descriptor _descriptor = {
+static Eon_Theme_Checkbox_Descriptor _descriptor = {
+	.max_width_get = _checkbox_max_width_get,
+	.max_height_get = _checkbox_max_height_get,
+	.min_width_get = _checkbox_min_width_get,
+	.min_height_get = _checkbox_min_height_get,
 	.sw_setup = _checkbox_setup,
 	.sw_cleanup = _checkbox_cleanup,
-	.boundings = _checkbox_boundings,
 	.free = _checkbox_free,
 };
 /*============================================================================*
@@ -242,7 +228,7 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
-	r = eon_theme_checkbox_new(&_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_checkbox_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

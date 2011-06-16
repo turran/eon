@@ -39,6 +39,7 @@ typedef struct _Eon_Theme_Progressbar
 {
 	EINA_MAGIC;
 	void *data;
+	Enesim_Renderer_Delete free;
 } Eon_Theme_Progressbar;
 
 static inline Eon_Theme_Progressbar * _eon_theme_progressbar_get(Enesim_Renderer *r)
@@ -50,6 +51,15 @@ static inline Eon_Theme_Progressbar * _eon_theme_progressbar_get(Enesim_Renderer
 
 	return thiz;
 }
+
+static void _eon_theme_progressbar_free(Enesim_Renderer *r)
+{
+	Eon_Theme_Progressbar *thiz;
+
+	thiz = _eon_theme_progressbar_get(r);
+	if (thiz->free) thiz->free(r);
+	free(thiz);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -60,17 +70,27 @@ static inline Eon_Theme_Progressbar * _eon_theme_progressbar_get(Enesim_Renderer
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_theme_progressbar_new(Eon_Theme_Widget_Descriptor *twdescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
+EAPI Enesim_Renderer * eon_theme_progressbar_new(Eon_Theme_Progressbar_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Theme_Progressbar *thiz;
+	Eon_Theme_Widget_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Progressbar));
 	EINA_MAGIC_SET(thiz, EON_THEME_PROGRESSBAR_MAGIC);
 	thiz->data = data;
-	r = eon_theme_widget_new(twdescriptor, descriptor, thiz);
+	thiz->free = descriptor->free;
+	
+	pdescriptor.max_width_get = descriptor->max_width_get;
+	pdescriptor.min_width_get = descriptor->min_width_get;
+	pdescriptor.max_height_get = descriptor->max_height_get;
+	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.sw_setup = descriptor->sw_setup;
+	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.free = _eon_theme_progressbar_free;
+
+	r = eon_theme_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

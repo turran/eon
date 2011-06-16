@@ -41,8 +41,8 @@ typedef struct _Eon_Theme_Container
 	/* properties */
 	Enesim_Renderer *content;
 	/* private */
-	Eon_Theme_Widget_Descriptor *twdescriptor;
 	void *data;
+	Enesim_Renderer_Delete free;
 } Eon_Theme_Container;
 
 static inline Eon_Theme_Container * _eon_theme_container_get(Enesim_Renderer *r)
@@ -54,28 +54,38 @@ static inline Eon_Theme_Container * _eon_theme_container_get(Enesim_Renderer *r)
 
 	return thiz;
 }
+
+static void _eon_theme_container_free(Enesim_Renderer *r)
+{
+	Eon_Theme_Container *thiz;
+
+	thiz = _eon_theme_container_get(r);
+	if (thiz->free) thiz->free(r);
+	free(thiz);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_theme_container_new(Eon_Theme_Widget_Descriptor *twdescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
+Enesim_Renderer * eon_theme_container_new(Eon_Theme_Container_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Theme_Container *thiz;
+	Eon_Theme_Widget_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Container));
 	EINA_MAGIC_SET(thiz, EON_THEME_CONTAINER_MAGIC);
 	thiz->data = data;
-	thiz->twdescriptor = twdescriptor;
-	r = eon_theme_widget_new(twdescriptor, descriptor, thiz);
+	thiz->free = descriptor->free;
+	pdescriptor.max_width_get = descriptor->max_width_get;
+	pdescriptor.min_width_get = descriptor->min_width_get;
+	pdescriptor.max_height_get = descriptor->max_height_get;
+	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.sw_setup = descriptor->sw_setup;
+	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.free = _eon_theme_container_free;
+
+	r = eon_theme_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -85,28 +95,29 @@ renderer_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Eina_Bool eon_is_theme_container(Enesim_Renderer *r)
+Eina_Bool eon_is_theme_container(Enesim_Renderer *r)
 {
 	Eon_Theme_Container *thiz;
+
+	if (!eon_is_theme_widget(r))
+		return EINA_FALSE;
+
+	thiz = eon_theme_widget_data_get(r);
+	if (!EINA_MAGIC_CHECK(thiz, EON_THEME_CONTAINER_MAGIC))
+		return EINA_FALSE;
 	return EINA_TRUE;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void * eon_theme_container_data_get(Enesim_Renderer *r)
+void * eon_theme_container_data_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Container *thiz;
 
 	thiz = _eon_theme_container_get(r);
 	return thiz->data;
 }
-
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
 /**
  * To be documented
  * FIXME: To be fixed

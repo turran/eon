@@ -1,0 +1,14 @@
+escen {
+	basic_progressbar "progress01" {
+		default {
+			set { x_origin = 128; };
+			set { y_origin = 128; };
+			set { height = 20; };
+			set { width = 120; };
+			set { progression = 0.8; };
+			set { dark_color = 0xffff0000; };
+			set { light_color = 0xff880000; };
+		};
+	};
+};
+

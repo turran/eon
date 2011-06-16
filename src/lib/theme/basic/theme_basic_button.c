@@ -18,7 +18,6 @@
 #include "Eon.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
-#include <float.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -59,8 +58,8 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	thiz = _button_get(r);
 	/* add 6px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
+	eon_theme_element_width_get(r, &width);
+	eon_theme_element_height_get(r, &height);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
 	/* always center */
@@ -68,7 +67,7 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 			vertical_padding);
 }
 /*----------------------------------------------------------------------------*
- *                      The Eon's theme widget interface                      *
+ *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
 static double _button_min_width_get(Enesim_Renderer *r)
 {
@@ -138,15 +137,6 @@ static double _button_max_height_get(Enesim_Renderer *r)
 	return DBL_MAX;
 }
 
-static Eon_Theme_Widget_Descriptor _twdescriptor = {
-	.max_width_get = _button_max_width_get,
-	.max_height_get = _button_max_height_get,
-	.min_width_get = _button_min_width_get,
-	.min_height_get = _button_min_height_get,
-};
-/*----------------------------------------------------------------------------*
- *                      The Enesim's renderer interface                       *
- *----------------------------------------------------------------------------*/
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Button *thiz;
@@ -207,18 +197,13 @@ static void _button_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _button_boundings(Enesim_Renderer *r, Enesim_Rectangle *boundings)
-{
-	Button *thiz;
-
-	thiz = _button_get(r);
-	enesim_renderer_boundings(thiz->compound, boundings);
-}
-
-static Enesim_Renderer_Descriptor _descriptor = {
+static Eon_Theme_Button_Descriptor _descriptor = {
+	.max_width_get = _button_max_width_get,
+	.max_height_get = _button_max_height_get,
+	.min_width_get = _button_min_width_get,
+	.min_height_get = _button_min_height_get,
 	.sw_setup = _button_setup,
 	.sw_cleanup = _button_cleanup,
-	.boundings = _button_boundings,
 	.free = _button_free,
 };
 /*============================================================================*
@@ -247,7 +232,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
-	r = eon_theme_button_new(&_twdescriptor, &_descriptor, thiz);
+	r = eon_theme_button_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
