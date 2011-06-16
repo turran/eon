@@ -44,39 +44,12 @@ Escen * eon_theme_get(void);
 Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
 
-
-/* element */
-typedef struct _Eon_Element_Descriptor
-{
-	void (*initialize)(Ender_Element *ender);
-	void (*actual_width_set)(Enesim_Renderer *r, double width);
-	void (*actual_height_set)(Enesim_Renderer *r, double height);
-	double (*min_width_get)(Enesim_Renderer *r);
-	double (*min_height_get)(Enesim_Renderer *r);
-	double (*max_width_get)(Enesim_Renderer *r);
-	double (*max_height_get)(Enesim_Renderer *r);
-} Eon_Element_Descriptor;
-
-Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *edescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
-		void *data);
-void * eon_element_data_get(Enesim_Renderer *r);
-void eon_element_initialize(Ender_Element *ender);
-
-/* layout */
-typedef struct _Eon_Layout_Descriptor
-{
-	void (*child_add)(Enesim_Renderer *r, Ender_Element *child);
-	void (*child_remove)(Enesim_Renderer *r, Ender_Element *child);
-	void (*child_clear)(Enesim_Renderer *r);
-	Ender_Element * (*child_at)(Enesim_Renderer *r, double x, double y);
-} Eon_Layout_Descriptor;
-
-Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
-		Eon_Element_Descriptor *edescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
-		void *data);
-void * eon_layout_data_get(Enesim_Renderer *r);
+#include "private/eon_element_private.h"
+#include "private/eon_widget_private.h"
+#include "private/eon_layout_private.h"
+#include "private/eon_theme_element_private.h"
+#include "private/eon_theme_widget_private.h"
+#include "private/eon_theme_container_private.h"
 
 /* toggle */
 typedef struct _Eon_Toggle_Descriptor
@@ -85,14 +58,7 @@ typedef struct _Eon_Toggle_Descriptor
 } Eon_Toggle_Descriptor;
 
 /* widget */
-typedef struct _Eon_Widget_Descriptor
-{
-	void (*initialize)(Ender_Element *ender);
-	const char *name;
-} Eon_Widget_Descriptor;
 
-Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data);
-void * eon_widget_data_get(Enesim_Renderer *r);
 Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r);
 Escen_Ender * eon_widget_theme_get(Enesim_Renderer *r);
 void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...);
@@ -101,11 +67,6 @@ void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...);
 /* container */
 void * eon_container_data_get(Enesim_Renderer *r);
 Enesim_Renderer * eon_container_new(Eon_Widget_Descriptor *descriptor, void *data);
-
-/* theme */
-#include "private/eon_theme_element_private.h"
-#include "private/eon_theme_widget_private.h"
-#include "private/eon_theme_container_private.h"
 
 #endif
 

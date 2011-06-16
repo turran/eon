@@ -51,21 +51,6 @@ typedef struct _Eon_Event_Mouse_Out
  * @{
  */
 
-EAPI Eina_Bool eon_is_element(Enesim_Renderer *r);
-EAPI void eon_element_actual_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_element_actual_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_element_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_element_height_set(Enesim_Renderer *r, double height);
-EAPI void eon_element_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_element_width_set(Enesim_Renderer *r, double width);
-EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_element_min_width_set(Enesim_Renderer *r, double width);
-EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height);
-EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_element_max_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_element_max_width_set(Enesim_Renderer *r, double width);
-EAPI void eon_element_max_height_set(Enesim_Renderer *r, double height);
-EAPI void eon_element_max_height_get(Enesim_Renderer *r, double *height);
 
 /**
  * @}
@@ -157,6 +142,7 @@ EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text);
  * @}
  */
 
+#include "eon_element.h"
 #include "eon_theme.h"
 
 #endif

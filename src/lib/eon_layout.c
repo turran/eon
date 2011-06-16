@@ -31,7 +31,12 @@
 typedef struct _Eon_Layout
 {
 	EINA_MAGIC;
-	Eon_Layout_Descriptor *descriptor;
+	Eon_Layout_Child_Add child_add;
+	Eon_Layout_Child_Remove child_remove;
+	Eon_Layout_Child_Clear child_clear;
+	Eon_Layout_Child_At child_at;
+	Eon_Element_Initialize initialize;
+	Enesim_Renderer_Delete free;
 	Eina_Tiler *tiler;
 	Eina_Array *obscure;
 	Eina_Array *damage;
@@ -50,6 +55,27 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static void _eon_layout_initialize(Ender_Element *ender)
+{
+	Eon_Layout *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(ender);
+	thiz = _eon_layout_get(r);
+	if (thiz->initialize)
+		thiz->initialize(ender);
+}
+
+static void _eon_layout_free(Enesim_Renderer *r)
+{
+	Eon_Layout *thiz;
+
+	thiz = _eon_layout_get(r);
+	if (thiz->free)
+		thiz->free(r);
+	free(thiz);
+}
+
 static void _child_changed(Ender_Element *child, const char *event_name, void *event_data, void *data)
 {
 	Eon_Layout *thiz;
@@ -59,20 +85,27 @@ static void _child_changed(Ender_Element *child, const char *event_name, void *e
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *ldescriptor,
-		Eon_Element_Descriptor *edescriptor,
-		Enesim_Renderer_Descriptor *descriptor,
+Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Layout *thiz;
+	Eon_Element_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Layout));
 	EINA_MAGIC_SET(thiz, EON_LAYOUT_MAGIC);
 	thiz->data = data;
-	thiz->descriptor = ldescriptor;
+	thiz->initialize = descriptor->initialize;
+	thiz->free = descriptor->free;
+	thiz->child_add = descriptor->child_add;
+	thiz->child_remove = descriptor->child_remove;
+	thiz->child_clear = descriptor->child_clear;
+	thiz->child_at = descriptor->child_at;
 
-	r = eon_element_new(edescriptor, descriptor, thiz);
+	pdescriptor.initialize = _eon_layout_initialize;
+	pdescriptor.free = _eon_layout_free;
+
+	r = eon_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -248,7 +281,7 @@ EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 	Eon_Layout *thiz;
 
 	thiz = _eon_layout_get(r);
-	thiz->descriptor->child_remove(r, child);
+	thiz->child_remove(r, child);
 	ender_event_listener_remove(child, "Mutation", _child_changed);
 }
 
@@ -267,7 +300,7 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	{
 		ender_element_value_remove(curr_parent, "child", child, NULL);
 	}
-	thiz->descriptor->child_add(r, child);
+	thiz->child_add(r, child);
 	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
 	/* TODO whenever a child is appended to a layout
 	 * call the init of it (on init you should register
@@ -285,7 +318,7 @@ EAPI void eon_layout_child_clear(Enesim_Renderer *r)
 	Eon_Layout *thiz;
 
 	thiz = _eon_layout_get(r);
-	thiz->descriptor->child_clear(r);
+	thiz->child_clear(r);
 	//ender_event_listener_remove(child, "Mutation", _child_changed);
 }
 
@@ -302,9 +335,9 @@ EAPI Ender_Element * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x,
 	if (!thiz) return NULL;
 
 	printf("%p\n", thiz);
-	if (!thiz->descriptor->child_at)
+	if (!thiz->child_at)
 		return NULL;
-	return thiz->descriptor->child_at(r, x, y);
+	return thiz->child_at(r, x, y);
 }
 
 /**

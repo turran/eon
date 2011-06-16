@@ -47,17 +47,27 @@ static void _layout_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
  *----------------------------------------------------------------------------*/
 static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
+	Theme_Basic_Layout *thiz;
+	Enesim_Renderer *rchild;
 	/* check the type of the child, if it is an eon_theme_element
 	 * we can move it by x, y
 	 * if it is not, then we only support renderers that have the
 	 * translation flag, if not then we just skip this child and
 	 * give a warning
 	 */
+	thiz = _layout_get(r);
+	rchild = ender_element_renderer_get(child);
+	enesim_renderer_compound_layer_add(thiz->compound, rchild);
 }
 
 static void _layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
+	Theme_Basic_Layout *thiz;
+	Enesim_Renderer *rchild;
 
+	thiz = _layout_get(r);
+	rchild = ender_element_renderer_get(child);
+	enesim_renderer_compound_layer_remove(thiz->compound, rchild);
 }
 
 static double _layout_min_width_get(Enesim_Renderer *r)

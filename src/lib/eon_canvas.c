@@ -54,6 +54,7 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 	return e;
 }
 
+#if 0
 static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
 	Eon_Canvas *e;
@@ -191,11 +192,7 @@ static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
 	.boundings = _eon_canvas_boundings,
 	.free = _eon_canvas_free,
 };
-/*----------------------------------------------------------------------------*
- *                         The Eon's element interface                        *
- *----------------------------------------------------------------------------*/
-static Eon_Element_Descriptor _eon_canvas_element_descriptor = {
-};
+#endif
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -219,9 +216,10 @@ static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
 	thiz = _eon_canvas_get(r);
 }
 
-static Eon_Layout_Descriptor _eon_canvas_layout_descriptor = {
+static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
+	.name = "canvas",
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -254,9 +252,7 @@ EAPI Enesim_Renderer * eon_canvas_new(void)
 	enesim_renderer_rop_set(r, ENESIM_FILL);
 	e->background = r;
 
-	thiz = eon_layout_new(&_eon_canvas_layout_descriptor,
-			&_eon_canvas_element_descriptor,
-			&_eon_canvas_descriptor, e);
+	thiz = eon_layout_new(&_descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;

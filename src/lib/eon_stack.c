@@ -386,12 +386,6 @@ static void _eon_stack_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 	//printf("stack %p boundings %g %g\n", r, w, h);
 }
 
-static Enesim_Renderer_Descriptor _eon_stack_renderer_descriptor = {
-	.sw_setup = _eon_stack_setup,
-	.sw_cleanup = _eon_stack_cleanup,
-	.boundings = _eon_stack_boundings,
-	.free = _eon_stack_free,
-};
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -466,11 +460,6 @@ static double _eon_stack_min_height_get(Enesim_Renderer *r)
 
 	return min_height;
 }
-
-static Eon_Element_Descriptor _eon_stack_element_descriptor = {
-	.min_width_get = _eon_stack_min_width_get,
-	.min_height_get = _eon_stack_min_height_get,
-};
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -587,11 +576,12 @@ static void _eon_stack_child_clear(Enesim_Renderer *r)
 	thiz->relayout = EINA_TRUE;
 }
 
-static Eon_Layout_Descriptor _eon_stack_layout_descriptor = {
+static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_stack_child_add,
 	.child_clear = _eon_stack_child_clear,
 	.child_remove = _eon_stack_child_remove,
 	.child_at = _eon_stack_child_at,
+	.name = "stack",
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -633,9 +623,7 @@ EAPI Enesim_Renderer * eon_stack_new(void)
 	enesim_renderer_rop_set(r, ENESIM_FILL);
 	e->background = r;
 
-	thiz = eon_layout_new(&_eon_stack_layout_descriptor,
-			&_eon_stack_element_descriptor,
-			&_eon_stack_renderer_descriptor, e);
+	thiz = eon_layout_new(&_descriptor, e);
 	if (!thiz) goto renderer_err;
 
 	return thiz;
