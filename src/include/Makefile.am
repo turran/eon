@@ -4,6 +4,7 @@ include_HEADERS = \
 Eon.h
 
 EON_UTILHEADERS = \
+eon_element.h
 eon_theme.h
 
 installed_headersdir = $(prefix)/include/eon
