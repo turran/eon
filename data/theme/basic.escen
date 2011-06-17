@@ -1,4 +1,11 @@
 escen {
+	basic_layout "stack" {
+
+	};
+
+	basic_layout "canvas" {
+
+	};
 	basic_button "button" {
 		default : "mouse_out" {
 			set { foreground_color = 0xff222222; };

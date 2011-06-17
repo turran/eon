@@ -64,6 +64,9 @@ namespace "eon" {
 		double "height";
 	};
 
+	abstract "theme_layout" : "theme_element" {
+	};
+
 	abstract "theme_widget" : "theme_element" {
 	};
 
