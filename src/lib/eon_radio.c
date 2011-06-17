@@ -58,7 +58,7 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
 	/* TODO trigger the selected event */
 }
 /*----------------------------------------------------------------------------*
- *                         The Eon's widget interface                        *
+ *                     The Eon's container interface                          *
  *----------------------------------------------------------------------------*/
 static void _eon_radio_initialize(Ender_Element *ender)
 {
@@ -66,7 +66,7 @@ static void _eon_radio_initialize(Ender_Element *ender)
 	ender_event_listener_add(ender, "MouseClick", _radio_mouse_click, NULL);
 }
 
-static Eon_Widget_Descriptor _eon_radio_widget_descriptor = {
+static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_radio_initialize,
 	.name = "radio",
 };
@@ -88,7 +88,7 @@ EAPI Enesim_Renderer * eon_radio_new(void)
 	thiz = calloc(1, sizeof(Eon_Radio));
 	if (!thiz) return NULL;
 
-	r = eon_container_new(&_eon_radio_widget_descriptor, thiz);
+	r = eon_container_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

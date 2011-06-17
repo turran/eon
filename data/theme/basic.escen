@@ -1,6 +1,8 @@
 escen {
 	basic_layout "stack" {
-
+		default {
+			set { color = 0xff000000; };
+		};
 	};
 
 	basic_layout "canvas" {

@@ -21,6 +21,9 @@ EAPI void eon_theme_element_min_height_get(Enesim_Renderer *r, double *height);
  * @{
  */
 
+typedef double (*Eon_Theme_Container_Decoration_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Container_Decoration_Height_Get)(Enesim_Renderer *r);
+
 EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *content);
 EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **content);
 
@@ -33,11 +36,9 @@ typedef void (*Eon_Theme_Radio_Selected_Set)(Enesim_Renderer *r, Eina_Bool selec
 
 typedef struct _Eon_Theme_Radio_Descriptor
 {
-	/* element needed functions */
-	Eon_Theme_Element_Max_Width_Get max_width_get;
-	Eon_Theme_Element_Min_Width_Get min_width_get;
-	Eon_Theme_Element_Max_Height_Get max_height_get;
-	Eon_Theme_Element_Min_Height_Get min_height_get;
+	/* container needed functions */
+	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -108,11 +109,9 @@ EAPI void eon_theme_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enable);
 
 typedef struct _Eon_Theme_Button_Descriptor
 {
-	/* element needed functions */
-	Eon_Theme_Element_Max_Width_Get max_width_get;
-	Eon_Theme_Element_Min_Width_Get min_width_get;
-	Eon_Theme_Element_Max_Height_Get max_height_get;
-	Eon_Theme_Element_Min_Height_Get min_height_get;
+	/* container needed functions */
+	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -131,11 +130,9 @@ EAPI void * eon_theme_button_data_get(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Checkbox_Descriptor
 {
-	/* element needed functions */
-	Eon_Theme_Element_Max_Width_Get max_width_get;
-	Eon_Theme_Element_Min_Width_Get min_width_get;
-	Eon_Theme_Element_Max_Height_Get max_height_get;
-	Eon_Theme_Element_Min_Height_Get min_height_get;
+	/* container needed functions */
+	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -177,11 +174,9 @@ EAPI void * eon_theme_progressbar_data_get(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Scrollview_Descriptor
 {
-	/* element needed functions */
-	Eon_Theme_Element_Max_Width_Get max_width_get;
-	Eon_Theme_Element_Min_Width_Get min_width_get;
-	Eon_Theme_Element_Max_Height_Get max_height_get;
-	Eon_Theme_Element_Min_Height_Get min_height_get;
+	/* container needed functions */
+	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

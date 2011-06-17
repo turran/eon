@@ -45,6 +45,7 @@ Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
 
 #include "private/eon_element_private.h"
+#include "private/eon_container_private.h"
 #include "private/eon_widget_private.h"
 #include "private/eon_layout_private.h"
 #include "private/eon_theme_element_private.h"
@@ -58,10 +59,6 @@ typedef struct _Eon_Toggle_Descriptor
 } Eon_Toggle_Descriptor;
 
 /* widget */
-
-/* container */
-void * eon_container_data_get(Enesim_Renderer *r);
-Enesim_Renderer * eon_container_new(Eon_Widget_Descriptor *descriptor, void *data);
 
 #endif
 

@@ -33,21 +33,21 @@ static inline Eon_Checkbox * _eon_checkbox_get(Enesim_Renderer *r)
 	thiz = eon_container_data_get(r);
 	return thiz;
 }
-/*----------------------------------------------------------------------------*
- *                         The Eon's widget interface                        *
- *----------------------------------------------------------------------------*/
+
 static void _checkbox_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 
 }
-
+/*----------------------------------------------------------------------------*
+ *                      The Eon's container interface                         *
+ *----------------------------------------------------------------------------*/
 static void _eon_checkbox_initialize(Ender_Element *ender)
 {
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseClick", _checkbox_mouse_click, NULL);
 }
 
-static Eon_Widget_Descriptor _eon_checkbox_widget_descriptor = {
+static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_checkbox_initialize,
 	.name = "checkbox",
 };
@@ -69,7 +69,7 @@ EAPI Enesim_Renderer * eon_checkbox_new(void)
 	thiz = calloc(1, sizeof(Eon_Checkbox));
 	if (!thiz) return NULL;
 
-	r = eon_container_new(&_eon_checkbox_widget_descriptor, thiz);
+	r = eon_container_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

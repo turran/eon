@@ -25,24 +25,26 @@ typedef struct _Eon_Theme_Layout
 	EINA_MAGIC;
 	/* properties */
 	/* private */
+	Eon_Theme_Layout_Child_Add child_add;
+	Eon_Theme_Layout_Child_Remove child_remove;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Layout;
 
-static inline Eon_Theme_Layout * _eon_theme_button_get(Enesim_Renderer *r)
+static inline Eon_Theme_Layout * _eon_theme_layout_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Layout *thiz;
 
-	thiz = eon_theme_container_data_get(r);
+	thiz = eon_theme_element_data_get(r);
 
 	return thiz;
 }
 
-static void _eon_theme_button_free(Enesim_Renderer *r)
+static void _eon_theme_layout_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Layout *thiz;
 
-	thiz = _eon_theme_button_get(r);
+	thiz = _eon_theme_layout_get(r);
 	if (thiz->free) thiz->free(r);
 	free(thiz);
 }
@@ -63,6 +65,8 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 	thiz = calloc(1, sizeof(Eon_Theme_Layout));
 	thiz->data = data;
 	thiz->free = descriptor->free;
+	thiz->child_add = descriptor->child_add;
+	thiz->child_remove = descriptor->child_remove;
 
 	pdescriptor.max_width_get = descriptor->max_width_get;
 	pdescriptor.min_width_get = descriptor->min_width_get;
@@ -70,7 +74,7 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 	pdescriptor.min_height_get = descriptor->min_height_get;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
-	pdescriptor.free = _eon_theme_button_free;
+	pdescriptor.free = _eon_theme_layout_free;
 
 	r = eon_theme_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
@@ -88,7 +92,10 @@ renderer_err:
  */
 EAPI void * eon_theme_layout_data_get(Enesim_Renderer *r)
 {
+	Eon_Theme_Layout *thiz;
 
+	thiz = _eon_theme_layout_get(r);
+	return thiz->data;
 }
 
 /**
@@ -98,5 +105,23 @@ EAPI void * eon_theme_layout_data_get(Enesim_Renderer *r)
 EAPI Eina_Bool eon_is_theme_layout(Enesim_Renderer *r)
 {
 
+}
+
+EAPI void eon_theme_layout_child_add(Enesim_Renderer *r, Ender_Element *e)
+{
+	Eon_Theme_Layout *thiz;
+
+	thiz = _eon_theme_layout_get(r);
+	if (thiz->child_add)
+		thiz->child_add(r, e);
+}
+
+EAPI void eon_theme_layout_child_remove(Enesim_Renderer *r, Ender_Element *e)
+{
+	Eon_Theme_Layout *thiz;
+
+	thiz = _eon_theme_layout_get(r);
+	if (thiz->child_remove)
+		thiz->child_remove(r, e);
 }
 

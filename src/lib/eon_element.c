@@ -84,6 +84,7 @@ static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 	rect->y = 0;
 	rect->w = aw;
 	rect->h = ah;
+	printf("boundings are %g %g %g %g\n", rect->x, rect->y, rect->w, rect->h);
 }
 
 static void _eon_element_free(Enesim_Renderer *r)
@@ -113,19 +114,24 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 	 */
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->theme_renderer, color);
+	eon_element_actual_size_get(r, &width, &height);
+	if (width < 1)
+		eon_element_real_width_get(r, &width);
+	if (height < 1)
+		eon_element_real_height_get(r, &height);
+	eon_element_actual_size_set(r, width, height);
 #if 0
 	/* set the width and height to the element */
 	/* FIXME if this is working, maybe we should just remove the callbacks
 	 * from eon_element?
 	 */
-	eon_element_actual_size_get(r, &width, &height);
 	printf("actual size get %g %g\n", width, height);
 	eon_theme_element_width_set(er, width);
 	eon_theme_element_height_set(er, height);
 #endif
 	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
 	{
-		printf("not available to setup yet\n");
+		printf("the theme can not setup yet\n");
 		return EINA_FALSE;
 	}
 	/* get the ender from the escen ender and get the fill function */
@@ -182,21 +188,6 @@ static void _eon_widget_actual_height_set(Enesim_Renderer *r, double height)
 }
 #endif
 
-Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	return thiz->theme_ender;
-}
-
-Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	return thiz->theme_instance;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -230,7 +221,11 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	}
 
 	theme_ender = escen_ender_get(theme_escen, descriptor->name);
-	if (!theme_ender) return NULL;
+	if (!theme_ender)
+	{
+		printf("no ender %s\n", descriptor->name);
+		return NULL;
+	}
 
 	theme_instance = escen_instance_new(theme_ender);
 	theme_element = escen_instance_ender_get(theme_instance);
@@ -258,6 +253,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	enesim_renderer_color_get(theme_renderer, &color);
 	enesim_renderer_color_set(r, color);
 
+	printf("element of name %s created %p\n", descriptor->name, r);
 	return r;
 
 renderer_err:
@@ -271,6 +267,22 @@ void * eon_element_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_element_get(r);
 	return thiz->data;
+}
+
+Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->theme_ender;
+}
+
+Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->theme_instance;
 }
 
 void eon_element_actual_width_set(Enesim_Renderer *r, double width)
@@ -358,7 +370,6 @@ void eon_element_real_height_get(Enesim_Renderer *r, double *height)
 void eon_element_property_set(Enesim_Renderer *r, const char *name, ...)
 {
 	Eon_Element *thiz;
-	Ender_Element *ender;
 	va_list va_args;
 
 	thiz = _eon_element_get(r);
@@ -370,12 +381,33 @@ void eon_element_property_set(Enesim_Renderer *r, const char *name, ...)
 void eon_element_property_get(Enesim_Renderer *r, const char *name, ...)
 {
 	Eon_Element *thiz;
-	Ender_Element *ender;
 	va_list va_args;
 
 	thiz = _eon_element_get(r);
 	va_start(va_args, name);
 	ender_element_value_get_valist(thiz->theme_element, name, va_args);
+	va_end(va_args);
+}
+
+void eon_element_property_add(Enesim_Renderer *r, const char *name, ...)
+{
+	Eon_Element *thiz;
+	va_list va_args;
+
+	thiz = _eon_element_get(r);
+	va_start(va_args, name);
+	ender_element_value_add_valist(thiz->theme_element, name, va_args);
+	va_end(va_args);
+}
+
+void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...)
+{
+	Eon_Element *thiz;
+	va_list va_args;
+
+	thiz = _eon_element_get(r);
+	va_start(va_args, name);
+	ender_element_value_remove_valist(thiz->theme_element, name, va_args);
 	va_end(va_args);
 }
 /*============================================================================*

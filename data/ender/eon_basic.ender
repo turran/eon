@@ -27,6 +27,5 @@ namespace "eon" {
 	};
 
 	class "basic_layout" : "theme_layout" {
-		[ender] "child";
 	};
 };

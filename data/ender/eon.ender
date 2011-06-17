@@ -65,6 +65,7 @@ namespace "eon" {
 	};
 
 	abstract "theme_layout" : "theme_element" {
+		[ender] "child";
 	};
 
 	abstract "theme_widget" : "theme_element" {

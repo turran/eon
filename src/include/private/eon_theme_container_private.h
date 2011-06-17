@@ -3,11 +3,9 @@
 
 typedef struct _Eon_Theme_Container_Descriptor
 {
-	/* element needed functions */
-	Eon_Theme_Element_Max_Width_Get max_width_get;
-	Eon_Theme_Element_Min_Width_Get min_width_get;
-	Eon_Theme_Element_Max_Height_Get max_height_get;
-	Eon_Theme_Element_Min_Height_Get min_height_get;
+	/* container needed functions */
+	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

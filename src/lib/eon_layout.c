@@ -104,6 +104,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 
 	pdescriptor.initialize = _eon_layout_initialize;
 	pdescriptor.free = _eon_layout_free;
+	pdescriptor.name = descriptor->name;
 
 	r = eon_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
@@ -283,6 +284,7 @@ EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 	thiz = _eon_layout_get(r);
 	thiz->child_remove(r, child);
 	ender_event_listener_remove(child, "Mutation", _child_changed);
+	eon_element_property_remove(r, "child", child, NULL);
 }
 
 /**
@@ -300,6 +302,7 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	{
 		ender_element_value_remove(curr_parent, "child", child, NULL);
 	}
+	eon_element_property_add(r, "child", child, NULL);
 	thiz->child_add(r, child);
 	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
 	/* TODO whenever a child is appended to a layout

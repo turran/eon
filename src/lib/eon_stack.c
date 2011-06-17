@@ -41,8 +41,6 @@ typedef struct _Eon_Stack
 	Eina_List *children;
 	Eina_Bool relayout;
 	Eon_Stack_State old, curr;
-	Enesim_Renderer *background;
-	Enesim_Renderer *compound;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Stack;
 
@@ -52,16 +50,6 @@ static inline Eon_Stack * _eon_stack_get(Enesim_Renderer *r)
 
 	thiz = eon_layout_data_get(r);
 	return thiz;
-}
-
-static void _stack_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Eon_Stack *e;
-
-	e = _eon_stack_get(r);
-	/* just iterate over the list of dirty rectangles and intersect against the span */
-	/* if it intersects render the child that is on that span from bottom to top */
-	e->fill_func(e->compound, x, y, len, dst);
 }
 
 static void _stack_vertical_child_size_set(Eon_Stack *thiz, Eon_Stack_Child *ech, double aw, double *ah)
@@ -280,110 +268,12 @@ static void _stack_child_changed(Ender_Element *e, const char *event_name, void 
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
-static void _eon_stack_cleanup(Enesim_Renderer *r)
-{
-	Eon_Stack *thiz;
-	Eon_Stack_Child *ech;
-	Eina_List *l;
-	double ox, oy;
-
-	thiz = _eon_stack_get(r);
-	if (!thiz) return;
-
-	/* restore the coordinates on every child */
-	enesim_renderer_sw_cleanup(thiz->compound);
-
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		Enesim_Renderer *renderer;
-		Enesim_Matrix matrix;
-		Enesim_Matrix_Type matrix_type;
-
-		renderer = ender_element_renderer_get(ech->ender);
-		//enesim_renderer_transformation_get(renderer, &matrix);
-		//matrix_type = enesim_matrix_type_get(&matrix);
-		enesim_renderer_origin_set(renderer, ech->old_x, ech->old_y);
-	}
-}
-
-static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
-{
-	Eon_Stack *thiz;
-	double ox, oy;
-
-	thiz = _eon_stack_get(r);
-	if (!thiz) return EINA_FALSE;
-
-	//printf("setting up the stack %p\n", r);
-	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	if (thiz->relayout)
-	{
-		//if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
-		//	return EINA_FALSE;
-		/* set the coordinates on every child */
-		/* the way to setting the actual size is based on min-size, max-size
-		 * and the boundings for an eon element or only the boundings
-		 * for an enesim renderer
-		 */
-		_stack_relayout(r, thiz);
-	}
-	else
-	{
-		Eina_List *l;
-		Eon_Stack_Child *ech;
-
-		/* just set the new coordinates on every child */
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			Enesim_Renderer *r_child;
-
-			r_child = ender_element_renderer_get(ech->ender);
-			enesim_renderer_origin_set(r_child, ech->curr_x, ech->curr_y);
-		}
-	}
-
-	if (!enesim_renderer_sw_setup(thiz->compound))
-	{
-		DBG("Cannot setup the compound renderer");
-		_eon_stack_cleanup(r);
-		return EINA_FALSE;
-	}
-
-	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill_func) return EINA_FALSE;
-	*fill = _stack_draw;
-
-	//printf("end setting up the stack %p\n", r);
-	return EINA_TRUE;
-}
-
 static void _eon_stack_free(Enesim_Renderer *r)
 {
-	Eon_Stack *e;
-
-	e = _eon_stack_get(r);
-	if (!e) return;
-
-	free(e);
-}
-
-/* TODO this code might be the same among every layout */
-static void _eon_stack_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
-{
 	Eon_Stack *thiz;
-	double w, h;
 
 	thiz = _eon_stack_get(r);
-	if (!thiz) return;
-
-	eon_layout_actual_size_get(r, &w, &h);
-	rect->x = 0;
-	rect->y = 0;
-	rect->w = w;
-	rect->h = h;
-	//printf("stack %p boundings %g %g\n", r, w, h);
+	free(thiz);
 }
 
 /*----------------------------------------------------------------------------*
@@ -527,9 +417,6 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
-	r_child = ender_element_renderer_get(child);
-	enesim_renderer_compound_layer_add(thiz->compound, r_child);
-	printf("child %p added to stack %p\n", r_child, r);
 	/* TODO whenever a child is added, register a callback for a property
 	 * change, if it is called then we need to do the setup again
 	 */
@@ -552,8 +439,6 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 			Enesim_Renderer *r_child;
 
 			thiz->children = eina_list_remove_list(thiz->children, l);
-			r_child = ender_element_renderer_get(thiz_child->ender);
-			enesim_renderer_compound_layer_remove(thiz->compound, r_child);
 			thiz->relayout = EINA_TRUE;
 			break;
 		}
@@ -595,45 +480,19 @@ static Eon_Layout_Descriptor _descriptor = {
  */
 EAPI Enesim_Renderer * eon_stack_new(void)
 {
-	Eon_Stack *e;
-	Enesim_Renderer *thiz;
+	Eon_Stack *thiz;
 	Enesim_Renderer *r;
-#if 0
-	const int color[] = { 0xffffffff, 0xff00ff00, 0xff00ffff };
-	static int i = 0;
-#endif
 
-	e = calloc(1, sizeof(Eon_Stack));
-	if (!e) return NULL;
+	thiz = calloc(1, sizeof(Eon_Stack));
+	if (!thiz) return NULL;
 
-	r = enesim_renderer_compound_new();
-	if (!r) goto compound_err;
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-	e->compound = r;
+	r = eon_layout_new(&_descriptor, thiz);
+	if (!r) goto renderer_err;
 
-	r = enesim_renderer_background_new();
-	if (!r) goto background_err;
-
-#if 0
-	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
-#else
-	enesim_renderer_background_color_set(r, 0xffffffff);
-#endif
-	enesim_renderer_compound_layer_add(e->compound, r);
-	enesim_renderer_rop_set(r, ENESIM_FILL);
-	e->background = r;
-
-	thiz = eon_layout_new(&_descriptor, e);
-	if (!thiz) goto renderer_err;
-
-	return thiz;
+	return r;
 
 renderer_err:
-	enesim_renderer_delete(e->background);
-background_err:
-	enesim_renderer_delete(e->compound);
-compound_err:
-	free(e);
+	free(thiz);
 	return NULL;
 }
 

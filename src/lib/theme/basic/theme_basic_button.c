@@ -69,72 +69,14 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
-static double _button_min_width_get(Enesim_Renderer *r)
+static double _button_decoration_width_get(Enesim_Renderer *r)
 {
-	Button *thiz;
-	Enesim_Renderer *content;
-	/* the padding */
-	double min_width = horizontal_padding * 2;
-
-	thiz = _button_get(r);
-	eon_theme_container_content_get(r, &content);
-	if (!content)
-		goto end;
-	if (eon_is_element(content))
-	{
-		double cmin_width;
-
-		eon_element_min_width_get(content, &cmin_width);
-		min_width += cmin_width;
-	}
-	else
-	{
-		Enesim_Rectangle boundings;
-
-		enesim_renderer_boundings(content, &boundings);
-		min_width += boundings.w;
-	}
-end:
-	return min_width;
+	return horizontal_padding * 2;
 }
 
-static double _button_max_width_get(Enesim_Renderer *r)
+static double _button_decoration_height_get(Enesim_Renderer *r)
 {
-	return DBL_MAX;
-}
-
-static double _button_min_height_get(Enesim_Renderer *r)
-{
-	Button *thiz;
-	Enesim_Renderer *content;
-	/* the padding */
-	double min_height = vertical_padding * 2;
-
-	thiz = _button_get(r);
-	eon_theme_container_content_get(r, &content);
-	if (!content)
-		goto end;
-	if (eon_is_element(content))
-	{
-		double cmin_height;
-
-		eon_element_min_height_get(content, &cmin_height);
-		min_height += cmin_height;
-	}
-	else
-	{
-		Enesim_Rectangle boundings;
-
-		enesim_renderer_boundings(content, &boundings);
-		min_height += boundings.h;
-	}
-end:
-	return min_height;
-}
-
-static double _button_max_height_get(Enesim_Renderer *r)
-{
-	return DBL_MAX;
+	return vertical_padding * 2;
 }
 
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -198,10 +140,8 @@ static void _button_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Button_Descriptor _descriptor = {
-	.max_width_get = _button_max_width_get,
-	.max_height_get = _button_max_height_get,
-	.min_width_get = _button_min_width_get,
-	.min_height_get = _button_min_height_get,
+	.decoration_width_get = _button_decoration_width_get,
+	.decoration_height_get = _button_decoration_height_get,
 	.sw_setup = _button_setup,
 	.sw_cleanup = _button_cleanup,
 	.free = _button_free,
