@@ -246,9 +246,10 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->width = -1;
 	thiz->height = -1;
 
-	thiz->theme_renderer = theme_renderer;
 	thiz->theme_ender = theme_ender;
 	thiz->theme_instance = theme_instance;
+	thiz->theme_element = theme_element;
+	thiz->theme_renderer = theme_renderer;
 
 	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;

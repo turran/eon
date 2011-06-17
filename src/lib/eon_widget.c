@@ -125,6 +125,7 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.free = _eon_widget_free;
+	pdescriptor.name = descriptor->name;
 
 	r = eon_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
