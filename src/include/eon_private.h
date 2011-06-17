@@ -59,10 +59,10 @@ typedef struct _Eon_Toggle_Descriptor
 
 /* widget */
 
-Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r);
-Escen_Ender * eon_widget_theme_get(Enesim_Renderer *r);
-void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...);
-void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...);
+Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r);
+Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r);
+void eon_element_property_set(Enesim_Renderer *r, const char *name, ...);
+void eon_element_property_get(Enesim_Renderer *r, const char *name, ...);
 
 /* container */
 void * eon_container_data_get(Enesim_Renderer *r);

@@ -46,12 +46,12 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
 	 * we actually need to change the state of the radio button
 	 */
 	r = ender_element_renderer_get(e);
-	theme = eon_widget_theme_get(r);
+	theme = eon_element_theme_ender_get(r);
 	new_state = escen_ender_state_get(theme, "selected");
 	if (new_state)
 	{
 		Escen_Instance *eei;
-		eei = eon_widget_theme_instance_get(r);
+		eei = eon_element_theme_instance_get(r);
 		escen_instance_state_set(eei, new_state);
 	}
 	eon_radio_selected_set(r, EINA_TRUE);
@@ -159,7 +159,7 @@ EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 	thiz = _eon_radio_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "selected", selected, NULL);
+	eon_element_property_set(r, "selected", selected, NULL);
 	if (selected)
 	{
 		Enesim_Renderer *other_radio;
@@ -193,6 +193,6 @@ EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 EAPI void eon_radio_selected_get(Enesim_Renderer *r, Eina_Bool *selected)
 {
 	*selected = EINA_TRUE;
-	//eon_widget_property_get(r, "selected", selected, NULL);
+	//eon_element_property_get(r, "selected", selected, NULL);
 }
 

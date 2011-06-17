@@ -80,7 +80,7 @@ EAPI void eon_toggle_toggled_set(Enesim_Renderer *r, Ender_Element *toggled)
 	thiz = _eon_toggle_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "toggled", toggled, NULL);
+	eon_element_property_set(r, "toggled", toggled, NULL);
 }
 
 /**
@@ -94,7 +94,7 @@ EAPI void eon_toggle_toggled_get(Enesim_Renderer *r, const Ender_Element **toggl
 	thiz = _eon_toggle_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_get(r, "toggled", toggled, NULL);
+	eon_element_property_get(r, "toggled", toggled, NULL);
 }
 
 

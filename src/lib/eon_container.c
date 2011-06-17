@@ -83,7 +83,7 @@ EAPI void eon_container_content_set(Enesim_Renderer *r, Ender_Element *content)
 
 	thiz->content = content;
 	rcontent = ender_element_renderer_get(content);
-	eon_widget_property_set(r, "content", rcontent, NULL);
+	eon_element_property_set(r, "content", rcontent, NULL);
 }
 
 /**

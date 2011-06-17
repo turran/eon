@@ -97,5 +97,5 @@ EAPI void eon_progressbar_progression_set(Enesim_Renderer *r, double progression
 	thiz = _eon_progressbar_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "progression", progression, NULL);
+	eon_element_property_set(r, "progression", progression, NULL);
 }

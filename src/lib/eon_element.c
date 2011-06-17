@@ -180,26 +180,23 @@ static void _eon_widget_actual_height_set(Enesim_Renderer *r, double height)
 	ender = escen_instance_ender_get(thiz->eei);
 	ender_element_value_set(ender, "height", height, NULL);
 }
-
-Escen_Ender * eon_widget_theme_get(Enesim_Renderer *r)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(r);
-
-	return thiz->escen_ender;
-}
-
-Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(r);
-
-	return thiz->eei;
-}
-
 #endif
+
+Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->theme_ender;
+}
+
+Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->theme_instance;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
