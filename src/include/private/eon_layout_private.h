@@ -8,6 +8,8 @@ typedef Ender_Element * (*Eon_Layout_Child_At)(Enesim_Renderer *r, double x, dou
 
 typedef struct _Eon_Layout_Descriptor
 {
+	Eon_Element_Min_Width_Get min_width_get;
+	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Layout_Child_Add child_add;
 	Eon_Layout_Child_Remove child_remove;
 	Eon_Layout_Child_Clear child_clear;

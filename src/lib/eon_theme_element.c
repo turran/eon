@@ -29,6 +29,8 @@ typedef struct _Eon_Theme_Element
 	/* properties */
 	double width;
 	double height;
+	double x;
+	double y;
 	/* private */
 	void *data;
 	Eon_Theme_Element_Max_Width_Get max_width_get;
@@ -242,4 +244,62 @@ EAPI void eon_theme_element_height_get(Enesim_Renderer *r, double *height)
 	thiz = _eon_theme_element_get(r);
 	if (!thiz) return;
 	*height = thiz->height;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_element_x_set(Enesim_Renderer *r, double x)
+{
+	Eon_Theme_Element *thiz;
+
+	thiz = _eon_theme_element_get(r);
+	if (!thiz) return;
+	thiz->x = x;
+	/* FIXME for now */
+	enesim_renderer_x_origin_set(r, x);
+	printf("setting x @ %g\n", x);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_element_x_get(Enesim_Renderer *r, double *x)
+{
+	Eon_Theme_Element *thiz;
+
+	thiz = _eon_theme_element_get(r);
+	if (!thiz) return;
+	*x = thiz->x;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_element_y_set(Enesim_Renderer *r, double y)
+{
+	Eon_Theme_Element *thiz;
+
+	thiz = _eon_theme_element_get(r);
+	if (!thiz) return;
+	thiz->y = y;
+	/* FIXME for now */
+	enesim_renderer_y_origin_set(r, y);
+	printf("setting y @ %g\n", y);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_element_y_get(Enesim_Renderer *r, double *y)
+{
+	Eon_Theme_Element *thiz;
+
+	thiz = _eon_theme_element_get(r);
+	if (!thiz) return;
+	*y = thiz->y;
 }

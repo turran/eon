@@ -35,15 +35,23 @@ typedef struct _Eon_Element
 	double min_height;
 	double actual_width;
 	double actual_height;
+	double actual_x;
+	double actual_y;
 	/* private */
+	/* function pointers */
+	Eon_Element_Initialize initialize;
+	Enesim_Renderer_Delete free;
+	Eon_Element_Min_Height_Get min_height_get;
+	Eon_Element_Min_Width_Get min_width_get;
+	/* the theme data */
 	Escen_Ender *theme_ender;
 	Escen_Instance *theme_instance;
 	Ender_Element *theme_element;
 	Enesim_Renderer *theme_renderer;
+	/* misc */
 	Enesim_Renderer_Descriptor descriptor;
 	Enesim_Renderer_Sw_Fill fill;
-	Eon_Element_Initialize initialize;
-	Enesim_Renderer_Delete free;
+	const char *name;
 	void *data;
 } Eon_Element;
 
@@ -68,11 +76,14 @@ static void _element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, ui
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
+/* Given that we dont support the x_origin property, we must inform correctly to the enesim system that we can be at a specific position*/
+/* TODO Remove the function call */
 static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 {
 	Eon_Element *thiz;
 	double aw, ah;
 
+	thiz = _eon_element_get(r);
 	eon_element_actual_size_get(r, &aw, &ah);
 	/* There's no layout, or the layout didnt set an active width/height */
 	if (aw < 0 || ah < 0)
@@ -80,11 +91,11 @@ static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 		eon_element_real_width_get(r, &aw);
 		eon_element_real_height_get(r, &ah);
 	}
-	rect->x = 0;
-	rect->y = 0;
+	rect->x = thiz->actual_x;
+	rect->y = thiz->actual_y;
 	rect->w = aw;
 	rect->h = ah;
-	printf("boundings are %g %g %g %g\n", rect->x, rect->y, rect->w, rect->h);
+	//printf("boundings for %s are %g %g %g %g\n", thiz->name, rect->x, rect->y, rect->w, rect->h);
 }
 
 static void _eon_element_free(Enesim_Renderer *r)
@@ -95,7 +106,6 @@ static void _eon_element_free(Enesim_Renderer *r)
 	if (thiz->free)
 		thiz->free(r);
 	free(thiz);
-
 }
 
 static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -106,29 +116,26 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 	double width, height;
 
 	thiz = _eon_element_get(r);
-	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->theme_renderer, ox, oy);
 	/* FIXME if the user changes the color of the element, the theme should
 	 * reflect that value
 	 */
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->theme_renderer, color);
 	eon_element_actual_size_get(r, &width, &height);
-	if (width < 1)
+	if (width < 0)
 		eon_element_real_width_get(r, &width);
-	if (height < 1)
+	if (height < 0)
 		eon_element_real_height_get(r, &height);
 	eon_element_actual_size_set(r, width, height);
-#if 0
-	/* set the width and height to the element */
-	/* FIXME if this is working, maybe we should just remove the callbacks
-	 * from eon_element?
-	 */
-	printf("actual size get %g %g\n", width, height);
-	eon_theme_element_width_set(er, width);
-	eon_theme_element_height_set(er, height);
-#endif
+	if (thiz->setup)
+	{
+		if (!thiz->setup(r))
+		{
+			printf("cannot setup the eon element\n");
+			return EINA_FALSE;
+		}
+	}
+		
 	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
 	{
 		printf("the theme can not setup yet\n");
@@ -165,28 +172,6 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	.sw_setup = _eon_element_sw_setup,
 	.sw_cleanup = _eon_element_sw_cleanup,
 };
-
-#if 0
-static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
-{
-	Eon_Widget *thiz;
-	Ender_Element *ender;
-
-	thiz = _eon_widget_get(r);
-	ender = escen_instance_ender_get(thiz->eei);
-	ender_element_value_set(ender, "width", width, NULL);
-}
-
-static void _eon_widget_actual_height_set(Enesim_Renderer *r, double height)
-{
-	Eon_Widget *thiz;
-	Ender_Element *ender;
-
-	thiz = _eon_widget_get(r);
-	ender = escen_instance_ender_get(thiz->eei);
-	ender_element_value_set(ender, "height", height, NULL);
-}
-#endif
 
 /*============================================================================*
  *                                 Global                                     *
@@ -249,6 +234,13 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
+	/* Set the function pointers */
+	thiz->initialize = descriptor->initialize;
+	thiz->free = descriptor->free;
+	thiz->min_width_get = descriptor->min_width_get;
+	thiz->min_height_get = descriptor->min_height_get;
+	thiz->name = descriptor->name;
+
 	/* Set the default properties from the state */
 	enesim_renderer_color_get(theme_renderer, &color);
 	enesim_renderer_color_set(r, color);
@@ -275,6 +267,14 @@ Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r)
 
 	thiz = _eon_element_get(r);
 	return thiz->theme_ender;
+}
+
+Ender_Element * eon_element_theme_element_get(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->theme_element;
 }
 
 Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r)
@@ -327,6 +327,40 @@ void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *heig
 	*height = thiz->actual_height;
 }
 
+void eon_element_actual_x_set(Enesim_Renderer *r, double x)
+{
+	Eon_Element *thiz;
+	Ender_Element *ender;
+
+	thiz = _eon_element_get(r);
+	thiz->actual_x = x;
+	ender_element_value_set(thiz->theme_element, "x", x, NULL);
+	printf("actual x %s is %g\n", thiz->name, x);
+}
+
+void eon_element_actual_y_set(Enesim_Renderer *r, double y)
+{
+	Eon_Element *thiz;
+	Ender_Element *ender;
+
+	thiz = _eon_element_get(r);
+	thiz->actual_y = y;
+	ender_element_value_set(thiz->theme_element, "y", y, NULL);
+	printf("actual y %s is %g\n", thiz->name, y);
+}
+
+void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
+{
+	Eon_Element *thiz;
+	Ender_Element *ender;
+
+	thiz = _eon_element_get(r);
+	thiz->actual_x = x;
+	thiz->actual_y = y;
+	ender_element_value_set(thiz->theme_element, "x", x, NULL);
+	ender_element_value_set(thiz->theme_element, "y", y, NULL);
+}
+
 void eon_element_real_width_get(Enesim_Renderer *r, double *width)
 {
 	Eon_Element *thiz;
@@ -342,7 +376,7 @@ void eon_element_real_width_get(Enesim_Renderer *r, double *width)
 	rw = set > max ? max : set;
 	rw = rw < min ? min : rw;
 
-	//printf("real width = %g (%g %g %g)\n", rw, min, set, max);
+	printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
 	*width = rw;
 }
 
@@ -358,12 +392,12 @@ void eon_element_real_height_get(Enesim_Renderer *r, double *height)
 
 	thiz = _eon_element_get(r);
 	set = thiz->height;
-	eon_element_min_width_get(r, &min);
-	eon_element_max_width_get(r, &max);
+	eon_element_min_height_get(r, &min);
+	eon_element_max_height_get(r, &max);
 	rh = set > max ? max : set;
 	rh = rh < min ? min : rh;
 
-	//printf("real height = %g (%g %g %g)\n", rh, min, set, max);
+	printf("real height %s = %g (%g %g %g)\n", thiz->name, rh, min, set, max);
 	*height = rh;
 }
 
@@ -513,12 +547,16 @@ EAPI void eon_element_width_set(Enesim_Renderer *r, double width)
 EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width)
 {
 	Eon_Element *thiz;
-	double v = 0;
+	double ev = 0;
+	double tv = 0;
 
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "min_width", &v, NULL);
-	*width = v > thiz->min_width ? v : thiz->min_width;
+	ender_element_value_get(thiz->theme_element, "min_width", &ev, NULL);
+	if (thiz->min_width_get)
+		tv = thiz->min_width_get(r);
+	ev = ev > tv ? ev : tv;
+	*width = ev > thiz->min_width ? ev : thiz->min_width;
 }
 
 /**
@@ -555,13 +593,17 @@ EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height)
 EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height)
 {
 	Eon_Element *thiz;
-	double v = 0;
+	double tv = 0;
+	double ev = 0;
 
 	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "min_height", &v, NULL);
-	*height = v > thiz->min_height ? v : thiz->min_height;
+	ender_element_value_get(thiz->theme_element, "min_height", &tv, NULL);
+	if (thiz->min_height_get)
+		ev = thiz->min_height_get(r);
+	ev = ev > tv ? ev : tv;
+	*height = ev > thiz->min_height ? ev : thiz->min_height;
 }
 
 /**

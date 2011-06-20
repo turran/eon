@@ -41,6 +41,7 @@ static void _layout_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	Theme_Basic_Layout *thiz;
 
 	thiz = _layout_get(r);
+	printf("layout %p drawing at %d %d %d\n", r, x, y, len);
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
@@ -82,9 +83,6 @@ static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *f
 	if (!thiz) return EINA_FALSE;
 
 	//printf("setting up the stack %p\n", r);
-	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	if (thiz->relayout)
 	{
 		//if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
@@ -144,8 +142,6 @@ static void _eon_stack_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 }
 #endif
 
-
-
 static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Theme_Basic_Layout *thiz;
@@ -158,7 +154,7 @@ static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	 */
 	thiz = _layout_get(r);
 	rchild = ender_element_renderer_get(child);
-	//enesim_renderer_compound_layer_add(thiz->compound, rchild);
+	enesim_renderer_compound_layer_add(thiz->compound, rchild);
 	printf("child %p added to stack %p\n", rchild, r);
 }
 
@@ -169,7 +165,7 @@ static void _layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 
 	thiz = _layout_get(r);
 	rchild = ender_element_renderer_get(child);
-	//enesim_renderer_compound_layer_remove(thiz->compound, rchild);
+	enesim_renderer_compound_layer_remove(thiz->compound, rchild);
 	printf("child %p removed from stack %p\n", rchild, r);
 }
 
@@ -196,9 +192,15 @@ static double _layout_max_height_get(Enesim_Renderer *r)
 static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Theme_Basic_Layout *thiz;
+	double ox;
+	double oy;
 
 	thiz = _layout_get(r);
 
+	/* setup common properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	printf("layout @ %g %g\n", ox, oy);
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
 		printf("compound cannot setup yet\n");
@@ -253,8 +255,8 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 {
 	Enesim_Renderer *r;
 	Theme_Basic_Layout *thiz;
-#if 0
-	const int color[] = { 0xffffffff, 0xff00ff00, 0xff00ffff };
+#if 1
+	const int color[] = { 0xffffffff, 0xff00ff00, 0x88008888 };
 	static int i = 0;
 #endif
 
@@ -269,10 +271,10 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 	if (!r) goto background_err;
 	enesim_renderer_compound_layer_add(thiz->compound, r);
 	enesim_renderer_rop_set(r, ENESIM_FILL);
-#if 0
+#if 1
 	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
 #else
-	enesim_renderer_background_color_set(r, 0xffff0000);
+	enesim_renderer_background_color_set(r, 0xffffffff);
 #endif
 	thiz->background = r;
 

@@ -119,11 +119,9 @@ static double _eon_theme_label_max_width_get(Enesim_Renderer *r)
 static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	Enesim_Rectangle boundings;
 
 	thiz = _eon_theme_label_get(r);
-	enesim_renderer_boundings(r, &boundings);
-	return boundings.h;
+	return thiz->size_get(r);
 }
 
 static double _eon_theme_label_max_height_get(Enesim_Renderer *r)

@@ -16,6 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
+#include "eon_private.h" // FIXME for now
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
 #include <float.h>
@@ -48,10 +49,16 @@ static inline Radio * _radio_get(Enesim_Renderer *r)
 
 static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
-	Radio *rad;
+	Radio *thiz;
 
-	rad = _radio_get(r);
-	rad->fill(rad->compound, x, y, len, dst);
+	thiz = _radio_get(r);
+	printf("drawing radio %p into %d %d %d\n", r, x, y, len);
+	{
+		double ox, oy;
+		enesim_renderer_origin_get(thiz->compound, &ox, &oy);
+		printf("with origin %g %g\n", ox, oy);
+	}
+	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                          The Radio theme interface                         *
@@ -72,11 +79,13 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	Enesim_Renderer *content;
 	double ox, oy;
 	double width, height;
+	double cheight;
 
 	thiz = _radio_get(r);
 	/* set the common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	printf("going to draw at %g %g\n", ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
 	if (!content)
@@ -95,21 +104,30 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		enesim_renderer_rop_set(thiz->content, ENESIM_BLEND);
 		enesim_renderer_rop_set(thiz->outter_circle, ENESIM_BLEND);
 	}
-	enesim_renderer_origin_set(thiz->content, circle_radius * 2 +
-			radio_to_content_padding, 0);
-
 	eon_theme_element_width_get(r, &width);
 	eon_theme_element_height_get(r, &height);
+	eon_element_actual_height_get(thiz->content, &cheight);
+	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);
+#if 1
+	eon_element_actual_x_set(thiz->content, circle_radius * 2 + radio_to_content_padding);
+	eon_element_actual_y_set(thiz->content, height/2 - cheight/2);
+#else
+	enesim_renderer_origin_set(thiz->content, circle_radius * 2 +
+			radio_to_content_padding, 0);
+#endif
+
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 	/* get the fill function */
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
+		printf("cannot setup the compound\n");
 		return EINA_FALSE;
 	}
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
 	if (!thiz->fill)
 	{
+		printf("no fill function\n");
 		return EINA_FALSE;
 	}
 
@@ -154,6 +172,10 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 {
 	Enesim_Renderer *r;
 	Radio *thiz;
+#if 1
+ 	const int color[] = { 0xffffffff, 0xff00ff00, 0xff00ffff };
+ 	static int i = 0;
+#endif
 
 	thiz = calloc(1, sizeof(Radio));
 	if (!thiz) return NULL;
@@ -183,7 +205,11 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	thiz->background = r;
 	enesim_renderer_rectangle_corner_radius_set(r, circle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_color_set(r, 0xff888888);
+#if 0
+ 	enesim_renderer_shape_fill_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
+#else
+	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+#endif
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 
 	r = eon_theme_radio_new(&_descriptor, thiz);

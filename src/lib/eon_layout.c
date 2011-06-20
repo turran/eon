@@ -105,6 +105,8 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.initialize = _eon_layout_initialize;
 	pdescriptor.free = _eon_layout_free;
 	pdescriptor.name = descriptor->name;
+	pdescriptor.min_width_get = descriptor->min_width_get;
+	pdescriptor.min_height_get = descriptor->min_height_get;
 
 	r = eon_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
@@ -185,7 +187,7 @@ Eina_Bool eon_layout_state_setup(Enesim_Renderer *r, unsigned int width,
 #endif
 }
 
-void eon_layout_stack_cleanup(Enesim_Renderer *r)
+void eon_layout_state_cleanup(Enesim_Renderer *r)
 {
 #if 0
 	Eon_Layout *thiz;
@@ -194,6 +196,38 @@ void eon_layout_stack_cleanup(Enesim_Renderer *r)
 	/* remove every dirty rectangle? */
 	if (thiz->tiler) eina_tiler_clear(thiz->tiler);
 #endif
+}
+
+void eon_layout_child_real_width_get(Enesim_Renderer *r, Enesim_Renderer *child, double *width)
+{
+	double set;
+
+	eon_element_width_get(child, &set);
+	/* fill the layout size */
+	if (set < 0)
+	{
+		eon_layout_actual_width_get(r, width);
+	}
+	else
+	{
+		eon_element_real_width_get(child, width);
+	}
+}
+
+void eon_layout_child_real_height_get(Enesim_Renderer *r, Enesim_Renderer *child, double *height)
+{
+	double set;
+
+	eon_element_height_get(child, &set);
+	/* fill the layout size */
+	if (set < 0)
+	{
+		eon_layout_actual_height_get(r, height);
+	}
+	else
+	{
+		eon_element_real_height_get(child, height);
+	}
 }
 /*============================================================================*
  *                                   API                                      *
@@ -295,14 +329,27 @@ EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Layout *thiz;
 	Ender_Element *curr_parent;
+	Enesim_Renderer *child_r;
 
 	thiz = _eon_layout_get(r);
+	child_r = ender_element_renderer_get(child);
+	if (!eon_is_element(child_r))
+		return;
 	curr_parent = ender_element_parent_get(child);
 	if (curr_parent)
 	{
 		ender_element_value_remove(curr_parent, "child", child, NULL);
 	}
-	eon_element_property_add(r, "child", child, NULL);
+#if 1
+	{
+		/* TEST */
+		Ender_Element *theme;
+
+		theme = eon_element_theme_element_get(child_r);
+		eon_element_property_add(r, "child", theme, NULL);
+	}
+#endif
+	//eon_element_property_add(r, "child", child, NULL);
 	thiz->child_add(r, child);
 	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
 	/* TODO whenever a child is appended to a layout

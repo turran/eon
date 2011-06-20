@@ -114,7 +114,7 @@ static void _eon_widget_initialize(Ender_Element *ender)
 Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 {
 	Eon_Widget *thiz;
-	Eon_Element_Descriptor pdescriptor;
+	Eon_Element_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Widget));

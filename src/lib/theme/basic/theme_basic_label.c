@@ -74,7 +74,7 @@ static void _label_size_set(Enesim_Renderer *r, int size)
 static int _label_size_get(Enesim_Renderer *r)
 {
 	Label *thiz;
-	int size;
+	unsigned int size;
 
 	thiz = _label_get(r);
 	etex_span_size_get(thiz->text, &size);
