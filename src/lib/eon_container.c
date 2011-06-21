@@ -26,6 +26,7 @@ typedef struct _Eon_Container
 	Ender_Element *content;
 	/* private */
 	Eon_Element_Initialize initialize;
+	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
 	void *data;
 } Eon_Container;
@@ -49,6 +50,25 @@ static void _eon_container_initialize(Ender_Element *e)
 	thiz = _eon_container_get(r);
 	if (thiz->initialize)
 		thiz->initialize(e);
+}
+
+static void _eon_container_setup(Enesim_Renderer *r)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(r);
+	if (thiz->content)
+	{
+		Enesim_Renderer *content_r;
+
+		content_r = ender_element_renderer_get(thiz->content);
+		if (!eon_element_setup(content_r))
+			return EINA_FALSE;
+	}
+	if (thiz->setup)
+		return thiz->setup(r);
+
+	return EINA_TRUE;
 }
 
 static void _eon_container_free(Enesim_Renderer *r)
@@ -92,6 +112,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
+	pdescriptor.setup = _eon_container_setup;
 	pdescriptor.name = descriptor->name;
 
 	r = eon_widget_new(&pdescriptor, thiz);

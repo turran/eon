@@ -162,6 +162,7 @@ static void _stack_horizontal_arrange(Enesim_Renderer *r, Eon_Stack *thiz, doubl
 		printf("H setting child on %g %g %g %g\n", last_x, y, w, h);
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, last_x, y);
+		eon_element_setup(child_r);
 		ech->curr_x = last_x;
 		ech->curr_y = y;
 		last_x += w;
@@ -204,13 +205,14 @@ static void _stack_vertical_arrange(Enesim_Renderer *r, Eon_Stack *thiz, double 
 		printf("V setting child on %g %g %g %g\n", x, last_y, w, h);
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, x, last_y);
+		eon_element_setup(child_r);
 		ech->curr_x = x;
 		ech->curr_y = last_y;
 		last_y += h;
 	}
 }
 
-static void _stack_relayout(Enesim_Renderer *r, Eon_Stack *thiz)
+static Eina_Bool _stack_relayout(Enesim_Renderer *r, Eon_Stack *thiz)
 {
 	double aw, ah;
 	/* the idea on a layout setup is the set the actual width and height
@@ -222,6 +224,8 @@ static void _stack_relayout(Enesim_Renderer *r, Eon_Stack *thiz)
 	else
 		_stack_vertical_arrange(r, thiz, aw, ah);
 	thiz->relayout = EINA_FALSE;
+	/* FIXME */
+	return EINA_TRUE;
 }
 
 /* if some child changed some property just relayout */
@@ -233,6 +237,21 @@ static void _stack_child_changed(Ender_Element *e, const char *event_name, void 
 	thiz = _eon_stack_get(r);
 	thiz->relayout = EINA_TRUE;
 }
+
+static Eina_Bool _eon_stack_setup(Enesim_Renderer *r)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	printf("stack setup\n");
+	if (thiz->relayout)
+	{
+		printf("relayouting\n");
+		return _stack_relayout(r, thiz);
+	}
+	return EINA_TRUE;
+}
+
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -350,7 +369,6 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz->relayout = EINA_TRUE;
 	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
 	ender_event_listener_add(child, "Mutation", _stack_child_changed, r);
-	_stack_relayout(r, thiz);
 }
 
 static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
@@ -371,7 +389,6 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 			break;
 		}
 	}
-	_stack_relayout(r, thiz);
 	/* TODO */
 	//ender_event_listener_remove(child, "Mutation", _stack_child_changed, r);
 }
@@ -397,6 +414,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_at = _eon_stack_child_at,
 	.min_width_get = _eon_stack_min_width_get,
 	.min_height_get = _eon_stack_min_height_get,
+	.setup = _eon_stack_setup,
 	.name = "stack",
 };
 /*============================================================================*
@@ -437,7 +455,7 @@ EAPI void eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction direct
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.direction = direction;
-	//thiz->relayout = EINA_TRUE;
+	thiz->relayout = EINA_TRUE;
 }
 
 /**

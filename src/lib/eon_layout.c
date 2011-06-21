@@ -107,6 +107,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.setup = descriptor->setup;
 
 	r = eon_element_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

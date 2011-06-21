@@ -40,6 +40,7 @@ typedef struct _Eon_Element
 	/* private */
 	/* function pointers */
 	Eon_Element_Initialize initialize;
+	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
@@ -187,6 +188,17 @@ void eon_element_initialize(Ender_Element *ender)
 		thiz->initialize(ender);
 }
 
+Eina_Bool eon_element_setup(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
+	if (thiz->setup)
+		return thiz->setup(r);
+	return EINA_TRUE;
+}
+
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data)
 {
@@ -236,6 +248,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 
 	/* Set the function pointers */
 	thiz->initialize = descriptor->initialize;
+	thiz->setup = descriptor->setup;
 	thiz->free = descriptor->free;
 	thiz->min_width_get = descriptor->min_width_get;
 	thiz->min_height_get = descriptor->min_height_get;

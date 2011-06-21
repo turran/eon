@@ -4,6 +4,7 @@
 typedef struct _Eon_Widget_Descriptor
 {
 	Eon_Element_Initialize initialize;
+	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Widget_Descriptor;
