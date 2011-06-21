@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,6 @@ static void _layout_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 	Theme_Basic_Layout *thiz;
 
 	thiz = _layout_get(r);
-	printf("layout %p drawing at %d %d %d\n", r, x, y, len);
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
@@ -155,7 +154,7 @@ static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz = _layout_get(r);
 	rchild = ender_element_renderer_get(child);
 	enesim_renderer_compound_layer_add(thiz->compound, rchild);
-	printf("child %p added to stack %p\n", rchild, r);
+	//printf("child %p added to stack %p\n", rchild, r);
 }
 
 static void _layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
@@ -166,7 +165,7 @@ static void _layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 	thiz = _layout_get(r);
 	rchild = ender_element_renderer_get(child);
 	enesim_renderer_compound_layer_remove(thiz->compound, rchild);
-	printf("child %p removed from stack %p\n", rchild, r);
+	//printf("child %p removed from stack %p\n", rchild, r);
 }
 
 static double _layout_min_width_get(Enesim_Renderer *r)
@@ -200,7 +199,6 @@ static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	printf("layout @ %g %g\n", ox, oy);
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
 		printf("compound cannot setup yet\n");

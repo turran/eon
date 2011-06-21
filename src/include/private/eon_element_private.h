@@ -4,15 +4,19 @@
 typedef void (*Eon_Element_Initialize)(Ender_Element *ender);
 typedef Eina_Bool (*Eon_Element_Setup)(Enesim_Renderer *r);
 typedef void (*Eon_Element_Free)(Enesim_Renderer *r);
-typedef double (*Eon_Element_Min_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Min_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Element_Max_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Element_Min_Height_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Element_Max_Height_Get)(Enesim_Renderer *r);
 
 typedef struct _Eon_Element_Descriptor
 {
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
-	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
+	Eon_Element_Max_Width_Get max_width_get;
+	Eon_Element_Min_Height_Get min_height_get;
+	Eon_Element_Max_Height_Get max_height_get;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Element_Descriptor;
@@ -21,6 +25,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data);
 void * eon_element_data_get(Enesim_Renderer *r);
 void eon_element_initialize(Ender_Element *ender);
+Enesim_Renderer * eon_element_theme_renderer_get(Enesim_Renderer *r);
 Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r);
 Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r);
 void eon_element_property_set(Enesim_Renderer *r, const char *name, ...);

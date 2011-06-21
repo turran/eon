@@ -23,6 +23,7 @@ EAPI void eon_theme_element_min_height_get(Enesim_Renderer *r, double *height);
 
 typedef double (*Eon_Theme_Container_Decoration_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Container_Decoration_Height_Get)(Enesim_Renderer *r);
+typedef void (*Eon_Theme_Container_Content_Position_Get)(Enesim_Renderer *r, Enesim_Renderer *content, double *x, double *y);
 
 EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *content);
 EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **content);
@@ -37,6 +38,7 @@ typedef void (*Eon_Theme_Radio_Selected_Set)(Enesim_Renderer *r, Eina_Bool selec
 typedef struct _Eon_Theme_Radio_Descriptor
 {
 	/* container needed functions */
+	Eon_Theme_Container_Content_Position_Get content_position_get;
 	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
 	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
@@ -110,6 +112,7 @@ EAPI void eon_theme_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enable);
 typedef struct _Eon_Theme_Button_Descriptor
 {
 	/* container needed functions */
+	Eon_Theme_Container_Content_Position_Get content_position_get;
 	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
 	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
@@ -131,6 +134,7 @@ EAPI void * eon_theme_button_data_get(Enesim_Renderer *r);
 typedef struct _Eon_Theme_Checkbox_Descriptor
 {
 	/* container needed functions */
+	Eon_Theme_Container_Content_Position_Get content_position_get;
 	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
 	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */

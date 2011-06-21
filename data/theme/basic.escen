@@ -1,6 +1,7 @@
 escen {
 	basic_layout "stack" {
 		default {
+			set { color = 0xffffaaaa; };
 		};
 	};
 

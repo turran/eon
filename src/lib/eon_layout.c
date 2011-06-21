@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,6 +45,12 @@ typedef struct _Eon_Layout
 	void *data;
 } Eon_Layout;
 
+#define _eon_layout_get(r) \
+	eon_element_data_get(r); \
+	if (!EINA_MAGIC_CHECK((Eon_Layout *)eon_element_data_get(r), EON_LAYOUT_MAGIC)) \
+		EINA_MAGIC_FAIL((Eon_Layout *)eon_element_data_get(r), EON_LAYOUT_MAGIC)
+
+#if 0
 static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 {
 	Eon_Layout *thiz;
@@ -54,6 +60,7 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 
 	return thiz;
 }
+#endif
 
 static void _eon_layout_initialize(Ender_Element *ender)
 {
@@ -385,7 +392,6 @@ EAPI Ender_Element * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x,
 	thiz = _eon_layout_get(r);
 	if (!thiz) return NULL;
 
-	printf("%p\n", thiz);
 	if (!thiz->child_at)
 		return NULL;
 	return thiz->child_at(r, x, y);

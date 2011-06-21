@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -124,6 +124,10 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	thiz->initialize = descriptor->initialize;
 
 	pdescriptor.initialize = _eon_widget_initialize;
+	pdescriptor.min_width_get = descriptor->min_width_get;
+	pdescriptor.max_width_get = descriptor->max_width_get;
+	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.max_height_get = descriptor->max_height_get;
 	pdescriptor.free = _eon_widget_free;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.setup = descriptor->setup;

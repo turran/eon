@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -282,6 +282,14 @@ Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r)
 	return thiz->theme_ender;
 }
 
+Enesim_Renderer * eon_element_theme_renderer_get(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->theme_renderer;
+}
+
 Ender_Element * eon_element_theme_element_get(Enesim_Renderer *r)
 {
 	Eon_Element *thiz;
@@ -343,29 +351,26 @@ void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *heig
 void eon_element_actual_x_set(Enesim_Renderer *r, double x)
 {
 	Eon_Element *thiz;
-	Ender_Element *ender;
 
 	thiz = _eon_element_get(r);
 	thiz->actual_x = x;
 	ender_element_value_set(thiz->theme_element, "x", x, NULL);
-	printf("actual x %s is %g\n", thiz->name, x);
+	//printf("actual x %s is %g\n", thiz->name, x);
 }
 
 void eon_element_actual_y_set(Enesim_Renderer *r, double y)
 {
 	Eon_Element *thiz;
-	Ender_Element *ender;
 
 	thiz = _eon_element_get(r);
 	thiz->actual_y = y;
 	ender_element_value_set(thiz->theme_element, "y", y, NULL);
-	printf("actual y %s is %g\n", thiz->name, y);
+	//printf("actual y %s is %g\n", thiz->name, y);
 }
 
 void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
 {
 	Eon_Element *thiz;
-	Ender_Element *ender;
 
 	thiz = _eon_element_get(r);
 	thiz->actual_x = x;
@@ -389,7 +394,7 @@ void eon_element_real_width_get(Enesim_Renderer *r, double *width)
 	rw = set > max ? max : set;
 	rw = rw < min ? min : rw;
 
-	printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
+	//printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
 	*width = rw;
 }
 

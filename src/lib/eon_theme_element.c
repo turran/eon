@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2009 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,12 @@ typedef struct _Eon_Theme_Element
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Element;
 
+#define _eon_theme_element_get(r) \
+	enesim_renderer_data_get(r); \
+	if (!EINA_MAGIC_CHECK((Eon_Theme_Element *)enesim_renderer_data_get(r), EON_THEME_ELEMENT_MAGIC)) \
+		EINA_MAGIC_FAIL((Eon_Theme_Element *)enesim_renderer_data_get(r), EON_THEME_ELEMENT_MAGIC)
+
+#if 0
 static inline Eon_Theme_Element * _eon_theme_element_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Element *thiz;
@@ -50,7 +56,7 @@ static inline Eon_Theme_Element * _eon_theme_element_get(Enesim_Renderer *r)
 
 	return thiz;
 }
-
+#endif
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -259,7 +265,7 @@ EAPI void eon_theme_element_x_set(Enesim_Renderer *r, double x)
 	thiz->x = x;
 	/* FIXME for now */
 	enesim_renderer_x_origin_set(r, x);
-	printf("setting x @ %g\n", x);
+	//printf("setting x @ %g\n", x);
 }
 
 /**
@@ -288,7 +294,7 @@ EAPI void eon_theme_element_y_set(Enesim_Renderer *r, double y)
 	thiz->y = y;
 	/* FIXME for now */
 	enesim_renderer_y_origin_set(r, y);
-	printf("setting y @ %g\n", y);
+	//printf("setting y @ %g\n", y);
 }
 
 /**
