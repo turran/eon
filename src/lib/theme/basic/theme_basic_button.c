@@ -98,7 +98,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	}
 	if (thiz->content != content)
 	{
-		enesim_renderer_compound_clear(thiz->compound);
+		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
 		enesim_renderer_compound_layer_add(thiz->compound, content);
 		/* FIXME at the cleanup we should restore this */

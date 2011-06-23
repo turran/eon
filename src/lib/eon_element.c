@@ -394,7 +394,7 @@ void eon_element_real_width_get(Enesim_Renderer *r, double *width)
 	rw = set > max ? max : set;
 	rw = rw < min ? min : rw;
 
-	//printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
+	printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
 	*width = rw;
 }
 

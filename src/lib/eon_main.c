@@ -44,6 +44,17 @@ static void _constructor_callback(Ender_Element *e, void *data)
  *                                 Global                                     *
  *============================================================================*/
 int eon_log = -1;
+
+Ender_Namespace * eon_namespace_get(void)
+{
+	static Ender_Namespace *namespace = NULL;
+
+	if (!namespace)
+	{
+		namespace = ender_namespace_new("eon");
+	}
+	return namespace;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

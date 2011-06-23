@@ -90,7 +90,7 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fi
 	}
 	if (thiz->content != content)
 	{
-		enesim_renderer_compound_clear(thiz->compound);
+		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
 		if (thiz->selected)
 		{

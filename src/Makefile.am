@@ -1,2 +1,2 @@
-SUBDIRS = lib include
+SUBDIRS = include lib
 MAINTAINERCLEANFILES = Makefile.in

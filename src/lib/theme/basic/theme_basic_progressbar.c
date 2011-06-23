@@ -31,15 +31,20 @@ typedef struct _Progressbar
 	Enesim_Color dark;
 	/* private */
 	struct {
-		Enesim_Renderer *background;
-		Enesim_Renderer *bar;
+		Enesim_Renderer *content; /* the compound */
 		Enesim_Renderer *rectangle;
-	} shape;
+	} widget;
 	struct {
 		Enesim_Renderer *background;
+		Enesim_Renderer *bar;
+	} content;
+	struct {
+		Enesim_Renderer *content; /* the compound */
+	} bar;
+	struct {
 		Enesim_Renderer *pattern;
 		Enesim_Renderer *shade;
-	} background;
+	} bar_content;
 	Enesim_Renderer_Sw_Fill fill;
 } Progressbar;
 
@@ -56,7 +61,7 @@ static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *
 	Progressbar *thiz;
 
 	thiz = _progressbar_get(r);
-	thiz->fill(thiz->shape.rectangle, x, y, len, dst);
+	thiz->fill(thiz->widget.rectangle, x, y, len, dst);
 }
 
 static void _progressbar_update_size(Enesim_Renderer *r)
@@ -70,39 +75,32 @@ static void _progressbar_update_size(Enesim_Renderer *r)
 	eon_theme_element_width_get(r, &width);
 	eon_theme_element_height_get(r, &height);
 
-	printf("updating size %g %g\n", width, height);
-	enesim_renderer_rectangle_width_set(thiz->shape.rectangle, width);
-	enesim_renderer_rectangle_height_set(thiz->shape.rectangle, height);
+	enesim_renderer_rectangle_width_set(thiz->widget.rectangle, width);
+	enesim_renderer_rectangle_height_set(thiz->widget.rectangle, height);
 
 	sa = sin(-40 * M_PI / 180.0);
 	ca = cos(-40 * M_PI / 180.0);
 	t.xx = ca;               t.xy = sa;               t.xz = 0;
 	t.yx = -sa / 2;    t.yy = ca / 2;     t.yz = 0;
 	t.zx = 0;                t.zy = 0;                t.zz = 1;
-	enesim_renderer_transformation_set(thiz->background.pattern, &t);
-	enesim_renderer_stripes_even_thickness_set(thiz->background.shade, height / 4.0);
-	enesim_renderer_stripes_odd_thickness_set(thiz->background.shade, height / 4.0);
+	enesim_renderer_transformation_set(thiz->bar_content.pattern, &t);
+	enesim_renderer_stripes_even_thickness_set(thiz->bar_content.shade, height / 4.0);
+	enesim_renderer_stripes_odd_thickness_set(thiz->bar_content.shade, height / 4.0);
 	t.xx = 1;               t.xy = 0;                t.xz = 0;
 	t.yx = 0;               t.yy = 0.5;              t.yz = 0;
 	t.zx = 0;               t.zy = 0;                t.zz = 1;
-	enesim_renderer_transformation_set(thiz->background.shade, &t);
+	enesim_renderer_transformation_set(thiz->bar_content.shade, &t);
 
 	width = width * thiz->progression;
-	enesim_renderer_rectangle_width_set(thiz->shape.bar, width);
-	enesim_renderer_rectangle_height_set(thiz->shape.bar, height);
+	enesim_renderer_rectangle_width_set(thiz->content.bar, width);
+	enesim_renderer_rectangle_height_set(thiz->content.bar, height);
 }
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme progressbar interface                    *
  *----------------------------------------------------------------------------*/
 static double _progressbar_min_width_get(Enesim_Renderer *r)
 {
-	Progressbar *thiz;
-	unsigned int min_width;
-
-	thiz = _progressbar_get(r);
-	enesim_renderer_rectangle_width_get(thiz->shape.rectangle, &min_width);
-
-	return min_width;
+	return 22;
 }
 
 static double _progressbar_max_width_get(Enesim_Renderer *r)
@@ -112,13 +110,7 @@ static double _progressbar_max_width_get(Enesim_Renderer *r)
 
 static double _progressbar_min_height_get(Enesim_Renderer *r)
 {
-	Progressbar *thiz;
-	unsigned int min_height;
-
-	thiz = _progressbar_get(r);
-	enesim_renderer_rectangle_height_get(thiz->shape.rectangle, &min_height);
-
-	return min_height;
+	return 22;
 }
 
 static double _progressbar_max_height_get(Enesim_Renderer *r)
@@ -135,18 +127,27 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	thiz = _progressbar_get(r);
 	/* the matrix */
 	enesim_renderer_transformation_get(r, &matrix);
-	enesim_renderer_transformation_set(thiz->shape.rectangle, &matrix);
+	enesim_renderer_transformation_set(thiz->widget.rectangle, &matrix);
 	/* the origin */
 	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->shape.rectangle, ox, oy);
+	enesim_renderer_origin_set(thiz->widget.rectangle, ox, oy);
+
+	/* if we are at zero progression level just draw the background and not the bar */
+	enesim_renderer_compound_layer_clear(thiz->widget.content);
+	enesim_renderer_compound_layer_add(thiz->widget.content, thiz->content.background);
+	if (thiz->progression > 0.0)
+	{
+		enesim_renderer_compound_layer_add(thiz->widget.content, thiz->content.bar);
+	}
 
 	_progressbar_update_size(r);
 
-	if (!enesim_renderer_sw_setup(thiz->shape.rectangle))
+	if (!enesim_renderer_sw_setup(thiz->widget.rectangle))
 	{
+		printf("failed 1\n");
 		return EINA_FALSE;
 	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->shape.rectangle);
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->widget.rectangle);
 	if (!thiz->fill) return EINA_FALSE;
 
 	*fill = _draw;
@@ -159,7 +160,7 @@ static void _cleanup(Enesim_Renderer *r)
 	Progressbar *thiz;
 
 	thiz = _progressbar_get(r);
-	enesim_renderer_sw_cleanup(thiz->shape.bar);
+	enesim_renderer_sw_cleanup(thiz->content.bar);
 }
 
 static void _free(Enesim_Renderer *r)
@@ -169,10 +170,10 @@ static void _free(Enesim_Renderer *r)
 	thiz = _progressbar_get(r);
 
 	thiz = enesim_renderer_data_get(r);
-	if (thiz->shape.background)
-		enesim_renderer_delete(thiz->shape.background);
-	if (thiz->shape.bar)
-		enesim_renderer_delete(thiz->shape.bar);
+	if (thiz->widget.content)
+		enesim_renderer_delete(thiz->widget.content);
+	if (thiz->content.bar)
+		enesim_renderer_delete(thiz->content.bar);
 }
 
 static Eon_Theme_Progressbar_Descriptor _descriptor = {
@@ -201,54 +202,65 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	thiz = calloc(1, sizeof(Progressbar));
 	if (!thiz) return NULL;
 
-	r = enesim_renderer_background_new();
-	if (!r) goto background_background_err;
-	thiz->background.background = r;
-	
+	/* first the bar content */
 	r = enesim_renderer_stripes_new();
-	if (!r) goto background_pattern_err;
-	thiz->background.pattern = r;
+	if (!r) goto bar_content_pattern_err;
+	thiz->bar_content.pattern = r;
 	enesim_renderer_stripes_even_color_set(r, 0xffa1ff38);
 	enesim_renderer_stripes_odd_color_set(r, 0xffb3ff00);
 	enesim_renderer_stripes_even_thickness_set(r, 3);
 	enesim_renderer_stripes_odd_thickness_set(r, 5);
 
 	r = enesim_renderer_stripes_new();
-	if (!r) goto background_shade_err;
-	thiz->background.shade = r;
+	if (!r) goto bar_content_shade_err;
+	thiz->bar_content.shade = r;
 	enesim_renderer_stripes_even_color_set(r, 0);
 	enesim_renderer_stripes_odd_color_set(r, 0x33000000);
 	enesim_renderer_stripes_even_thickness_set(r, 1);
 	enesim_renderer_stripes_odd_thickness_set(r, 1);
 
+	/* now the bar itself */
 	r = enesim_renderer_compound_new();
-	if (!r) goto shape_background_err;
-	thiz->shape.background = r;
-	//enesim_renderer_compound_layer_add(r, thiz->background.background);
-	//enesim_renderer_rop_set(thiz->background.background, ENESIM_FILL);
-	enesim_renderer_compound_layer_add(r, thiz->background.pattern);
-	enesim_renderer_rop_set(thiz->background.pattern, ENESIM_FILL);
-	enesim_renderer_compound_layer_add(r, thiz->background.shade);
-	enesim_renderer_rop_set(thiz->background.shade, ENESIM_BLEND);
+	if (!r) goto bar_content_err;
+	thiz->bar.content = r;
+	enesim_renderer_compound_layer_add(r, thiz->bar_content.pattern);
+	enesim_renderer_rop_set(thiz->bar_content.pattern, ENESIM_FILL);
+	enesim_renderer_compound_layer_add(r, thiz->bar_content.shade);
+	enesim_renderer_rop_set(thiz->bar_content.shade, ENESIM_BLEND);
 
+	/* now the content */
 	r = enesim_renderer_rectangle_new();
-	if (!r) goto shape_bar_err;
-	thiz->shape.bar = r;
+	if (!r) goto content_bar_err;
+	thiz->content.bar = r;
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_rectangle_corner_radius_set(r, 5);
 	enesim_renderer_shape_stroke_weight_set(r, 2);
 	enesim_renderer_shape_stroke_color_set(r, 0xffa1ff38);
-	enesim_renderer_shape_fill_renderer_set(r, thiz->shape.background);
+	enesim_renderer_shape_fill_renderer_set(r, thiz->bar.content);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
+	r = enesim_renderer_background_new();
+	if (!r) goto content_background_err;
+	thiz->content.background = r;
+	enesim_renderer_background_color_set(r, 0xffffffff);
+
+	/* now the widget */
+	r = enesim_renderer_compound_new();
+	if (!r) goto widget_content_err;
+	thiz->widget.content = r;
+	enesim_renderer_compound_layer_add(r, thiz->content.background);
+	enesim_renderer_rop_set(thiz->content.background, ENESIM_FILL);
+	enesim_renderer_compound_layer_add(r, thiz->content.bar);
+	enesim_renderer_rop_set(thiz->content.bar, ENESIM_BLEND);
+
 	r = enesim_renderer_rectangle_new();
-	if (!r) goto shape_rectangle_err;
-	thiz->shape.rectangle = r;
+	if (!r) goto widget_rectangle_err;
+	thiz->widget.rectangle = r;
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_rectangle_corner_radius_set(r, 5);
 	enesim_renderer_shape_stroke_weight_set(r, 2);
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
-	enesim_renderer_shape_fill_renderer_set(r, thiz->shape.bar);
+	enesim_renderer_shape_fill_renderer_set(r, thiz->widget.content);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = eon_theme_progressbar_new(&_descriptor, thiz);
@@ -257,18 +269,20 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->shape.rectangle);
-shape_rectangle_err:
-	enesim_renderer_delete(thiz->shape.bar);
-shape_bar_err:
-	enesim_renderer_delete(thiz->shape.background);
-shape_background_err:
-	enesim_renderer_delete(thiz->background.shade);
-background_shade_err:
-	enesim_renderer_delete(thiz->background.pattern);
-background_pattern_err:
-	enesim_renderer_delete(thiz->background.background);
-background_background_err:
+	enesim_renderer_delete(thiz->widget.rectangle);
+widget_rectangle_err:
+	enesim_renderer_delete(thiz->widget.content);
+widget_content_err:
+	enesim_renderer_delete(thiz->content.background);
+content_background_err:
+	enesim_renderer_delete(thiz->content.bar);
+content_bar_err:
+	enesim_renderer_delete(thiz->bar.content);
+bar_content_err:
+	enesim_renderer_delete(thiz->bar_content.shade);
+bar_content_shade_err:
+	enesim_renderer_delete(thiz->bar_content.pattern);
+bar_content_pattern_err:
 	free(thiz);
 	return NULL;
 }
@@ -282,10 +296,10 @@ void eon_basic_progressbar_light_color_set(Enesim_Renderer *r, Enesim_Color colo
 	Enesim_Renderer *r1;
 
 	thiz = _progressbar_get(r);
-	r1 = thiz->background.pattern;
+	r1 = thiz->bar_content.pattern;
 	enesim_renderer_stripes_even_color_set(r1, color);
 
-	r1 = thiz->shape.bar;
+	r1 = thiz->content.bar;
 	enesim_renderer_shape_stroke_color_set(r1, color);
 }
 
@@ -298,7 +312,7 @@ void eon_basic_progressbar_dark_color_set(Enesim_Renderer *r, Enesim_Color color
 	Enesim_Renderer *r1;
 
 	thiz = _progressbar_get(r);
-	r1 = thiz->background.pattern;
+	r1 = thiz->bar_content.pattern;
 	enesim_renderer_stripes_odd_color_set(r1, color);
 }
 
