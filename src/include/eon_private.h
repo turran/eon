@@ -39,6 +39,9 @@ extern int eon_log;
 /* theme inheritance */
 #define EON_THEME_ELEMENT_MAGIC 0xe041001
 
+/* main */
+Ender_Namespace * eon_namespace_get(void);
+
 /* theme */
 Escen * eon_theme_get(void);
 Eina_Bool eon_theme_init(void);

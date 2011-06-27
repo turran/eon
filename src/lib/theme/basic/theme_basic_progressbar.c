@@ -139,7 +139,6 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	{
 		enesim_renderer_compound_layer_add(thiz->widget.content, thiz->content.bar);
 	}
-
 	_progressbar_update_size(r);
 
 	if (!enesim_renderer_sw_setup(thiz->widget.rectangle))
@@ -160,7 +159,7 @@ static void _cleanup(Enesim_Renderer *r)
 	Progressbar *thiz;
 
 	thiz = _progressbar_get(r);
-	enesim_renderer_sw_cleanup(thiz->content.bar);
+	enesim_renderer_sw_cleanup(thiz->widget.rectangle);
 }
 
 static void _free(Enesim_Renderer *r)
@@ -170,10 +169,21 @@ static void _free(Enesim_Renderer *r)
 	thiz = _progressbar_get(r);
 
 	thiz = enesim_renderer_data_get(r);
+
+	if (thiz->widget.rectangle)
+		enesim_renderer_delete(thiz->widget.rectangle);
 	if (thiz->widget.content)
 		enesim_renderer_delete(thiz->widget.content);
+	if (thiz->content.background)
+		enesim_renderer_delete(thiz->content.background);
 	if (thiz->content.bar)
 		enesim_renderer_delete(thiz->content.bar);
+	if (thiz->bar.content)
+		enesim_renderer_delete(thiz->bar.content);
+	if (thiz->bar_content.shade)
+		enesim_renderer_delete(thiz->bar_content.shade);
+	if (thiz->bar_content.pattern)
+		enesim_renderer_delete(thiz->bar_content.pattern);
 }
 
 static Eon_Theme_Progressbar_Descriptor _descriptor = {
