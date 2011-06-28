@@ -20,65 +20,23 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Button
+typedef struct _Eon_Window
 {
-} Eon_Button;
 
-static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
+} Eon_Window;
+
+typedef struct _Eon_Backend
 {
-	Eon_Button *thiz;
 
-	thiz = eon_container_data_get(r);
-	return thiz;
-}
-/*----------------------------------------------------------------------------*
- *                        The Eon's widget interface                          *
- *----------------------------------------------------------------------------*/
-static void _eon_button_free(Enesim_Renderer *r)
-{
-	Eon_Button *thiz;
-
-	thiz = _eon_button_get(r);
-	free(thiz);
-}
-
-static void _eon_button_initialize(Ender_Element *e)
-{
-	/* register every event needed for a button
-	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
-	 */
-}
-
-static Eon_Container_Descriptor _descriptor = {
-	.initialize = _eon_button_initialize,
-	.free = _eon_button_free,
-	.name = "button",
-};
+} Eon_Backend;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#include "eon_generated_button.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_button_new(void)
+Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
+		unsigned int width, unsigned int height)
 {
-	Eon_Button *thiz;
-	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Eon_Button));
-	if (!thiz) return NULL;
-
-	r = eon_container_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
-
-	return r;
-
-renderer_err:
-	free(thiz);
-	return NULL;
 }

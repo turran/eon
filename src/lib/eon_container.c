@@ -192,6 +192,7 @@ static void _eon_container_free(Enesim_Renderer *r)
  * on initialize we should just check whenever the content has changed
  * (i.e mutation event) if so, inform that we have changed too
  */
+#include "eon_generated_container.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
