@@ -187,7 +187,10 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 		printf("decoration %g %g\n", dw, dh);
 		eon_element_actual_size_set(content_r, aw - dw, ah - dh);
 		if (!eon_element_setup(thiz->content))
+		{
+			printf("impossible to setup the content\n");
 			return EINA_FALSE;
+		}
 		printf("setting size %g %g\n", aw - dw, ah - dh);
 		eon_theme_container_content_position_get(theme_r, &cx, &cy);
 		eon_element_actual_position_set(content_r, cx, cy);

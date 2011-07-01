@@ -41,4 +41,7 @@ namespace "eon" {
 		string "font";
 		int "size";
 	};
+	abstract "theme_scrollview" : "theme_container" {
+
+	};
 };

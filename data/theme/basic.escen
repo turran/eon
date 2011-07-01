@@ -63,6 +63,8 @@ escen {
 	};
 	
 	basic_scrollview "scrollview" {
+		default {
+		};
 	};
 
 	basic_checkbox "checkbox" {

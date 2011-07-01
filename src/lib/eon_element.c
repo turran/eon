@@ -415,6 +415,12 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	}
 
 	theme_instance = escen_instance_new(theme_ender);
+	if (!theme_instance)
+	{
+		printf("no instance %s\n", descriptor->name);
+		return NULL;
+	}
+
 	theme_element = escen_instance_ender_get(theme_instance);
 	theme_renderer = ender_element_renderer_get(theme_element);
 
@@ -701,7 +707,7 @@ EAPI void eon_element_width_get(Ender_Element *e, double *width)
  */
 EAPI void eon_element_width_set(Ender_Element *e, double width)
 {
-	ender_element_value_set(e, "min_width", width, NULL);
+	ender_element_value_set(e, "width", width, NULL);
 }
 
 /**

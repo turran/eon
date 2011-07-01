@@ -11,5 +11,6 @@ void eon_button_init(void);
 void eon_radio_init(void);
 void eon_checkbox_init(void);
 void eon_label_init(void);
+void eon_scrollview_init(void);
 
 #endif

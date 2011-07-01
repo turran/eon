@@ -69,10 +69,43 @@ static void _scrollview_content_position_get(Enesim_Renderer *r, Enesim_Renderer
 static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Theme_Basic_Scrollview *thiz;
+	Enesim_Renderer *content;
+	double ox, oy;
+	double width, height;
 
 	thiz = _scrollview_get(r);
+
+	/* setup common properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
+	enesim_renderer_origin_set(thiz->clipper, ox, oy);
+	/* the clipped width/height */
+	eon_theme_element_width_get(r, &width);
+	eon_theme_element_height_get(r, &height);
+	enesim_renderer_clipper_width_set(thiz->clipper, width);
+	enesim_renderer_clipper_height_set(thiz->clipper, height);
+
+	eon_theme_container_content_get(r, &content);
+	if (!content)
+	{
+		printf("scrollview no content\n");
+		return EINA_FALSE;
+	}
+	if (thiz->content != content)
+	{
+		enesim_renderer_clipper_content_set(thiz->clipper, content);
+		thiz->content = content;
+	}
+
+	if (!enesim_renderer_sw_setup(thiz->clipper))
+	{
+		printf("the scrollview cannot setup yet\n");
+		return EINA_FALSE;
+	}
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->clipper);
-	if (!thiz->fill) return EINA_FALSE;
+	if (!thiz->fill)
+	{
+		return EINA_FALSE;
+	}
 
 	*fill = _scrollview_draw;
 

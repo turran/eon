@@ -63,6 +63,7 @@ static void _register_enders(void)
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
+	eon_scrollview_init();
 }
 /*============================================================================*
  *                                 Global                                     *

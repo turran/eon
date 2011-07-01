@@ -50,7 +50,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 	return EINA_TRUE;
 }
 
-static Eon_Container_Descriptor _eon_scrollview_widget_descriptor = {
+static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
 	.name = "scrollview",
@@ -66,7 +66,7 @@ EAPI Enesim_Renderer * _eon_scrollview_new(void)
 	thiz = calloc(1, sizeof(Eon_Scrollview));
 	if (!thiz) return NULL;
 
-	r = eon_container_new(&_eon_scrollview_widget_descriptor, thiz);
+	r = eon_container_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

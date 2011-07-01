@@ -28,4 +28,7 @@ namespace "eon" {
 
 	class "basic_layout" : "theme_layout" {
 	};
+
+	class "basic_scrollview" : "theme_scrollview" {
+	};
 };
