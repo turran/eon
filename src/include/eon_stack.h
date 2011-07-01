@@ -25,10 +25,10 @@ typedef enum _Eon_Stack_Direction
 } Eon_Stack_Direction;
 
 
-EAPI Enesim_Renderer * eon_stack_new(void);
-EAPI void eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction direction);
-EAPI void eon_stack_width_set(Enesim_Renderer *r, unsigned int width);
-EAPI void eon_stack_height_set(Enesim_Renderer *r, unsigned int height);
+EAPI Ender_Element * eon_stack_new(void);
+EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Stack_Direction direction);
+EAPI void eon_stack_width_set(Ender_Element *e, unsigned int width);
+EAPI void eon_stack_height_set(Ender_Element *e, unsigned int height);
 
 /**
  * @{

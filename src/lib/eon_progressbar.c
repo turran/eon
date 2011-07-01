@@ -45,17 +45,10 @@ static Eon_Widget_Descriptor _eon_progressbar_widget_descriptor = {
 	.initialize = _eon_progressbar_initialize,
 	.name = "progressbar",
 };
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_progressbar_new(void)
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_progressbar_new(void)
 {
 	Eon_Progressbar *thiz;
 	Enesim_Renderer *r;
@@ -73,11 +66,7 @@ renderer_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_progressbar_progression_get(Enesim_Renderer *r, double *progression)
+static void _eon_progressbar_progression_get(Enesim_Renderer *r, double *progression)
 {
 	Eon_Progressbar *thiz;
 
@@ -86,11 +75,7 @@ EAPI void eon_progressbar_progression_get(Enesim_Renderer *r, double *progressio
 
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_progressbar_progression_set(Enesim_Renderer *r, double progression)
+static void _eon_progressbar_progression_set(Enesim_Renderer *r, double progression)
 {
 	Eon_Progressbar *thiz;
 
@@ -98,4 +83,38 @@ EAPI void eon_progressbar_progression_set(Enesim_Renderer *r, double progression
 	if (!thiz) return;
 
 	eon_element_property_set(r, "progression", progression, NULL);
+}
+
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+#include "eon_generated_progressbar.c"
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_progressbar_new(void)
+{
+	return ender_element_new("progressbar");
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_progressbar_progression_get(Ender_Element *e, double *progression)
+{
+	ender_element_value_get(e, "progression", progression, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_progressbar_progression_set(Ender_Element *e, double progression)
+{
+	ender_element_value_set(e, "progression", progression, NULL);
 }

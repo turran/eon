@@ -39,6 +39,35 @@ static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *content)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *content_r;
+	Enesim_Renderer *content_t;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return;
+
+	thiz->content = content;
+	content_r = ender_element_renderer_get(content);
+	if (!eon_is_element(content_r))
+		return;
+	content_t = eon_element_theme_renderer_get(content_r);
+	eon_element_property_set(r, "content", content_t, NULL);
+}
+
+static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(r);
+	if (!thiz) return;
+
+	*content = thiz->content;
+}
+/*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
 static void _eon_container_initialize(Ender_Element *e)
@@ -55,7 +84,6 @@ static void _eon_container_initialize(Ender_Element *e)
 static double _eon_container_min_width_get(Enesim_Renderer *r)
 {
 	Eon_Container *thiz;
-	Enesim_Renderer *content_r;
 	Enesim_Renderer *theme_r;
 	double v = 0;
 	double min;
@@ -63,8 +91,7 @@ static double _eon_container_min_width_get(Enesim_Renderer *r)
 	thiz = _eon_container_get(r);
 	if (!thiz->content) return v;
 
-	content_r = ender_element_renderer_get(thiz->content);
-	eon_element_min_width_get(content_r, &min);
+	eon_element_min_width_get(thiz->content, &min);
 	v += min;
 
 	theme_r = eon_element_theme_renderer_get(r);
@@ -77,7 +104,6 @@ static double _eon_container_min_width_get(Enesim_Renderer *r)
 static double _eon_container_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Container *thiz;
-	Enesim_Renderer *content_r;
 	Enesim_Renderer *theme_r;
 	double v = 0;
 	double max;
@@ -85,8 +111,7 @@ static double _eon_container_max_width_get(Enesim_Renderer *r)
 	thiz = _eon_container_get(r);
 	if (!thiz->content) return v;
 
-	content_r = ender_element_renderer_get(thiz->content);
-	eon_element_max_width_get(content_r, &max);
+	eon_element_max_width_get(thiz->content, &max);
 	v += max;
 
 	theme_r = eon_element_theme_renderer_get(r);
@@ -99,7 +124,6 @@ static double _eon_container_max_width_get(Enesim_Renderer *r)
 static double _eon_container_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Container *thiz;
-	Enesim_Renderer *content_r;
 	Enesim_Renderer *theme_r;
 	double v = 0;
 	double min;
@@ -107,23 +131,19 @@ static double _eon_container_min_height_get(Enesim_Renderer *r)
 	thiz = _eon_container_get(r);
 	if (!thiz->content) return v;
 
-	content_r = ender_element_renderer_get(thiz->content);
-	eon_element_min_height_get(content_r, &min);
+	eon_element_min_height_get(thiz->content, &min);
 	v += min;
-	printf("1 min height = %g\n", v);
 
 	theme_r = eon_element_theme_renderer_get(r);
 	eon_theme_container_decoration_size_get(theme_r, NULL, &min);
 	v += min;
 
-	printf("2 min height = %g\n", v);
 	return v;
 }
 
 static double _eon_container_max_height_get(Enesim_Renderer *r)
 {
 	Eon_Container *thiz;
-	Enesim_Renderer *content_r;
 	Enesim_Renderer *theme_r;
 	double v = 0;
 	double max;
@@ -131,8 +151,7 @@ static double _eon_container_max_height_get(Enesim_Renderer *r)
 	thiz = _eon_container_get(r);
 	if (!thiz->content) return v;
 
-	content_r = ender_element_renderer_get(thiz->content);
-	eon_element_max_height_get(content_r, &max);
+	eon_element_max_height_get(thiz->content, &max);
 	v += max;
 
 	theme_r = eon_element_theme_renderer_get(r);
@@ -142,10 +161,12 @@ static double _eon_container_max_height_get(Enesim_Renderer *r)
 	return v;
 }
 
-static Eina_Bool _eon_container_setup(Enesim_Renderer *r)
+static Eina_Bool _eon_container_setup(Ender_Element *e)
 {
 	Eon_Container *thiz;
+	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->content)
 	{
@@ -160,19 +181,19 @@ static Eina_Bool _eon_container_setup(Enesim_Renderer *r)
 		content_r = ender_element_renderer_get(thiz->content);
 		theme_r = eon_element_theme_renderer_get(r);
 		/* set the size and position */
-		eon_element_actual_width_get(r, &aw);
-		eon_element_actual_height_get(r, &ah);
+		eon_element_actual_width_get(e, &aw);
+		eon_element_actual_height_get(e, &ah);
 		eon_theme_container_decoration_size_get(theme_r, &dw, &dh);
 		printf("decoration %g %g\n", dw, dh);
 		eon_element_actual_size_set(content_r, aw - dw, ah - dh);
-		if (!eon_element_setup(content_r))
+		if (!eon_element_setup(thiz->content))
 			return EINA_FALSE;
 		printf("setting size %g %g\n", aw - dw, ah - dh);
 		eon_theme_container_content_position_get(theme_r, &cx, &cy);
 		eon_element_actual_position_set(content_r, cx, cy);
 	}
 	if (thiz->setup)
-		return thiz->setup(r);
+		return thiz->setup(e);
 
 	return EINA_TRUE;
 }
@@ -243,34 +264,17 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_container_content_set(Enesim_Renderer *r, Ender_Element *content)
+EAPI void eon_container_content_set(Ender_Element *e, Ender_Element *content)
 {
-	Eon_Container *thiz;
-	Enesim_Renderer *content_r;
-	Enesim_Renderer *content_t;
-
-	thiz = _eon_container_get(r);
-	if (!thiz) return;
-
-	thiz->content = content;
-	content_r = ender_element_renderer_get(content);
-	if (!eon_is_element(content_r))
-		return;
-	content_t = eon_element_theme_renderer_get(content_r);
-	eon_element_property_set(r, "content", content_t, NULL);
+	ender_element_value_set(e, "content", content, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)
+EAPI void eon_container_content_get(Ender_Element *e, const Ender_Element **content)
 {
-	Eon_Container *thiz;
-
-	thiz = _eon_container_get(r);
-	if (!thiz) return;
-
-	*content = thiz->content;
+	ender_element_value_get(e, "content", content, NULL);
 }
 

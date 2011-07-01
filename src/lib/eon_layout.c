@@ -89,6 +89,55 @@ static void _child_changed(Ender_Element *child, const char *event_name, void *e
 
 	thiz = data;
 }
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static void _eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
+{
+	Eon_Layout *thiz;
+
+	thiz = _eon_layout_get(r);
+	thiz->child_remove(r, child);
+	ender_event_listener_remove(child, "Mutation", _child_changed);
+	eon_element_property_remove(r, "child", child, NULL);
+}
+
+static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
+{
+	Eon_Layout *thiz;
+	Ender_Element *curr_parent;
+	Ender_Element *theme;
+	Enesim_Renderer *child_r;
+
+	thiz = _eon_layout_get(r);
+	child_r = ender_element_renderer_get(child);
+	if (!eon_is_element(child_r))
+		return;
+	curr_parent = ender_element_parent_get(child);
+	if (curr_parent)
+	{
+		ender_element_value_remove(curr_parent, "child", child, NULL);
+	}
+	theme = eon_element_theme_element_get(child_r);
+	eon_element_property_add(r, "child", theme, NULL);
+	thiz->child_add(r, child);
+	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
+	/* TODO whenever a child is appended to a layout
+	 * call the init of it (on init you should register
+	 * the callbacks, etc) just in case the ender
+	 * is of type element (or widget?)
+	 */
+}
+
+static void _eon_layout_child_clear(Enesim_Renderer *r)
+{
+	Eon_Layout *thiz;
+
+	thiz = _eon_layout_get(r);
+	thiz->child_clear(r);
+	//ender_event_listener_remove(child, "Mutation", _child_changed);
+}
+
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -134,79 +183,57 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-void eon_layout_actual_size_get(Enesim_Renderer *r, double *width, double *height)
+void eon_layout_actual_size_get(Ender_Element *e, double *width, double *height)
 {
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
 	/* whenever we are the topmost, the user must have set the
 	 * the width and height of the object
 	 */
 	if (eon_layout_is_topmost(r))
 	{
-		eon_element_width_get(r, width);
-		eon_element_height_get(r, height);
+		eon_element_width_get(e, width);
+		eon_element_height_get(e, height);
 	}
 	else
 	{
-		eon_element_actual_width_get(r, width);
-		eon_element_actual_height_get(r, height);
+		eon_element_actual_width_get(e, width);
+		eon_element_actual_height_get(e, height);
 	}
 }
 
-void eon_layout_actual_width_get(Enesim_Renderer *r, double *width)
+void eon_layout_actual_width_get(Ender_Element *e, double *width)
 {
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
 	if (eon_layout_is_topmost(r))
 	{
-		eon_element_width_get(r, width);
+		eon_element_width_get(e, width);
 	}
 	else
 	{
-		eon_element_actual_width_get(r, width);
+		eon_element_actual_width_get(e, width);
 	}
 }
 
-void eon_layout_actual_height_get(Enesim_Renderer *r, double *height)
+void eon_layout_actual_height_get(Ender_Element *e, double *height)
 {
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
 	if (eon_layout_is_topmost(r))
 	{
-		eon_element_height_get(r, height);
+		eon_element_height_get(e, height);
 	}
 	else
 	{
-		eon_element_actual_height_get(r, height);
+		eon_element_actual_height_get(e, height);
 	}
 }
 
-Eina_Bool eon_layout_state_setup(Enesim_Renderer *r, unsigned int width,
-		unsigned int height)
-{
-#if 0
-	Eon_Layout *thiz;
-	if (thiz->curr.width == 0 || thiz->curr.height == 0)
-	{
-		DBG("Invalid size %dx%d", thiz->curr.width, thiz->curr.height);
-		return EINA_FALSE;
-	}
-
-	if (thiz->curr.width != thiz->old.width || thiz->curr.height != thiz->old.height)
-	{
-		if (thiz->tiler) eina_tiler_free(thiz->tiler);
-		/* create a new tiler */
-		thiz->tiler = eina_tiler_new(thiz->curr.width, thiz->curr.height);
-	}
-#endif
-}
-
-void eon_layout_state_cleanup(Enesim_Renderer *r)
-{
-#if 0
-	Eon_Layout *thiz;
-
-	thiz = _eon_layout_get(r);
-	/* remove every dirty rectangle? */
-	if (thiz->tiler) eina_tiler_clear(thiz->tiler);
-#endif
-}
-
-void eon_layout_child_real_width_get(Enesim_Renderer *r, Enesim_Renderer *child, double *width)
+void eon_layout_child_real_width_get(Ender_Element *e, Ender_Element *child, double *width)
 {
 	double set;
 
@@ -214,7 +241,7 @@ void eon_layout_child_real_width_get(Enesim_Renderer *r, Enesim_Renderer *child,
 	/* fill the layout size */
 	if (set < 0)
 	{
-		eon_layout_actual_width_get(r, width);
+		eon_layout_actual_width_get(e, width);
 	}
 	else
 	{
@@ -222,7 +249,7 @@ void eon_layout_child_real_width_get(Enesim_Renderer *r, Enesim_Renderer *child,
 	}
 }
 
-void eon_layout_child_real_height_get(Enesim_Renderer *r, Enesim_Renderer *child, double *height)
+void eon_layout_child_real_height_get(Ender_Element *e, Ender_Element *child, double *height)
 {
 	double set;
 
@@ -230,13 +257,17 @@ void eon_layout_child_real_height_get(Enesim_Renderer *r, Enesim_Renderer *child
 	/* fill the layout size */
 	if (set < 0)
 	{
-		eon_layout_actual_height_get(r, height);
+		eon_layout_actual_height_get(e, height);
 	}
 	else
 	{
 		eon_element_real_height_get(child, height);
 	}
 }
+
+#define _eon_layout_child_get NULL
+#define _eon_layout_child_set NULL
+#include "eon_generated_layout.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -319,65 +350,27 @@ end:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
+EAPI void eon_layout_child_remove(Ender_Element *e, Ender_Element *child)
 {
-	Eon_Layout *thiz;
-
-	thiz = _eon_layout_get(r);
-	thiz->child_remove(r, child);
-	ender_event_listener_remove(child, "Mutation", _child_changed);
-	eon_element_property_remove(r, "child", child, NULL);
+	ender_element_value_remove(e, "child", child, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
+EAPI void eon_layout_child_add(Ender_Element *e, Ender_Element *child)
 {
-	Eon_Layout *thiz;
-	Ender_Element *curr_parent;
-	Enesim_Renderer *child_r;
-
-	thiz = _eon_layout_get(r);
-	child_r = ender_element_renderer_get(child);
-	if (!eon_is_element(child_r))
-		return;
-	curr_parent = ender_element_parent_get(child);
-	if (curr_parent)
-	{
-		ender_element_value_remove(curr_parent, "child", child, NULL);
-	}
-#if 1
-	{
-		/* TEST */
-		Ender_Element *theme;
-
-		theme = eon_element_theme_element_get(child_r);
-		eon_element_property_add(r, "child", theme, NULL);
-	}
-#endif
-	//eon_element_property_add(r, "child", child, NULL);
-	thiz->child_add(r, child);
-	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
-	/* TODO whenever a child is appended to a layout
-	 * call the init of it (on init you should register
-	 * the callbacks, etc) just in case the ender
-	 * is of type element (or widget?)
-	 */
+	ender_element_value_add(e, "child", child, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_layout_child_clear(Enesim_Renderer *r)
+EAPI void eon_layout_child_clear(Ender_Element *e)
 {
-	Eon_Layout *thiz;
-
-	thiz = _eon_layout_get(r);
-	thiz->child_clear(r);
-	//ender_event_listener_remove(child, "Mutation", _child_changed);
+	ender_element_value_clear(e, "child");
 }
 
 /**
@@ -387,7 +380,6 @@ EAPI void eon_layout_child_clear(Enesim_Renderer *r)
 EAPI Ender_Element * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y)
 {
 	Eon_Layout *thiz;
-	Ender_Element *child;
 
 	thiz = _eon_layout_get(r);
 	if (!thiz) return NULL;
@@ -405,7 +397,6 @@ EAPI Ender_Element * eon_layout_child_get_at_destination_coord(Enesim_Renderer *
 		unsigned int x, unsigned int y)
 {
 	Eon_Layout *thiz;
-	Ender_Element *child;
 	Enesim_Matrix matrix;
 	Enesim_Matrix_Type mtype;
 	double rx, ry;

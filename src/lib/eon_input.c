@@ -134,6 +134,7 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l)
 	Ender_Element *child;
 	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(l);
 	if (!eon_is_layout(r))
 		return;
 	if (!ei->pointer.inside)

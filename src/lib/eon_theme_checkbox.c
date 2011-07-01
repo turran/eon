@@ -104,7 +104,7 @@ renderer_err:
  */
 EAPI Eina_Bool eon_is_theme_checkbox(Enesim_Renderer *r)
 {
-	Eon_Theme_Checkbox *thiz;
+	//Eon_Theme_Checkbox *thiz;
 	return EINA_TRUE;
 }
 

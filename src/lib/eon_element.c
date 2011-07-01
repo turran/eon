@@ -69,10 +69,199 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 static void _element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
 	Eon_Element *thiz;
-	Enesim_Renderer *er;
 
 	thiz = _eon_element_get(r);
 	thiz->fill(thiz->theme_renderer, x, y, len, dst);
+}
+
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static void _eon_element_actual_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	*height = thiz->actual_height;
+}
+
+static void _eon_element_actual_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	*width = thiz->actual_width;
+}
+
+static void _eon_element_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	*height = thiz->height;
+}
+
+static void _eon_element_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->height = height;
+}
+
+static void _eon_element_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	*width = thiz->width;
+}
+
+static void _eon_element_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->width = width;
+}
+
+static void _eon_element_min_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+	double ev = 0;
+	double tv = 0;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	ender_element_value_get(thiz->theme_element, "min_width", &ev, NULL);
+	if (thiz->min_width_get)
+		tv = thiz->min_width_get(r);
+	ev = ev > tv ? ev : tv;
+	*width = ev > thiz->min_width ? ev : thiz->min_width;
+}
+
+static void _eon_element_min_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Element *thiz;
+
+	if (!width) return;
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->min_width = width;
+}
+
+static void _eon_element_min_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->min_height = height;
+}
+
+static void _eon_element_min_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+	double tv = 0;
+	double ev = 0;
+
+	if (!height) return;
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	ender_element_value_get(thiz->theme_element, "min_height", &tv, NULL);
+	if (thiz->min_height_get)
+		ev = thiz->min_height_get(r);
+	ev = ev > tv ? ev : tv;
+	*height = ev > thiz->min_height ? ev : thiz->min_height;
+}
+
+static void _eon_element_max_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+	double v = DBL_MAX;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	ender_element_value_get(thiz->theme_element, "max_width", &v, NULL);
+	*width = v < thiz->max_width ? v : thiz->max_width;
+}
+
+static void _eon_element_max_width_set(Enesim_Renderer *r, double width)
+{
+	Eon_Element *thiz;
+
+	if (!width) return;
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->max_width = width;
+}
+
+static void _eon_element_max_height_set(Enesim_Renderer *r, double height)
+{
+	Eon_Element *thiz;
+
+	if (!height) return;
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->max_height = height;
+}
+
+static void _eon_element_max_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+	double v = DBL_MAX;
+
+	if (!height) return;
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	ender_element_value_get(thiz->theme_element, "max_height", &v, NULL);
+	*height = v < thiz->max_height ? v : thiz->max_height;
+}
+/*----------------------------------------------------------------------------*
+ *                             Internal functions                             *
+ *----------------------------------------------------------------------------*/
+static void _eon_element_real_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+	double rw;
+	double min, set, max;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+
+	set = thiz->width;
+	_eon_element_min_width_get(r, &min);
+	_eon_element_max_width_get(r, &max);
+	rw = set > max ? max : set;
+	rw = rw < min ? min : rw;
+
+	printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
+	*width = rw;
+}
+
+static void _eon_element_real_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+	double rh;
+	double min, set, max;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+
+	set = thiz->height;
+	_eon_element_min_height_get(r, &min);
+	_eon_element_max_height_get(r, &max);
+	rh = set > max ? max : set;
+	rh = rh < min ? min : rh;
+
+	printf("real height %s = %g (%g %g %g)\n", thiz->name, rh, min, set, max);
+	*height = rh;
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -89,8 +278,8 @@ static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 	/* There's no layout, or the layout didnt set an active width/height */
 	if (aw < 0 || ah < 0)
 	{
-		eon_element_real_width_get(r, &aw);
-		eon_element_real_height_get(r, &ah);
+		_eon_element_real_width_get(r, &aw);
+		_eon_element_real_height_get(r, &ah);
 	}
 	rect->x = thiz->actual_x;
 	rect->y = thiz->actual_y;
@@ -111,9 +300,9 @@ static void _eon_element_free(Enesim_Renderer *r)
 
 static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
+	Ender_Element *e;
 	Eon_Element *thiz;
 	Enesim_Color color;
-	double ox, oy;
 	double width, height;
 
 	thiz = _eon_element_get(r);
@@ -124,17 +313,16 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 	enesim_renderer_color_set(thiz->theme_renderer, color);
 	eon_element_actual_size_get(r, &width, &height);
 	if (width < 0)
-		eon_element_real_width_get(r, &width);
+		_eon_element_real_width_get(r, &width);
 	if (height < 0)
-		eon_element_real_height_get(r, &height);
+		_eon_element_real_height_get(r, &height);
 	eon_element_actual_size_set(r, width, height);
-	if (thiz->setup)
+	e = ender_element_renderer_from(r);
+	if (!e) return EINA_FALSE;
+	if (!eon_element_setup(e))
 	{
-		if (!thiz->setup(r))
-		{
-			printf("cannot setup the eon element\n");
-			return EINA_FALSE;
-		}
+		printf("cannot setup the eon element\n");
+		return EINA_FALSE;
 	}
 		
 	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
@@ -188,14 +376,16 @@ void eon_element_initialize(Ender_Element *ender)
 		thiz->initialize(ender);
 }
 
-Eina_Bool eon_element_setup(Enesim_Renderer *r)
+Eina_Bool eon_element_setup(Ender_Element *e)
 {
 	Eon_Element *thiz;
+	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
-		return thiz->setup(r);
+		return thiz->setup(e);
 	return EINA_TRUE;
 }
 
@@ -379,44 +569,20 @@ void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
 	ender_element_value_set(thiz->theme_element, "y", y, NULL);
 }
 
-void eon_element_real_width_get(Enesim_Renderer *r, double *width)
+void eon_element_real_width_get(Ender_Element *e, double *width)
 {
-	Eon_Element *thiz;
-	double rw;
-	double min, set, max;
+	Enesim_Renderer *r;
 
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-
-	set = thiz->width;
-	eon_element_min_width_get(r, &min);
-	eon_element_max_width_get(r, &max);
-	rw = set > max ? max : set;
-	rw = rw < min ? min : rw;
-
-	printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
-	*width = rw;
+	r = ender_element_renderer_get(e);
+	_eon_element_real_width_get(r, width);
 }
 
-void eon_element_real_height_get(Enesim_Renderer *r, double *height)
+void eon_element_real_height_get(Ender_Element *e, double *height)
 {
-	Eon_Element *thiz;
-	double rh;
-	double min, set, max;
+	Enesim_Renderer *r;
 
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-
-
-	thiz = _eon_element_get(r);
-	set = thiz->height;
-	eon_element_min_height_get(r, &min);
-	eon_element_max_height_get(r, &max);
-	rh = set > max ? max : set;
-	rh = rh < min ? min : rh;
-
-	printf("real height %s = %g (%g %g %g)\n", thiz->name, rh, min, set, max);
-	*height = rh;
+	r = ender_element_renderer_get(e);
+	_eon_element_real_height_get(r, height);
 }
 
 void eon_element_property_set(Enesim_Renderer *r, const char *name, ...)
@@ -462,6 +628,10 @@ void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...)
 	ender_element_value_remove_valist(thiz->theme_element, name, va_args);
 	va_end(va_args);
 }
+
+#define _eon_element_actual_width_set NULL
+#define _eon_element_actual_height_set NULL
+#include "eon_generated_element.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -484,203 +654,126 @@ EAPI Eina_Bool eon_is_element(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_actual_height_get(Enesim_Renderer *r, double *height)
+EAPI void eon_element_actual_height_get(Ender_Element *e, double *height)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	*height = thiz->actual_height;
+	ender_element_value_get(e, "actual_height", height, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_actual_width_get(Enesim_Renderer *r, double *width)
+EAPI void eon_element_actual_width_get(Ender_Element *e, double *width)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	*width = thiz->actual_width;
+	ender_element_value_get(e, "actual_width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_height_get(Enesim_Renderer *r, double *height)
+EAPI void eon_element_height_get(Ender_Element *e, double *height)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	*height = thiz->height;
+	ender_element_value_get(e, "height", height, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_height_set(Enesim_Renderer *r, double height)
+EAPI void eon_element_height_set(Ender_Element *e, double height)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	thiz->height = height;
+	ender_element_value_set(e, "height", height, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_width_get(Enesim_Renderer *r, double *width)
+EAPI void eon_element_width_get(Ender_Element *e, double *width)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	*width = thiz->width;
+	ender_element_value_get(e, "width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_width_set(Enesim_Renderer *r, double width)
+EAPI void eon_element_width_set(Ender_Element *e, double width)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	thiz->width = width;
+	ender_element_value_set(e, "min_width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_min_width_get(Enesim_Renderer *r, double *width)
+EAPI void eon_element_min_width_get(Ender_Element *e, double *width)
 {
-	Eon_Element *thiz;
-	double ev = 0;
-	double tv = 0;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "min_width", &ev, NULL);
-	if (thiz->min_width_get)
-		tv = thiz->min_width_get(r);
-	ev = ev > tv ? ev : tv;
-	*width = ev > thiz->min_width ? ev : thiz->min_width;
+	ender_element_value_get(e, "min_width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_min_width_set(Enesim_Renderer *r, double width)
+EAPI void eon_element_min_width_set(Ender_Element *e, double width)
 {
-	Eon_Element *thiz;
-
-	if (!width) return;
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	thiz->min_width = width;
+	ender_element_value_set(e, "min_width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_min_height_set(Enesim_Renderer *r, double height)
+EAPI void eon_element_min_height_set(Ender_Element *e, double height)
 {
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	thiz->min_height = height;
+	ender_element_value_set(e, "min_height", height, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_min_height_get(Enesim_Renderer *r, double *height)
+EAPI void eon_element_min_height_get(Ender_Element *e, double *height)
 {
-	Eon_Element *thiz;
-	double tv = 0;
-	double ev = 0;
-
-	if (!height) return;
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "min_height", &tv, NULL);
-	if (thiz->min_height_get)
-		ev = thiz->min_height_get(r);
-	ev = ev > tv ? ev : tv;
-	*height = ev > thiz->min_height ? ev : thiz->min_height;
+	ender_element_value_get(e, "min_height", height, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_max_width_get(Enesim_Renderer *r, double *width)
+EAPI void eon_element_max_width_get(Ender_Element *e, double *width)
 {
-	Eon_Element *thiz;
-	double v = DBL_MAX;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "max_width", &v, NULL);
-	*width = v < thiz->max_width ? v : thiz->max_width;
+	ender_element_value_get(e, "max_width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_max_width_set(Enesim_Renderer *r, double width)
+EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 {
-	Eon_Element *thiz;
-
-	if (!width) return;
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	thiz->max_width = width;
+	ender_element_value_set(e, "max_width", width, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_max_height_set(Enesim_Renderer *r, double height)
+EAPI void eon_element_max_height_set(Ender_Element *e, double height)
 {
-	Eon_Element *thiz;
-
-	if (!height) return;
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	thiz->max_height = height;
+	ender_element_value_set(e, "max_height", height, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_max_height_get(Enesim_Renderer *r, double *height)
+EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 {
-	Eon_Element *thiz;
-	double v = DBL_MAX;
-
-	if (!height) return;
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "max_height", &v, NULL);
-	*height = v < thiz->max_height ? v : thiz->max_height;
+	ender_element_value_get(e, "max_height", height, NULL);
 }
 
 /**

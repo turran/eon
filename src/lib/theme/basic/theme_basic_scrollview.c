@@ -49,6 +49,23 @@ static void _scrollview_draw(Enesim_Renderer *r, int x, int y, unsigned int len,
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollview interface                     *
  *----------------------------------------------------------------------------*/
+static double _scrollview_decoration_width_get(Enesim_Renderer *r)
+{
+	return 0;
+}
+
+static double _scrollview_decoration_height_get(Enesim_Renderer *r)
+{
+	return 0;
+}
+
+static void _scrollview_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
+		double *x, double *y)
+{
+	*x = 0;
+	*y = 0;
+}
+
 static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Theme_Basic_Scrollview *thiz;
@@ -82,6 +99,9 @@ static void _scrollview_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Scrollview_Descriptor _descriptor = {
+	.content_position_get = _scrollview_content_position_get,
+	.decoration_width_get = _scrollview_decoration_width_get,
+	.decoration_height_get = _scrollview_decoration_height_get,
 	.sw_setup = _scrollview_setup,
 	.sw_cleanup = _scrollview_cleanup,
 	.free = _scrollview_free,

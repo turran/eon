@@ -5,9 +5,9 @@
  * @{
  */
 
-EAPI Enesim_Renderer * eon_label_new(void);
-EAPI void eon_label_text_set(Enesim_Renderer *r, const char *text);
-EAPI void eon_label_text_get(Enesim_Renderer *r, const char **text);
+EAPI Ender_Element * eon_label_new(void);
+EAPI void eon_label_text_set(Ender_Element *e, const char *text);
+EAPI void eon_label_text_get(Ender_Element *e, const char **text);
 
 /**
  * @}

@@ -2,7 +2,7 @@
 #define _EON_ELEMENT_PRIVATE_H
 
 typedef void (*Eon_Element_Initialize)(Ender_Element *ender);
-typedef Eina_Bool (*Eon_Element_Setup)(Enesim_Renderer *r);
+typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *ender);
 typedef void (*Eon_Element_Free)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Min_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Max_Width_Get)(Enesim_Renderer *r);
@@ -25,6 +25,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data);
 void * eon_element_data_get(Enesim_Renderer *r);
 void eon_element_initialize(Ender_Element *ender);
+Ender_Element * eon_element_theme_element_get(Enesim_Renderer *r);
 Enesim_Renderer * eon_element_theme_renderer_get(Enesim_Renderer *r);
 Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r);
 Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r);
@@ -45,7 +46,11 @@ void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *heig
 void eon_element_actual_width_set(Enesim_Renderer *r, double width);
 void eon_element_actual_height_set(Enesim_Renderer *r, double height);
 void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y);
-void eon_element_real_width_get(Enesim_Renderer *r, double *width);
-void eon_element_real_height_get(Enesim_Renderer *r, double *height);
+
+Eina_Bool eon_element_setup(Ender_Element *e);
+void eon_element_real_width_get(Ender_Element *e, double *width);
+void eon_element_real_height_get(Ender_Element *e, double *height);
+
+
 
 #endif

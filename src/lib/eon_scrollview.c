@@ -28,15 +28,15 @@ typedef struct _Eon_Scrollview
 	/* private */
 } Eon_Scrollview;
 
-static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
+static inline Eon_Scrollview * _eon_scrollview_get(Enesim_Renderer *r)
 {
-	Eon_Button *thiz;
+	Eon_Scrollview *thiz;
 
 	thiz = eon_container_data_get(r);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
- *                        The Eon's widget interface                          *
+ *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
 static void _eon_scrollview_initialize(Ender_Element *e)
 {
@@ -45,21 +45,20 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 	 */
 }
 
-static Eon_Widget_Descriptor _eon_scrollview_widget_descriptor = {
+static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
+{
+	return EINA_TRUE;
+}
+
+static Eon_Container_Descriptor _eon_scrollview_widget_descriptor = {
 	.initialize = _eon_scrollview_initialize,
+	.setup = _eon_scrollview_setup,
 	.name = "scrollview",
 };
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_scrollview_new(void)
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+EAPI Enesim_Renderer * _eon_scrollview_new(void)
 {
 	Eon_Scrollview *thiz;
 	Enesim_Renderer *r;
@@ -77,11 +76,7 @@ renderer_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
+static void _eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
 {
 	Eon_Scrollview *thiz;
 
@@ -89,11 +84,7 @@ EAPI void eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
 	thiz->x_position = x;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
+static void _eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
 {
 	Eon_Scrollview *thiz;
 
@@ -101,11 +92,7 @@ EAPI void eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
 	*x = thiz->x_position;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
+static void _eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
 {
 	Eon_Scrollview *thiz;
 
@@ -113,15 +100,62 @@ EAPI void eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
 	thiz->y_position = y;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_scrollview_x_position_get(Enesim_Renderer *r, double *y)
+static void _eon_scrollview_y_position_get(Enesim_Renderer *r, double *y)
 {
 	Eon_Scrollview *thiz;
 
 	thiz = _eon_scrollview_get(r);
 	*y = thiz->y_position;
+}
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+#include "eon_generated_scrollview.c"
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_scrollview_new(void)
+{
+	return ender_element_new("scrollview");
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollview_x_position_set(Ender_Element *e, double x)
+{
+	ender_element_value_set(e, "x_position", x, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollview_x_position_get(Ender_Element *e, double *x)
+{
+	ender_element_value_get(e, "x_position", x, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollview_y_position_set(Ender_Element *e, double y)
+{
+	ender_element_value_set(e, "y_position", y, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollview_y_position_get(Ender_Element *e, double *y)
+{
+	ender_element_value_get(e, "y_position", y, NULL);
 }
 

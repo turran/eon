@@ -1,5 +1,5 @@
 using "enesim";
-using "eon";
+using "eon.theme";
 
 namespace "eon" {
 	class "basic_label" : "theme_label" {

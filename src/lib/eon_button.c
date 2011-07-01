@@ -54,18 +54,10 @@ static Eon_Container_Descriptor _descriptor = {
 	.free = _eon_button_free,
 	.name = "button",
 };
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-#include "eon_generated_button.c"
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_button_new(void)
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_button_new(void)
 {
 	Eon_Button *thiz;
 	Enesim_Renderer *r;
@@ -81,4 +73,19 @@ EAPI Enesim_Renderer * eon_button_new(void)
 renderer_err:
 	free(thiz);
 	return NULL;
+}
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+#include "eon_generated_button.c"
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_button_new(void)
+{
+	return ender_element_new("button");
 }

@@ -5,8 +5,8 @@
  * @{
  */
 
-EAPI void eon_container_content_set(Enesim_Renderer *r, Ender_Element *content);
-EAPI void eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content);
+EAPI void eon_container_content_set(Ender_Element *e, Ender_Element *content);
+EAPI void eon_container_content_get(Ender_Element *e, const Ender_Element **content);
 
 /**
  * @}

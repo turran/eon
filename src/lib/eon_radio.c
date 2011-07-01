@@ -54,7 +54,7 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
 		eei = eon_element_theme_instance_get(r);
 		escen_instance_state_set(eei, new_state);
 	}
-	eon_radio_selected_set(r, EINA_TRUE);
+	eon_radio_selected_set(e, EINA_TRUE);
 	/* TODO trigger the selected event */
 }
 /*----------------------------------------------------------------------------*
@@ -70,17 +70,10 @@ static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_radio_initialize,
 	.name = "radio",
 };
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_radio_new(void)
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_radio_new(void)
 {
 	Eon_Radio *thiz;
 	Enesim_Renderer *r;
@@ -98,11 +91,7 @@ renderer_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_radio_group_name_set(Enesim_Renderer *r, const char *group)
+static void _eon_radio_group_name_set(Enesim_Renderer *r, const char *group)
 {
 	Eon_Radio *thiz;
 	Eina_List *radios;
@@ -134,11 +123,7 @@ EAPI void eon_radio_group_name_set(Enesim_Renderer *r, const char *group)
 	}
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_radio_group_name_get(Enesim_Renderer *r, const char **group)
+static void _eon_radio_group_name_get(Enesim_Renderer *r, const char **group)
 {
 	Eon_Radio *thiz;
 
@@ -148,11 +133,14 @@ EAPI void eon_radio_group_name_get(Enesim_Renderer *r, const char **group)
 	*group = thiz->group_name;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
+static void _eon_radio_selected_get(Enesim_Renderer *r, Eina_Bool *selected)
+{
+	*selected = EINA_TRUE;
+	//eon_element_property_get(r, "selected", selected, NULL);
+}
+
+
+static void _eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 {
 	Eon_Radio *thiz;
 
@@ -179,20 +167,67 @@ EAPI void eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 
 			if (other_radio == r) continue;
 
-			eon_radio_selected_get(other_radio, &other_selected);
+			_eon_radio_selected_get(other_radio, &other_selected);
 			if (other_selected)
-				eon_radio_selected_set(other_radio, EINA_FALSE);	
+			{
+				Ender_Element *other_radio_ender;
+
+				other_radio_ender = ender_element_renderer_from(other_radio);
+				eon_radio_selected_set(other_radio_ender, EINA_FALSE);	
+			}
 		}
 	}
+}
+
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+#include "eon_generated_radio.c" 
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_radio_new(void)
+{
+	return ender_element_new("radio");
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_radio_selected_get(Enesim_Renderer *r, Eina_Bool *selected)
+EAPI void eon_radio_group_name_set(Ender_Element *e, const char *group)
 {
-	*selected = EINA_TRUE;
-	//eon_element_property_get(r, "selected", selected, NULL);
+	ender_element_value_set(e, "group_name", group, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_radio_group_name_get(Ender_Element *e, const char **group)
+{
+	ender_element_value_get(e, "group_name", group, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_radio_selected_set(Ender_Element *e, Eina_Bool selected)
+{
+	ender_element_value_set(e, "selected", selected, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_radio_selected_get(Ender_Element *e, Eina_Bool *selected)
+{
+	ender_element_value_get(e, "selected", selected, NULL);
 }
 

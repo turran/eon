@@ -23,6 +23,7 @@ eon_checkbox.c \
 eon_progressbar.c \
 eon_radio.c \
 eon_stack.c \
+eon_scrollview.c \
 eon_theme.c \
 eon_theme_checkbox.c \
 eon_theme_container.c \
@@ -35,6 +36,7 @@ eon_theme_radio.c \
 eon_theme_scrollview.c \
 eon_theme_widget.c \
 eon_toggle.c \
+eon_wrapper.c \
 eon_widget.c
 
 libeon_la_LIBADD = \

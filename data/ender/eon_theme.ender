@@ -1,0 +1,44 @@
+using "enesim";
+
+namespace "eon" {
+	abstract "theme_element" : "renderer" {
+		double "min_width";
+		double "max_width";
+		double "min_height";
+		double "max_height";
+		double "width";
+		double "height";
+		double "x";
+		double "y";
+	};
+
+	abstract "theme_layout" : "theme_element" {
+		[ender] "child";
+	};
+
+	abstract "theme_widget" : "theme_element" {
+	};
+
+	abstract "theme_container" : "theme_widget" {
+		renderer "content";
+	};
+
+	abstract "theme_button" : "theme_container" {
+	};
+
+	abstract "theme_radio" : "theme_container" {
+	};
+
+	abstract "theme_checkbox" : "theme_container" {
+	};
+
+	abstract "theme_progressbar" : "theme_widget" {
+	};
+
+	abstract "theme_label" : "theme_widget" {
+		int "ellipsize";
+		string "text";
+		string "font";
+		int "size";
+	};
+};

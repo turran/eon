@@ -211,7 +211,6 @@ static void _eon_canvas_child_add(Enesim_Renderer *r, Ender_Element *child)
 static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
-	Eon_Canvas_Child *thiz_child;
 
 	thiz = _eon_canvas_get(r);
 }

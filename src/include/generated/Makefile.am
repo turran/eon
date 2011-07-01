@@ -5,8 +5,14 @@ eon_generated_element.c \
 eon_generated_widget.c \
 eon_generated_layout.c \
 eon_generated_container.c \
+eon_generated_stack.c \
+eon_generated_progressbar.c \
+eon_generated_radio.c \
+eon_generated_checkbox.c \
 eon_generated_label.c \
-eon_generated_button.c
+eon_generated_button.c \
+eon_generated_scrollview.c \
+eon_generated_wrapper.c
 
 %.c:
 	

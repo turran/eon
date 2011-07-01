@@ -22,6 +22,8 @@
  *============================================================================*/
 static int _init = 0;
 
+#if 0
+/* for later */
 static void _destructor_callback(Ender_Element *e, void *data)
 {
 	Enesim_Renderer *r;
@@ -30,6 +32,7 @@ static void _destructor_callback(Ender_Element *e, void *data)
 	if (!eon_is_element(r))
 		return;
 }
+#endif
 
 static void _constructor_callback(Ender_Element *e, void *data)
 {
@@ -39,6 +42,27 @@ static void _constructor_callback(Ender_Element *e, void *data)
 	if (!eon_is_element(r))
 		return;
 	eon_element_initialize(e);
+}
+
+static void _register_enders(void)
+{
+	/* register the dependency */
+	ender_loader_load("enesim");
+	/* core */
+	eon_element_init();
+	/* element inheritance */
+	eon_widget_init();
+	eon_layout_init();
+	eon_wrapper_init();
+	/* widget inheritance */
+	eon_container_init();
+	/* layout inheritance */
+	eon_stack_init();
+	/* container inheritance */
+	eon_label_init();
+	eon_button_init();
+	eon_radio_init();
+	eon_checkbox_init();
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -71,6 +95,8 @@ EAPI int eon_init(void)
 		ender_init(NULL, NULL);
 		ender_element_new_listener_add(_constructor_callback, NULL);
 		escen_init();
+		_register_enders();
+		ender_loader_load_all();
 		eon_basic_init();
 		/* initialize the theme */
 		if (!eon_theme_init())

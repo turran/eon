@@ -23,5 +23,11 @@ typedef struct _Eon_Layout_Descriptor
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data);
 void * eon_layout_data_get(Enesim_Renderer *r);
+void eon_layout_actual_size_get(Ender_Element *e, double *width, double *height);
+void eon_layout_actual_width_get(Ender_Element *e, double *width);
+void eon_layout_actual_height_get(Ender_Element *e, double *height);
+
+void eon_layout_child_real_width_get(Ender_Element *e, Ender_Element *child, double *width);
+void eon_layout_child_real_height_get(Ender_Element *e, Ender_Element *child, double *height);
 
 #endif

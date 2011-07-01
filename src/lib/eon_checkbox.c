@@ -51,17 +51,10 @@ static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_checkbox_initialize,
 	.name = "checkbox",
 };
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_checkbox_new(void)
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_checkbox_new(void)
 {
 	Eon_Checkbox *thiz;
 	Enesim_Renderer *r;
@@ -77,4 +70,14 @@ EAPI Enesim_Renderer * eon_checkbox_new(void)
 renderer_err:
 	free(thiz);
 	return NULL;
+}/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+#include "eon_generated_checkbox.c"
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+EAPI Ender_Element * eon_checkbox_new(void)
+{
+	return ender_element_new("checkbox");
 }

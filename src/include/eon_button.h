@@ -5,7 +5,7 @@
  * @{
  */
 
-EAPI Enesim_Renderer * eon_button_new(void);
+EAPI Ender_Element * eon_button_new(void);
 
 /**
  * @}

@@ -3,4 +3,7 @@
 
 #include <float.h>
 
+void eon_basic_init(void);
+void eon_basic_shutdown(void);
+
 #endif
