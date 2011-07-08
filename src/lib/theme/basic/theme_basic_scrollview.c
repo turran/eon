@@ -77,7 +77,7 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->clipper, ox, oy);
+	enesim_renderer_origin_set(thiz->clipper, ox, oy - 50);
 	/* the clipped width/height */
 	eon_theme_element_width_get(r, &width);
 	eon_theme_element_height_get(r, &height);

@@ -17,6 +17,12 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * For some container instances we might need to pass some events
+ * to the content, we need to define such logic on the container
+ * class
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

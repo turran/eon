@@ -1,7 +1,7 @@
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
-AC_INIT(eon, 0.0.2, enesim-devel@googlegroups.com)
+AC_INIT(eon, 0.0.3, enesim-devel@googlegroups.com)
 AC_PREREQ(2.52)
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CANONICAL_BUILD
@@ -58,11 +58,23 @@ PKG_CHECK_MODULES(ETEX, [etex >= 0.0.1])
 ENDER_DATADIR=$(pkg-config --variable=datadir ender)
 AC_SUBST(ENDER_DATADIR)
 PKG_CHECK_MODULES(EINA, [eina >= 1.0.0])
+PKG_CHECK_MODULES(ECORE, [ecore >= 1.0.0])
 
-EON_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS $ENDER_CFLAGS $ESCEN_CFLAGS $ETEX_CFLAGS -Wall"
-EON_LIBS="$EINA_LIBS $ENESIM_LIBS $ENDER_LIBS $ESCEN_LIBS $ETEX_LIBS"
+EON_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS $ENDER_CFLAGS $ESCEN_CFLAGS $ETEX_CFLAGS $ECORE_CFLAGS -Wall"
+EON_LIBS="$EINA_LIBS $ENESIM_LIBS $ENDER_LIBS $ESCEN_LIBS $ETEX_LIBS $ECORE_LIBS"
 AC_SUBST(EON_CFLAGS)
 AC_SUBST(EON_LIBS)
+
+# Backends
+PKG_CHECK_MODULES(ECORE_SDL, [ecore-sdl >= 0.9.9], [have_ecore_sdl=yes], [have_ecore_sdl=no])
+PKG_CHECK_MODULES(SDL, [sdl], [have_sdl=yes], [have_sdl=no])
+if test "x$have_ecore_sdl" = "xyes" && test "x$have_sdl" = "xyes"; then
+	build_backend_sdl=yes
+	AC_DEFINE(BUILD_BACKEND_SDL, [1], [Build support for SDL backend])
+else
+	build_backend_sdl=no
+fi
+AM_CONDITIONAL(BUILD_BACKEND_SDL, test "x$build_backend_sdl" = "xyes")
 
 ## Make the debug preprocessor configurable
 
@@ -74,6 +86,8 @@ data/ender/Makefile
 data/theme/Makefile
 src/Makefile
 src/lib/Makefile
+src/lib/backend/Makefile
+src/lib/backend/ecore_sdl/Makefile
 src/lib/theme/Makefile
 src/lib/theme/basic/Makefile
 src/include/Makefile

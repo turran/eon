@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS = theme
+SUBDIRS = backend theme
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
@@ -37,13 +37,16 @@ eon_theme_scrollview.c \
 eon_theme_widget.c \
 eon_toggle.c \
 eon_wrapper.c \
-eon_widget.c
+eon_widget.c \
+eon_window.c
 
 libeon_la_LIBADD = \
 theme/libtheme.la \
+backend/libbackend.la \
 @EON_LIBS@
 
 libeon_la_DEPENDENCIES = \
-theme/libtheme.la
+theme/libtheme.la \
+backend/libbackend.la
 
 libeon_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

@@ -18,7 +18,8 @@ eon_layout.h \
 eon_progressbar.h \
 eon_radio.h \
 eon_stack.h \
-eon_theme.h
+eon_theme.h \
+eon_window.h
 
 installed_headersdir = $(prefix)/include/eon
 installed_headers_DATA = $(EON_UTILHEADERS)

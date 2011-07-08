@@ -241,10 +241,8 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
-	printf("stack setup\n");
 	if (thiz->relayout)
 	{
-		printf("relayouting\n");
 		return _stack_relayout(e, thiz);
 	}
 	return EINA_TRUE;

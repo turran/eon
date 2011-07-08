@@ -35,11 +35,28 @@ static inline Eon_Scrollview * _eon_scrollview_get(Enesim_Renderer *r)
 	thiz = eon_container_data_get(r);
 	return thiz;
 }
+
+static void _scrollview_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	printf("mouse clicked\n");
+}
+
+static void _scrollview_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	printf("mouse move\n");
+}
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
 static void _eon_scrollview_initialize(Ender_Element *e)
 {
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+	ender_event_listener_add(e, "MouseClick", _scrollview_mouse_click, NULL);
+	ender_event_listener_add(e, "MouseMove", _scrollview_mouse_move, NULL);
 	/* register every event needed for a scrollview
 	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
 	 */
