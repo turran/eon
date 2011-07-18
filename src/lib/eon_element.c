@@ -74,6 +74,10 @@ static void _element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, ui
 	thiz->fill(thiz->theme_renderer, x, y, len, dst);
 }
 
+static void _theme_changed(Ender_Element *child, const char *event_name, void *event_data, void *data)
+{
+	printf("theme changed\n");
+}
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
@@ -372,6 +376,13 @@ void eon_element_initialize(Ender_Element *ender)
 
 	r = ender_element_renderer_get(ender);
 	thiz = _eon_element_get(r);
+	/* whenever the theme has changed we should notify
+	 * the change on this element too
+	 */
+	if (thiz->theme_element)
+	{
+		ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, thiz);
+	}
 	if (thiz->initialize)
 		thiz->initialize(ender);
 }

@@ -17,6 +17,11 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * Fix the min_width, max_width and max_height, we should not use the
+ * boundings at all
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -31,6 +36,7 @@ typedef struct _Eon_Theme_Label
 	Eon_Theme_Label_Text_Get text_get;
 	Eon_Theme_Label_Ellipsize_Set ellipsize_set;
 	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
+	Eon_Theme_Label_Height_Get height_get;
 	/* data needed for our own callbacks */
 	Enesim_Renderer *text;
 	Eina_Bool ellipsized;
@@ -121,7 +127,7 @@ static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	return thiz->size_get(r);
+	return thiz->height_get(r);
 }
 
 static double _eon_theme_label_max_height_get(Enesim_Renderer *r)
@@ -133,6 +139,7 @@ static double _eon_theme_label_max_height_get(Enesim_Renderer *r)
 	enesim_renderer_boundings(r, &boundings);
 	return boundings.h;
 }
+
 /* FIXME do we actually need this? */
 static void _eon_theme_label_ellipsize_set(Enesim_Renderer *r,
 		Eina_Bool ellipsize)
@@ -202,6 +209,7 @@ EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descripto
 	thiz->font_set = descriptor->font_set;
 	thiz->size_get = descriptor->size_get;
 	thiz->size_set = descriptor->size_set;
+	thiz->height_get = descriptor->height_get;
 	/* set default values */
 	if (!descriptor->ellipsize_set || !descriptor->ellipsize_get)
 	{

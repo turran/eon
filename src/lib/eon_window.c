@@ -32,15 +32,6 @@ struct _Eon_Window
 	Ecore_Idler *idler;
 };
 
-typedef struct _Eon_Window_Instance_Timer
-{
-	int refs;
-	Eina_List *instances;
-	Ecore_Timer *timer;
-} Eon_Window_Instance_Timer;
-
-static Eina_List *_instance_timers = NULL;
-
 static Eina_Bool _idler_cb(void *data)
 {
 	Eon_Window *ee = data;
@@ -65,55 +56,6 @@ static Eina_Bool _idler_cb(void *data)
 	}
 	//ee->changed = EINA_FALSE;
 	return EINA_TRUE;
-}
-
-static Eina_Bool _instance_timer_cb(void *data)
-{
-	Eon_Window_Instance_Timer *timer = data;
-	Escen_Instance *eei;
-	Eina_List *l;
-
-	EINA_LIST_FOREACH(timer->instances, l, eei)
-	{
-		escen_instance_process(eei);
-	}
-
-        return EINA_TRUE;
-}
-
-static void _instance_new_cb(Escen_Instance *eei, void *data)
-{
-	Eon_Window_Instance_Timer *timer;
-	Escen *escen;
-	Escen_Ender *ee;
-	Eina_List *l;
-	Eina_Bool found = EINA_FALSE;
-	double spf;
-	int fps;
-
-	ee = escen_instance_escen_ender_get(eei);
-	escen = escen_ender_escen_get(ee);
-	fps = escen_fps_get(escen);
-	spf = 1.0/fps;
-	EINA_LIST_FOREACH(_instance_timers, l, timer)
-	{
-		double interval;
-
-		interval = ecore_timer_interval_get(timer->timer);
-		if (fabs(interval - spf) < DBL_EPSILON)
-		{
-			found = EINA_TRUE;
-			break;
-		}
-	}
-	if (!found)
-	{
-		timer = calloc(1, sizeof(Eon_Window_Instance_Timer));
-		timer->timer = ecore_timer_add(spf, _instance_timer_cb, timer);
-		_instance_timers = eina_list_append(_instance_timers, timer);
-	}
-	timer->refs++;
-	timer->instances = eina_list_append(timer->instances, eei);
 }
 
 static void _property_change(Ender_Element *e, const char *event_name,
@@ -156,7 +98,6 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 		ee->data = data;
 		ee->idler = ecore_idler_add(_idler_cb, ee);
 		ender_event_listener_add(layout, "Mutation", _property_change, ee);
-		ee->changed = EINA_TRUE;
 
 		return ee;
 	}

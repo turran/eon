@@ -68,6 +68,8 @@ typedef const char * (*Eon_Theme_Label_Text_Get)(Enesim_Renderer *r);
 /* ellipsize */
 typedef void (*Eon_Theme_Label_Ellipsize_Set)(Enesim_Renderer *r, Eina_Bool enable);
 typedef Eina_Bool (*Eon_Theme_Label_Ellipsize_Get)(Enesim_Renderer *r);
+/* height ascender + ascender */
+typedef unsigned int (*Eon_Theme_Label_Height_Get)(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Label_Descriptor
 {
@@ -80,6 +82,7 @@ typedef struct _Eon_Theme_Label_Descriptor
 	Eon_Theme_Label_Text_Get text_get;
 	Eon_Theme_Label_Ellipsize_Set ellipsize_set;
 	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
+	Eon_Theme_Label_Height_Get height_get;
 	/* element needed functions */
 	Eon_Theme_Element_Max_Width_Get max_width_get;
 	Eon_Theme_Element_Min_Width_Get min_width_get;

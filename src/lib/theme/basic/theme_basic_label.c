@@ -99,6 +99,16 @@ static const char * _label_text_get(Enesim_Renderer *r)
 	return str;
 }
 
+static unsigned int _label_height_get(Enesim_Renderer *r)
+{
+	Label *thiz;
+	Enesim_Rectangle boundings;
+
+	thiz = _label_get(r);
+	enesim_renderer_boundings(thiz->text, &boundings);
+	return boundings.h; 
+} 
+
 static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Label *thiz;
@@ -150,6 +160,7 @@ static Eon_Theme_Label_Descriptor _descriptor = {
 	.size_get = _label_size_get,
 	.font_set = _label_font_set,
 	.font_get = _label_font_get,
+	.height_get = _label_height_get,
 	.sw_setup = _label_setup,
 	.sw_cleanup = _label_cleanup,
 	.free = _label_free,
