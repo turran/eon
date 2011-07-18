@@ -50,7 +50,7 @@ void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y);
 Eina_Bool eon_element_setup(Ender_Element *e);
 void eon_element_real_width_get(Ender_Element *e, double *width);
 void eon_element_real_height_get(Ender_Element *e, double *height);
-
-
+void eon_element_changed_set(Ender_Element *e, Eina_Bool changed);
+Eina_Bool eon_element_has_changed(Ender_Element *e);
 
 #endif

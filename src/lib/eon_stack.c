@@ -196,7 +196,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 				case EON_HORIZONTAL_ALIGNMENT_CENTER:
 				x = (aw / 2) - (w / 2);
 				break;
-			}		
+			}
 		}
 		printf("V setting child on %g %g %g %g\n", x, last_y, w, h);
 		eon_element_actual_size_set(child_r, w, h);

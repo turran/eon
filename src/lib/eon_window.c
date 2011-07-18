@@ -23,13 +23,12 @@
 struct _Eon_Window
 {
 	Ender_Element *layout;
-	Eina_Bool changed;
 	unsigned int width;
 	unsigned int height;
 	Eon_Backend *backend;
 	Eon_Backend_Data data;
 
-	Ecore_Idler *idler;
+	Ecore_Idle_Enterer *idler;
 };
 
 static Eina_Bool _idler_cb(void *data)
@@ -40,7 +39,10 @@ static Eina_Bool _idler_cb(void *data)
 	Enesim_Renderer *r;
 	Eina_Rectangle area;
 
-	if (!ee->changed) return EINA_TRUE;
+	if (!eon_element_has_changed(ee->layout))
+	{
+		return EINA_TRUE;
+	}
 	r = ender_element_renderer_get(ee->layout);
 	/* get the damage rectangles */
 	eon_layout_redraw_get(r, &redraws);
@@ -54,18 +56,9 @@ static Eina_Bool _idler_cb(void *data)
 		eina_rectangle_coords_from(&area, 0, 0, ee->width, ee->height);
 		ee->backend->flush(&ee->data, &area);
 	}
-	//ee->changed = EINA_FALSE;
 	return EINA_TRUE;
 }
 
-static void _property_change(Ender_Element *e, const char *event_name,
-		void *event_data, void *data)
-{
-	Eon_Window *ee = data;
-
-	printf("inside\n");
-	ee->changed = EINA_TRUE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -94,10 +87,8 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 		ee->height = height;
 		ee->backend = backend;
 		ee->layout = layout;
-		ee->changed = EINA_TRUE;
 		ee->data = data;
-		ee->idler = ecore_idler_add(_idler_cb, ee);
-		ender_event_listener_add(layout, "Mutation", _property_change, ee);
+		ee->idler = ecore_idle_enterer_add(_idler_cb, ee);
 
 		return ee;
 	}

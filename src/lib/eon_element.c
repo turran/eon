@@ -52,6 +52,7 @@ typedef struct _Eon_Element
 	/* misc */
 	Enesim_Renderer_Descriptor descriptor;
 	Enesim_Renderer_Sw_Fill fill;
+	Eina_Bool changed;
 	const char *name;
 	void *data;
 } Eon_Element;
@@ -74,9 +75,19 @@ static void _element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, ui
 	thiz->fill(thiz->theme_renderer, x, y, len, dst);
 }
 
-static void _theme_changed(Ender_Element *child, const char *event_name, void *event_data, void *data)
+static void _theme_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	printf("theme changed\n");
+	Ender_Event_Mutation *ev = event_data;
+	Ender_Element *element = data;
+
+	eon_element_changed_set(element, EINA_TRUE);
+}
+
+static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Ender_Event_Mutation *ev = event_data;
+
+	eon_element_changed_set(e, EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -328,7 +339,7 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 		printf("cannot setup the eon element\n");
 		return EINA_FALSE;
 	}
-		
+
 	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
 	{
 		printf("the theme can not setup yet\n");
@@ -379,9 +390,10 @@ void eon_element_initialize(Ender_Element *ender)
 	/* whenever the theme has changed we should notify
 	 * the change on this element too
 	 */
+	ender_event_listener_add(ender, "Mutation", _element_changed, NULL);
 	if (thiz->theme_element)
 	{
-		ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, thiz);
+		ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, ender);
 	}
 	if (thiz->initialize)
 		thiz->initialize(ender);
@@ -391,13 +403,19 @@ Eina_Bool eon_element_setup(Ender_Element *e)
 {
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
+	Eina_Bool ret = EINA_TRUE;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
+	if (!thiz->changed)
+		goto end;
+
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
-		return thiz->setup(e);
-	return EINA_TRUE;
+		ret = thiz->setup(e);
+	thiz->changed = EINA_FALSE;
+end:
+	return ret;
 }
 
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
@@ -562,7 +580,6 @@ void eon_element_actual_x_set(Enesim_Renderer *r, double x)
 	thiz = _eon_element_get(r);
 	thiz->actual_x = x;
 	ender_element_value_set(thiz->theme_element, "x", x, NULL);
-	//printf("actual x %s is %g\n", thiz->name, x);
 }
 
 void eon_element_actual_y_set(Enesim_Renderer *r, double y)
@@ -572,7 +589,6 @@ void eon_element_actual_y_set(Enesim_Renderer *r, double y)
 	thiz = _eon_element_get(r);
 	thiz->actual_y = y;
 	ender_element_value_set(thiz->theme_element, "y", y, NULL);
-	//printf("actual y %s is %g\n", thiz->name, y);
 }
 
 void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
@@ -644,6 +660,33 @@ void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...)
 	va_start(va_args, name);
 	ender_element_value_remove_valist(thiz->theme_element, name, va_args);
 	va_end(va_args);
+}
+
+Eina_Bool eon_element_has_changed(Ender_Element *e)
+{
+	Enesim_Renderer *r;
+	Eon_Element *thiz;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+	return thiz->changed;
+}
+
+void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
+{
+	Eon_Element *thiz;
+	Ender_Element *parent;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+	thiz->changed = changed;
+	printf("setting changed on %s\n", ender_element_name_get(e));
+	parent = ender_element_parent_get(e);
+	if (parent)
+	{
+		eon_element_changed_set(parent, changed);
+	}
 }
 
 #define _eon_element_actual_width_set NULL
