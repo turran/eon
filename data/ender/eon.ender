@@ -10,6 +10,8 @@ namespace "eon" {
 		double "height";
 		double "actual_width";
 		double "actual_height";
+		double "preferred_width";
+		double "preferred_height";
 	};
 
 	abstract "layout" : "element" {

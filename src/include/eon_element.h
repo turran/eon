@@ -20,6 +20,8 @@ EAPI void eon_element_max_width_get(Ender_Element *e, double *width);
 EAPI void eon_element_max_width_set(Ender_Element *e, double width);
 EAPI void eon_element_max_height_set(Ender_Element *e, double height);
 EAPI void eon_element_max_height_get(Ender_Element *e, double *height);
+EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width);
+EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
 
 /**
  * @}

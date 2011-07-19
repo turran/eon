@@ -15,5 +15,5 @@ eon_generated_scrollview.c \
 eon_generated_image.c \
 eon_generated_wrapper.c
 
-%.c:
+%.c:	$(top_srcdir)/data/ender/eon.ender
 	ender_generator $(top_srcdir)/data/ender/eon.ender $(basename $(subst eon_generated_,,$@)) $@

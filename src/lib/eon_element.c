@@ -238,6 +238,22 @@ static void _eon_element_max_height_get(Enesim_Renderer *r, double *height)
 	ender_element_value_get(thiz->theme_element, "max_height", &v, NULL);
 	*height = v < thiz->max_height ? v : thiz->max_height;
 }
+
+static void _eon_element_preferred_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Element *thiz;
+
+	if (!width) return;
+	thiz = _eon_element_get(r);
+}
+
+static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Element *thiz;
+
+	if (height) return;
+	thiz = _eon_element_get(r);
+}
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
  *----------------------------------------------------------------------------*/
@@ -691,6 +707,8 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 
 #define _eon_element_actual_width_set NULL
 #define _eon_element_actual_height_set NULL
+#define _eon_element_preferred_width_set NULL
+#define _eon_element_preferred_height_set NULL
 #include "eon_generated_element.c"
 /*============================================================================*
  *                                   API                                      *
@@ -818,6 +836,15 @@ EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 	ender_element_value_set(e, "max_width", width, NULL);
 }
 
+EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width)
+{
+	ender_element_value_get(e, "preferred_width", width, NULL);
+}
+
+EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height)
+{
+	ender_element_value_get(e, "preferred_height", height, NULL);
+}
 /**
  * To be documented
  * FIXME: To be fixed
@@ -847,3 +874,5 @@ EAPI void eon_element_theme_set(Enesim_Renderer *r, const char *file)
 	 * the current state
 	 */
 }
+
+

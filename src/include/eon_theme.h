@@ -8,6 +8,8 @@ typedef double (*Eon_Theme_Element_Max_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Element_Max_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Element_Min_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Element_Min_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Element_Preferred_Height_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Element_Preferred_Width_Get)(Enesim_Renderer *r);
 
 EAPI void eon_theme_element_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_theme_element_height_get(Enesim_Renderer *r, double *width);
@@ -15,6 +17,8 @@ EAPI void eon_theme_element_max_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_theme_element_max_height_get(Enesim_Renderer *r, double *height);
 EAPI void eon_theme_element_min_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_theme_element_min_height_get(Enesim_Renderer *r, double *height);
+EAPI void eon_theme_element_preferred_height_get(Enesim_Renderer *r, double *height);
+EAPI void eon_theme_element_preferred_width_get(Enesim_Renderer *r, double *width);
 
 /**
  * @}
