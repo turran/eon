@@ -40,10 +40,11 @@ namespace "eon" {
 
 	class "radio" : "container" {
 		string "group_name";
-		int "selected";
+		bool "selected";
 	};
 
 	class "checkbox" : "container" {
+		bool "selected";
 	};
 
 	class "scrollview" : "container" {

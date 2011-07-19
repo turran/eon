@@ -27,8 +27,10 @@ typedef struct _Checkbox
 	/* properties */
 	unsigned int size;
 	Eina_Bool selected;
+	Eina_Bool was_selected;
 	/* private */
 	Enesim_Renderer *content;
+	Enesim_Renderer *background;
 	Enesim_Renderer *box;
 	Enesim_Renderer *check;
 	Enesim_Renderer *compound;
@@ -71,11 +73,27 @@ static double _checkbox_decoration_height_get(Enesim_Renderer *r)
 	return thiz->size;
 }
 
+static void _checkbox_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
+		double *x, double *y)
+{
+	Checkbox *thiz;
+	double height;
+	double cheight = 0;
+
+	thiz = _checkbox_get(r);
+	eon_theme_element_height_get(r, &height);
+	eon_theme_element_height_get(content, &cheight);
+	*x = thiz->size + checkbox_to_content_padding;
+	*y = height/2 - cheight/2;
+}
+
 static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Checkbox *thiz;
 	Enesim_Renderer *content;
+	Eina_Bool restack = EINA_FALSE;
 	double ox, oy;
+	double width, height;
 
 	thiz = _checkbox_get(r);
 	/* set the common properties */
@@ -90,19 +108,33 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fi
 	}
 	if (thiz->content != content)
 	{
+		/* FIXME at the cleanup we should restore this */
+		enesim_renderer_rop_set(content, ENESIM_BLEND);
+		thiz->content = content;
+		restack = EINA_TRUE;
+	}
+	if (thiz->was_selected != thiz->selected)
+	{
+		thiz->was_selected = thiz->selected;
+		restack = EINA_TRUE;
+	}
+	if (restack)
+	{
 		enesim_renderer_compound_layer_clear(thiz->compound);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->box);
 		if (thiz->selected)
 		{
 			enesim_renderer_compound_layer_add(thiz->compound, thiz->check);
 		}
 		enesim_renderer_compound_layer_add(thiz->compound, content);
-		/* FIXME at the cleanup we should restore this */
-		enesim_renderer_rop_set(content, ENESIM_BLEND);
-		thiz->content = content;
 	}
-	enesim_renderer_origin_set(thiz->content, thiz->size +
-			checkbox_to_content_padding, 0);
+	eon_theme_element_width_get(r, &width);
+	eon_theme_element_height_get(r, &height);
+	/* TODO really the checkbox must have the check as fill rnderer of the box */
+	//enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
+	enesim_renderer_rectangle_width_set(thiz->background, width);
+	enesim_renderer_rectangle_height_set(thiz->background, height);
 
 	if (!enesim_renderer_sw_setup(thiz->compound)) return EINA_FALSE;
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
@@ -132,6 +164,7 @@ static void _checkbox_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Checkbox_Descriptor _descriptor = {
+	.content_position_get = _checkbox_content_position_get,
 	.decoration_width_get = _checkbox_decoration_width_get,
 	.decoration_height_get = _checkbox_decoration_height_get,
 	.sw_setup = _checkbox_setup,
@@ -166,10 +199,20 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto rectangle_err;
 	thiz->box = r;
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	enesim_renderer_shape_stroke_weight_set(r, 2);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
+	
+	r = enesim_renderer_rectangle_new();
+	if (!r) goto background_err;
+	thiz->background = r;
+	/* FIXME we are using the circle_radius from the radiobutton we must share such variable */
+	enesim_renderer_rectangle_corner_radius_set(r, 8);
+	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
+	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 
 	r = eon_theme_checkbox_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -177,6 +220,8 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	return r;
 
 renderer_err:
+	enesim_renderer_delete(thiz->background);
+background_err:
 	enesim_renderer_delete(thiz->box);
 rectangle_err:
 	enesim_renderer_delete(thiz->check);

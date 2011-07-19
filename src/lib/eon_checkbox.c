@@ -23,7 +23,7 @@
 typedef struct _Eon_Checkbox
 {
 	/* properties */
-	char *group_name;
+	Eina_Bool selected;
 } Eon_Checkbox;
 
 static inline Eon_Checkbox * _eon_checkbox_get(Enesim_Renderer *r)
@@ -36,7 +36,11 @@ static inline Eon_Checkbox * _eon_checkbox_get(Enesim_Renderer *r)
 
 static void _checkbox_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
+	Eina_Bool selected;
 
+	printf("called\n");
+	eon_checkbox_selected_get(e, &selected);
+	eon_checkbox_selected_set(e, !selected);
 }
 /*----------------------------------------------------------------------------*
  *                      The Eon's container interface                         *
@@ -70,14 +74,70 @@ static Enesim_Renderer * _eon_checkbox_new(void)
 renderer_err:
 	free(thiz);
 	return NULL;
-}/*============================================================================*
+}
+
+static void _eon_checkbox_selected_get(Enesim_Renderer *r, Eina_Bool *selected)
+{
+	Eon_Checkbox *thiz;
+
+	thiz = _eon_checkbox_get(r);
+	*selected = thiz->selected;
+}
+
+static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
+{
+	Eon_Checkbox *thiz;
+	Escen_Ender *theme;
+	Escen_State *new_state;
+	
+	thiz = _eon_checkbox_get(r);
+	/* first set the property internally */
+	thiz->selected = selected;
+	/* now set the state */
+	theme = eon_element_theme_ender_get(r);
+	if (selected)
+		new_state = escen_ender_state_get(theme, "selected");
+	else
+		new_state = escen_ender_state_get(theme, "unselected");
+	if (new_state)
+	{
+		Escen_Instance *eei;
+		eei = eon_element_theme_instance_get(r);
+		escen_instance_state_set(eei, new_state);
+	}
+}
+/*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 #include "eon_generated_checkbox.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Ender_Element * eon_checkbox_new(void)
 {
 	return ender_element_new("checkbox");
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_checkbox_selected_set(Ender_Element *e, Eina_Bool selected)
+{
+	ender_element_value_set(e, "selected", selected, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_checkbox_selected_get(Ender_Element *e, Eina_Bool *selected)
+{
+	ender_element_value_get(e, "selected", selected, NULL);
+}
+
+

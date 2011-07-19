@@ -33,6 +33,7 @@
 #include "Enesim.h"
 #include "Ender.h"
 
+#include "eon_main.h"
 #include "eon_element.h"
 #include "eon_container.h"
 #include "eon_layout.h"
@@ -46,5 +47,7 @@
 #include "eon_label.h"
 #include "eon_theme.h"
 #include "eon_window.h"
+/* the backends */
+#include "eon_ecore_sdl.h"
 
 #endif

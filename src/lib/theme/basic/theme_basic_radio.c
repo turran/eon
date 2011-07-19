@@ -110,6 +110,7 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		thiz->content = content;
 		enesim_renderer_rop_set(thiz->outter_circle, ENESIM_BLEND);
 	}
+	/* set the needed properties */
 	eon_theme_element_width_get(r, &width);
 	eon_theme_element_height_get(r, &height);
 	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);

@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 		label = eon_label_new();
 		sprintf(str, "Option %d", i);
 		eon_label_text_set(label, str);
-		checkbox = eon_chechbox_new();
+		checkbox = eon_checkbox_new();
 		eon_container_content_set(checkbox, label);
 
 		eon_layout_child_add(layout, checkbox);

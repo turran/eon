@@ -59,6 +59,8 @@ escen {
 	basic_progressbar "progressbar" {
 		default {
 			set { progression = 0.5; };
+			set { dark_color = 0xff00ff00; };
+			set { light_color = 0xff00ffff; };
 		};
 	};
 	
@@ -70,8 +72,6 @@ escen {
 	basic_checkbox "checkbox" {
 		default {
 			set { size = 16; };
-			set { dark_color = 0xff00ff00; };
-			set { light_color = 0xff00ffff; };
 			set { selected = 0; };
 		};
 

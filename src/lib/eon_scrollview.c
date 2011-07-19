@@ -45,6 +45,11 @@ static void _scrollview_mouse_move(Ender_Element *e, const char *event_name, voi
 {
 	printf("mouse move\n");
 }
+
+static void _scrollview_mouse_drag(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	printf("mouse drag\n");
+}
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/

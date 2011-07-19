@@ -542,3 +542,22 @@ EAPI void eon_stack_child_vertical_alignment_set(Ender_Element *e, Ender_Element
 {
 	ender_element_value_set(child, "vertical_alignment", alignment, NULL);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_child_last_expand_set(Ender_Element *e, Eina_Bool expand)
+{
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_child_last_expand_get(Ender_Element *e, Eina_Bool *expand)
+{
+
+}
+
