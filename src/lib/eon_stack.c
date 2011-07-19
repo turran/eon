@@ -41,6 +41,7 @@ typedef struct _Eon_Stack
 	Eina_List *children;
 	Eina_Bool relayout;
 	Eon_Stack_State old, curr;
+	Eina_Bool last_expand;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Stack;
 
@@ -423,6 +424,7 @@ static Enesim_Renderer * _eon_stack_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Stack));
 	if (!thiz) return NULL;
+	thiz->last_expand = EINA_TRUE;
 
 	r = eon_layout_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -487,6 +489,23 @@ static void _eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender_El
 		}
 	}
 }
+
+static void _eon_stack_last_expand_set(Enesim_Renderer *r, Eina_Bool last_expand)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	thiz->last_expand = last_expand;
+}
+
+static void _eon_stack_last_expand_get(Enesim_Renderer *r, Eina_Bool *last_expand)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	*last_expand = thiz->last_expand;
+}
+
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -547,17 +566,17 @@ EAPI void eon_stack_child_vertical_alignment_set(Ender_Element *e, Ender_Element
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_child_last_expand_set(Ender_Element *e, Eina_Bool expand)
+EAPI void eon_stack_last_expand_set(Ender_Element *e, Eina_Bool expand)
 {
-
+	ender_element_value_set(e, "last_expand", expand, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_child_last_expand_get(Ender_Element *e, Eina_Bool *expand)
+EAPI void eon_stack_last_expand_get(Ender_Element *e, Eina_Bool *expand)
 {
-
+	ender_element_value_get(e, "last_expand", expand, NULL);
 }
 

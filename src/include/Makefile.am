@@ -13,6 +13,7 @@ eon_canvas.h \
 eon_checkbox.h \
 eon_container.h \
 eon_element.h \
+eon_image.h \
 eon_input.h \
 eon_label.h \
 eon_layout.h \

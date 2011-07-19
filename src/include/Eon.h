@@ -35,6 +35,7 @@
 
 #include "eon_main.h"
 #include "eon_element.h"
+#include "eon_image.h"
 #include "eon_container.h"
 #include "eon_layout.h"
 #include "eon_canvas.h"

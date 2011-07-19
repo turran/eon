@@ -73,7 +73,7 @@ typedef unsigned int (*Eon_Theme_Label_Height_Get)(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Label_Descriptor
 {
-	/* the label needed functions */ 
+	/* the label needed functions */
 	Eon_Theme_Label_Font_Set font_set;
 	Eon_Theme_Label_Font_Get font_get;
 	Eon_Theme_Label_Size_Set size_set;
@@ -224,5 +224,28 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 		void *data);
 EAPI Eina_Bool eon_is_theme_layout(Enesim_Renderer *r);
 EAPI void * eon_theme_layout_data_get(Enesim_Renderer *r);
+
+/**
+ * @}
+ * @{
+ */
+
+typedef struct _Eon_Theme_Image_Descriptor
+{
+	/* element needed functions */
+	Eon_Theme_Element_Max_Width_Get max_width_get;
+	Eon_Theme_Element_Min_Width_Get min_width_get;
+	Eon_Theme_Element_Max_Height_Get max_height_get;
+	Eon_Theme_Element_Min_Height_Get min_height_get;
+	/* renderer needed functions */
+	Enesim_Renderer_Sw_Setup sw_setup;
+	Enesim_Renderer_Sw_Cleanup sw_cleanup;
+	Enesim_Renderer_Delete free;
+} Eon_Theme_Image_Descriptor;
+
+EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_image(Enesim_Renderer *r);
+EAPI void * eon_theme_image_data_get(Enesim_Renderer *r);
 
 #endif

@@ -17,6 +17,11 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * The scrollview should not behave exactly as a container, the min width/height
+ * should not be the contents plus this, but only this
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

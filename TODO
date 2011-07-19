@@ -1,3 +1,1 @@
-Move eon-ecore inside, just create an eon_window struct will handle all the needed logic there, or better a renderer itself? 
-Add a property of width and height to describe the desired width and height of an element, can be NaN to define it as resize
 Add a scaler element, the scaler should be an element that can scale renderers or other elements by using a WIP property on enesim called scale which should scale the geometry not the final rendering process, ie. before applying the transformation matrix

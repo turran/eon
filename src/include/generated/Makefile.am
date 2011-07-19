@@ -12,8 +12,8 @@ eon_generated_checkbox.c \
 eon_generated_label.c \
 eon_generated_button.c \
 eon_generated_scrollview.c \
+eon_generated_image.c \
 eon_generated_wrapper.c
 
 %.c:
-	
 	ender_generator $(top_srcdir)/data/ender/eon.ender $(basename $(subst eon_generated_,,$@)) $@

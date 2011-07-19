@@ -24,6 +24,7 @@ namespace "eon" {
 		rel int "child_vertical_alignment";
 		rel int "child_horizontal_alignment";
 		int "direction";
+		bool "last_expand";
 	};
 
 	class "canvas" : "layout" {
@@ -59,6 +60,10 @@ namespace "eon" {
 	class "label" : "widget" {
 		int "ellipsize";
 		string "text";
+	};
+
+	class "image" : "element" {
+		string "file";
 	};
 
 	class "wrapper" : "element" {
