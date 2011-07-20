@@ -245,6 +245,7 @@ static void _eon_element_preferred_width_get(Enesim_Renderer *r, double *width)
 
 	if (!width) return;
 	thiz = _eon_element_get(r);
+	ender_element_value_get(thiz->theme_element, "preferred_width", width, NULL);
 }
 
 static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height)
@@ -253,6 +254,7 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 
 	if (height) return;
 	thiz = _eon_element_get(r);
+	ender_element_value_get(thiz->theme_element, "preferred_height", height, NULL);
 }
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *

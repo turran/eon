@@ -92,6 +92,8 @@ typedef struct _Eon_Theme_Label_Descriptor
 	Eon_Theme_Element_Min_Width_Get min_width_get;
 	Eon_Theme_Element_Max_Height_Get max_height_get;
 	Eon_Theme_Element_Min_Height_Get min_height_get;
+	Eon_Theme_Element_Preferred_Width_Get preferred_width_get;
+	Eon_Theme_Element_Preferred_Height_Get preferred_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -167,6 +169,8 @@ typedef struct _Eon_Theme_Progressbar_Descriptor
 	Eon_Theme_Element_Min_Width_Get min_width_get;
 	Eon_Theme_Element_Max_Height_Get max_height_get;
 	Eon_Theme_Element_Min_Height_Get min_height_get;
+	Eon_Theme_Element_Preferred_Width_Get preferred_width_get;
+	Eon_Theme_Element_Preferred_Height_Get preferred_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -218,6 +222,8 @@ typedef struct _Eon_Theme_Layout_Descriptor
 	Eon_Theme_Element_Min_Width_Get min_width_get;
 	Eon_Theme_Element_Max_Height_Get max_height_get;
 	Eon_Theme_Element_Min_Height_Get min_height_get;
+	Eon_Theme_Element_Preferred_Width_Get preferred_width_get;
+	Eon_Theme_Element_Preferred_Height_Get preferred_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
