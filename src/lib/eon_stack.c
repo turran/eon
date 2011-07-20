@@ -220,19 +220,8 @@ static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
 		_stack_horizontal_arrange(e, thiz, aw, ah);
 	else
 		_stack_vertical_arrange(e, thiz, aw, ah);
-	thiz->relayout = EINA_FALSE;
 	/* FIXME */
 	return EINA_TRUE;
-}
-
-/* if some child changed some property just relayout */
-static void _stack_child_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Enesim_Renderer *r = data;
-	Eon_Stack *thiz;
-
-	thiz = _eon_stack_get(r);
-	thiz->relayout = EINA_TRUE;
 }
 
 static Eina_Bool _eon_stack_setup(Ender_Element *e)
@@ -242,11 +231,7 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
-	if (thiz->relayout)
-	{
-		return _stack_relayout(e, thiz);
-	}
-	return EINA_TRUE;
+	return _stack_relayout(e, thiz);
 }
 
 /*----------------------------------------------------------------------------*
@@ -364,7 +349,6 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 	 */
 	thiz->relayout = EINA_TRUE;
 	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
-	ender_event_listener_add(child, "Mutation", _stack_child_changed, r);
 }
 
 static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
@@ -384,7 +368,6 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 		}
 	}
 	/* TODO */
-	//ender_event_listener_remove(child, "Mutation", _stack_child_changed, r);
 }
 
 static void _eon_stack_child_clear(Enesim_Renderer *r)
@@ -521,7 +504,7 @@ static void _eon_stack_last_expand_get(Enesim_Renderer *r, Eina_Bool *last_expan
  */
 EAPI Ender_Element * eon_stack_new(void)
 {
-	return ender_element_new("stack");
+	return ender_element_new_with_namespace("stack", "eon");
 }
 
 /**

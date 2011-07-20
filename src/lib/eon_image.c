@@ -23,12 +23,6 @@
 typedef struct _Eon_Image
 {
 	/* properties */
-	int width;
-	int height;
-	/* private */
-	Eina_Bool file_changed;
-	int final_width;
-	int final_height;
 } Eon_Image;
 
 static void _eon_image_file_get(Enesim_Renderer *r, const char **file);
@@ -41,31 +35,6 @@ static inline Eon_Image * _eon_image_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _eon_image_calculate_size(Enesim_Renderer *r)
-{
-	Eon_Image *thiz;
-	const char *file;
-
-	thiz = _eon_image_get(r);
-	if (!thiz->file_changed)
-		return;
-
-	thiz->final_width = thiz->width;
-	thiz->final_height = thiz->height;
-	if (thiz->width < 0 || thiz->height < 0)
-	{
-		int iw;
-		int ih;
-
-		_eon_image_file_get(r, &file);
-		emage_info_load(file, &iw, &ih, NULL);
-		if (thiz->width < 0)
-			thiz->final_width = iw;
-		if (thiz->height < 0)
-			thiz->final_height = ih;
-	}
-	thiz->file_changed = EINA_FALSE;
-}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -77,31 +46,9 @@ static void _eon_image_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static double _eon_image_width_get(Enesim_Renderer *r)
-{
-	Eon_Image *thiz;
-
-	thiz = _eon_image_get(r);
-	_eon_image_calculate_size(r);
-	return thiz->final_width;
-}
-
-static double _eon_image_height_get(Enesim_Renderer *r)
-{
-	Eon_Image *thiz;
-
-	thiz = _eon_image_get(r);
-	_eon_image_calculate_size(r);
-	return thiz->final_height;
-}
-
 static Eon_Element_Descriptor _descriptor = {
 	.name = "image",
 	.free = _eon_image_free,
-	.min_width_get = _eon_image_width_get,
-	.max_width_get = _eon_image_width_get,
-	.min_height_get = _eon_image_height_get,
-	.max_height_get = _eon_image_height_get,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -111,6 +58,7 @@ static Enesim_Renderer * _eon_image_new(void)
 	Eon_Image *thiz;
 	Enesim_Renderer *r;
 
+	printf("creating new image\n");
 	thiz = calloc(1, sizeof(Eon_Image));
 	if (!thiz) return NULL;
 
@@ -126,10 +74,6 @@ renderer_err:
 
 static void _eon_image_file_set(Enesim_Renderer *r, const char *file)
 {
-	Eon_Image *thiz;
-
-	thiz = _eon_image_get(r);
-	thiz->file_changed = EINA_TRUE;
 	eon_element_property_set(r, "file", file, NULL);
 }
 
@@ -150,7 +94,7 @@ static void _eon_image_file_get(Enesim_Renderer *r, const char **file)
  */
 EAPI Ender_Element * eon_image_new(void)
 {
-	return ender_element_new("image");
+	return ender_element_new_with_namespace("image", "eon");
 }
 
 /**

@@ -1,5 +1,16 @@
 #include "Eon.h"
 
+static void _add_label(Ender_Element *button, int index)
+{
+	Ender_Element *label;
+	char str[PATH_MAX];
+
+	label = eon_label_new();
+	sprintf(str, "My Button %d", index);
+	eon_label_text_set(label, str);
+	eon_container_content_set(button, label);
+}
+
 int main(int argc, char **argv)
 {
 	Eon_Window *win;
@@ -20,16 +31,9 @@ int main(int argc, char **argv)
 	for (i = 0; i < 5; i++)
 	{
 		Ender_Element *button;
-		Ender_Element *label;
-		char str[PATH_MAX];
-
-		label = eon_label_new();
-		sprintf(str, "My Button %d", i);
-		eon_label_text_set(label, str);
 
 		button = eon_button_new();
-		eon_container_content_set(button, label);
-
+		_add_label(button, i);
 		eon_layout_child_add(layout, button);
 	}
 

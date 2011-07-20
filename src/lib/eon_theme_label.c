@@ -37,6 +37,7 @@ typedef struct _Eon_Theme_Label
 	Eon_Theme_Label_Ellipsize_Set ellipsize_set;
 	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
 	Eon_Theme_Label_Height_Get height_get;
+	Eon_Theme_Label_Width_Get width_get;
 	/* data needed for our own callbacks */
 	Enesim_Renderer *text;
 	Eina_Bool ellipsized;
@@ -105,21 +106,16 @@ static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 	}
 	else
 	{
-		Enesim_Rectangle boundings;
-
-		enesim_renderer_boundings(r, &boundings);
-		return boundings.w;
+		return thiz->width_get(r);
 	}
 }
 
 static double _eon_theme_label_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	Enesim_Rectangle boundings;
 
 	thiz = _eon_theme_label_get(r);
-	enesim_renderer_boundings(r, &boundings);
-	return boundings.w;
+	return thiz->width_get(r);
 }
 
 static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
@@ -133,11 +129,9 @@ static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
 static double _eon_theme_label_max_height_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
-	Enesim_Rectangle boundings;
 
 	thiz = _eon_theme_label_get(r);
-	enesim_renderer_boundings(r, &boundings);
-	return boundings.h;
+	return thiz->height_get(r);
 }
 
 /* FIXME do we actually need this? */
@@ -210,6 +204,7 @@ EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descripto
 	thiz->size_get = descriptor->size_get;
 	thiz->size_set = descriptor->size_set;
 	thiz->height_get = descriptor->height_get;
+	thiz->width_get = descriptor->width_get;
 	/* set default values */
 	if (!descriptor->ellipsize_set || !descriptor->ellipsize_get)
 	{

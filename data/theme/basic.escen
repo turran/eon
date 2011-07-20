@@ -83,4 +83,8 @@ escen {
 			set { selected = 0; };
 		};
 	};
+
+	basic_image "image" {
+
+	};
 };

@@ -33,6 +33,7 @@ typedef struct _Button
 
 static const int horizontal_padding = 10;
 static const int vertical_padding = 3;
+static const int rectangle_radius = 8;
 
 static inline Button * _button_get(Enesim_Renderer *r)
 {
@@ -178,6 +179,8 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->rectangle = r;
 	/* setup the initial state */
 	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
+	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
+	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = eon_theme_button_new(&_descriptor, thiz);

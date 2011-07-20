@@ -6,6 +6,8 @@ namespace "eon" {
 		double "max_width";
 		double "min_height";
 		double "max_height";
+		double "preferred_width";
+		double "preferred_height";
 		double "width";
 		double "height";
 		double "x";
@@ -43,5 +45,9 @@ namespace "eon" {
 	};
 	abstract "theme_scrollview" : "theme_container" {
 
+	};
+
+	abstract "theme_image" : "theme_element" {
+		string "file";
 	};
 };

@@ -106,7 +106,17 @@ static unsigned int _label_height_get(Enesim_Renderer *r)
 
 	thiz = _label_get(r);
 	enesim_renderer_boundings(thiz->text, &boundings);
-	return boundings.h; 
+	return boundings.h;
+} 
+
+static unsigned int _label_width_get(Enesim_Renderer *r)
+{
+	Label *thiz;
+	Enesim_Rectangle boundings;
+
+	thiz = _label_get(r);
+	enesim_renderer_boundings(thiz->text, &boundings);
+	return boundings.w;
 } 
 
 static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -161,6 +171,7 @@ static Eon_Theme_Label_Descriptor _descriptor = {
 	.font_set = _label_font_set,
 	.font_get = _label_font_get,
 	.height_get = _label_height_get,
+	.width_get = _label_width_get,
 	.sw_setup = _label_setup,
 	.sw_cleanup = _label_cleanup,
 	.free = _label_free,

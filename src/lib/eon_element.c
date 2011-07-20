@@ -252,7 +252,7 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 {
 	Eon_Element *thiz;
 
-	if (height) return;
+	if (!height) return;
 	thiz = _eon_element_get(r);
 	ender_element_value_get(thiz->theme_element, "preferred_height", height, NULL);
 }
@@ -269,6 +269,9 @@ static void _eon_element_real_width_get(Enesim_Renderer *r, double *width)
 	if (!thiz) return;
 
 	set = thiz->width;
+	/* if the user has not set a value we better use the preferred one */
+	if (set < 0)
+		_eon_element_preferred_width_get(r, &set);
 	_eon_element_min_width_get(r, &min);
 	_eon_element_max_width_get(r, &max);
 	rw = set > max ? max : set;
@@ -288,6 +291,9 @@ static void _eon_element_real_height_get(Enesim_Renderer *r, double *height)
 	if (!thiz) return;
 
 	set = thiz->height;
+	/* if the user has not set a value we better use the preferred one */
+	if (set < 0)
+		_eon_element_preferred_height_get(r, &set);
 	_eon_element_min_height_get(r, &min);
 	_eon_element_max_height_get(r, &max);
 	rh = set > max ? max : set;
@@ -840,11 +846,13 @@ EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 
 EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width)
 {
+	*width = -1;
 	ender_element_value_get(e, "preferred_width", width, NULL);
 }
 
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height)
 {
+	*height = -1;
 	ender_element_value_get(e, "preferred_height", height, NULL);
 }
 /**

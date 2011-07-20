@@ -54,6 +54,7 @@ static void _register_enders(void)
 	eon_widget_init();
 	eon_layout_init();
 	eon_wrapper_init();
+	eon_image_init();
 	/* widget inheritance */
 	eon_container_init();
 	/* layout inheritance */

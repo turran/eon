@@ -3,6 +3,7 @@ MAINTAINERCLEANFILES = Makefile.in
 check_PROGRAMS = \
 eon_test_label \
 eon_test_button \
+eon_test_button_image \
 eon_test_checkbox \
 eon_test_radio \
 eon_test_image \
@@ -12,6 +13,11 @@ eon_test_button_SOURCES = eon_test_button.c
 eon_test_button_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_button_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_button_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_button_image_SOURCES = eon_test_button_image.c
+eon_test_button_image_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_button_image_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_button_image_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_radio_SOURCES = eon_test_radio.c
 eon_test_radio_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

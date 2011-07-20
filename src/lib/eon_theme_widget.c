@@ -52,7 +52,7 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Theme_Widget *thiz;
-	Eon_Theme_Element_Descriptor pdescriptor;
+	Eon_Theme_Element_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Widget));

@@ -74,6 +74,7 @@ typedef void (*Eon_Theme_Label_Ellipsize_Set)(Enesim_Renderer *r, Eina_Bool enab
 typedef Eina_Bool (*Eon_Theme_Label_Ellipsize_Get)(Enesim_Renderer *r);
 /* height ascender + ascender */
 typedef unsigned int (*Eon_Theme_Label_Height_Get)(Enesim_Renderer *r);
+typedef unsigned int (*Eon_Theme_Label_Width_Get)(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Label_Descriptor
 {
@@ -87,6 +88,7 @@ typedef struct _Eon_Theme_Label_Descriptor
 	Eon_Theme_Label_Ellipsize_Set ellipsize_set;
 	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
 	Eon_Theme_Label_Height_Get height_get;
+	Eon_Theme_Label_Width_Get width_get;
 	/* element needed functions */
 	Eon_Theme_Element_Max_Width_Get max_width_get;
 	Eon_Theme_Element_Min_Width_Get min_width_get;
@@ -247,6 +249,8 @@ typedef struct _Eon_Theme_Image_Descriptor
 	Eon_Theme_Element_Min_Width_Get min_width_get;
 	Eon_Theme_Element_Max_Height_Get max_height_get;
 	Eon_Theme_Element_Min_Height_Get min_height_get;
+	Eon_Theme_Element_Preferred_Width_Get preferred_width_get;
+	Eon_Theme_Element_Preferred_Height_Get preferred_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

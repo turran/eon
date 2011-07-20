@@ -151,7 +151,7 @@ EAPI void eon_theme_element_preferred_width_get(Enesim_Renderer *r, double *widt
 	if (thiz->preferred_width_get)
 		*width = thiz->preferred_width_get(r);
 	else
-		*width = 0;
+		*width = -1;
 }
 
 /**
@@ -165,10 +165,11 @@ EAPI void eon_theme_element_preferred_height_get(Enesim_Renderer *r, double *hei
 	if (!height) return;
 	thiz = _eon_theme_element_get(r);
 	if (!thiz) return;
+	printf("preferred element height get\n");
 	if (thiz->preferred_height_get)
 		*height = thiz->preferred_height_get(r);
 	else
-		*height = 0;
+		*height = -1;
 }
 
 /**
