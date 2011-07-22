@@ -21,6 +21,16 @@ eon_progressbar.h \
 eon_radio.h \
 eon_stack.h \
 eon_theme.h \
+eon_theme_button.h \
+eon_theme_container.h \
+eon_theme_image.h \
+eon_theme_layout.h \
+eon_theme_radio.h \
+eon_theme_checkbox.h \
+eon_theme_element.h \
+eon_theme_label.h \
+eon_theme_progressbar.h \
+eon_theme_scrollview.h \
 eon_window.h \
 eon_ecore_sdl.h
 

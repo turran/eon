@@ -723,7 +723,6 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
 	thiz->changed = changed;
-	printf("setting changed on %s\n", ender_element_name_get(e));
 	parent = ender_element_parent_get(e);
 	if (parent)
 	{

@@ -16,19 +16,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_THEME_CONTAINER_H_
+#define _EON_THEME_CONTAINER_H_
 
+/**
+ * @{
+ */
 
-#include "eon_theme_element.h"
-#include "eon_theme_container.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollview.h"
+typedef double (*Eon_Theme_Container_Decoration_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Container_Decoration_Height_Get)(Enesim_Renderer *r);
+typedef void (*Eon_Theme_Container_Content_Position_Get)(Enesim_Renderer *r, Enesim_Renderer *content, double *x, double *y);
+
+EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *content);
+EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **content);
+
+/**
+ * @}
+ */
 
 #endif
+
