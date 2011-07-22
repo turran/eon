@@ -33,6 +33,7 @@ void eon_element_property_set(Enesim_Renderer *r, const char *name, ...);
 void eon_element_property_get(Enesim_Renderer *r, const char *name, ...);
 void eon_element_property_add(Enesim_Renderer *r, const char *name, ...);
 void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...);
+void eon_element_state_set(Enesim_Renderer *r, const char *name, Eina_Bool be_finalized);
 
 /* TODO the issue here is that this functions need to be exported
  * so the theme developer can set the content position, maybe we should

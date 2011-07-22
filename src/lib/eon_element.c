@@ -686,6 +686,24 @@ void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...)
 	va_end(va_args);
 }
 
+void eon_element_state_set(Enesim_Renderer *r, const char *name, Eina_Bool be_finalized)
+{
+	Eon_Element *thiz;
+	Escen_State *new_state;
+	Escen_Instance *theme_instance;
+
+	thiz = _eon_element_get(r);
+	if (be_finalized && !escen_instance_current_state_finalized(thiz->theme_instance))
+	{
+		printf("state didnt finalize, not setting a new one\n");
+		return;
+	}
+	new_state = escen_ender_state_get(thiz->theme_ender, name);
+	if (!new_state) return;
+
+	escen_instance_state_set(thiz->theme_instance, new_state);
+}
+
 Eina_Bool eon_element_has_changed(Ender_Element *e)
 {
 	Enesim_Renderer *r;

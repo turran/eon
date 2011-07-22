@@ -1,6 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 check_PROGRAMS = \
+eon_test_canvas \
 eon_test_label \
 eon_test_button \
 eon_test_button_image \
@@ -49,4 +50,9 @@ eon_test_progressbar_SOURCES = eon_test_progressbar.c
 eon_test_progressbar_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_progressbar_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_progressbar_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_canvas_SOURCES = eon_test_canvas.c
+eon_test_canvas_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_canvas_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_canvas_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 

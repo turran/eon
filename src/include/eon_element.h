@@ -44,6 +44,12 @@ EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
 
 /**
  * @}
+ * @defgroup Eon_Widget Widget
+ * @ingroup Eon_Element
+ * @{
+ */
+/**
+ * @}
  */
 
 #endif

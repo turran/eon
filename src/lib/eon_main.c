@@ -63,6 +63,7 @@ static void _register_enders(void)
 	/* widget inheritance */
 	eon_container_init();
 	/* layout inheritance */
+	eon_canvas_init();
 	eon_stack_init();
 	/* container inheritance */
 	eon_label_init();

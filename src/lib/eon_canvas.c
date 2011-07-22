@@ -48,10 +48,10 @@ typedef struct _Eon_Canvas
 
 static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 {
-	Eon_Canvas *e;
+	Eon_Canvas *thiz;
 
-	e = eon_layout_data_get(r);
-	return e;
+	thiz = eon_layout_data_get(r);
+	return thiz;
 }
 
 #if 0
@@ -220,17 +220,10 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_remove = _eon_canvas_child_remove,
 	.name = "canvas",
 };
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_canvas_new(void)
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_canvas_new(void)
 {
 	Eon_Canvas *e;
 	Enesim_Renderer *thiz;
@@ -265,42 +258,16 @@ compound_err:
 	return NULL;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
+static void _eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, double x)
 {
 	Eon_Canvas *thiz;
-
-	thiz = _eon_canvas_get(r);
-	/* TODO we need to redraw the whole canvas here */
-	enesim_renderer_background_color_set(thiz->background, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_fill_ender_set(Enesim_Renderer *r, Ender_Element *ender)
-{
-
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, double x)
-{
-	Eon_Canvas *e;
 	Eon_Canvas_Child *ech;
 	Eina_List *l;
 
-	e = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(r);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
-	EINA_LIST_FOREACH (e->children, l, ech)
+	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		if (ech->ender == child)
 		{
@@ -313,16 +280,16 @@ EAPI void eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, doubl
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, double y)
+static void _eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, double y)
 {
-	Eon_Canvas *e;
+	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
 	Eina_List *l;
 
-	e = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(r);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
-	EINA_LIST_FOREACH (e->children, l, ech)
+	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		if (ech->ender == child)
 		{
@@ -330,5 +297,38 @@ EAPI void eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, doubl
 		}
 	}
 }
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+#define _eon_canvas_child_x_get NULL
+#define _eon_canvas_child_y_get NULL
+#include "eon_generated_canvas.c"
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_canvas_new(void)
+{
+	return ender_element_new_with_namespace("canvas", "eon");
+}
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_canvas_child_x_set(Ender_Element *e, Ender_Element *child, double x)
+{
+	ender_element_value_set(child, "x", x, NULL);
+}
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_canvas_child_y_set(Ender_Element *e, Ender_Element *child, double y)
+{
+	ender_element_value_set(child, "y", y, NULL);
+}

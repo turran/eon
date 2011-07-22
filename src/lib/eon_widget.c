@@ -61,26 +61,9 @@ static void _widget_mouse_in(Ender_Element *e, const char *event_name, void *eve
 static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Enesim_Renderer *r;
-	Escen_State *new_state;
-	Escen_Ender *theme_ender;
-	Escen_Instance *theme_instance;
 
 	r = ender_element_renderer_get(e);
-	theme_instance = eon_element_theme_instance_get(r);
-	if (escen_instance_current_state_finalized(theme_instance))
-	{
-		printf("state finalized, setting the new one\n");
-	}
-	else
-	{
-		printf("state didnt finalize, not setting a new one\n");
-		return;
-	}
-	theme_ender = eon_element_theme_ender_get(r);
-	new_state = escen_ender_state_get(theme_ender, "mouse_out");
-	if (!new_state) return;
-
-	escen_instance_state_set(theme_instance, new_state);
+	eon_element_state_set(r, "mouse_out", EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *

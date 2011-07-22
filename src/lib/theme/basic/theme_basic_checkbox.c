@@ -131,8 +131,8 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fi
 	}
 	eon_theme_element_width_get(r, &width);
 	eon_theme_element_height_get(r, &height);
-	/* TODO really the checkbox must have the check as fill rnderer of the box */
-	//enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
+	enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
+	enesim_renderer_y_origin_set(thiz->check, height/2 - thiz->size/2);
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 

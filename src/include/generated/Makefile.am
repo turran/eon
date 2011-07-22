@@ -1,6 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in config.h.in~ config.h.in
 
 BUILT_SOURCES = \
+eon_generated_canvas.c \
 eon_generated_element.c \
 eon_generated_widget.c \
 eon_generated_layout.c \

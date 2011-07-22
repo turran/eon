@@ -41,9 +41,14 @@ static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
 {
 	Enesim_Renderer *r = data;
 
-	if (error) return;
+	if (error)
+	{
+		eon_element_state_set(r, "failed", EINA_FALSE);
+		return;
+	}
 	/* set the new new surface to the theme associated */
 	eon_element_property_set(r, "source", s, NULL);
+	eon_element_state_set(r, "loaded", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -65,6 +70,7 @@ static Eina_Bool _eon_image_setup(Ender_Element *e)
 	thiz = _eon_image_get(r);
 	if (!thiz->file_changed) return EINA_TRUE;
 
+	eon_element_state_set(r, "loading", EINA_FALSE);
 	emage_load_async(thiz->file, NULL, ENESIM_FORMAT_ARGB8888, NULL, _emage_async_cb,
 			r, NULL);
 	thiz->file_changed = EINA_FALSE;

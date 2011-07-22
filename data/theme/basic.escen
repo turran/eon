@@ -85,6 +85,44 @@ escen {
 	};
 
 	basic_image "image" {
+		default {
 
+		};
+
+		state "loading" {
+			animate {
+				property = color;
+				key {
+					value = 0xffffffff;
+					time = 0.1;
+					type = LINEAR;
+				};
+				key {
+					value = 0xaaaaaaaa;
+					time = 1;
+					type = LINEAR;
+				};
+			};
+		};
+
+		state "loaded" {
+			animate {
+				property = color;
+				key {
+					value = 0xaaaaaaaa;
+					time = 0.1;
+					type = LINEAR;
+				};
+				key {
+					value = 0xffffffff;
+					time = 1;
+					type = LINEAR;
+				};
+			};
+		};
+
+		state "failed" {
+
+		};
 	};
 };

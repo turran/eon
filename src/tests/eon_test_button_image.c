@@ -1,21 +1,27 @@
 #include "Eon.h"
 
+static char *first_file;
+static char *second_file;
+
 static void _help(void)
 {
-	printf("eon_test_button_image FILE.png\n");
+	printf("eon_test_button_image FILE.png [FILE.png]\n");
 }
 
-#if 0
 static void _button_clicked(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Ender_Element *image = data;
-	double w, h;
+	const char *file;
 
 	printf("button clicked\n");
-	eon_element_min_width_set(image, 60);
-	eon_element_min_height_set(image, 20);
+	eon_image_file_get(image, &file);
+	printf("file = %s %s %s\n", file, first_file, second_file);
+	if (!strcmp(file, first_file))
+		eon_image_file_set(image, second_file);
+	else
+		eon_image_file_set(image, first_file);
+	printf("ok\n");
 }
-#endif
 
 static void _add_image(Ender_Element *button, const char *file)
 {
@@ -29,9 +35,7 @@ static void _add_image(Ender_Element *button, const char *file)
 	eon_element_preferred_width_get(image, &h);
 	eon_element_min_width_set(image, w);
 	eon_element_min_height_set(image, 40);
-#if 0
 	ender_event_listener_add(button, "MouseClick", _button_clicked, image);
-#endif
 }
 
 
@@ -50,6 +54,12 @@ int main(int argc, char **argv)
 		_help();
 		return 1;
 	}
+	first_file = argv[1];
+
+	if (argc > 2)
+		second_file = argv[2];
+	else
+		second_file = first_file;
 
 	layout = eon_stack_new();
 	eon_element_width_set(layout, 320.0);
