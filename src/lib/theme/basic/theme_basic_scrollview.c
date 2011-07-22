@@ -196,6 +196,7 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_color_set(r, 0xff222222);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto vbar_err;
@@ -204,6 +205,7 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_color_set(r, 0xff222222);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = eon_theme_scrollview_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;

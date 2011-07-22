@@ -20,7 +20,7 @@
 #define _EON_H
 
 /**
- * @mainpage Enesim
+ * @mainpage Eon
  * @section intro Introduction
  *
  * @section dependencies Dependencies
@@ -28,6 +28,10 @@
  * - Enesim
  * - Ender
  * - Escen
+ * - Emage
+ * @section optional_dependencies Optional Dependencies
+ * @section backends Backends
+ * - Ecore_SDL 
  */
 
 #include "Enesim.h"
@@ -50,5 +54,7 @@
 #include "eon_window.h"
 /* the backends */
 #include "eon_ecore_sdl.h"
+
+/** @} */
 
 #endif

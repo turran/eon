@@ -48,6 +48,6 @@ namespace "eon" {
 	};
 
 	abstract "theme_image" : "theme_element" {
-		string "file";
+		surface "source";
 	};
 };

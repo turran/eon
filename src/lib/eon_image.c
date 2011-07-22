@@ -23,6 +23,8 @@
 typedef struct _Eon_Image
 {
 	/* properties */
+	char *file;
+	Eina_Bool file_changed;
 } Eon_Image;
 
 static void _eon_image_file_get(Enesim_Renderer *r, const char **file);
@@ -31,10 +33,18 @@ static inline Eon_Image * _eon_image_get(Enesim_Renderer *r)
 {
 	Eon_Image *thiz;
 
-	thiz = eon_container_data_get(r);
+	thiz = eon_element_data_get(r);
 	return thiz;
 }
 
+static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
+{
+	Enesim_Renderer *r = data;
+
+	if (error) return;
+	/* set the new new surface to the theme associated */
+	eon_element_property_set(r, "source", s, NULL);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -46,8 +56,25 @@ static void _eon_image_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _eon_image_setup(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+	if (!thiz->file_changed) return EINA_TRUE;
+
+	emage_load_async(thiz->file, NULL, ENESIM_FORMAT_ARGB8888, NULL, _emage_async_cb,
+			r, NULL);
+	thiz->file_changed = EINA_FALSE;
+
+	return EINA_TRUE;
+}
+
 static Eon_Element_Descriptor _descriptor = {
 	.name = "image",
+	.setup = _eon_image_setup,
 	.free = _eon_image_free,
 };
 /*----------------------------------------------------------------------------*
@@ -58,7 +85,6 @@ static Enesim_Renderer * _eon_image_new(void)
 	Eon_Image *thiz;
 	Enesim_Renderer *r;
 
-	printf("creating new image\n");
 	thiz = calloc(1, sizeof(Eon_Image));
 	if (!thiz) return NULL;
 
@@ -74,12 +100,26 @@ renderer_err:
 
 static void _eon_image_file_set(Enesim_Renderer *r, const char *file)
 {
-	eon_element_property_set(r, "file", file, NULL);
+	Eon_Image *thiz;
+
+	thiz = _eon_image_get(r);
+	if (thiz->file)
+		free(thiz->file);
+	thiz->file = strdup(file);
+	thiz->file_changed = EINA_TRUE;
+	/* given that we work asynchronously we must set a null surface
+	 * the theme should manage it automatically, like setting an empty
+	 * renderer for it, etc
+	 */
+	eon_element_property_set(r, "source", NULL, NULL);
 }
 
 static void _eon_image_file_get(Enesim_Renderer *r, const char **file)
 {
-	eon_element_property_get(r, "file", file, NULL);
+	Eon_Image *thiz;
+
+	thiz = _eon_image_get(r);
+	*file = thiz->file;
 }
 /*============================================================================*
  *                                 Global                                     *

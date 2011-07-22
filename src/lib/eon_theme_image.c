@@ -39,9 +39,9 @@ typedef struct _Eon_Theme_Image
 {
 	EINA_MAGIC;
 	/* properties */
-	char *file;
+	Enesim_Surface *source;
 	/* private */
-	Eina_Bool file_changed;
+	Eina_Bool source_changed;
 	int original_width;
 	int original_height;
 	void *data;
@@ -63,17 +63,21 @@ static void _eon_theme_image_free(Enesim_Renderer *r)
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(r);
-	if (thiz->free) thiz->free(r);
-	free(thiz->file);
 	free(thiz);
 }
 
 static inline void _eon_theme_image_original_size_get(Eon_Theme_Image *thiz)
 {
-	if (!thiz->file_changed)
+	if (!thiz->source_changed)
 		return;
-	emage_info_load(thiz->file, &thiz->original_width, &thiz->original_height, NULL);
-	thiz->file_changed = EINA_FALSE;
+	if (thiz->source)
+		enesim_surface_size_get(thiz->source, &thiz->original_width, &thiz->original_height);
+	else
+	{
+		thiz->original_width = -1;
+		thiz->original_height = -1;
+	}
+	thiz->source_changed = EINA_FALSE;
 }
 
 static double _eon_theme_image_min_width_height_get(Enesim_Renderer *r)
@@ -188,23 +192,23 @@ EAPI void * eon_theme_image_data_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_image_file_set(Enesim_Renderer *r, const char *file)
+EAPI void eon_theme_image_source_set(Enesim_Renderer *r, Enesim_Surface *source)
 {
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(r);
-	thiz->file_changed = EINA_TRUE;
-	thiz->file = strdup(file);
+	thiz->source_changed = EINA_TRUE;
+	thiz->source = source;
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_image_file_get(Enesim_Renderer *r, const char **file)
+EAPI void eon_theme_image_source_get(Enesim_Renderer *r, Enesim_Surface **source)
 {
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(r);
-	*file = thiz->file;
+	*source = thiz->source;
 }

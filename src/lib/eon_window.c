@@ -17,6 +17,10 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * - correctly abstract the window "class" to not use any ecore functionality
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -30,6 +34,8 @@ struct _Eon_Window
 
 	Ecore_Idle_Enterer *idler;
 };
+
+static Ecore_Idle_Enterer * _global_idler = NULL;
 
 static Eina_Bool _idler_cb(void *data)
 {
@@ -59,6 +65,15 @@ static Eina_Bool _idler_cb(void *data)
 	return EINA_TRUE;
 }
 
+
+static Eina_Bool _global_idler_cb(void *data)
+{
+	/* we must call this before the window idlers
+	 * basically we process the emage events here
+	 */
+	emage_dispatch();
+	return EINA_TRUE;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -68,6 +83,7 @@ static Eina_Bool _idler_cb(void *data)
 Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 		unsigned int width, unsigned int height)
 {
+	Eon_Window *ee;
 	Eon_Backend_Data data;
 	Enesim_Renderer *l;
 
@@ -78,19 +94,19 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 	if (!l) return NULL;
 	if (!eon_is_layout(l)) return NULL;
 
-	if (backend->setup(layout, width, height, &data))
-	{
-		Eon_Window *ee;
+	if (!backend->setup(layout, width, height, &data))
+		return NULL;
 
-		ee = calloc(1, sizeof(Eon_Window));
-		ee->width = width;
-		ee->height = height;
-		ee->backend = backend;
-		ee->layout = layout;
-		ee->data = data;
-		ee->idler = ecore_idle_enterer_add(_idler_cb, ee);
+	if (!_global_idler)
+		_global_idler = ecore_idle_enterer_add(_global_idler_cb, NULL);
 
-		return ee;
-	}
-	return NULL;
+	ee = calloc(1, sizeof(Eon_Window));
+	ee->width = width;
+	ee->height = height;
+	ee->backend = backend;
+	ee->layout = layout;
+	ee->data = data;
+	ee->idler = ecore_idle_enterer_add(_idler_cb, ee);
+
+	return ee;
 }

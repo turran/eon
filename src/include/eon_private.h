@@ -6,6 +6,7 @@
 #endif
 
 #include "Escen.h"
+#include "Emage.h"
 #include "Etex.h"
 #include "Ecore.h"
 

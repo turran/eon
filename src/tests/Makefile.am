@@ -6,6 +6,7 @@ eon_test_button \
 eon_test_button_image \
 eon_test_checkbox \
 eon_test_radio \
+eon_test_progressbar \
 eon_test_image \
 eon_test_scrollview
 
@@ -43,4 +44,9 @@ eon_test_image_SOURCES = eon_test_image.c
 eon_test_image_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_image_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_image_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_progressbar_SOURCES = eon_test_progressbar.c
+eon_test_progressbar_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_progressbar_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_progressbar_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 

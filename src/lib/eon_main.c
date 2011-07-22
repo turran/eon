@@ -17,6 +17,11 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * Add our own image loader for escen based files, which should use a common
+ * implementation found on eon_image_loader.c?
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -64,6 +69,7 @@ static void _register_enders(void)
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
+	eon_progressbar_init();
 	eon_scrollview_init();
 }
 /*============================================================================*

@@ -44,12 +44,18 @@ static void _image_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	thiz = _image_get(r);
 	thiz->fill(thiz->image, x, y, len, dst);
 }
+
+static void _empty_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+{
+	/* doing nothing */
+}
 /*----------------------------------------------------------------------------*
  *                         The Image theme interface                         *
  *----------------------------------------------------------------------------*/
 static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Image *thiz;
+	Enesim_Surface *s;
 	double ox, oy;
 	double width, height;
 
@@ -57,25 +63,12 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->image, ox, oy);
-	/* TODO for now, just do it sync */
+
+	eon_theme_image_source_get(r, &s);
+	if (!s)
 	{
-		Enesim_Surface *s = NULL;
-		const char *file = NULL;
-
-		eon_theme_image_file_get(r, &file);
-		if (!file)
-		{
-			printf("no file setted\n");
-			return EINA_FALSE;
-		}
-
-		emage_load(file, &s, ENESIM_FORMAT_ARGB8888, NULL, NULL);
-		if (!s)
-		{
-			printf("impossible to load the file\n");
-			return EINA_FALSE;
-		}
-		enesim_renderer_image_src_set(thiz->image, s);
+		*fill = _empty_draw;
+		return EINA_TRUE;
 	}
 	eon_theme_element_width_get(r, &width);
 	eon_theme_element_height_get(r, &height);
@@ -84,6 +77,7 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_image_y_set(thiz->image, 0);
 	enesim_renderer_image_w_set(thiz->image, (int)width);
 	enesim_renderer_image_h_set(thiz->image, (int)height);
+	enesim_renderer_image_src_set(thiz->image, s);
 
 	if (!enesim_renderer_sw_setup(thiz->image))
 	{

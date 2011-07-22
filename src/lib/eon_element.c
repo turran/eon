@@ -884,5 +884,3 @@ EAPI void eon_element_theme_set(Enesim_Renderer *r, const char *file)
 	 * the current state
 	 */
 }
-
-

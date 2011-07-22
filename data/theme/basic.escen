@@ -59,8 +59,8 @@ escen {
 	basic_progressbar "progressbar" {
 		default {
 			set { progression = 0.5; };
-			set { dark_color = 0xff00ff00; };
-			set { light_color = 0xff00ffff; };
+			set { dark_color = 0xffa1ff38; };
+			set { light_color = 0xffb3ff00; };
 		};
 	};
 	
