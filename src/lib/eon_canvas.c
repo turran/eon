@@ -55,15 +55,6 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 }
 
 #if 0
-static void _canvas_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Eon_Canvas *e;
-
-	e = _eon_canvas_get(r);
-	/* just iterate over the list of dirty rectangles and intersect against the span */
-	/* if it intersects render the child that is on that span from bottom to top */
-	e->fill_func(e->compound, x, y, len, dst);
-}
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
@@ -162,37 +153,48 @@ static void _eon_canvas_cleanup(Enesim_Renderer *r)
 		}
 	}
 }
-
+#endif
+/*----------------------------------------------------------------------------*
+ *                         The Eon's element interface                        *
+ *----------------------------------------------------------------------------*/
 static void _eon_canvas_free(Enesim_Renderer *r)
 {
-	Eon_Canvas *e;
+	Eon_Canvas *thiz;
 
-	e = _eon_canvas_get(r);
-	if (!e) return;
-
-	free(e);
+	thiz = _eon_canvas_get(r);
+	free(thiz);
 }
 
-static void _eon_canvas_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
+static Eina_Bool _eon_canvas_setup(Ender_Element *e)
 {
-	Eon_Canvas *e;
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *ech;
+	Enesim_Renderer *r;
+	Eina_List *l;
 
-	e = _eon_canvas_get(r);
-	if (!e) return;
 
-	rect->x = 0;
-	rect->y = 0;
-	rect->w = e->curr.width;
-	rect->h = e->curr.height;
+	r = ender_element_renderer_get(e);
+	thiz = _eon_canvas_get(r);
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		Enesim_Renderer *child_r;
+		double h;
+		double w;
+
+		child_r = ender_element_renderer_get(ech->ender);
+
+		eon_element_real_height_get(ech->ender, &h);
+		eon_element_real_width_get(ech->ender, &w);
+
+		eon_element_actual_size_set(child_r, w, h);
+		eon_element_actual_position_set(child_r, ech->x, ech->y);
+		eon_element_setup(ech->ender);
+
+		printf("setting child on %g %g %g %g\n", ech->x, ech->y, w, h);
+	}
+
+	return EINA_TRUE;
 }
-
-static Enesim_Renderer_Descriptor _eon_canvas_descriptor = {
-	.sw_setup = _eon_canvas_setup,
-	.sw_cleanup = _eon_canvas_cleanup,
-	.boundings = _eon_canvas_boundings,
-	.free = _eon_canvas_free,
-};
-#endif
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -218,6 +220,8 @@ static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
 static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
+	.free = _eon_canvas_free,
+	.setup = _eon_canvas_setup,
 	.name = "canvas",
 };
 /*----------------------------------------------------------------------------*
@@ -321,7 +325,7 @@ EAPI Ender_Element * eon_canvas_new(void)
  */
 EAPI void eon_canvas_child_x_set(Ender_Element *e, Ender_Element *child, double x)
 {
-	ender_element_value_set(child, "x", x, NULL);
+	ender_element_value_set(child, "child_x", x, NULL);
 }
 
 /**
@@ -330,5 +334,5 @@ EAPI void eon_canvas_child_x_set(Ender_Element *e, Ender_Element *child, double 
  */
 EAPI void eon_canvas_child_y_set(Ender_Element *e, Ender_Element *child, double y)
 {
-	ender_element_value_set(child, "y", y, NULL);
+	ender_element_value_set(child, "child_y", y, NULL);
 }

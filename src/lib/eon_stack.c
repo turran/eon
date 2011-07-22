@@ -224,6 +224,17 @@ static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
 	return EINA_TRUE;
 }
 
+/*----------------------------------------------------------------------------*
+ *                         The Eon's element interface                        *
+ *----------------------------------------------------------------------------*/
+static void _eon_stack_free(Enesim_Renderer *r)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(r);
+	free(thiz);
+}
+
 static Eina_Bool _eon_stack_setup(Ender_Element *e)
 {
 	Eon_Stack *thiz;
@@ -234,19 +245,6 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 	return _stack_relayout(e, thiz);
 }
 
-/*----------------------------------------------------------------------------*
- *                      The Enesim's renderer interface                       *
- *----------------------------------------------------------------------------*/
-static void _eon_stack_free(Enesim_Renderer *r)
-{
-	Eon_Stack *thiz;
-
-	thiz = _eon_stack_get(r);
-	free(thiz);
-}
-/*----------------------------------------------------------------------------*
- *                         The Eon's element interface                        *
- *----------------------------------------------------------------------------*/
 static double _eon_stack_min_width_get(Enesim_Renderer *r)
 {
 	Eon_Stack *thiz;
@@ -367,7 +365,6 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 			break;
 		}
 	}
-	/* TODO */
 }
 
 static void _eon_stack_child_clear(Enesim_Renderer *r)
@@ -450,7 +447,6 @@ static void _eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender_
 		if (ech->ender == child)
 		{
 			ech->halign = alignment;
-			//thiz->relayout = EINA_TRUE;
 		}
 	}
 }
@@ -468,7 +464,6 @@ static void _eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender_El
 		if (ech->ender == child)
 		{
 			ech->valign = alignment;
-			//thiz->relayout = EINA_TRUE;
 		}
 	}
 }
