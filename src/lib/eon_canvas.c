@@ -189,8 +189,6 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e)
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, ech->x, ech->y);
 		eon_element_setup(ech->ender);
-
-		printf("setting child on %g %g %g %g\n", ech->x, ech->y, w, h);
 	}
 
 	return EINA_TRUE;
