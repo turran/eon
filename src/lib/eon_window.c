@@ -31,40 +31,9 @@ struct _Eon_Window
 	unsigned int height;
 	Eon_Backend *backend;
 	Eon_Backend_Data data;
-
-	Ecore_Idle_Enterer *idler;
 };
 
 static Ecore_Idle_Enterer * _global_idler = NULL;
-
-static Eina_Bool _idler_cb(void *data)
-{
-	Eon_Window *ee = data;
-	Eina_List *redraws = NULL;
-	Eina_List *l;
-	Enesim_Renderer *r;
-	Eina_Rectangle area;
-
-	if (!eon_element_has_changed(ee->layout))
-	{
-		return EINA_TRUE;
-	}
-	r = ender_element_renderer_get(ee->layout);
-	/* get the damage rectangles */
-	eon_layout_redraw_get(r, &redraws);
-	/* render only those rectangles */
-	enesim_renderer_draw_list(r, ee->data.surface, redraws, 0, 0);
-	/* call the flush on the backend of such rectangles */
-	/* FIXME for now the layout always returns nothing, force a render anyway */
-	//ee->flush(ee->data, redraws);
-	//EINA_LIST_FOREACH
-	{
-		eina_rectangle_coords_from(&area, 0, 0, ee->width, ee->height);
-		ee->backend->flush(&ee->data, &area);
-	}
-	return EINA_TRUE;
-}
-
 
 static Eina_Bool _global_idler_cb(void *data)
 {
@@ -106,7 +75,6 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 	ee->backend = backend;
 	ee->layout = layout;
 	ee->data = data;
-	ee->idler = ecore_idle_enterer_add(_idler_cb, ee);
 
 	return ee;
 }

@@ -59,6 +59,14 @@ typedef struct _Eon_Ecore_Remote
 {
 	Ecore_Ipc_Server *srv;
 } Eon_Ecore_Remote;
+
+typedef struct _Eon_Ecore_Remote_Element
+{
+	Eon_Ecore_Remote *remote;
+	Ender_Element *e;
+	int id;
+} Eon_Ecore_Remote_Element;
+
 /*----------------------------------------------------------------------------*
  *                           Ecore IPC callbacks                              *
  *----------------------------------------------------------------------------*/
@@ -82,6 +90,15 @@ Eina_Bool handler_server_data(void *data, int ev_type, void *ev)
 /*----------------------------------------------------------------------------*
  *                               Eon callbacks                                *
  *----------------------------------------------------------------------------*/
+static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Ecore_Remote *re = data;
+	Ender_Event_Mutation *ev = event_data;
+
+	printf("element changed\n");
+	//ecore_ipc_server_send(re->remote->srv, 2, em->prop_id, ob->id, 0, 0, NULL, 0);
+}
+
 #if 0
 static void _mutation_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
 {
@@ -90,7 +107,6 @@ static void _mutation_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
 
 	printf("[REMOTE] changing property %s %s\n", em->prop, ekeko_object_type_name_get(o));
 	/* TODO only do this on the curr state, not post */
-	ecore_ipc_server_send(rdoc->srv, 2, em->prop_id, ob->id, 0, 0, NULL, 0);
 }
 
 static void _object_new_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
@@ -154,16 +170,29 @@ static void object_delete(void *data)
 #endif
 
 /*----------------------------------------------------------------------------*
- *                           Ender calbacks                            *
+ *                               Ender calbacks                               *
  *----------------------------------------------------------------------------*/
 static void _constructor_callback(Ender_Element *e, void *data)
 {
+	Eon_Ecore_Remote *thiz;
+	Eon_Ecore_Remote_Element *re;
 	Enesim_Renderer *r;
+	const char *name;
+	static int _id = 0;
 
+	thiz = data;
 	r = ender_element_renderer_get(e);
 	if (!eon_is_element(r))
 		return;
+	name = ender_element_name_get(e);
+
+	re = calloc(1, sizeof(Eon_Ecore_Remote_Element));
+	re->id = ++_id;
+	re->e = e;
+	re->remote = thiz;
 	/* send the 'new' event */
+	ecore_ipc_server_send(thiz->srv, 0, 0, 0, 0, 0, name, strlen(name) + 1);
+	ender_event_listener_add(e, "Mutation", _element_changed, re);
 }
 /*----------------------------------------------------------------------------*
  *                           Eon backend interface                            *
@@ -176,11 +205,6 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 	ecore_init();
 	ecore_ipc_init();
 
-	if (!_initialized++)
-	{
-		/* add our ender creator callback */
-		ender_element_new_listener_remove(_constructor_callback, NULL);
-	}
 	/* handle the ipc mechanism */
 	srv = ecore_ipc_server_connect(ECORE_IPC_LOCAL_SYSTEM, "eon-remote", 0, NULL);
 	if (!srv)
@@ -195,6 +219,14 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 		handler_server_del, NULL);
 	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DATA,
 		handler_server_data, NULL);
+	/* FIXME something is wrong here as every element created with eon
+	 * will be created on the server too ...
+	 */
+	if (!_initialized++)
+	{
+		/* add our ender creator callback */
+		ender_element_new_listener_add(_constructor_callback, thiz);
+	}
 
 	thiz->srv = srv;
 	data->prv = thiz;

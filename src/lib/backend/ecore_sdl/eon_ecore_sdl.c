@@ -30,13 +30,34 @@
 
 typedef struct _SDL
 {
-	SDL_Surface *surface;
+	SDL_Surface *native_surface;
+	Enesim_Surface *surface;
 	Eon_Input *input;
 	Ender_Element *layout;
 	Enesim_Buffer *buffer;
+	unsigned int width;
+	unsigned int height;
+	Ecore_Idle_Enterer *idler;
 } SDL;
 
 static Eina_Bool _initialized = EINA_FALSE;
+
+static void _sdl_flush(SDL *thiz, Eina_Rectangle *rect)
+{
+	Sint32 x, y;
+	Uint32 w, h;
+
+	if (!enesim_converter_surface(thiz->surface, thiz->buffer, ENESIM_ANGLE_0, rect, 0, 0))
+	{
+		printf("looks like we had an error here\n");
+	}
+	x = rect->x;
+	y = rect->y;
+	w = rect->w;
+	h = rect->h;
+	SDL_UpdateRect(thiz->native_surface, x, y, w, h);
+}
+
 
 static Eina_Bool _mouse_in(void *data, int type, void *event)
 {
@@ -115,6 +136,36 @@ static Eina_Bool _feed_events(void *data)
 	return ECORE_CALLBACK_RENEW;
 }
 
+static Eina_Bool _idler_cb(void *data)
+{
+	SDL *thiz = data;
+	Eina_List *redraws = NULL;
+	Eina_List *l;
+	Enesim_Renderer *r;
+	Eina_Rectangle area;
+
+	if (!eon_element_has_changed(thiz->layout))
+	{
+		return EINA_TRUE;
+	}
+	r = ender_element_renderer_get(thiz->layout);
+	/* get the damage rectangles */
+	eon_layout_redraw_get(r, &redraws);
+	/* render only those rectangles */
+	enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0);
+	/* call the flush on the backend of such rectangles */
+	/* FIXME for now the layout always returns nothing, force a render anyway */
+	//ee->flush(ee->data, redraws);
+	//EINA_LIST_FOREACH
+	{
+		eina_rectangle_coords_from(&area, 0, 0, thiz->width, thiz->height);
+
+		_sdl_flush(thiz, &area);
+	}
+	return EINA_TRUE;
+}
+
+
 static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned int height, Eon_Backend_Data *data)
 {
 	SDL *thiz;
@@ -129,15 +180,18 @@ static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned 
 	SDL_Init(SDL_INIT_VIDEO);
 
 	thiz = calloc(1, sizeof(SDL));
-	thiz->surface = SDL_SetVideoMode(width, height, 24, 0);
+	thiz->native_surface = SDL_SetVideoMode(width, height, 24, 0);
 	thiz->layout = layout;
+	thiz->width = width;
+	thiz->height = height;
 	thiz->input = eon_input_new();
 	/* TODO create a buffer based on the real format */
-	buffer_data.rgb888.plane0_stride = thiz->surface->pitch;
-	buffer_data.rgb888.plane0 = thiz->surface->pixels;
+	buffer_data.rgb888.plane0_stride = thiz->native_surface->pitch;
+	buffer_data.rgb888.plane0 = thiz->native_surface->pixels;
 	thiz->buffer = enesim_buffer_new_data_from(ENESIM_BACKEND_SOFTWARE, ENESIM_CONVERTER_BGR888, width, height, &buffer_data);
+	thiz->idler = ecore_idle_enterer_add(_idler_cb, thiz);
+	thiz->surface = enesim_surface_new(ENESIM_BACKEND_SOFTWARE, ENESIM_FORMAT_ARGB8888, width, height);
 	/* fill the required data */
-	data->surface = enesim_surface_new(ENESIM_BACKEND_SOFTWARE, ENESIM_FORMAT_ARGB8888, width, height);
 	data->prv = thiz;
 
 	/* FIXME for now use ecore_sdl, we shouldnt */
@@ -159,6 +213,8 @@ static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned 
 
 static void _sdl_cleanup(Eon_Backend_Data *data)
 {
+	SDL *thiz = data->prv;
+
 	if (_initialized)
 	{
 		ecore_sdl_shutdown();
@@ -169,28 +225,9 @@ static void _sdl_cleanup(Eon_Backend_Data *data)
 	}
 }
 
-static void _sdl_flush(Eon_Backend_Data *data, Eina_Rectangle *rect)
-{
-	SDL *thiz;
-	Sint32 x, y;
-	Uint32 w, h;
-
-	thiz = data->prv;
-	if (!enesim_converter_surface(data->surface, thiz->buffer, ENESIM_ANGLE_0, rect, 0, 0))
-	{
-		printf("looks like we had an error here\n");
-	}
-	x = rect->x;
-	y = rect->y;
-	w = rect->w;
-	h = rect->h;
-	SDL_UpdateRect(thiz->surface, x, y, w, h);
-}
-
 static Eon_Backend _backend = {
 	.setup = _sdl_setup,
 	.cleanup = _sdl_cleanup,
-	.flush = _sdl_flush,
 };
 #endif
 /*============================================================================*

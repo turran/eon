@@ -26,7 +26,8 @@ int main(int argc, char **argv)
 
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
 
-	win = eon_window_new(eon_ecore_sdl_new(), layout, 320, 240);
+	//win = eon_window_new(eon_ecore_sdl_new(), layout, 320, 240);
+	win = eon_window_new(eon_ecore_remote_new(), layout, 320, 240);
 
 	for (i = 0; i < 5; i++)
 	{
