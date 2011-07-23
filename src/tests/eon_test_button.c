@@ -15,6 +15,7 @@ int main(int argc, char **argv)
 {
 	Eon_Window *win;
 	Ender_Element *layout;
+	Eon_Backend *backend;
 	int i;
 
 	eon_init();
@@ -26,8 +27,9 @@ int main(int argc, char **argv)
 
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
 
-	//win = eon_window_new(eon_ecore_sdl_new(), layout, 320, 240);
-	win = eon_window_new(eon_ecore_remote_new(), layout, 320, 240);
+	backend = eon_ecore_remote_new();
+	//backend = eon_ecore_sdl_new();
+	win = eon_window_new(backend, layout, 320, 240);
 
 	for (i = 0; i < 5; i++)
 	{

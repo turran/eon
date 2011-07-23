@@ -3,6 +3,7 @@
 int main(int argc, char **argv)
 {
 	Eon_Window *win;
+	Eon_Backend *backend;
 	Ender_Element *layout;
 	int i;
 
@@ -14,8 +15,8 @@ int main(int argc, char **argv)
 	eon_element_height_set(layout, 240.0);
 
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
-
-	win = eon_window_new(eon_ecore_sdl_new(), layout, 320, 240);
+	backend = eon_ecore_sdl_new();
+	win = eon_window_new(backend, layout, 320, 240);
 
 	for (i = 0; i < 5; i++)
 	{
