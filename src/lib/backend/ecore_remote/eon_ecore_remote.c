@@ -53,44 +53,37 @@
  *============================================================================*/
 #ifdef BUILD_BACKEND_REMOTE
 static int _ids = 0;
+static int _initialized = 0;
 
-typedef struct _Engine_Remote_Document
+typedef struct _Eon_Ecore_Remote
 {
 	Ecore_Ipc_Server *srv;
-} Engine_Remote_Document;
-
-typedef struct _Object
-{
-	int id;
-	Ekeko_Object *o;
-} Object;
-
-
-typedef struct _Msg_Prop_Change
-{
-
-} Msg_Prop_Change;
-
-static Engine_Remote_Document *rdoc = NULL;
-
-/* Ecore IPC callbacks */
+} Eon_Ecore_Remote;
+/*----------------------------------------------------------------------------*
+ *                           Ecore IPC callbacks                              *
+ *----------------------------------------------------------------------------*/
 Eina_Bool handler_server_add(void *data, int ev_type, void *ev)
 {
 	printf("SERVER ADDDDDDDDDDDDDD\n");
+	return EINA_TRUE;
 }
 
 Eina_Bool handler_server_del(void *data, int ev_type, void *ev)
 {
 	printf("SERVER DELLLL\n");
+	return EINA_TRUE;
 }
 
 Eina_Bool handler_server_data(void *data, int ev_type, void *ev)
 {
 	printf("SERVER DATA!!!\n");
+	return EINA_TRUE;
 }
-
-/* Eon callbacks */
-static void _mutation_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
+/*----------------------------------------------------------------------------*
+ *                               Eon callbacks                                *
+ *----------------------------------------------------------------------------*/
+#if 0
+static void _mutation_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
 {
 	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)ev;
 	Object *ob = (Object *)data;
@@ -100,7 +93,7 @@ static void _mutation_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
 	ecore_ipc_server_send(rdoc->srv, 2, em->prop_id, ob->id, 0, 0, NULL, 0);
 }
 
-static void _object_new_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
+static void _object_new_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
 {
 	Eon_Document_Object_New *e = (Eon_Document_Object_New *)ev;
 
@@ -109,43 +102,18 @@ static void _object_new_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
 
 static void * document_create(Eon_Document *d, const char *options)
 {
-	Ecore_Ipc_Server *srv;
 
 	printf("[REMOTE] Initializing engine\n");
 
-	ecore_init();
-	ecore_ipc_init();
-	srv = ecore_ipc_server_connect(ECORE_IPC_LOCAL_SYSTEM, "eon-remote", 0, NULL);
-	if (!srv)
-	{
-		/* FIXME add a good way to tell the system that the creation
-		 * failed
-		 */
-		exit(1);
-	}
-	rdoc = calloc(1, sizeof(Engine_Remote_Document));
-	ekeko_event_listener_add(d, EON_DOCUMENT_OBJECT_NEW, _object_new_cb, EINA_FALSE, NULL);
-
-	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_ADD,
-		handler_server_add, NULL);
-	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DEL,
-		handler_server_del, NULL);
-	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DATA,
-		handler_server_data, NULL);
-
-	rdoc->srv = srv;
-	return rdoc;
 }
 
 static void document_delete(void *d)
 {
 	Engine_Remote_Document *rdoc = d;
 
-	ecore_ipc_shutdown();
-	ecore_shutdown();
 }
 
-static void * object_create(Ekeko_Object *o)
+static void * object_create(Ender_Element *o)
 {
 	Object *ob;
 	char *name;
@@ -166,7 +134,7 @@ static void * object_create(Ekeko_Object *o)
 static void * canvas_create(Eon_Canvas *c, void *dd, Eina_Bool root, int w, int h)
 {
 	printf("CANVAS CREATE\n");
-	return object_create((Ekeko_Object *)c);
+	return object_create((Ender_Element *)c);
 }
 
 static Eina_Bool canvas_flush(void *src, Eina_Rectangle *srect)
@@ -183,22 +151,76 @@ static void object_delete(void *data)
 	/* remove every callback */
 	/* delete the object */
 }
+#endif
 
-static void shape_render(void *er, void *cd, Eina_Rectangle *clip)
+/*----------------------------------------------------------------------------*
+ *                           Ender calbacks                            *
+ *----------------------------------------------------------------------------*/
+static void _constructor_callback(Ender_Element *e, void *data)
 {
-	printf("SHAPE RENDER!!\n");
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	if (!eon_is_element(r))
+		return;
+	/* send the 'new' event */
+}
+/*----------------------------------------------------------------------------*
+ *                           Eon backend interface                            *
+ *----------------------------------------------------------------------------*/
+static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsigned int height, Eon_Backend_Data *data)
+{
+	Ecore_Ipc_Server *srv;
+	Eon_Ecore_Remote *thiz;
+
+	ecore_init();
+	ecore_ipc_init();
+
+	if (!_initialized++)
+	{
+		/* add our ender creator callback */
+		ender_element_new_listener_remove(_constructor_callback, NULL);
+	}
+	/* handle the ipc mechanism */
+	srv = ecore_ipc_server_connect(ECORE_IPC_LOCAL_SYSTEM, "eon-remote", 0, NULL);
+	if (!srv)
+	{
+		return EINA_FALSE;
+	}
+	thiz = calloc(1, sizeof(Eon_Ecore_Remote));
+
+	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_ADD,
+		handler_server_add, NULL);
+	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DEL,
+		handler_server_del, NULL);
+	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DATA,
+		handler_server_data, NULL);
+
+	thiz->srv = srv;
+	data->prv = thiz;
+
+	return EINA_TRUE;
 }
 
-static void paint_setup(void *pd, Eon_Shape *s)
+static void _remote_cleanup(Eon_Backend_Data *data)
 {
-	printf("PAINT SETUP\n");
+	ecore_ipc_shutdown();
+	ecore_shutdown();
+	if (_initialized == 1)
+		ender_element_new_listener_remove(_constructor_callback, NULL);
+	_initialized--;
+}
+
+static void _remote_flush(Eon_Backend_Data *data, Eina_Rectangle *rect)
+{
 }
 
 static Eon_Backend _backend = {
-	.setup = _sdl_setup,
-	.cleanup = _sdl_cleanup,
-	.flush = _sdl_flush,
+	.setup = _remote_setup,
+	.cleanup = _remote_cleanup,
+	.flush = _remote_flush,
 };
+
 #endif
 /*============================================================================*
  *                                   API                                      *

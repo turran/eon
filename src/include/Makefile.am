@@ -32,6 +32,7 @@ eon_theme_label.h \
 eon_theme_progressbar.h \
 eon_theme_scrollview.h \
 eon_window.h \
+eon_ecore_remote.h \
 eon_ecore_sdl.h
 
 installed_headersdir = $(prefix)/include/eon

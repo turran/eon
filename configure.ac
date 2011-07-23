@@ -77,6 +77,15 @@ else
 fi
 AM_CONDITIONAL(BUILD_BACKEND_SDL, test "x$build_backend_sdl" = "xyes")
 
+PKG_CHECK_MODULES(ECORE_IPC, [ecore-ipc >= 0.9.9], [have_ecore_ipc=yes], [have_ecore_ipc=no])
+if test "x$have_ecore_ipc" = "xyes"; then
+	build_backend_remote=yes
+	AC_DEFINE(BUILD_BACKEND_REMOTE, [1], [Build support for remote backend])
+else
+	build_backend_remote=no
+fi
+AM_CONDITIONAL(BUILD_BACKEND_REMOTE, test "x$build_backend_remote" = "xyes")
+
 ## Make the debug preprocessor configurable
 
 AC_OUTPUT([
@@ -90,6 +99,7 @@ src/lib/Makefile
 src/lib/backend/Makefile
 src/lib/backend/ecore_common/Makefile
 src/lib/backend/ecore_sdl/Makefile
+src/lib/backend/ecore_remote/Makefile
 src/lib/theme/Makefile
 src/lib/theme/basic/Makefile
 src/include/Makefile
@@ -111,6 +121,10 @@ echo "------------------------------------------------------------------------"
 echo
 echo
 echo "Configuration Options Summary:"
+echo
+echo "Backends:"
+echo "SDL: .....................: $build_backend_sdl"
+echo "Remote: ..................: $build_backend_remote"
 echo
 echo "Installation Path.........: $prefix"
 echo

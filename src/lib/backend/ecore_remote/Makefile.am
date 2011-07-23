@@ -6,13 +6,13 @@ libeon_ecore_remote_la_CFLAGS = \
 -I$(top_srcdir)/src/include \
 -I. \
 @EON_CFLAGS@ \
-@ECORE_REMOTE_CFLAGS@
+@ECORE_IPC_CFLAGS@
 
 libeon_ecore_remote_la_SOURCES = \
 eon_ecore_remote.c
 
 libeon_ecore_remote_la_LIBADD = \
-@ECORE_REMOTE_LIBS@
+@ECORE_IPC_LIBS@
 
 libeon_ecore_remote_la_DEPENDENCIES =
 
