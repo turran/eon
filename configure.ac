@@ -77,8 +77,8 @@ else
 fi
 AM_CONDITIONAL(BUILD_BACKEND_SDL, test "x$build_backend_sdl" = "xyes")
 
-PKG_CHECK_MODULES(ECORE_IPC, [ecore-ipc >= 0.9.9], [have_ecore_ipc=yes], [have_ecore_ipc=no])
-if test "x$have_ecore_ipc" = "xyes"; then
+PKG_CHECK_MODULES(EIX, [eix >= 0.0.1], [have_eix=yes], [have_eix=no])
+if test "x$have_eix" = "xyes"; then
 	build_backend_remote=yes
 	AC_DEFINE(BUILD_BACKEND_REMOTE, [1], [Build support for remote backend])
 else

@@ -54,6 +54,7 @@
 #include "eon_window.h"
 /* the backends */
 #include "eon_ecore_sdl.h"
+#include "eon_ecore_remote.h"
 
 /** @} */
 

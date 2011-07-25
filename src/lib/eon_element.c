@@ -77,7 +77,6 @@ static void _element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, ui
 
 static void _theme_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Ender_Event_Mutation *ev = event_data;
 	Ender_Element *element = data;
 
 	eon_element_changed_set(element, EINA_TRUE);
@@ -85,8 +84,6 @@ static void _theme_changed(Ender_Element *e, const char *event_name, void *event
 
 static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Ender_Event_Mutation *ev = event_data;
-
 	eon_element_changed_set(e, EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*

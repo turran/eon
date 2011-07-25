@@ -11,7 +11,6 @@ struct _Eon_Backend
 {
 	Eina_Bool (*setup)(Ender_Element *layout, unsigned int width, unsigned int height, Eon_Backend_Data *data);
 	void (*cleanup)(Eon_Backend_Data *data);
-	Eina_Bool (*flush)(Eon_Backend_Data *data, Enesim_Rectangle *area);
 };
 
 #endif

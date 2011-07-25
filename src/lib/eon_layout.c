@@ -82,13 +82,6 @@ static void _eon_layout_free(Enesim_Renderer *r)
 		thiz->free(r);
 	free(thiz);
 }
-
-static void _child_changed(Ender_Element *child, const char *event_name, void *event_data, void *data)
-{
-	Eon_Layout *thiz;
-
-	thiz = data;
-}
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
@@ -98,7 +91,6 @@ static void _eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 
 	thiz = _eon_layout_get(r);
 	thiz->child_remove(r, child);
-	ender_event_listener_remove(child, "Mutation", _child_changed);
 	eon_element_property_remove(r, "child", child, NULL);
 }
 
@@ -121,7 +113,6 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	theme = eon_element_theme_element_get(child_r);
 	eon_element_property_add(r, "child", theme, NULL);
 	thiz->child_add(r, child);
-	ender_event_listener_add(child, "Mutation", _child_changed, thiz);
 	/* TODO whenever a child is appended to a layout
 	 * call the init of it (on init you should register
 	 * the callbacks, etc) just in case the ender
@@ -135,7 +126,6 @@ static void _eon_layout_child_clear(Enesim_Renderer *r)
 
 	thiz = _eon_layout_get(r);
 	thiz->child_clear(r);
-	//ender_event_listener_remove(child, "Mutation", _child_changed);
 }
 
 /*============================================================================*

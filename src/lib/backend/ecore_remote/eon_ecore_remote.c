@@ -47,17 +47,16 @@
 #include "Eon.h"
 #include "eon_private.h"
 
-#include <Ecore_Ipc.h>
+#include <Eix.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 #ifdef BUILD_BACKEND_REMOTE
-static int _ids = 0;
 static int _initialized = 0;
 
 typedef struct _Eon_Ecore_Remote
 {
-	Ecore_Ipc_Server *srv;
+	Eix_Server *srv;
 } Eon_Ecore_Remote;
 
 typedef struct _Eon_Ecore_Remote_Element
@@ -67,6 +66,12 @@ typedef struct _Eon_Ecore_Remote_Element
 	int id;
 } Eon_Ecore_Remote_Element;
 
+#define INDEX(n) (n - EON_ECORE_REMOTE_CLIENT_SIZE)
+static Eet_Data_Descriptor *_descriptors[EON_ECORE_REMOTE_PROPERTY_CLEAR - EON_ECORE_REMOTE_CLIENT_SIZE + 1];
+static Eet_Data_Descriptor *_ddescriptors[2];
+/*----------------------------------------------------------------------------*
+ *                              Encode/Decode                                 *
+ *----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*
  *                           Ecore IPC callbacks                              *
  *----------------------------------------------------------------------------*/
@@ -81,94 +86,56 @@ Eina_Bool handler_server_del(void *data, int ev_type, void *ev)
 	printf("SERVER DELLLL\n");
 	return EINA_TRUE;
 }
-
-Eina_Bool handler_server_data(void *data, int ev_type, void *ev)
-{
-	printf("SERVER DATA!!!\n");
-	return EINA_TRUE;
-}
 /*----------------------------------------------------------------------------*
  *                               Eon callbacks                                *
  *----------------------------------------------------------------------------*/
 static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Ecore_Remote *re = data;
+	Eon_Ecore_Remote_Element *re = data;
+	Eon_Ecore_Remote *thiz = re->remote;
 	Ender_Event_Mutation *ev = event_data;
 
 	printf("element changed\n");
-	//ecore_ipc_server_send(re->remote->srv, 2, em->prop_id, ob->id, 0, 0, NULL, 0);
+	switch (ev->type)
+	{
+		case ENDER_EVENT_MUTATION_SET:
+		{
+			Eon_Ecore_Remote_Property_Set evs;
+			evs.id = re->id;
+			evs.name = ev->name;
+			eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_PROPERTY_SET, &evs, 0, 0);
+		}
+		break;
+
+		case ENDER_EVENT_MUTATION_ADD:
+		{
+			Eon_Ecore_Remote_Property_Add evs;
+			evs.id = re->id;
+			evs.name = ev->name;
+			eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_PROPERTY_ADD, &evs, 0, 0);
+		}
+		break;
+
+		case ENDER_EVENT_MUTATION_REMOVE:
+		{
+			Eon_Ecore_Remote_Property_Remove evs;
+			evs.id = re->id;
+			evs.name = ev->name;
+			eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_PROPERTY_REMOVE, &evs, 0, 0);
+		}
+		break;
+
+		case ENDER_EVENT_MUTATION_CLEAR:
+		{
+			Eon_Ecore_Remote_Property_Clear evs;
+
+			evs.id = re->id;
+			evs.name = ev->name;
+			eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_PROPERTY_CLEAR, &evs, 0, 0);
+		}
+		break;
+	}
 }
-
-#if 0
-static void _mutation_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
-{
-	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)ev;
-	Object *ob = (Object *)data;
-
-	printf("[REMOTE] changing property %s %s\n", em->prop, ekeko_object_type_name_get(o));
-	/* TODO only do this on the curr state, not post */
-}
-
-static void _object_new_cb(const Ender_Element *o, Ekeko_Event *ev, void *data)
-{
-	Eon_Document_Object_New *e = (Eon_Document_Object_New *)ev;
-
-	printf("[REMOTE] Creating a new object %s %p\n", e->name, ev->target);
-}
-
-static void * document_create(Eon_Document *d, const char *options)
-{
-
-	printf("[REMOTE] Initializing engine\n");
-
-}
-
-static void document_delete(void *d)
-{
-	Engine_Remote_Document *rdoc = d;
-
-}
-
-static void * object_create(Ender_Element *o)
-{
-	Object *ob;
-	char *name;
-	printf("[REMOTE] Object created %s\n", ekeko_object_type_name_get(o));
-
-	ob = malloc(sizeof(Object));
-	ob->o = o;
-	ob->id = _ids++;
-
-	name = ekeko_object_type_name_get(o);
-	ecore_ipc_server_send(rdoc->srv, 0, 0, 0, 0, 0, name, strlen(name) + 1);
-	ekeko_event_listener_add(o, EKEKO_EVENT_PROP_MODIFY, _mutation_cb, EINA_FALSE, ob);
-	/* TODO register a callback on every property change */
-	/* TODO register a callback on every tree change */
-	return ob;
-}
-
-static void * canvas_create(Eon_Canvas *c, void *dd, Eina_Bool root, int w, int h)
-{
-	printf("CANVAS CREATE\n");
-	return object_create((Ender_Element *)c);
-}
-
-static Eina_Bool canvas_flush(void *src, Eina_Rectangle *srect)
-{
-	printf("CANVAS FLUSH\n");
-}
-
-
-static void object_delete(void *data)
-{
-	Object *ob = (Object *)data;
-
-	ekeko_event_listener_remove(ob->o, EKEKO_EVENT_PROP_MODIFY, _mutation_cb, EINA_FALSE, ob);
-	/* remove every callback */
-	/* delete the object */
-}
-#endif
-
 /*----------------------------------------------------------------------------*
  *                               Ender calbacks                               *
  *----------------------------------------------------------------------------*/
@@ -176,7 +143,9 @@ static void _constructor_callback(Ender_Element *e, void *data)
 {
 	Eon_Ecore_Remote *thiz;
 	Eon_Ecore_Remote_Element *re;
+	Eon_Ecore_Remote_Element_New new;
 	Enesim_Renderer *r;
+	Eix_Error err;
 	const char *name;
 	static int _id = 0;
 
@@ -191,7 +160,9 @@ static void _constructor_callback(Ender_Element *e, void *data)
 	re->e = e;
 	re->remote = thiz;
 	/* send the 'new' event */
-	ecore_ipc_server_send(thiz->srv, 0, 0, 0, 0, 0, name, strlen(name) + 1);
+	new.id = re->id;
+	new.name = name;
+	err = eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_ELEMENT_NEW, &new, 0, 0);
 	ender_event_listener_add(e, "Mutation", _element_changed, re);
 }
 /*----------------------------------------------------------------------------*
@@ -199,26 +170,25 @@ static void _constructor_callback(Ender_Element *e, void *data)
  *----------------------------------------------------------------------------*/
 static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsigned int height, Eon_Backend_Data *data)
 {
-	Ecore_Ipc_Server *srv;
+	Eix_Server *srv;
 	Eon_Ecore_Remote *thiz;
+	Eon_Ecore_Remote_Client_Size client_size;
 
 	ecore_init();
-	ecore_ipc_init();
+	eix_init();
 
 	/* handle the ipc mechanism */
-	srv = ecore_ipc_server_connect(ECORE_IPC_LOCAL_SYSTEM, "eon-remote", 0, NULL);
+	srv = eix_connect("eon-remote", 0);
 	if (!srv)
 	{
 		return EINA_FALSE;
 	}
 	thiz = calloc(1, sizeof(Eon_Ecore_Remote));
 
-	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_ADD,
+	ecore_event_handler_add(EIX_EVENT_SERVER_ADD,
 		handler_server_add, NULL);
-	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DEL,
+	ecore_event_handler_add(EIX_EVENT_SERVER_DEL,
 		handler_server_del, NULL);
-	ecore_event_handler_add(ECORE_IPC_EVENT_SERVER_DATA,
-		handler_server_data, NULL);
 	/* FIXME something is wrong here as every element created with eon
 	 * will be created on the server too ...
 	 */
@@ -226,31 +196,33 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 	{
 		/* add our ender creator callback */
 		ender_element_new_listener_add(_constructor_callback, thiz);
+		/* register the messages */
+		eon_ecore_remote_init();
 	}
-
 	thiz->srv = srv;
 	data->prv = thiz;
+
+	eon_ecore_remote_server_setup(thiz->srv);
+	/* send the size of the client */ 
+	client_size.width = width;
+	client_size.height = height;
+	eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_CLIENT_SIZE, &client_size, 0, 0);
 
 	return EINA_TRUE;
 }
 
 static void _remote_cleanup(Eon_Backend_Data *data)
 {
-	ecore_ipc_shutdown();
+	eix_shutdown();
 	ecore_shutdown();
 	if (_initialized == 1)
 		ender_element_new_listener_remove(_constructor_callback, NULL);
 	_initialized--;
 }
 
-static void _remote_flush(Eon_Backend_Data *data, Eina_Rectangle *rect)
-{
-}
-
 static Eon_Backend _backend = {
 	.setup = _remote_setup,
 	.cleanup = _remote_cleanup,
-	.flush = _remote_flush,
 };
 
 #endif
@@ -267,3 +239,76 @@ EAPI Eon_Backend * eon_ecore_remote_new(void)
 #endif
 }
 
+EAPI void eon_ecore_remote_server_setup(void *srv)
+{
+#ifdef BUILD_BACKEND_REMOTE
+	int i;
+	int limit;
+
+	limit = EON_ECORE_REMOTE_PROPERTY_CLEAR - EON_ECORE_REMOTE_CLIENT_SIZE + 1;
+
+	for (i = 0; i < limit; i++)
+	{
+		printf("adding messages %d %p\n", EON_ECORE_REMOTE_CLIENT_SIZE + i, srv);
+		eix_server_message_add(srv, EON_ECORE_REMOTE_CLIENT_SIZE + i, _descriptors[i], 0);
+	}
+#else
+	return;
+#endif
+}
+
+EAPI void eon_ecore_remote_init(void)
+{
+#ifdef BUILD_BACKEND_REMOTE
+	Eet_Data_Descriptor *edd;
+	Eet_Data_Descriptor_Class eddc;
+
+	/* frst the datas */
+#if 0
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Element_New", sizeof(Eon_Ecore_Remote_Element_New));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_ddescriptors[0] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Element_New, "id", id, EET_T_UINT);
+#endif
+	
+	/* now the messages */
+	/* client size */
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Client_Size", sizeof(Eon_Ecore_Remote_Client_Size));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_descriptors[INDEX(EON_ECORE_REMOTE_CLIENT_SIZE)] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Client_Size, "width", width, EET_T_UINT);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Client_Size, "height", height, EET_T_UINT);
+	/* remote new */
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Element_New", sizeof(Eon_Ecore_Remote_Element_New));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_descriptors[INDEX(EON_ECORE_REMOTE_ELEMENT_NEW)] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Element_New, "id", id, EET_T_UINT);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Element_New, "name", name, EET_T_INLINED_STRING);
+	/* property set */
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Property_Set", sizeof(Eon_Ecore_Remote_Property_Set));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_descriptors[INDEX(EON_ECORE_REMOTE_PROPERTY_SET)] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Set, "id", id, EET_T_UINT);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Set, "name", name, EET_T_INLINED_STRING);
+	/* property add */
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Property_Add", sizeof(Eon_Ecore_Remote_Property_Add));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_descriptors[INDEX(EON_ECORE_REMOTE_PROPERTY_ADD)] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Add, "id", id, EET_T_UINT);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Add, "name", name, EET_T_INLINED_STRING);
+	/* property remove */
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Property_Remove", sizeof(Eon_Ecore_Remote_Property_Remove));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_descriptors[INDEX(EON_ECORE_REMOTE_PROPERTY_REMOVE)] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Remove, "id", id, EET_T_UINT);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Remove, "name", name, EET_T_INLINED_STRING);
+	/* property clear */
+	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Property_Clear", sizeof(Eon_Ecore_Remote_Property_Clear));
+	edd = eet_data_descriptor_stream_new(&eddc);
+	_descriptors[INDEX(EON_ECORE_REMOTE_PROPERTY_CLEAR)] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Clear, "id", id, EET_T_UINT);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Property_Clear, "name", name, EET_T_INLINED_STRING);
+#else
+	return;
+#endif
+}

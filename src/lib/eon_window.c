@@ -20,6 +20,8 @@
 /**
  * @todo
  * - correctly abstract the window "class" to not use any ecore functionality
+ * - we need to make the window itself have "properties" so the backend
+ *   (specially the remote) can manage correctly the element's hierarchy
  */
 /*============================================================================*
  *                                  Local                                     *
