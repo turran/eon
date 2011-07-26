@@ -74,14 +74,14 @@ EAPI Enesim_Renderer * eon_theme_progressbar_new(Eon_Theme_Progressbar_Descripto
 		void *data)
 {
 	Eon_Theme_Progressbar *thiz;
-	Eon_Theme_Widget_Descriptor pdescriptor;
+	Eon_Theme_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Progressbar));
 	EINA_MAGIC_SET(thiz, EON_THEME_PROGRESSBAR_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
-	
+
 	pdescriptor.max_width_get = descriptor->max_width_get;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.max_height_get = descriptor->max_height_get;

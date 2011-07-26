@@ -165,7 +165,6 @@ EAPI void eon_theme_widget_preferred_height_get(Enesim_Renderer *r, double *heig
 	if (!height) return;
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	printf("preferred element height get\n");
 	if (thiz->preferred_height_get)
 		*height = thiz->preferred_height_get(r);
 	else
