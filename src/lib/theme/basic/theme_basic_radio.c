@@ -76,8 +76,8 @@ static void _radio_content_position_get(Enesim_Renderer *r, Enesim_Renderer *con
 
 	thiz = _radio_get(r);
 
-	eon_theme_element_height_get(r, &height);
-	eon_theme_element_height_get(content, &cheight);
+	eon_theme_widget_height_get(r, &height);
+	eon_theme_widget_height_get(content, &cheight);
 	*x = circle_radius * 2 + radio_to_content_padding;
 	*y = height/2 - cheight/2;
 }
@@ -111,8 +111,8 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		enesim_renderer_rop_set(thiz->outter_circle, ENESIM_BLEND);
 	}
 	/* set the needed properties */
-	eon_theme_element_width_get(r, &width);
-	eon_theme_element_height_get(r, &height);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);

@@ -1,7 +1,7 @@
 using "enesim";
 
 namespace "eon" {
-	abstract "theme_element" : "renderer" {
+	abstract "theme_widget" : "renderer" {
 		double "min_width";
 		double "max_width";
 		double "min_height";
@@ -14,11 +14,8 @@ namespace "eon" {
 		double "y";
 	};
 
-	abstract "theme_layout" : "theme_element" {
+	abstract "theme_layout" : "theme_widget" {
 		[ender] "child";
-	};
-
-	abstract "theme_widget" : "theme_element" {
 	};
 
 	abstract "theme_container" : "theme_widget" {
@@ -47,7 +44,7 @@ namespace "eon" {
 
 	};
 
-	abstract "theme_image" : "theme_element" {
+	abstract "theme_image" : "theme_widget" {
 		surface "source";
 	};
 };

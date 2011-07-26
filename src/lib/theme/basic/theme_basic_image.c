@@ -70,8 +70,8 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		*fill = _empty_draw;
 		return EINA_TRUE;
 	}
-	eon_theme_element_width_get(r, &width);
-	eon_theme_element_height_get(r, &height);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 	printf("the image size is %g %g\n", width, height);
 	enesim_renderer_image_x_set(thiz->image, 0);
 	enesim_renderer_image_y_set(thiz->image, 0);

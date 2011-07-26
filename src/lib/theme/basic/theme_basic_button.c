@@ -59,8 +59,8 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	thiz = _button_get(r);
 	/* add 6px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
-	eon_theme_element_width_get(r, &width);
-	eon_theme_element_height_get(r, &height);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
 	/* always center */

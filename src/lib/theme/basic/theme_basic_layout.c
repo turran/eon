@@ -145,7 +145,7 @@ static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Theme_Basic_Layout *thiz;
 	Enesim_Renderer *rchild;
-	/* check the type of the child, if it is an eon_theme_element
+	/* check the type of the child, if it is an eon_theme_widget
 	 * we can move it by x, y
 	 * if it is not, then we only support renderers that have the
 	 * translation flag, if not then we just skip this child and

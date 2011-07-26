@@ -35,7 +35,7 @@ static inline Eon_Theme_Layout * _eon_theme_layout_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Layout *thiz;
 
-	thiz = eon_theme_element_data_get(r);
+	thiz = eon_theme_widget_data_get(r);
 
 	return thiz;
 }
@@ -59,7 +59,7 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 		void *data)
 {
 	Eon_Theme_Layout *thiz;
-	Eon_Theme_Element_Descriptor pdescriptor = { 0 };
+	Eon_Theme_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Layout));
@@ -76,7 +76,7 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_layout_free;
 
-	r = eon_theme_element_new(&pdescriptor, thiz);
+	r = eon_theme_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

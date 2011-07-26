@@ -20,7 +20,7 @@
 #define _EON_THEME_H_
 
 
-#include "eon_theme_element.h"
+#include "eon_theme_widget.h"
 #include "eon_theme_container.h"
 #include "eon_theme_radio.h"
 #include "eon_theme_checkbox.h"

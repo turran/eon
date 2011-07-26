@@ -39,7 +39,7 @@ extern int eon_log;
 #define EON_LAYOUT_MAGIC 0xe0400002
 #define EON_WIDGET_MAGIC 0xe0400003
 /* theme inheritance */
-#define EON_THEME_ELEMENT_MAGIC 0xe041001
+#define EON_THEME_WIDGET_MAGIC 0xe041001
 
 /* main */
 Ender_Namespace * eon_namespace_get(void);
@@ -56,7 +56,6 @@ void eon_theme_shutdown(void);
 #include "private/eon_container_private.h"
 #include "private/eon_widget_private.h"
 #include "private/eon_layout_private.h"
-#include "private/eon_theme_element_private.h"
 #include "private/eon_theme_widget_private.h"
 #include "private/eon_theme_container_private.h"
 

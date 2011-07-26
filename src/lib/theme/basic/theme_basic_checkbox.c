@@ -81,8 +81,8 @@ static void _checkbox_content_position_get(Enesim_Renderer *r, Enesim_Renderer *
 	double cheight = 0;
 
 	thiz = _checkbox_get(r);
-	eon_theme_element_height_get(r, &height);
-	eon_theme_element_height_get(content, &cheight);
+	eon_theme_widget_height_get(r, &height);
+	eon_theme_widget_height_get(content, &cheight);
 	*x = thiz->size + checkbox_to_content_padding;
 	*y = height/2 - cheight/2;
 }
@@ -129,8 +129,8 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fi
 		}
 		enesim_renderer_compound_layer_add(thiz->compound, content);
 	}
-	eon_theme_element_width_get(r, &width);
-	eon_theme_element_height_get(r, &height);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
 	enesim_renderer_y_origin_set(thiz->check, height/2 - thiz->size/2);
 	enesim_renderer_rectangle_width_set(thiz->background, width);

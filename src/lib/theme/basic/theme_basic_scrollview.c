@@ -87,8 +87,8 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	/* the clipped width/height */
-	//eon_theme_element_width_get(r, &width);
-	//eon_theme_element_height_get(r, &height);
+	//eon_theme_widget_width_get(r, &width);
+	//eon_theme_widget_height_get(r, &height);
 	//enesim_renderer_compound_width_set(thiz->compound, width);
 	//enesim_renderer_compound_height_set(thiz->compound, height);
 
@@ -108,10 +108,10 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		thiz->content = content;
 	}
 	/* set the needed properties */
-	eon_theme_element_width_get(r, &width);
-	eon_theme_element_height_get(r, &height);
-	eon_theme_element_width_get(content, &c_width);
-	eon_theme_element_height_get(content, &c_height);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
+	eon_theme_widget_width_get(content, &c_width);
+	eon_theme_widget_height_get(content, &c_height);
 
 	enesim_renderer_rectangle_width_set(thiz->hbar, width - scrollview_bar_width);
 	enesim_renderer_rectangle_height_set(thiz->hbar, scrollview_bar_width);

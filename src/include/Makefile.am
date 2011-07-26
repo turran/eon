@@ -27,7 +27,7 @@ eon_theme_image.h \
 eon_theme_layout.h \
 eon_theme_radio.h \
 eon_theme_checkbox.h \
-eon_theme_element.h \
+eon_theme_widget.h \
 eon_theme_label.h \
 eon_theme_progressbar.h \
 eon_theme_scrollview.h \

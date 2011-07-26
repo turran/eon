@@ -52,7 +52,7 @@ static inline Eon_Theme_Image * _eon_theme_image_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Image *thiz;
 
-	thiz = eon_theme_element_data_get(r);
+	thiz = eon_theme_widget_data_get(r);
 	EON_THEME_IMAGE_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
@@ -123,7 +123,7 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 		void *data)
 {
 	Eon_Theme_Image *thiz;
-	Eon_Theme_Element_Descriptor pdescriptor;
+	Eon_Theme_Widget_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Image));
@@ -155,7 +155,7 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_image_free;
 
-	r = eon_theme_element_new(&pdescriptor, thiz);
+	r = eon_theme_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

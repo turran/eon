@@ -72,8 +72,8 @@ static void _progressbar_update_size(Enesim_Renderer *r)
 	double width, height;
 
 	thiz = _progressbar_get(r);
-	eon_theme_element_width_get(r, &width);
-	eon_theme_element_height_get(r, &height);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 
 	enesim_renderer_rectangle_width_set(thiz->widget.rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->widget.rectangle, height);
