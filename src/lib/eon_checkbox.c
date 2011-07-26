@@ -94,7 +94,7 @@ static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 	/* first set the property internally */
 	thiz->selected = selected;
 	/* now set the state */
-	theme = eon_element_theme_ender_get(r);
+	theme = eon_widget_theme_ender_get(r);
 	if (selected)
 		new_state = escen_ender_state_get(theme, "selected");
 	else
@@ -102,7 +102,7 @@ static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 	if (new_state)
 	{
 		Escen_Instance *eei;
-		eei = eon_element_theme_instance_get(r);
+		eei = eon_widget_theme_instance_get(r);
 		escen_instance_state_set(eei, new_state);
 	}
 }

@@ -14,12 +14,12 @@ namespace "eon" {
 		double "preferred_height";
 	};
 
-	abstract "layout" : "element" {
-		[ender] "child";
-	};
-
 	abstract "widget" : "element" {
 
+	};
+
+	abstract "layout" : "widget" {
+		[ender] "child";
 	};
 
 	class "stack" : "layout" {
@@ -64,7 +64,7 @@ namespace "eon" {
 		string "text";
 	};
 
-	class "image" : "element" {
+	class "image" : "widget" {
 		string "file";
 	};
 

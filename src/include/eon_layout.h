@@ -21,7 +21,7 @@
 
 /**
  * @defgroup Eon_Layout Layout
- * @ingroup Eon_Element
+ * @ingroup Eon_Widget
  * @{
  */
 

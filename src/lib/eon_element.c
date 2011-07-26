@@ -42,16 +42,19 @@ typedef struct _Eon_Element
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
+	Enesim_Renderer_Sw_Setup sw_setup;
+	Enesim_Renderer_Sw_Cleanup sw_cleanup;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
-	/* the theme data */
-	Escen_Ender *theme_ender;
-	Escen_Instance *theme_instance;
-	Ender_Element *theme_element;
-	Enesim_Renderer *theme_renderer;
+	Eon_Element_Min_Height_Get max_height_get;
+	Eon_Element_Min_Width_Get max_width_get;
+	Eon_Element_Actual_X_Set actual_x_set;
+	Eon_Element_Actual_Y_Set actual_y_set;
+	Eon_Element_Actual_Width_Set actual_width_set;
+	Eon_Element_Actual_Height_Set actual_height_set;
+	Eon_Element_Preferred_Height_Get preferred_height_get;
+	Eon_Element_Preferred_Width_Get preferred_width_get;
 	/* misc */
-	Enesim_Renderer_Descriptor descriptor;
-	Enesim_Renderer_Sw_Fill fill;
 	Eina_Bool changed;
 	const char *name;
 	void *data;
@@ -65,21 +68,6 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 	EON_ELEMENT_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
-}
-
-static void _element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	thiz->fill(thiz->theme_renderer, x, y, len, dst);
-}
-
-static void _theme_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Ender_Element *element = data;
-
-	eon_element_changed_set(element, EINA_TRUE);
 }
 
 static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -146,16 +134,13 @@ static void _eon_element_width_set(Enesim_Renderer *r, double width)
 static void _eon_element_min_width_get(Enesim_Renderer *r, double *width)
 {
 	Eon_Element *thiz;
-	double ev = 0;
-	double tv = 0;
+	double v = 0;
 
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "min_width", &ev, NULL);
 	if (thiz->min_width_get)
-		tv = thiz->min_width_get(r);
-	ev = ev > tv ? ev : tv;
-	*width = ev > thiz->min_width ? ev : thiz->min_width;
+		v = thiz->min_width_get(r);
+	*width = v > thiz->min_width ? v : thiz->min_width;
 }
 
 static void _eon_element_min_width_set(Enesim_Renderer *r, double width)
@@ -180,17 +165,14 @@ static void _eon_element_min_height_set(Enesim_Renderer *r, double height)
 static void _eon_element_min_height_get(Enesim_Renderer *r, double *height)
 {
 	Eon_Element *thiz;
-	double tv = 0;
-	double ev = 0;
+	double v = 0;
 
 	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "min_height", &tv, NULL);
 	if (thiz->min_height_get)
-		ev = thiz->min_height_get(r);
-	ev = ev > tv ? ev : tv;
-	*height = ev > thiz->min_height ? ev : thiz->min_height;
+		v = thiz->min_height_get(r);
+	*height = v > thiz->min_height ? v : thiz->min_height;
 }
 
 static void _eon_element_max_width_get(Enesim_Renderer *r, double *width)
@@ -200,7 +182,8 @@ static void _eon_element_max_width_get(Enesim_Renderer *r, double *width)
 
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "max_width", &v, NULL);
+	if (thiz->max_width_get)
+		v = thiz->max_width_get(r);
 	*width = v < thiz->max_width ? v : thiz->max_width;
 }
 
@@ -232,7 +215,8 @@ static void _eon_element_max_height_get(Enesim_Renderer *r, double *height)
 	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
-	ender_element_value_get(thiz->theme_element, "max_height", &v, NULL);
+	if (thiz->max_height_get)
+		v = thiz->max_height_get(r);
 	*height = v < thiz->max_height ? v : thiz->max_height;
 }
 
@@ -242,7 +226,8 @@ static void _eon_element_preferred_width_get(Enesim_Renderer *r, double *width)
 
 	if (!width) return;
 	thiz = _eon_element_get(r);
-	ender_element_value_get(thiz->theme_element, "preferred_width", width, NULL);
+	if (thiz->preferred_width_get)
+		*width = thiz->preferred_width_get(r);
 }
 
 static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height)
@@ -251,7 +236,8 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 
 	if (!height) return;
 	thiz = _eon_element_get(r);
-	ender_element_value_get(thiz->theme_element, "preferred_height", height, NULL);
+	if (thiz->preferred_height_get)
+		*height = thiz->preferred_height_get(r);
 }
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
@@ -338,15 +324,12 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 {
 	Ender_Element *e;
 	Eon_Element *thiz;
-	Enesim_Color color;
 	double width, height;
 
 	thiz = _eon_element_get(r);
 	/* FIXME if the user changes the color of the element, the theme should
 	 * reflect that value
 	 */
-	enesim_renderer_color_get(r, &color);
-	enesim_renderer_color_set(thiz->theme_renderer, color);
 	eon_element_actual_size_get(r, &width, &height);
 	if (width < 0)
 		_eon_element_real_width_get(r, &width);
@@ -360,18 +343,12 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 		printf("cannot setup the eon element\n");
 		return EINA_FALSE;
 	}
-
-	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
+	if (!thiz->sw_setup)
 	{
-		printf("the theme can not setup yet\n");
+		printf("cannot sw setup the eon element\n");
 		return EINA_FALSE;
 	}
-	/* get the ender from the escen ender and get the fill function */
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->theme_renderer);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _element_draw;
-	return EINA_TRUE;
+	return thiz->sw_setup(r, fill);
 }
 
 static void _eon_element_sw_cleanup(Enesim_Renderer *r)
@@ -379,7 +356,8 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r)
 	Eon_Element *thiz;
 
 	thiz = _eon_element_get(r);
-	enesim_renderer_sw_cleanup(thiz->theme_renderer);
+	if (thiz->sw_cleanup)
+		thiz->sw_cleanup(r);
 }
 
 static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
@@ -387,7 +365,7 @@ static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 	Eon_Element *thiz;
 
 	thiz = _eon_element_get(r);
-	enesim_renderer_flags(thiz->theme_renderer, flags);
+	/* FIXME later */
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
@@ -412,10 +390,6 @@ void eon_element_initialize(Ender_Element *ender)
 	 * the change on this element too
 	 */
 	ender_event_listener_add(ender, "Mutation", _element_changed, NULL);
-	if (thiz->theme_element)
-	{
-		ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, ender);
-	}
 	if (thiz->initialize)
 		thiz->initialize(ender);
 }
@@ -431,7 +405,6 @@ Eina_Bool eon_element_setup(Ender_Element *e)
 	if (!thiz->changed)
 		goto end;
 
-	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
 		ret = thiz->setup(e);
 	thiz->changed = EINA_FALSE;
@@ -443,36 +416,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Element *thiz;
-	Escen *theme_escen;
-	Escen_Ender *theme_ender;
-	Escen_Instance *theme_instance;
-	Ender_Element *theme_element;
-	Enesim_Renderer *theme_renderer;
 	Enesim_Renderer *r;
-	Enesim_Color color;
-
-	theme_escen = eon_theme_get();
-	if (!theme_escen) {
-		printf("no theme\n");
-		return NULL;
-	}
-
-	theme_ender = escen_ender_get(theme_escen, descriptor->name);
-	if (!theme_ender)
-	{
-		printf("no ender %s\n", descriptor->name);
-		return NULL;
-	}
-
-	theme_instance = escen_instance_new(theme_ender);
-	if (!theme_instance)
-	{
-		printf("no instance %s\n", descriptor->name);
-		return NULL;
-	}
-
-	theme_element = escen_instance_ender_get(theme_instance);
-	theme_renderer = ender_element_renderer_get(theme_element);
 
 	thiz = calloc(1, sizeof(Eon_Element));
 	EINA_MAGIC_SET(thiz, EON_ELEMENT_MAGIC);
@@ -484,11 +428,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->width = -1;
 	thiz->height = -1;
 
-	thiz->theme_ender = theme_ender;
-	thiz->theme_instance = theme_instance;
-	thiz->theme_element = theme_element;
-	thiz->theme_renderer = theme_renderer;
-
 	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
@@ -496,13 +435,23 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
 	thiz->free = descriptor->free;
+	/* min */
 	thiz->min_width_get = descriptor->min_width_get;
 	thiz->min_height_get = descriptor->min_height_get;
+	/* max */
+	thiz->max_width_get = descriptor->max_width_get;
+	thiz->max_height_get = descriptor->max_height_get;
+	/* actual */
+	thiz->actual_x_set = descriptor->actual_x_set;
+	thiz->actual_y_set = descriptor->actual_y_set;
+	thiz->actual_width_set = descriptor->actual_width_set;
+	thiz->actual_height_set = descriptor->actual_height_set;
+	/* min */
+	thiz->preferred_width_get = descriptor->preferred_width_get;
+	thiz->preferred_height_get = descriptor->preferred_height_get;
+	thiz->sw_setup = descriptor->sw_setup;
+	thiz->sw_cleanup = descriptor->sw_cleanup;
 	thiz->name = descriptor->name;
-
-	/* Set the default properties from the state */
-	enesim_renderer_color_get(theme_renderer, &color);
-	enesim_renderer_color_set(r, color);
 
 	printf("element of name %s created %p\n", descriptor->name, r);
 	return r;
@@ -520,38 +469,6 @@ void * eon_element_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	return thiz->theme_ender;
-}
-
-Enesim_Renderer * eon_element_theme_renderer_get(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	return thiz->theme_renderer;
-}
-
-Ender_Element * eon_element_theme_element_get(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	return thiz->theme_element;
-}
-
-Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-
-	thiz = _eon_element_get(r);
-	return thiz->theme_instance;
-}
-
 void eon_element_actual_width_set(Enesim_Renderer *r, double width)
 {
 	Eon_Element *thiz;
@@ -559,7 +476,8 @@ void eon_element_actual_width_set(Enesim_Renderer *r, double width)
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->actual_width = width;
-	ender_element_value_set(thiz->theme_element, "width", width, NULL);
+	if (thiz->actual_width_set)
+		thiz->actual_width_set(r, width);
 }
 
 void eon_element_actual_height_set(Enesim_Renderer *r, double height)
@@ -569,7 +487,8 @@ void eon_element_actual_height_set(Enesim_Renderer *r, double height)
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->actual_height = height;
-	ender_element_value_set(thiz->theme_element, "height", height, NULL);
+	if (thiz->actual_height_set)
+		thiz->actual_height_set(r, height);
 }
 
 void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height)
@@ -580,8 +499,10 @@ void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height
 	if (!thiz) return;
 	thiz->actual_width = width;
 	thiz->actual_height = height;
-	ender_element_value_set(thiz->theme_element, "width", width, NULL);
-	ender_element_value_set(thiz->theme_element, "height", height, NULL);
+	if (thiz->actual_width_set)
+		thiz->actual_width_set(r, width);
+	if (thiz->actual_height_set)
+		thiz->actual_height_set(r, height);
 }
 
 void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *height)
@@ -600,7 +521,8 @@ void eon_element_actual_x_set(Enesim_Renderer *r, double x)
 
 	thiz = _eon_element_get(r);
 	thiz->actual_x = x;
-	ender_element_value_set(thiz->theme_element, "x", x, NULL);
+	if (thiz->actual_x_set)
+		thiz->actual_x_set(r, x);
 }
 
 void eon_element_actual_y_set(Enesim_Renderer *r, double y)
@@ -609,7 +531,8 @@ void eon_element_actual_y_set(Enesim_Renderer *r, double y)
 
 	thiz = _eon_element_get(r);
 	thiz->actual_y = y;
-	ender_element_value_set(thiz->theme_element, "y", y, NULL);
+	if (thiz->actual_y_set)
+		thiz->actual_y_set(r, y);
 }
 
 void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
@@ -619,8 +542,10 @@ void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
 	thiz = _eon_element_get(r);
 	thiz->actual_x = x;
 	thiz->actual_y = y;
-	ender_element_value_set(thiz->theme_element, "x", x, NULL);
-	ender_element_value_set(thiz->theme_element, "y", y, NULL);
+	if (thiz->actual_x_set)
+		thiz->actual_x_set(r, x);
+	if (thiz->actual_y_set)
+		thiz->actual_y_set(r, y);
 }
 
 void eon_element_real_width_get(Ender_Element *e, double *width)
@@ -637,68 +562,6 @@ void eon_element_real_height_get(Ender_Element *e, double *height)
 
 	r = ender_element_renderer_get(e);
 	_eon_element_real_height_get(r, height);
-}
-
-void eon_element_property_set(Enesim_Renderer *r, const char *name, ...)
-{
-	Eon_Element *thiz;
-	va_list va_args;
-
-	thiz = _eon_element_get(r);
-	va_start(va_args, name);
-	ender_element_value_set_valist(thiz->theme_element, name, va_args);
-	va_end(va_args);
-}
-
-void eon_element_property_get(Enesim_Renderer *r, const char *name, ...)
-{
-	Eon_Element *thiz;
-	va_list va_args;
-
-	thiz = _eon_element_get(r);
-	va_start(va_args, name);
-	ender_element_value_get_valist(thiz->theme_element, name, va_args);
-	va_end(va_args);
-}
-
-void eon_element_property_add(Enesim_Renderer *r, const char *name, ...)
-{
-	Eon_Element *thiz;
-	va_list va_args;
-
-	thiz = _eon_element_get(r);
-	va_start(va_args, name);
-	ender_element_value_add_valist(thiz->theme_element, name, va_args);
-	va_end(va_args);
-}
-
-void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...)
-{
-	Eon_Element *thiz;
-	va_list va_args;
-
-	thiz = _eon_element_get(r);
-	va_start(va_args, name);
-	ender_element_value_remove_valist(thiz->theme_element, name, va_args);
-	va_end(va_args);
-}
-
-void eon_element_state_set(Enesim_Renderer *r, const char *name, Eina_Bool be_finalized)
-{
-	Eon_Element *thiz;
-	Escen_State *new_state;
-	Escen_Instance *theme_instance;
-
-	thiz = _eon_element_get(r);
-	if (be_finalized && !escen_instance_current_state_finalized(thiz->theme_instance))
-	{
-		printf("state didnt finalize, not setting a new one\n");
-		return;
-	}
-	new_state = escen_ender_state_get(thiz->theme_ender, name);
-	if (!new_state) return;
-
-	escen_instance_state_set(thiz->theme_instance, new_state);
 }
 
 Eina_Bool eon_element_has_changed(Ender_Element *e)
@@ -887,14 +750,4 @@ EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 	ender_element_value_get(e, "max_height", height, NULL);
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_element_theme_set(Enesim_Renderer *r, const char *file)
-{
-	/* remove the theme already associated with the element
-	 * and set this, get the correct escen_ender and set
-	 * the current state
-	 */
-}
+

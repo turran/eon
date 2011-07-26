@@ -65,7 +65,7 @@ static void _eon_label_text_set(Enesim_Renderer *r, const char *text)
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	eon_element_property_set(r, "text", text, NULL);
+	eon_widget_property_set(r, "text", text, NULL);
 }
 
 static void _eon_label_text_get(Enesim_Renderer *r, const char **text)
@@ -75,7 +75,7 @@ static void _eon_label_text_get(Enesim_Renderer *r, const char **text)
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	eon_element_property_get(r, "text", text, NULL);
+	eon_widget_property_get(r, "text", text, NULL);
 }
 
 static void _eon_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
@@ -84,7 +84,7 @@ static void _eon_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
 
 	thiz = _eon_label_get(r);
 
-	eon_element_property_set(r, "ellipsize", enable, NULL);
+	eon_widget_property_set(r, "ellipsize", enable, NULL);
 }
 
 static void _eon_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enabled)
@@ -93,7 +93,7 @@ static void _eon_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enabled)
 
 	thiz = _eon_label_get(r);
 
-	eon_element_property_get(r, "ellipsize", enabled, NULL);
+	eon_widget_property_get(r, "ellipsize", enabled, NULL);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -159,7 +159,7 @@ EAPI void eon_label_text_direction_set(Ender_Element *e, Etex_Direction directio
 	Eon_Label *thiz;
 
 	thiz = _eon_label_get(r);
-	eon_element_property_set(r, "direction", direction);
+	eon_widget_property_set(r, "direction", direction);
 }
 
 /**
@@ -171,6 +171,6 @@ EAPI void eon_label_text_direction_get(Ender_Element *e, Etex_Direction *directi
 	Eon_Label *thiz;
 
 	thiz = _eon_label_get(r);
-	eon_element_property_get(r, "direction", direction);
+	eon_widget_property_get(r, "direction", direction);
 }
 #endif

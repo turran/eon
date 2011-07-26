@@ -46,9 +46,9 @@ typedef struct _Eon_Layout
 } Eon_Layout;
 
 #define _eon_layout_get(r) \
-	eon_element_data_get(r); \
-	if (!EINA_MAGIC_CHECK((Eon_Layout *)eon_element_data_get(r), EON_LAYOUT_MAGIC)) \
-		EINA_MAGIC_FAIL((Eon_Layout *)eon_element_data_get(r), EON_LAYOUT_MAGIC)
+	eon_widget_data_get(r); \
+	if (!EINA_MAGIC_CHECK((Eon_Layout *)eon_widget_data_get(r), EON_LAYOUT_MAGIC)) \
+		EINA_MAGIC_FAIL((Eon_Layout *)eon_widget_data_get(r), EON_LAYOUT_MAGIC)
 
 #if 0
 static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
@@ -91,7 +91,7 @@ static void _eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 
 	thiz = _eon_layout_get(r);
 	thiz->child_remove(r, child);
-	eon_element_property_remove(r, "child", child, NULL);
+	eon_widget_property_remove(r, "child", child, NULL);
 }
 
 static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
@@ -110,8 +110,8 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	{
 		ender_element_value_remove(curr_parent, "child", child, NULL);
 	}
-	theme = eon_element_theme_element_get(child_r);
-	eon_element_property_add(r, "child", theme, NULL);
+	theme = eon_widget_theme_element_get(child_r);
+	eon_widget_property_add(r, "child", theme, NULL);
 	thiz->child_add(r, child);
 	/* TODO whenever a child is appended to a layout
 	 * call the init of it (on init you should register
@@ -135,7 +135,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Layout *thiz;
-	Eon_Element_Descriptor pdescriptor;
+	Eon_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Layout));
@@ -155,7 +155,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.min_height_get = descriptor->min_height_get;
 	pdescriptor.setup = descriptor->setup;
 
-	r = eon_element_new(&pdescriptor, thiz);
+	r = eon_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -269,8 +269,8 @@ EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
 {
 	Eon_Layout *thiz;
 
-	if (!eon_is_element(r)) return EINA_FALSE;
-	thiz = eon_element_data_get(r);
+	if (!eon_is_widget(r)) return EINA_FALSE;
+	thiz = eon_widget_data_get(r);
 	/* FIXME looks like compiling with flag  > -O0 gives
 	 * a bad behaviour
 	 */

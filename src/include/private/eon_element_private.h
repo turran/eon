@@ -8,6 +8,12 @@ typedef double (*Eon_Element_Min_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Max_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Min_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Max_Height_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Element_Preferred_Height_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Element_Preferred_Width_Get)(Enesim_Renderer *r);
+typedef void (*Eon_Element_Actual_X_Set)(Enesim_Renderer *r, double x);
+typedef void (*Eon_Element_Actual_Y_Set)(Enesim_Renderer *r, double y);
+typedef void (*Eon_Element_Actual_Width_Set)(Enesim_Renderer *r, double width);
+typedef void (*Eon_Element_Actual_Height_Set)(Enesim_Renderer *r, double height);
 
 typedef struct _Eon_Element_Descriptor
 {
@@ -17,6 +23,14 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Max_Width_Get max_width_get;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Max_Height_Get max_height_get;
+	Eon_Element_Preferred_Width_Get preferred_width_get;
+	Eon_Element_Preferred_Height_Get preferred_height_get;
+	Eon_Element_Actual_X_Set actual_x_set;
+	Eon_Element_Actual_Y_Set actual_y_set;
+	Eon_Element_Actual_Width_Set actual_width_set;
+	Eon_Element_Actual_Height_Set actual_height_set;
+	Enesim_Renderer_Sw_Setup sw_setup;
+	Enesim_Renderer_Sw_Cleanup sw_cleanup;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Element_Descriptor;
@@ -25,15 +39,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data);
 void * eon_element_data_get(Enesim_Renderer *r);
 void eon_element_initialize(Ender_Element *ender);
-Ender_Element * eon_element_theme_element_get(Enesim_Renderer *r);
-Enesim_Renderer * eon_element_theme_renderer_get(Enesim_Renderer *r);
-Escen_Instance * eon_element_theme_instance_get(Enesim_Renderer *r);
-Escen_Ender * eon_element_theme_ender_get(Enesim_Renderer *r);
-void eon_element_property_set(Enesim_Renderer *r, const char *name, ...);
-void eon_element_property_get(Enesim_Renderer *r, const char *name, ...);
-void eon_element_property_add(Enesim_Renderer *r, const char *name, ...);
-void eon_element_property_remove(Enesim_Renderer *r, const char *name, ...);
-void eon_element_state_set(Enesim_Renderer *r, const char *name, Eina_Bool be_finalized);
 
 /* TODO the issue here is that this functions need to be exported
  * so the theme developer can set the content position, maybe we should

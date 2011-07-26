@@ -33,7 +33,7 @@ static inline Eon_Image * _eon_image_get(Enesim_Renderer *r)
 {
 	Eon_Image *thiz;
 
-	thiz = eon_element_data_get(r);
+	thiz = eon_widget_data_get(r);
 	return thiz;
 }
 
@@ -43,12 +43,12 @@ static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
 
 	if (error)
 	{
-		eon_element_state_set(r, "failed", EINA_FALSE);
+		eon_widget_state_set(r, "failed", EINA_FALSE);
 		return;
 	}
 	/* set the new new surface to the theme associated */
-	eon_element_property_set(r, "source", s, NULL);
-	eon_element_state_set(r, "loaded", EINA_FALSE);
+	eon_widget_property_set(r, "source", s, NULL);
+	eon_widget_state_set(r, "loaded", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -70,7 +70,7 @@ static Eina_Bool _eon_image_setup(Ender_Element *e)
 	thiz = _eon_image_get(r);
 	if (!thiz->file_changed) return EINA_TRUE;
 
-	eon_element_state_set(r, "loading", EINA_FALSE);
+	eon_widget_state_set(r, "loading", EINA_FALSE);
 	emage_load_async(thiz->file, NULL, ENESIM_FORMAT_ARGB8888, NULL, _emage_async_cb,
 			r, NULL);
 	thiz->file_changed = EINA_FALSE;
@@ -78,7 +78,7 @@ static Eina_Bool _eon_image_setup(Ender_Element *e)
 	return EINA_TRUE;
 }
 
-static Eon_Element_Descriptor _descriptor = {
+static Eon_Widget_Descriptor _descriptor = {
 	.name = "image",
 	.setup = _eon_image_setup,
 	.free = _eon_image_free,
@@ -94,7 +94,7 @@ static Enesim_Renderer * _eon_image_new(void)
 	thiz = calloc(1, sizeof(Eon_Image));
 	if (!thiz) return NULL;
 
-	r = eon_element_new(&_descriptor, thiz);
+	r = eon_widget_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -117,7 +117,7 @@ static void _eon_image_file_set(Enesim_Renderer *r, const char *file)
 	 * the theme should manage it automatically, like setting an empty
 	 * renderer for it, etc
 	 */
-	eon_element_property_set(r, "source", NULL, NULL);
+	eon_widget_property_set(r, "source", NULL, NULL);
 }
 
 static void _eon_image_file_get(Enesim_Renderer *r, const char **file)

@@ -51,7 +51,9 @@
 #include "eon_button.h"
 #include "eon_label.h"
 #include "eon_theme.h"
+#include "eon_widget.h"
 #include "eon_window.h"
+#include "eon_wrapper.h"
 /* the backends */
 #include "eon_ecore_sdl.h"
 #include "eon_ecore_remote.h"

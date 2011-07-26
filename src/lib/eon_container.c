@@ -60,8 +60,8 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 	content_r = ender_element_renderer_get(content);
 	if (!eon_is_element(content_r))
 		return;
-	content_t = eon_element_theme_renderer_get(content_r);
-	eon_element_property_set(r, "content", content_t, NULL);
+	content_t = eon_widget_theme_renderer_get(content_r);
+	eon_widget_property_set(r, "content", content_t, NULL);
 }
 
 static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)
@@ -100,7 +100,7 @@ static double _eon_container_min_width_get(Enesim_Renderer *r)
 	eon_element_min_width_get(thiz->content, &min);
 	v += min;
 
-	theme_r = eon_element_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_container_decoration_size_get(theme_r, &min, NULL);
 	v += min;
 
@@ -120,7 +120,7 @@ static double _eon_container_max_width_get(Enesim_Renderer *r)
 	eon_element_max_width_get(thiz->content, &max);
 	v += max;
 
-	theme_r = eon_element_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_container_decoration_size_get(theme_r, &max, NULL);
 	v += max;
 
@@ -140,7 +140,7 @@ static double _eon_container_min_height_get(Enesim_Renderer *r)
 	eon_element_min_height_get(thiz->content, &min);
 	v += min;
 
-	theme_r = eon_element_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_container_decoration_size_get(theme_r, NULL, &min);
 	v += min;
 
@@ -160,7 +160,7 @@ static double _eon_container_max_height_get(Enesim_Renderer *r)
 	eon_element_max_height_get(thiz->content, &max);
 	v += max;
 
-	theme_r = eon_element_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_container_decoration_size_get(theme_r, NULL, &max);
 	v += max;
 
@@ -185,7 +185,7 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 		double cy = 0;
 
 		content_r = ender_element_renderer_get(thiz->content);
-		theme_r = eon_element_theme_renderer_get(r);
+		theme_r = eon_widget_theme_renderer_get(r);
 		/* set the size and position */
 		eon_element_actual_width_get(e, &aw);
 		eon_element_actual_height_get(e, &ah);

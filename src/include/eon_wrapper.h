@@ -16,18 +16,18 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_IMAGE_H_
-#define _EON_IMAGE_H_
+#ifndef _EON_WRAPPER_H_
+#define _EON_WRAPPER_H_
 
 /**
- * @defgroup Eon_Image Image
- * @ingroup Eon_Widget
+ * @defgroup Eon_Button Button
+ * @ingroup Eon_Container
  * @{
  */
 
-EAPI Ender_Element * eon_image_new(void);
-EAPI void eon_image_file_set(Ender_Element *e, const char *file);
-EAPI void eon_image_file_get(Ender_Element *e, const char **file);
+EAPI Ender_Element * eon_wrapper_new(void);
+EAPI void eon_wrapper_wrapped_set(Ender_Element *e, Ender_Element *wrapped);
+EAPI void eon_wrapper_wrapped_get(Ender_Element *e, Ender_Element **wrapped);
 
 /**
  * @}
