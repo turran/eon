@@ -73,17 +73,8 @@ static void _theme_changed(Ender_Element *e, const char *event_name, void *event
 static void _widget_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Enesim_Renderer *r;
-	Escen_State *new_state;
-	Escen_Ender *theme_ender;
-	Escen_Instance *theme_instance;
-
 	r = ender_element_renderer_get(e);
-	theme_ender = eon_widget_theme_ender_get(r);
-	new_state = escen_ender_state_get(theme_ender, "mouse_in");
-	if (!new_state) return;
-
-	theme_instance = eon_widget_theme_instance_get(r);
-	escen_instance_state_set(theme_instance, new_state);
+	eon_widget_state_set(r, "mouse_in", EINA_FALSE);
 }
 
 static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -252,21 +243,19 @@ static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(r);
-	printf("setting actual width %g\n", width);
 	ender_element_value_set(thiz->theme_element, "width", width, NULL);
 }
 
 static void _eon_widget_actual_height_set(Enesim_Renderer *r, double height)
-{	
+{
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(r);
-	printf("setting actual height %g\n", height);
 	ender_element_value_set(thiz->theme_element, "height", height, NULL);
 }
 
 static void _eon_widget_actual_y_set(Enesim_Renderer *r, double y)
-{	
+{
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(r);
@@ -274,7 +263,7 @@ static void _eon_widget_actual_y_set(Enesim_Renderer *r, double y)
 }
 
 static void _eon_widget_actual_x_set(Enesim_Renderer *r, double x)
-{	
+{
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(r);

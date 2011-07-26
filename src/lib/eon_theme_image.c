@@ -150,7 +150,7 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 		pdescriptor.preferred_width_get = _eon_theme_image_preferred_width_get;
 	if (!pdescriptor.preferred_height_get)
 		pdescriptor.preferred_height_get = _eon_theme_image_preferred_height_get;
-	
+
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_image_free;

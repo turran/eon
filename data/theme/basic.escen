@@ -63,7 +63,7 @@ escen {
 			set { light_color = 0xffb3ff00; };
 		};
 	};
-	
+
 	basic_scrollview "scrollview" {
 		default {
 		};
@@ -86,7 +86,6 @@ escen {
 
 	basic_image "image" {
 		default {
-
 		};
 
 		state "loading" {
