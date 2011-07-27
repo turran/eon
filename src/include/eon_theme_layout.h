@@ -23,8 +23,8 @@
  * @{
  */
 
-typedef void (*Eon_Theme_Layout_Child_Add)(Enesim_Renderer *r, Ender_Element *child);
-typedef void (*Eon_Theme_Layout_Child_Remove)(Enesim_Renderer *r, Ender_Element *child);
+typedef void (*Eon_Theme_Layout_Child_Add)(Enesim_Renderer *r, Enesim_Renderer *child);
+typedef void (*Eon_Theme_Layout_Child_Remove)(Enesim_Renderer *r, Enesim_Renderer *child);
 
 typedef struct _Eon_Theme_Layout_Descriptor
 {

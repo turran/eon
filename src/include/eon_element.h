@@ -21,6 +21,13 @@
 
 /**
  * @defgroup Eon_Element Element
+ * Represents the root of the user interface
+ *
+ * An Eon Element is the root object on the user interface object inheritance. All other
+ * objects that interact with the user interface must inherit from this.
+ *
+ * An Eon Element has several size properties ...
+ *
  * @{
  */
 
@@ -41,13 +48,9 @@ EAPI void eon_element_max_height_set(Ender_Element *e, double height);
 EAPI void eon_element_max_height_get(Ender_Element *e, double *height);
 EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width);
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
+EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width);
+EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
 
-/**
- * @}
- * @defgroup Eon_Widget Widget
- * @ingroup Eon_Element
- * @{
- */
 /**
  * @}
  */

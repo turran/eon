@@ -21,6 +21,7 @@
 
 /**
  * @defgroup Eon_Widget Widget
+ * Represents a widget of the user interface
  * @{
  */
 

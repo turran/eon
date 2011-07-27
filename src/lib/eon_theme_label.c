@@ -164,7 +164,7 @@ static Eina_Bool _eon_theme_label_ellipsize_get(Enesim_Renderer *r)
 EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descriptor, void *data)
 {
 	Eon_Theme_Label *thiz;
-	Eon_Theme_Widget_Descriptor pdescriptor;
+	Eon_Theme_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	/* first check the label descriptors */

@@ -110,14 +110,10 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	{
 		ender_element_value_remove(curr_parent, "child", child, NULL);
 	}
-	theme = eon_widget_theme_element_get(child_r);
-	eon_widget_property_add(r, "child", theme, NULL);
+	//theme = eon_widget_theme_element_get(child_r);
+	//eon_widget_property_add(r, "child", theme, NULL);
+	eon_widget_property_add(r, "child", child_r, NULL);
 	thiz->child_add(r, child);
-	/* TODO whenever a child is appended to a layout
-	 * call the init of it (on init you should register
-	 * the callbacks, etc) just in case the ender
-	 * is of type element (or widget?)
-	 */
 }
 
 static void _eon_layout_child_clear(Enesim_Renderer *r)

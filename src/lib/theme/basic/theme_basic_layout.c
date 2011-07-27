@@ -46,105 +46,10 @@ static void _layout_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 /*----------------------------------------------------------------------------*
  *                      The Eon's layout theme interface                      *
  *----------------------------------------------------------------------------*/
-#if 0
-static void _eon_stack_cleanup(Enesim_Renderer *r)
-{
-	Eon_Stack *thiz;
-	Eon_Stack_Child *ech;
-	Eina_List *l;
-	double ox, oy;
-
-	thiz = _eon_stack_get(r);
-	if (!thiz) return;
-
-	/* restore the coordinates on every child */
-	enesim_renderer_sw_cleanup(thiz->compound);
-
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		Enesim_Renderer *renderer;
-		Enesim_Matrix matrix;
-		Enesim_Matrix_Type matrix_type;
-
-		renderer = ender_element_renderer_get(ech->ender);
-		//enesim_renderer_transformation_get(renderer, &matrix);
-		//matrix_type = enesim_matrix_type_get(&matrix);
-		enesim_renderer_origin_set(renderer, ech->old_x, ech->old_y);
-	}
-}
-
-static Eina_Bool _eon_stack_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
-{
-	Eon_Stack *thiz;
-	double ox, oy;
-
-	thiz = _eon_stack_get(r);
-	if (!thiz) return EINA_FALSE;
-
-	//printf("setting up the stack %p\n", r);
-	if (thiz->relayout)
-	{
-		//if (!eon_layout_state_setup(r, thiz->curr.width, thiz->curr.height))
-		//	return EINA_FALSE;
-		/* set the coordinates on every child */
-		/* the way to setting the actual size is based on min-size, max-size
-		 * and the boundings for an eon element or only the boundings
-		 * for an enesim renderer
-		 */
-		_stack_relayout(r, thiz);
-	}
-	else
-	{
-		Eina_List *l;
-		Eon_Stack_Child *ech;
-
-		/* just set the new coordinates on every child */
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			Enesim_Renderer *r_child;
-
-			r_child = ender_element_renderer_get(ech->ender);
-			enesim_renderer_origin_set(r_child, ech->curr_x, ech->curr_y);
-		}
-	}
-
-	if (!enesim_renderer_sw_setup(thiz->compound))
-	{
-		DBG("Cannot setup the compound renderer");
-		_eon_stack_cleanup(r);
-		return EINA_FALSE;
-	}
-
-	thiz->fill_func = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill_func) return EINA_FALSE;
-	*fill = _stack_draw;
-
-	//printf("end setting up the stack %p\n", r);
-	return EINA_TRUE;
-}
-
-/* TODO this code might be the same among every layout */
-static void _eon_stack_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
-{
-	Eon_Stack *thiz;
-	double w, h;
-
-	thiz = _eon_stack_get(r);
-	if (!thiz) return;
-
-	eon_layout_actual_size_get(r, &w, &h);
-	rect->x = 0;
-	rect->y = 0;
-	rect->w = w;
-	rect->h = h;
-	//printf("stack %p boundings %g %g\n", r, w, h);
-}
-#endif
-
-static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
+static void _layout_child_add(Enesim_Renderer *r, Enesim_Renderer *rchild)
 {
 	Theme_Basic_Layout *thiz;
-	Enesim_Renderer *rchild;
+	//Enesim_Renderer *rchild;
 	/* check the type of the child, if it is an eon_theme_widget
 	 * we can move it by x, y
 	 * if it is not, then we only support renderers that have the
@@ -152,18 +57,18 @@ static void _layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	 * give a warning
 	 */
 	thiz = _layout_get(r);
-	rchild = ender_element_renderer_get(child);
+	//rchild = ender_element_renderer_get(child);
 	enesim_renderer_compound_layer_add(thiz->compound, rchild);
 	//printf("child %p added to stack %p\n", rchild, r);
 }
 
-static void _layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
+static void _layout_child_remove(Enesim_Renderer *r, Enesim_Renderer *rchild)
 {
 	Theme_Basic_Layout *thiz;
-	Enesim_Renderer *rchild;
+	//Enesim_Renderer *rchild;
 
 	thiz = _layout_get(r);
-	rchild = ender_element_renderer_get(child);
+	//rchild = ender_element_renderer_get(child);
 	enesim_renderer_compound_layer_remove(thiz->compound, rchild);
 	//printf("child %p removed from stack %p\n", rchild, r);
 }

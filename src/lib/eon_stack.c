@@ -39,7 +39,6 @@ typedef struct _Eon_Stack_State
 typedef struct _Eon_Stack
 {
 	Eina_List *children;
-	Eina_Bool relayout;
 	Eon_Stack_State old, curr;
 	Eina_Bool last_expand;
 	Enesim_Renderer_Sw_Fill fill_func;
@@ -342,10 +341,6 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
-	/* TODO whenever a child is added, register a callback for a property
-	 * change, if it is called then we need to do the setup again
-	 */
-	thiz->relayout = EINA_TRUE;
 	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
 }
 
@@ -361,7 +356,6 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 		if (thiz_child->ender == child)
 		{
 			thiz->children = eina_list_remove_list(thiz->children, l);
-			thiz->relayout = EINA_TRUE;
 			break;
 		}
 	}
@@ -379,7 +373,6 @@ static void _eon_stack_child_clear(Enesim_Renderer *r)
 	{
 		eon_layout_child_remove(r, thiz_child->ender);
 	}
-	thiz->relayout = EINA_TRUE;
 #endif
 }
 
@@ -422,7 +415,6 @@ static void _eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction dir
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.direction = direction;
-	thiz->relayout = EINA_TRUE;
 }
 
 static void _eon_stack_direction_get(Enesim_Renderer *r, Eon_Stack_Direction *direction)

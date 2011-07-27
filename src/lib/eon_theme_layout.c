@@ -107,21 +107,21 @@ EAPI Eina_Bool eon_is_theme_layout(Enesim_Renderer *r)
 
 }
 
-EAPI void eon_theme_layout_child_add(Enesim_Renderer *r, Ender_Element *e)
+EAPI void eon_theme_layout_child_add(Enesim_Renderer *r, Enesim_Renderer *child)
 {
 	Eon_Theme_Layout *thiz;
 
 	thiz = _eon_theme_layout_get(r);
 	if (thiz->child_add)
-		thiz->child_add(r, e);
+		thiz->child_add(r, child);
 }
 
-EAPI void eon_theme_layout_child_remove(Enesim_Renderer *r, Ender_Element *e)
+EAPI void eon_theme_layout_child_remove(Enesim_Renderer *r, Enesim_Renderer *child)
 {
 	Eon_Theme_Layout *thiz;
 
 	thiz = _eon_theme_layout_get(r);
 	if (thiz->child_remove)
-		thiz->child_remove(r, e);
+		thiz->child_remove(r, child);
 }
 

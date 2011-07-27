@@ -324,18 +324,8 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 {
 	Ender_Element *e;
 	Eon_Element *thiz;
-	double width, height;
 
 	thiz = _eon_element_get(r);
-	/* FIXME if the user changes the color of the element, the theme should
-	 * reflect that value
-	 */
-	eon_element_actual_size_get(r, &width, &height);
-	if (width < 0)
-		_eon_element_real_width_get(r, &width);
-	if (height < 0)
-		_eon_element_real_height_get(r, &height);
-	eon_element_actual_size_set(r, width, height);
 	e = ender_element_renderer_from(r);
 	if (!e) return EINA_FALSE;
 	if (!eon_element_setup(e))
@@ -399,11 +389,19 @@ Eina_Bool eon_element_setup(Ender_Element *e)
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
+	double width, height;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz->changed)
 		goto end;
+
+	eon_element_actual_size_get(r, &width, &height);
+	if (width < 0)
+		_eon_element_real_width_get(r, &width);
+	if (height < 0)
+		_eon_element_real_height_get(r, &height);
+	eon_element_actual_size_set(r, width, height);
 
 	if (thiz->setup)
 		ret = thiz->setup(e);
@@ -584,6 +582,7 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 	thiz = _eon_element_get(r);
 	thiz->changed = changed;
 	parent = ender_element_parent_get(e);
+	printf("element changed %s\n", ender_element_name_get(e));
 	if (parent)
 	{
 		eon_element_changed_set(parent, changed);
@@ -592,6 +591,8 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 
 #define _eon_element_actual_width_set NULL
 #define _eon_element_actual_height_set NULL
+#define _eon_element_actual_x_set NULL
+#define _eon_element_actual_y_set NULL
 #define _eon_element_preferred_width_set NULL
 #define _eon_element_preferred_height_set NULL
 #include "eon_generated_element.c"
@@ -721,12 +722,20 @@ EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 	ender_element_value_set(e, "max_width", width, NULL);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width)
 {
 	*width = -1;
 	ender_element_value_get(e, "preferred_width", width, NULL);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height)
 {
 	*height = -1;

@@ -23,6 +23,8 @@
 typedef struct _Eon_Wrapper
 {
 	Ender_Element *wrapped;
+	Enesim_Renderer *wrapped_renderer;
+	Enesim_Renderer_Sw_Fill fill;
 } Eon_Wrapper;
 
 static inline Eon_Wrapper * _eon_wrapper_get(Enesim_Renderer *r)
@@ -32,19 +34,96 @@ static inline Eon_Wrapper * _eon_wrapper_get(Enesim_Renderer *r)
 	thiz = eon_element_data_get(r);
 	return thiz;
 }
+
+static void _wrapper_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+{
+	Eon_Wrapper *thiz;
+
+	thiz = _eon_wrapper_get(r);
+	thiz->fill(thiz->wrapped_renderer, x, y, len, dst);
+}
+
+static void _wrapped_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Enesim_Renderer *r = data;
+	Ender_Element *element;
+
+	element = ender_element_renderer_from(r);
+	eon_element_changed_set(element, EINA_TRUE);
+}
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_wrapper_free(Enesim_Renderer *r)
+static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
+	Eon_Wrapper *thiz;
+	Enesim_Rectangle rect;
+
+	thiz = _eon_wrapper_get(r);
+
+	/* in case the renderer has no transformation matrix, just set the origin
+	 * with the actual_x,y values
+	 */
+	enesim_renderer_boundings(r, &rect);
+	enesim_renderer_origin_set(thiz->wrapped, rect.x, rect.y);
+	if (!enesim_renderer_sw_setup(thiz->wrapped_renderer))
+	{
+		printf("the theme can not setup yet\n");
+		return EINA_FALSE;
+	}
+
+	/* get the ender from the escen ender and get the fill function */
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->wrapped_renderer);
+	if (!thiz->fill) return EINA_FALSE;
+
+	*fill = _wrapper_draw;
+
+	return EINA_TRUE;
 }
 
-static void _eon_wrapper_initialize(Ender_Element *ender)
+static void _eon_wrapper_sw_cleanup(Enesim_Renderer *r)
 {
-	/* we should register for every event and whenever one is received
-	 * just forward it to the wrapped element
-	 */
+	Eon_Wrapper *thiz;
+
+	thiz = _eon_wrapper_get(r);
+	enesim_renderer_sw_cleanup(thiz->wrapped_renderer);
 }
+
+static void _eon_wrapper_free(Enesim_Renderer *r)
+{
+	Eon_Wrapper *thiz;
+
+	thiz = _eon_wrapper_get(r);
+	free(thiz);
+}
+
+static double _eon_wrapper_preferred_height_get(Enesim_Renderer *r)
+{
+	Eon_Wrapper *thiz;
+	Eina_Rectangle rect;
+
+	thiz = _eon_wrapper_get(r);
+	if (!thiz->wrapped_renderer) return 0;
+
+	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
+	return rect.h;
+}
+
+static double _eon_wrapper_preferred_width_get(Enesim_Renderer *r)
+{
+	Eon_Wrapper *thiz;
+	Eina_Rectangle rect;
+
+	thiz = _eon_wrapper_get(r);
+	if (!thiz->wrapped_renderer) return 0;
+
+	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
+	return rect.w;
+}
+
+/* The min and max hint functions must check if the wrapped renderer supports
+ * the affine transformation, if so we can just return inifinite for both values
+ */
 
 static double _eon_wrapper_min_width_get(Enesim_Renderer *r)
 {
@@ -61,9 +140,9 @@ static double _eon_wrapper_max_width_get(Enesim_Renderer *r)
 	Eon_Wrapper *thiz;
 
 	thiz = _eon_wrapper_get(r);
-	if (!thiz->wrapped) return 0;
+	if (!thiz->wrapped) return DBL_MAX;
 
-	return 0;
+	return DBL_MAX;
 }
 
 static double _eon_wrapper_min_height_get(Enesim_Renderer *r)
@@ -81,9 +160,9 @@ static double _eon_wrapper_max_height_get(Enesim_Renderer *r)
 	Eon_Wrapper *thiz;
 
 	thiz = _eon_wrapper_get(r);
-	if (!thiz->wrapped) return 0;
+	if (!thiz->wrapped) return DBL_MAX;
 
-	return 0;
+	return DBL_MAX;
 }
 
 static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
@@ -100,11 +179,22 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 	return EINA_TRUE;
 }
 
+static void _eon_wrapper_initialize(Ender_Element *ender)
+{
+	/* we should register for every event and whenever one is received
+	 * just forward it to the wrapped element?
+	 */
+}
+
 static Eon_Element_Descriptor _descriptor = {
 	.min_width_get = _eon_wrapper_min_width_get,
 	.max_width_get = _eon_wrapper_max_width_get,
 	.min_height_get = _eon_wrapper_min_height_get,
 	.max_height_get = _eon_wrapper_max_height_get,
+	.preferred_width_get = _eon_wrapper_preferred_width_get,
+	.preferred_height_get = _eon_wrapper_preferred_height_get,
+	.sw_setup = _eon_wrapper_sw_setup,
+	.sw_cleanup = _eon_wrapper_sw_cleanup,
 	.setup = _eon_wrapper_setup,
 	.initialize = _eon_wrapper_initialize,
 	.free = _eon_wrapper_free,
@@ -135,7 +225,15 @@ static void _eon_wrapper_wrapped_set(Enesim_Renderer *r, Ender_Element *wrapped)
 	Eon_Wrapper *thiz;
 
 	thiz = _eon_wrapper_get(r);
+	/* FIXME check that the wrapped element does support the origin property */
+	//if (thiz->wrapped)
+	//	ender_event_listener_remove(thiz->wrapped, "Mutation", _wrapped_changed, r);
 	thiz->wrapped = wrapped;
+	thiz->wrapped_renderer = NULL;
+	if (!thiz->wrapped)
+		return;
+	thiz->wrapped_renderer = ender_element_renderer_get(wrapped);
+	ender_event_listener_add(thiz->wrapped, "Mutation", _wrapped_changed, r);
 }
 
 static void _eon_wrapper_wrapped_get(Enesim_Renderer *r, Ender_Element **wrapped)
