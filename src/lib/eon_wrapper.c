@@ -65,7 +65,7 @@ static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 	 * with the actual_x,y values
 	 */
 	enesim_renderer_boundings(r, &rect);
-	enesim_renderer_origin_set(thiz->wrapped, rect.x, rect.y);
+	enesim_renderer_origin_set(thiz->wrapped_renderer, rect.x, rect.y);
 	if (!enesim_renderer_sw_setup(thiz->wrapped_renderer))
 	{
 		printf("the theme can not setup yet\n");
