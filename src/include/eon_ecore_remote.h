@@ -46,7 +46,7 @@ typedef struct _Eon_Ecore_Remote_Data
 
 typedef enum _Eon_Ecore_Remote_Message
 {
-	EON_ECORE_REMOTE_CLIENT_SIZE = 0xe0400001,
+	EON_ECORE_REMOTE_CLIENT_NEW = 0xe0400001,
 	EON_ECORE_REMOTE_ELEMENT_NEW,
 	EON_ECORE_REMOTE_PROPERTY_SET,
 	EON_ECORE_REMOTE_PROPERTY_ADD,
@@ -97,7 +97,6 @@ typedef struct _Eon_Ecore_Remote_Property_Clear
 EAPI void eon_ecore_remote_init(void);
 EAPI Eon_Backend * eon_ecore_remote_new(void);
 EAPI void eon_ecore_remote_server_setup(void *srv);
-EAPI Eina_Bool eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, const Ender_Value *v);
 
 #endif
 

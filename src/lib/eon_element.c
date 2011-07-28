@@ -582,7 +582,6 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 	thiz = _eon_element_get(r);
 	thiz->changed = changed;
 	parent = ender_element_parent_get(e);
-	printf("element changed %s\n", ender_element_name_get(e));
 	if (parent)
 	{
 		eon_element_changed_set(parent, changed);

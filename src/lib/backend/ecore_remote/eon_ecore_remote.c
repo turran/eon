@@ -61,7 +61,6 @@ typedef struct _Eon_Ecore_Remote
 
 typedef struct _Eon_Ecore_Remote_Element
 {
-	Eon_Ecore_Remote *remote;
 	Ender_Element *e;
 	int id;
 } Eon_Ecore_Remote_Element;
@@ -78,11 +77,99 @@ struct {
 	{ EON_ECORE_REMOTE_DATA_TYPES, NULL },
 };
 
-#define INDEX(n) (n - EON_ECORE_REMOTE_CLIENT_SIZE)
-static Eet_Data_Descriptor *_descriptors[EON_ECORE_REMOTE_PROPERTY_CLEAR - EON_ECORE_REMOTE_CLIENT_SIZE + 1];
+#define INDEX(n) (n - EON_ECORE_REMOTE_CLIENT_NEW)
+static Eet_Data_Descriptor *_descriptors[EON_ECORE_REMOTE_PROPERTY_CLEAR - EON_ECORE_REMOTE_CLIENT_NEW + 1];
 static Eet_Data_Descriptor *_ddescriptors[EON_ECORE_REMOTE_DATA_TYPES];
 static Eet_Data_Descriptor *_unified;
 static Eet_Data_Descriptor *_data;
+
+static const char * _renderer_key = "_eon_ecore_remote";
+
+static Eon_Ecore_Remote_Element * _remote_element_ender_from(Ender_Element *e)
+{
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	return enesim_renderer_private_get(r, _renderer_key);
+}
+
+static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, Ender_Value *v)
+{
+	Ender_Container *container;
+	Ender_Value_Type type;
+
+	printf("setting value!!!\n");
+	container = ender_value_container_get(v);
+	type = ender_container_type_get(container);
+
+	if (ender_container_is_compound(container))
+	{
+		printf("compound!!\n");
+		return EINA_FALSE;
+	}
+	printf("type = %d\n", type);
+	data->type = EON_ECORE_REMOTE_DATA_UINT32;
+	data->value.duint32.u32 = 1;
+	switch (type)
+	{
+		case ENDER_BOOL:
+		data->type = EON_ECORE_REMOTE_DATA_UINT32;
+		data->value.duint32.u32 = ender_value_bool_get(v);
+		break;
+
+		case ENDER_UINT32:
+		data->type = EON_ECORE_REMOTE_DATA_UINT32;
+		data->value.duint32.u32 = ender_value_uint32_get(v);
+		break;
+
+		case ENDER_INT32:
+		data->type = EON_ECORE_REMOTE_DATA_UINT32;
+		data->value.duint32.u32 = ender_value_int32_get(v);
+		break;
+
+		case ENDER_DOUBLE:
+		data->type = EON_ECORE_REMOTE_DATA_DOUBLE;
+		data->value.ddouble.d = ender_value_double_get(v);
+		break;
+
+		case ENDER_COLOR:
+		data->type = EON_ECORE_REMOTE_DATA_UINT32;
+		data->value.duint32.u32 = ender_value_color_get(v);
+		break;
+
+		case ENDER_ARGB:
+		data->type = EON_ECORE_REMOTE_DATA_UINT32;
+		data->value.duint32.u32 = ender_value_argb_get(v);
+		break;
+
+		case ENDER_STRING:
+		data->type = EON_ECORE_REMOTE_DATA_STRING;
+		data->value.dstring.s = ender_value_string_get(v);
+		break;
+
+		case ENDER_ENDER:
+		{
+			Ender_Element *rel;
+			Eon_Ecore_Remote_Element *re;
+
+			data->type = EON_ECORE_REMOTE_DATA_UINT32;
+			rel = ender_value_ender_get(v);
+			if (!rel) return EINA_FALSE;
+			re = _remote_element_ender_from(rel);
+			if (!re) return EINA_FALSE;
+			data->value.duint32.u32 = re->id;
+		}
+		break;
+
+		case ENDER_MATRIX:
+		case ENDER_RENDERER:
+		case ENDER_SURFACE:
+		case ENDER_POINTER:
+		default:
+		break;
+	}
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                              Encode/Decode                                 *
  *----------------------------------------------------------------------------*/
@@ -142,10 +229,12 @@ Eina_Bool handler_server_del(void *data, int ev_type, void *ev)
  *----------------------------------------------------------------------------*/
 static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Ecore_Remote_Element *re = data;
-	Eon_Ecore_Remote *thiz = re->remote;
+	Eon_Ecore_Remote *thiz = data;
+	Eon_Ecore_Remote_Element *re;
 	Ender_Event_Mutation *ev = event_data;
 
+	re = _remote_element_ender_from(e);
+	printf("changing property %s\n", ev->name);
 	switch (ev->type)
 	{
 		case ENDER_EVENT_MUTATION_SET:
@@ -156,7 +245,7 @@ static void _element_changed(Ender_Element *e, const char *event_name, void *eve
 			evs.id = re->id;
 			evs.name = ev->name;
 			evs.value = &rdata;
-			eon_ecore_remote_data_from_value(&rdata, ev->value);
+			_eon_ecore_remote_data_from_value(&rdata, ev->value);
 			eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_PROPERTY_SET, &evs, 0, 0);
 		}
 		break;
@@ -169,6 +258,7 @@ static void _element_changed(Ender_Element *e, const char *event_name, void *eve
 			evs.id = re->id;
 			evs.name = ev->name;
 			evs.value = &rdata;
+			_eon_ecore_remote_data_from_value(&rdata, ev->value);
 			eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_PROPERTY_ADD, &evs, 0, 0);
 		}
 		break;
@@ -199,31 +289,48 @@ static void _element_changed(Ender_Element *e, const char *event_name, void *eve
 /*----------------------------------------------------------------------------*
  *                               Ender calbacks                               *
  *----------------------------------------------------------------------------*/
-static void _constructor_callback(Ender_Element *e, void *data)
+static void _global_constructor_callback(Ender_Element *e, void *data)
 {
-	Eon_Ecore_Remote *thiz;
 	Eon_Ecore_Remote_Element *re;
-	Eon_Ecore_Remote_Element_New new;
 	Enesim_Renderer *r;
-	Eix_Error err;
-	const char *name;
 	static int _id = 0;
 
-	thiz = data;
 	r = ender_element_renderer_get(e);
 	if (!eon_is_element(r))
+	{
+		printf("is not an element\n");
 		return;
-	name = ender_element_name_get(e);
+	}
 
 	re = calloc(1, sizeof(Eon_Ecore_Remote_Element));
 	re->id = ++_id;
 	re->e = e;
-	re->remote = thiz;
+	enesim_renderer_private_set(r, _renderer_key, re);
+}
+
+static void _client_constructor_callback(Ender_Element *e, void *data)
+{
+	Eon_Ecore_Remote *thiz;
+	Eon_Ecore_Remote_Element *re;
+	Eon_Ecore_Remote_Element_New new;
+	Eix_Error err;
+	const char *name;
+
+	thiz = data;
+
+	re = _remote_element_ender_from(e);
+	if (!re)
+	{
+		printf("no remote ender found\n");
+		return;
+	}
+
+	name = ender_element_name_get(e);
 	/* send the 'new' event */
 	new.id = re->id;
 	new.name = name;
 	err = eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_ELEMENT_NEW, &new, 0, 0);
-	ender_event_listener_add(e, "Mutation", _element_changed, re);
+	ender_event_listener_add(e, "Mutation", _element_changed, thiz);
 }
 /*----------------------------------------------------------------------------*
  *                           Eon backend interface                            *
@@ -232,10 +339,20 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 {
 	Eix_Server *srv;
 	Eon_Ecore_Remote *thiz;
-	Eon_Ecore_Remote_Client_New client_size;
+	Eon_Ecore_Remote_Element *re;
+	Eon_Ecore_Remote_Client_New client_new;
 
 	ecore_init();
 	eix_init();
+
+	/* handle the common initializer */
+	if (!_initialized++)
+	{
+		/* register the messages */
+		eon_ecore_remote_init();
+		/* add our ender creator callback */
+		ender_element_new_listener_add(_global_constructor_callback, NULL);
+	}
 
 	/* handle the ipc mechanism */
 	srv = eix_connect("eon-remote", 0);
@@ -252,32 +369,40 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 	/* FIXME something is wrong here as every element created with eon
 	 * will be created on the server too ...
 	 */
-	if (!_initialized++)
-	{
-		/* add our ender creator callback */
-		ender_element_new_listener_add(_constructor_callback, thiz);
-		/* register the messages */
-		eon_ecore_remote_init();
-	}
+	ender_element_new_listener_add(_client_constructor_callback, thiz);
 	thiz->srv = srv;
 	data->prv = thiz;
 
 	eon_ecore_remote_server_setup(thiz->srv);
-	/* send the size of the client */ 
-	client_size.width = width;
-	client_size.height = height;
-	eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_CLIENT_SIZE, &client_size, 0, 0);
+	/* FIXME once the Eon_Window is refactored to be an Ender itself
+	 * or at least be able to set the layout *after* the creation
+	 * we should remove the following lines
+	 */
+	_global_constructor_callback(layout, NULL);
+	_client_constructor_callback(layout, thiz);
+	/* send the size of the client */
+	client_new.width = width;
+	client_new.height = height;
+	re = _remote_element_ender_from(layout);
+	client_new.layout_id = re->id;
+	eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_CLIENT_NEW, &client_new, 0, 0);
 
 	return EINA_TRUE;
 }
 
 static void _remote_cleanup(Eon_Backend_Data *data)
 {
+	Eon_Ecore_Remote *thiz;
+
+
+	thiz = data->prv;
+	if (_initialized == 1)
+		ender_element_new_listener_remove(_global_constructor_callback, NULL);
+	ender_element_new_listener_remove(_client_constructor_callback, thiz);
+	_initialized--;
+
 	eix_shutdown();
 	ecore_shutdown();
-	if (_initialized == 1)
-		ender_element_new_listener_remove(_constructor_callback, NULL);
-	_initialized--;
 }
 
 static Eon_Backend _backend = {
@@ -305,12 +430,12 @@ EAPI void eon_ecore_remote_server_setup(void *srv)
 	int i;
 	int limit;
 
-	limit = EON_ECORE_REMOTE_PROPERTY_CLEAR - EON_ECORE_REMOTE_CLIENT_SIZE + 1;
+	limit = EON_ECORE_REMOTE_PROPERTY_CLEAR - EON_ECORE_REMOTE_CLIENT_NEW + 1;
 
 	for (i = 0; i < limit; i++)
 	{
-		printf("adding messages %d %p\n", EON_ECORE_REMOTE_CLIENT_SIZE + i, srv);
-		eix_server_message_add(srv, EON_ECORE_REMOTE_CLIENT_SIZE + i, _descriptors[i], 0);
+		printf("adding messages %d %p\n", EON_ECORE_REMOTE_CLIENT_NEW + i, srv);
+		eix_server_message_add(srv, EON_ECORE_REMOTE_CLIENT_NEW + i, _descriptors[i], 0);
 	}
 #else
 	return;
@@ -349,7 +474,7 @@ EAPI void eon_ecore_remote_init(void)
 	/* string */
 	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Data_String", sizeof(Eon_Ecore_Remote_Data_String));
 	edd = eet_data_descriptor_stream_new(&eddc);
-	_ddescriptors[EON_ECORE_REMOTE_DATA_DOUBLE] = edd;
+	_ddescriptors[EON_ECORE_REMOTE_DATA_STRING] = edd;
 	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Data_String, "s", s, EET_T_INLINED_STRING);
 	/* list of datas */
 	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Data_List", sizeof(Eon_Ecore_Remote_Data_List));
@@ -358,6 +483,7 @@ EAPI void eon_ecore_remote_init(void)
 	EET_DATA_DESCRIPTOR_ADD_LIST(edd, Eon_Ecore_Remote_Data_List, "list", list, _data);
 
 	EET_DATA_DESCRIPTOR_ADD_MAPPING(_unified, "Eon_Ecore_Remote_Data_Uint32", _ddescriptors[EON_ECORE_REMOTE_DATA_UINT32]);
+	EET_DATA_DESCRIPTOR_ADD_MAPPING(_unified, "Eon_Ecore_Remote_Data_String", _ddescriptors[EON_ECORE_REMOTE_DATA_STRING]);
 	EET_DATA_DESCRIPTOR_ADD_MAPPING(_unified, "Eon_Ecore_Remote_Data_Double", _ddescriptors[EON_ECORE_REMOTE_DATA_DOUBLE]);
 	EET_DATA_DESCRIPTOR_ADD_MAPPING(_unified, "Eon_Ecore_Remote_Data_List", _ddescriptors[EON_ECORE_REMOTE_DATA_LIST]);
 
@@ -365,7 +491,7 @@ EAPI void eon_ecore_remote_init(void)
 	/* client size */
 	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Client_New", sizeof(Eon_Ecore_Remote_Client_New));
 	edd = eet_data_descriptor_stream_new(&eddc);
-	_descriptors[INDEX(EON_ECORE_REMOTE_CLIENT_SIZE)] = edd;
+	_descriptors[INDEX(EON_ECORE_REMOTE_CLIENT_NEW)] = edd;
 	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Client_New, "width", width, EET_T_UINT);
 	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Client_New, "height", height, EET_T_UINT);
 	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eon_Ecore_Remote_Client_New, "layout_id", layout_id, EET_T_UINT);
@@ -408,70 +534,4 @@ EAPI void eon_ecore_remote_init(void)
 }
 
 
-EAPI Eina_Bool eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, const Ender_Value *v)
-{
-	Ender_Container *container;
-	Ender_Value_Type type;
 
-	printf("setting value!!!\n");
-	container = ender_value_container_get(v);
-	type = ender_container_type_get(container);
-
-	if (ender_container_is_compound(container))
-	{
-		printf("compound!!\n");
-		return EINA_FALSE;
-	}
-	printf("type = %d\n", type);
-	data->type = EON_ECORE_REMOTE_DATA_UINT32;
-	data->value.duint32.u32 = 1;
-	switch (type)
-	{
-		case ENDER_BOOL:
-		data->type = EON_ECORE_REMOTE_DATA_UINT32;
-		data->value.duint32.u32 = ender_value_bool_get(v);
-		break;
-
-		case ENDER_UINT32:
-		data->type = EON_ECORE_REMOTE_DATA_UINT32;
-		data->value.duint32.u32 = ender_value_uint32_get(v);
-		break;
-
-		case ENDER_INT32:
-		data->type = EON_ECORE_REMOTE_DATA_UINT32;
-		data->value.duint32.u32 = ender_value_int32_get(v);
-		break;
-
-		case ENDER_DOUBLE:
-		data->type = EON_ECORE_REMOTE_DATA_DOUBLE;
-		data->value.ddouble.d = ender_value_double_get(v);
-		break;
-
-		case ENDER_COLOR:
-		data->type = EON_ECORE_REMOTE_DATA_UINT32;
-		data->value.duint32.u32 = ender_value_color_get(v);
-		break;
-
-		case ENDER_ARGB:
-		data->type = EON_ECORE_REMOTE_DATA_UINT32;
-		data->value.duint32.u32 = ender_value_argb_get(v);
-		break;
-
-		case ENDER_STRING:
-		data->type = EON_ECORE_REMOTE_DATA_STRING;
-		data->value.dstring.s = ender_value_string_get(v);
-		break;
-
-		case ENDER_ENDER:
-		printf("ender case!!!!!!!\n");
-		break;
-
-		case ENDER_MATRIX:
-		case ENDER_RENDERER:
-		case ENDER_SURFACE:
-		case ENDER_POINTER:
-		default:
-		break;
-	}
-	return EINA_TRUE;
-}
