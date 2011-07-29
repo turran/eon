@@ -12,8 +12,8 @@ int main(int argc, char **argv)
 	eon_init();
 	ecore_init();
 
-	backend = eon_ecore_remote_new();
-	//backend = eon_ecore_sdl_new();
+	//backend = eon_ecore_remote_new();
+	backend = eon_ecore_sdl_new();
 
 	layout = eon_stack_new();
 	eon_element_width_set(layout, 320.0);

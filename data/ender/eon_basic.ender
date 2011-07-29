@@ -35,4 +35,8 @@ namespace "eon" {
 	class "basic_image" : "theme_image" {
 
 	};
+
+	class "basic_frame" : "theme_frame" {
+
+	};
 };

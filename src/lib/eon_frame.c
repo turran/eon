@@ -47,15 +47,7 @@ static void _eon_frame_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _eon_frame_initialize(Ender_Element *e)
-{
-	/* register every event needed for a frame
-	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
-	 */
-}
-
 static Eon_Container_Descriptor _descriptor = {
-	.initialize = _eon_frame_initialize,
 	.free = _eon_frame_free,
 	.name = "frame",
 };
@@ -108,7 +100,7 @@ static void _eon_frame_description_set(Enesim_Renderer *r, Ender_Element *e)
  */
 EAPI Ender_Element * eon_frame_new(void)
 {
-	return ender_element_new("frame");
+	return ender_element_new_with_namespace("frame", "eon");
 }
 
 /**

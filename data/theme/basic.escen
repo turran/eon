@@ -126,6 +126,7 @@ escen {
 	};
 
 	basic_frame "frame" {
-
+		default {
+		};
 	};
 };

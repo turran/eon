@@ -47,4 +47,8 @@ namespace "eon" {
 	abstract "theme_image" : "theme_widget" {
 		surface "source";
 	};
+
+	abstract "theme_frame" : "theme_container" {
+		renderer "description";
+	};
 };

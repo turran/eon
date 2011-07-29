@@ -72,6 +72,7 @@ static void _register_enders(void)
 	eon_checkbox_init();
 	eon_progressbar_init();
 	eon_scrollview_init();
+	eon_frame_init();
 }
 /*============================================================================*
  *                                 Global                                     *

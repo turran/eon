@@ -25,6 +25,7 @@ typedef struct _Frame
 {
 	/* properties */
 	/* private */
+	Enesim_Renderer *description_area;
 	Enesim_Renderer *rectangle;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
@@ -63,6 +64,8 @@ static void _frame_update_rectangle(Enesim_Renderer *r)
 	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
+	enesim_renderer_rectangle_width_set(thiz->description_area, width);
+	enesim_renderer_rectangle_height_set(thiz->description_area, height);
 	/* always center */
 	enesim_renderer_origin_set(thiz->content, horizontal_padding,
 			vertical_padding);
@@ -109,6 +112,7 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
 		enesim_renderer_compound_layer_add(thiz->compound, content);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->description_area);
 		/* FIXME at the cleanup we should restore this */
 		enesim_renderer_rop_set(content, ENESIM_BLEND);
 		thiz->content = content;
@@ -183,12 +187,22 @@ EAPI Enesim_Renderer * eon_basic_frame_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
+	r = enesim_renderer_rectangle_new();
+	if (!r) goto description_area_err;
+	thiz->description_area = r;
+	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
+	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
+	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
+	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+
 	r = eon_theme_frame_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
 
 renderer_err:
+	enesim_renderer_delete(thiz->description_area);
+description_area_err:
 	enesim_renderer_delete(thiz->rectangle);
 rectangle_err:
 	enesim_renderer_delete(thiz->compound);

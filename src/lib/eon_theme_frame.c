@@ -38,6 +38,7 @@
 typedef struct _Eon_Theme_Frame
 {
 	EINA_MAGIC;
+	Enesim_Renderer *description;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Frame;
@@ -119,5 +120,30 @@ EAPI void * eon_theme_frame_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_theme_frame_get(r);
 	return thiz->data;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_frame_description_set(Enesim_Renderer *r, Enesim_Renderer *description)
+{
+	Eon_Theme_Frame *thiz;
+
+	thiz = _eon_theme_frame_get(r);
+	thiz->description = description;
+}
+
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_frame_description_get(Enesim_Renderer *r, Enesim_Renderer **description)
+{
+	Eon_Theme_Frame *thiz;
+
+	thiz = _eon_theme_frame_get(r);
+	*description = thiz->description;
 }
 
