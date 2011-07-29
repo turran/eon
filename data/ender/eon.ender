@@ -12,10 +12,11 @@ namespace "eon" {
 		double "actual_height";
 		double "preferred_width";
 		double "preferred_height";
+		bool "force_redraw";
 	};
 
 	abstract "widget" : "element" {
-
+		string "theme";
 	};
 
 	abstract "layout" : "widget" {

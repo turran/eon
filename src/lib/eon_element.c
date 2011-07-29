@@ -17,6 +17,17 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * - All this "changed" is not completely correct, same thing happens with the force_redraw
+ * as it must be just a signal from the dev to inform that this element should redraw, not
+ * a bool property
+ * - A way to avoid all this mess of renderers/enders on the global, local and API functions
+ * is to store them all on the Eon_Element struct and add the opaque handler of such struct
+ * globally. Then add functions to get this type from renderers or enders, and change all the
+ * global/local functions to use that. So the API will remain with enders only and the global
+ * and local functions with the opaque handler
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -238,6 +249,22 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 	thiz = _eon_element_get(r);
 	if (thiz->preferred_height_get)
 		*height = thiz->preferred_height_get(r);
+}
+
+static void _eon_element_force_redraw_set(Enesim_Renderer *r, Eina_Bool force)
+{
+	Eon_Element *thiz;
+	Ender_Element *e;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	e = ender_element_renderer_from(r);
+	if (!e)
+	{
+		thiz->changed = force;
+		return;
+	}
+	eon_element_changed_set(e, force);
 }
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
@@ -588,6 +615,7 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 	}
 }
 
+#define _eon_element_force_redraw_get NULL
 #define _eon_element_actual_width_set NULL
 #define _eon_element_actual_height_set NULL
 #define _eon_element_actual_x_set NULL
@@ -758,4 +786,12 @@ EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 	ender_element_value_get(e, "max_height", height, NULL);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_force_redraw_set(Ender_Element *e, Eina_Bool force)
+{
+	ender_element_value_get(e, "force_redraw", force, NULL);
+}
 

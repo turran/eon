@@ -27,6 +27,7 @@ typedef struct _Eon_Widget
 {
 	EINA_MAGIC
 	/* properties */
+	char *theme;
 	/* private */
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
@@ -354,6 +355,28 @@ renderer_err:
 	return NULL;
 }
 
+void _eon_widget_theme_set(Enesim_Renderer *r, const char *file)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	thiz->theme = strdup(file);
+	/* remove the theme already associated with the element
+	 * and set this, get the correct escen_ender and set
+	 * the current state
+	 */
+}
+
+void _eon_widget_theme_get(Enesim_Renderer *r, const char **file)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	*file = thiz->theme;
+}
+
+#include "eon_generated_widget.c"
+
 void * eon_widget_data_get(Enesim_Renderer *r)
 {
 	Eon_Widget *e;
@@ -363,8 +386,6 @@ void * eon_widget_data_get(Enesim_Renderer *r)
 
 	return e->data;
 }
-
-#include "eon_generated_widget.c"
 
 void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...)
 {
@@ -479,10 +500,7 @@ EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_widget_theme_set(Enesim_Renderer *r, const char *file)
+EAPI void eon_widget_theme_set(Ender_Element *e, const char *file)
 {
-	/* remove the theme already associated with the element
-	 * and set this, get the correct escen_ender and set
-	 * the current state
-	 */
+	ender_element_value_get(e, "theme", file, NULL);
 }

@@ -22,6 +22,7 @@
 /**
  * @mainpage Eon
  * @section intro Introduction
+ * Eon is a framework for building rich graphical applications
  *
  * @section dependencies Dependencies
  * - Eina
