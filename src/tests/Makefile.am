@@ -6,6 +6,7 @@ eon_test_button_image \
 eon_test_canvas \
 eon_test_checkbox \
 eon_test_image \
+eon_test_frame \
 eon_test_label \
 eon_test_progressbar \
 eon_test_radio \
@@ -61,4 +62,9 @@ eon_test_wrapper_SOURCES = eon_test_wrapper.c
 eon_test_wrapper_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_wrapper_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_wrapper_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_frame_SOURCES = eon_test_frame.c
+eon_test_frame_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_frame_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_frame_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 

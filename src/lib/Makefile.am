@@ -15,6 +15,7 @@ eon_button.c \
 eon_canvas.c \
 eon_container.c \
 eon_element.c \
+eon_frame.c \
 eon_image.c \
 eon_input.c \
 eon_label.c \
@@ -30,6 +31,7 @@ eon_theme.c \
 eon_theme_checkbox.c \
 eon_theme_container.c \
 eon_theme_button.c \
+eon_theme_frame.c \
 eon_theme_image.c \
 eon_theme_label.c \
 eon_theme_layout.c \

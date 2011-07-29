@@ -16,20 +16,32 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_THEME_FRAME_H_
+#define _EON_THEME_FRAME_H_
 
+/**
+ * @{
+ */
+typedef struct _Eon_Theme_Frame_Descriptor
+{
+	/* container needed functions */
+	Eon_Theme_Container_Content_Position_Get content_position_get;
+	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
+	/* renderer needed functions */
+	Enesim_Renderer_Sw_Setup sw_setup;
+	Enesim_Renderer_Sw_Cleanup sw_cleanup;
+	Enesim_Renderer_Delete free;
+} Eon_Theme_Frame_Descriptor;
 
-#include "eon_theme_widget.h"
-#include "eon_theme_container.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_frame.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollview.h"
+EAPI Enesim_Renderer * eon_theme_frame_new(Eon_Theme_Frame_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_frame(Enesim_Renderer *r);
+EAPI void * eon_theme_frame_data_get(Enesim_Renderer *r);
 
+/**
+ * @}
+ */
 #endif
+
+

@@ -502,5 +502,5 @@ EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r)
  */
 EAPI void eon_widget_theme_set(Ender_Element *e, const char *file)
 {
-	ender_element_value_get(e, "theme", file, NULL);
+	ender_element_value_set(e, "theme", file, NULL);
 }
