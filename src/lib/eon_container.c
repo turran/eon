@@ -56,12 +56,18 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 	thiz = _eon_container_get(r);
 	if (!thiz) return;
 
-	thiz->content = content;
 	content_r = ender_element_renderer_get(content);
 	if (!eon_is_element(content_r))
 		return;
+
+	thiz->content = content;
+	/* FIXME what should we do here? not every element has a theme associated
+	 * so this will break whenever we add a wrapper for example on a button
+	 */
 	content_t = eon_widget_theme_renderer_get(content_r);
 	eon_widget_property_set(r, "content", content_t, NULL);
+	/* FIXME this should be the correct code */
+	//eon_widget_property_set(r, "content", content_r, NULL);
 }
 
 static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)
@@ -179,6 +185,7 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 		Enesim_Renderer *content_r;
 		Enesim_Renderer *theme_r;
 		double aw, ah;
+		double ax, ay;
 		double dw = 0;
 		double dh = 0;
 		double cx = 0;
@@ -189,6 +196,8 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 		/* set the size and position */
 		eon_element_actual_width_get(e, &aw);
 		eon_element_actual_height_get(e, &ah);
+		eon_element_actual_position_get(r, &ax, &ay);
+		printf("current geometry %g %g %g %g\n", aw, ah, ax, ay);
 		eon_theme_container_decoration_size_get(theme_r, &dw, &dh);
 		printf("decoration %g %g\n", dw, dh);
 		eon_element_actual_size_set(content_r, aw - dw, ah - dh);
@@ -197,8 +206,9 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 			printf("impossible to setup the content\n");
 			return EINA_FALSE;
 		}
-		printf("setting size %g %g and position %g %g\n", aw - dw, ah - dh, cx, cy);
 		eon_theme_container_content_position_get(theme_r, &cx, &cy);
+		printf("setting size %g %g and position %g %g (%g %g)\n", aw - dw, ah - dh, ax + cx, ay + cy, cx, cy);
+		//eon_element_actual_position_set(content_r, ax + cx, ay + cy);
 		eon_element_actual_position_set(content_r, cx, cy);
 	}
 	if (thiz->setup)

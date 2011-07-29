@@ -83,8 +83,8 @@ static double _button_decoration_height_get(Enesim_Renderer *r)
 static void _button_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
 		double *x, double *y)
 {
-	*x = 0;
-	*y = 0;
+	*x = horizontal_padding;
+	*y = vertical_padding;
 }
 
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)

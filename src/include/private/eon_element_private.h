@@ -51,6 +51,7 @@ void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height
 void eon_element_actual_size_get(Enesim_Renderer *r, double *width, double *height);
 void eon_element_actual_width_set(Enesim_Renderer *r, double width);
 void eon_element_actual_height_set(Enesim_Renderer *r, double height);
+void eon_element_actual_position_get(Enesim_Renderer *r, double *x, double *y);
 void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y);
 
 Eina_Bool eon_element_setup(Ender_Element *e);

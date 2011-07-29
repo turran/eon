@@ -573,6 +573,15 @@ void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
 		thiz->actual_y_set(r, y);
 }
 
+void eon_element_actual_position_get(Enesim_Renderer *r, double *x, double *y)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (x) *x = thiz->actual_x;
+	if (y) *y = thiz->actual_y;
+}
+
 void eon_element_real_width_get(Ender_Element *e, double *width)
 {
 	Enesim_Renderer *r;
