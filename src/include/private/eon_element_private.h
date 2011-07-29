@@ -14,11 +14,13 @@ typedef void (*Eon_Element_Actual_X_Set)(Enesim_Renderer *r, double x);
 typedef void (*Eon_Element_Actual_Y_Set)(Enesim_Renderer *r, double y);
 typedef void (*Eon_Element_Actual_Width_Set)(Enesim_Renderer *r, double width);
 typedef void (*Eon_Element_Actual_Height_Set)(Enesim_Renderer *r, double height);
+typedef Enesim_Renderer* (*Eon_Element_Renderer_Get)(Ender_Element *e);
 
 typedef struct _Eon_Element_Descriptor
 {
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Min_Width_Get min_width_get;
 	Eon_Element_Max_Width_Get max_width_get;
 	Eon_Element_Min_Height_Get min_height_get;
@@ -59,5 +61,7 @@ void eon_element_real_width_get(Ender_Element *e, double *width);
 void eon_element_real_height_get(Ender_Element *e, double *height);
 void eon_element_changed_set(Ender_Element *e, Eina_Bool changed);
 Eina_Bool eon_element_has_changed(Ender_Element *e);
+
+Enesim_Renderer * eon_element_renderer_get(Ender_Element *e);
 
 #endif

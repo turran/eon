@@ -61,13 +61,8 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 		return;
 
 	thiz->content = content;
-	/* FIXME what should we do here? not every element has a theme associated
-	 * so this will break whenever we add a wrapper for example on a button
-	 */
-	content_t = eon_widget_theme_renderer_get(content_r);
+	content_t = eon_element_renderer_get(content);
 	eon_widget_property_set(r, "content", content_t, NULL);
-	/* FIXME this should be the correct code */
-	//eon_widget_property_set(r, "content", content_r, NULL);
 }
 
 static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)

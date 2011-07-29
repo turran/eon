@@ -52,6 +52,7 @@ typedef struct _Eon_Element
 	/* function pointers */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Renderer_Get renderer_get;
 	Enesim_Renderer_Delete free;
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -459,6 +460,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	/* Set the function pointers */
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
+	thiz->renderer_get = descriptor->renderer_get;
 	thiz->free = descriptor->free;
 	/* min */
 	thiz->min_width_get = descriptor->min_width_get;
@@ -622,6 +624,17 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 	{
 		eon_element_changed_set(parent, changed);
 	}
+}
+
+Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
+{
+	Eon_Element *thiz;
+
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+	return thiz->renderer_get(e);
 }
 
 #define _eon_element_force_redraw_get NULL

@@ -159,6 +159,16 @@ static Eina_Bool _eon_widget_setup(Ender_Element *ender)
 	return EINA_TRUE;
 }
 
+static Enesim_Renderer * _eon_widget_renderer_get(Ender_Element *ender)
+{
+	Enesim_Renderer *r;
+	Eon_Widget *thiz;
+
+	r = ender_element_renderer_get(ender);
+	thiz = _eon_widget_get(r);
+	return thiz->theme_renderer;
+}
+
 static double _eon_widget_min_height_get(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
@@ -325,6 +335,7 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
+	pdescriptor.renderer_get = _eon_widget_renderer_get;
 	pdescriptor.min_width_get = _eon_widget_min_width_get;
 	pdescriptor.max_width_get = _eon_widget_max_width_get;
 	pdescriptor.min_height_get = _eon_widget_min_height_get;
