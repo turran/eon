@@ -16,19 +16,21 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_CONTAINER_H_
-#define _EON_THEME_CONTAINER_H_
+#ifndef _EON_THEME_BUTTON_BASE_H_
+#define _EON_THEME_BUTTON_BASE_H_
 
 /**
  * @{
  */
 
-EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *content);
-EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **content);
+typedef double (*Eon_Theme_Button_Base_Decoration_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Button_Base_Decoration_Height_Get)(Enesim_Renderer *r);
+typedef void (*Eon_Theme_Button_Base_Content_Position_Get)(Enesim_Renderer *r, Enesim_Renderer *content, double *x, double *y);
 
 /**
  * @}
  */
 
 #endif
+
 

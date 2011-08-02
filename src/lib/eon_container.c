@@ -88,86 +88,7 @@ static void _eon_container_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
-static double _eon_container_min_width_get(Enesim_Renderer *r)
-{
-	Eon_Container *thiz;
-	Enesim_Renderer *theme_r;
-	double v = 0;
-	double min;
-
-	thiz = _eon_container_get(r);
-	if (!thiz->content) return v;
-
-	eon_element_min_width_get(thiz->content, &min);
-	v += min;
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_container_decoration_size_get(theme_r, &min, NULL);
-	v += min;
-
-	return v;
-}
-
-static double _eon_container_max_width_get(Enesim_Renderer *r)
-{
-	Eon_Container *thiz;
-	Enesim_Renderer *theme_r;
-	double v = 0;
-	double max;
-
-	thiz = _eon_container_get(r);
-	if (!thiz->content) return v;
-
-	eon_element_max_width_get(thiz->content, &max);
-	v += max;
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_container_decoration_size_get(theme_r, &max, NULL);
-	v += max;
-
-	return v;
-}
-
-static double _eon_container_min_height_get(Enesim_Renderer *r)
-{
-	Eon_Container *thiz;
-	Enesim_Renderer *theme_r;
-	double v = 0;
-	double min;
-
-	thiz = _eon_container_get(r);
-	if (!thiz->content) return v;
-
-	eon_element_min_height_get(thiz->content, &min);
-	v += min;
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_container_decoration_size_get(theme_r, NULL, &min);
-	v += min;
-
-	return v;
-}
-
-static double _eon_container_max_height_get(Enesim_Renderer *r)
-{
-	Eon_Container *thiz;
-	Enesim_Renderer *theme_r;
-	double v = 0;
-	double max;
-
-	thiz = _eon_container_get(r);
-	if (!thiz->content) return v;
-
-	eon_element_max_height_get(thiz->content, &max);
-	v += max;
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_container_decoration_size_get(theme_r, NULL, &max);
-	v += max;
-
-	return v;
-}
-
+#if 0
 static Eina_Bool _eon_container_setup(Ender_Element *e)
 {
 	Eon_Container *thiz;
@@ -193,7 +114,7 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 		eon_element_actual_height_get(e, &ah);
 		eon_element_actual_position_get(r, &ax, &ay);
 		printf("current geometry %g %g %g %g\n", aw, ah, ax, ay);
-		eon_theme_container_decoration_size_get(theme_r, &dw, &dh);
+		eon_theme_button_base_decoration_size_get(theme_r, &dw, &dh);
 		printf("decoration %g %g\n", dw, dh);
 		eon_element_actual_size_set(content_r, aw - dw, ah - dh);
 		if (!eon_element_setup(thiz->content))
@@ -201,7 +122,7 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 			printf("impossible to setup the content\n");
 			return EINA_FALSE;
 		}
-		eon_theme_container_content_position_get(theme_r, &cx, &cy);
+		eon_theme_button_base_content_position_get(theme_r, &cx, &cy);
 		printf("setting size %g %g and position %g %g (%g %g)\n", aw - dw, ah - dh, ax + cx, ay + cy, cx, cy);
 		//eon_element_actual_position_set(content_r, ax + cx, ay + cy);
 		eon_element_actual_position_set(content_r, cx, cy);
@@ -211,6 +132,7 @@ static Eina_Bool _eon_container_setup(Ender_Element *e)
 
 	return EINA_TRUE;
 }
+#endif
 
 static void _eon_container_free(Enesim_Renderer *r)
 {
@@ -254,12 +176,12 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
-	pdescriptor.setup = _eon_container_setup;
+	pdescriptor.setup = descriptor->setup; //_eon_container_setup;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.min_width_get = _eon_container_min_width_get;
-	pdescriptor.max_width_get = _eon_container_max_width_get;
-	pdescriptor.min_height_get = _eon_container_min_height_get;
-	pdescriptor.max_height_get = _eon_container_max_height_get;
+	pdescriptor.min_width_get = descriptor->min_width_get;
+	pdescriptor.max_width_get = descriptor->max_width_get;
+	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.max_height_get = descriptor->max_height_get;
 
 	r = eon_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

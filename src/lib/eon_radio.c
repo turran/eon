@@ -32,7 +32,7 @@ static inline Eon_Radio * _eon_radio_get(Enesim_Renderer *r)
 {
 	Eon_Radio *thiz;
 
-	thiz = eon_container_data_get(r);
+	thiz = eon_button_base_data_get(r);
 	return thiz;
 }
 
@@ -58,7 +58,7 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
 	/* TODO trigger the selected event */
 }
 /*----------------------------------------------------------------------------*
- *                     The Eon's container interface                          *
+ *                     The Eon's button_base interface                          *
  *----------------------------------------------------------------------------*/
 static void _eon_radio_initialize(Ender_Element *ender)
 {
@@ -66,7 +66,7 @@ static void _eon_radio_initialize(Ender_Element *ender)
 	ender_event_listener_add(ender, "MouseClick", _radio_mouse_click, NULL);
 }
 
-static Eon_Container_Descriptor _descriptor = {
+static Eon_Button_Base_Descriptor _descriptor = {
 	.initialize = _eon_radio_initialize,
 	.name = "radio",
 };
@@ -81,7 +81,7 @@ static Enesim_Renderer * _eon_radio_new(void)
 	thiz = calloc(1, sizeof(Eon_Radio));
 	if (!thiz) return NULL;
 
-	r = eon_container_new(&_descriptor, thiz);
+	r = eon_button_base_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

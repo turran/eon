@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libeon.la
 
 libeon_la_SOURCES = \
+eon_button_base.c \
 eon_button.c \
 eon_canvas.c \
 eon_container.c \
@@ -31,6 +32,7 @@ eon_theme.c \
 eon_theme_checkbox.c \
 eon_theme_container.c \
 eon_theme_button.c \
+eon_theme_button_base.c \
 eon_theme_frame.c \
 eon_theme_image.c \
 eon_theme_label.c \

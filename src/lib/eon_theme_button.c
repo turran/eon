@@ -46,7 +46,7 @@ static inline Eon_Theme_Button * _eon_theme_button_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Button *thiz;
 
-	thiz = eon_theme_container_data_get(r);
+	thiz = eon_theme_button_base_data_get(r);
 	EON_THEME_BUTTON_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
@@ -74,7 +74,7 @@ EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Button_Descriptor *descrip
 		void *data)
 {
 	Eon_Theme_Button *thiz;
-	Eon_Theme_Container_Descriptor pdescriptor;
+	Eon_Theme_Button_Base_Descriptor pdescriptor;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Button));
@@ -89,7 +89,7 @@ EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Button_Descriptor *descrip
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_button_free;
 
-	r = eon_theme_container_new(&pdescriptor, thiz);
+	r = eon_theme_button_base_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

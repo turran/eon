@@ -82,10 +82,12 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 	EINA_MAGIC_SET(thiz, EON_THEME_SCROLLVIEW_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
-	
+
+#if THEME_NEW	
 	pdescriptor.content_position_get = descriptor->content_position_get;
 	pdescriptor.decoration_width_get = descriptor->decoration_width_get;
 	pdescriptor.decoration_height_get = descriptor->decoration_height_get;
+#endif
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_scrollview_free;

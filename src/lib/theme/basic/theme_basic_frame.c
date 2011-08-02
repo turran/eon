@@ -58,7 +58,6 @@ static void _frame_update_rectangle(Enesim_Renderer *r)
 	double width, height;
 
 	thiz = _frame_get(r);
-	/* add 6px of padding to the text */
 	/* set the size of the rectangle based on the size of the string */
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
@@ -86,8 +85,8 @@ static double _frame_decoration_height_get(Enesim_Renderer *r)
 static void _frame_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
 		double *x, double *y)
 {
-	*x = 0;
-	*y = 0;
+	*x = horizontal_padding;
+	*y = vertical_padding;
 }
 
 static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -152,9 +151,6 @@ static void _frame_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Frame_Descriptor _descriptor = {
-	.content_position_get = _frame_content_position_get,
-	.decoration_width_get = _frame_decoration_width_get,
-	.decoration_height_get = _frame_decoration_height_get,
 	.sw_setup = _frame_setup,
 	.sw_cleanup = _frame_cleanup,
 	.free = _frame_free,

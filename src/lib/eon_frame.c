@@ -47,8 +47,23 @@ static void _eon_frame_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static void _eon_frame_setup(Ender_Element *e)
+{
+	Eon_Frame *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_frame_get(r);
+	if (!thiz->description)
+	{
+		return EINA_FALSE;
+	}
+	return eon_element_setup(thiz->description);
+}
+
 static Eon_Container_Descriptor _descriptor = {
 	.free = _eon_frame_free,
+	.setup = _eon_frame_setup,
 	.name = "frame",
 };
 /*----------------------------------------------------------------------------*

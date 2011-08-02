@@ -22,6 +22,7 @@
 
 #include "eon_theme_widget.h"
 #include "eon_theme_container.h"
+#include "eon_theme_button_base.h"
 #include "eon_theme_radio.h"
 #include "eon_theme_checkbox.h"
 #include "eon_theme_label.h"

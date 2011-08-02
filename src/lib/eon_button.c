@@ -32,7 +32,7 @@ static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
 {
 	Eon_Button *thiz;
 
-	thiz = eon_container_data_get(r);
+	thiz = eon_button_base_data_get(r);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
@@ -53,7 +53,7 @@ static void _eon_button_initialize(Ender_Element *e)
 	 */
 }
 
-static Eon_Container_Descriptor _descriptor = {
+static Eon_Button_Base_Descriptor _descriptor = {
 	.initialize = _eon_button_initialize,
 	.free = _eon_button_free,
 	.name = "button",
@@ -69,7 +69,7 @@ static Enesim_Renderer * _eon_button_new(void)
 	thiz = calloc(1, sizeof(Eon_Button));
 	if (!thiz) return NULL;
 
-	r = eon_container_new(&_descriptor, thiz);
+	r = eon_button_base_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

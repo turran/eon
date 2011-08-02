@@ -39,15 +39,19 @@ namespace "eon" {
 		ender "content";
 	};
 
-	class "button" : "container" {
+	abstract "button_base" : "container" {
+
 	};
 
-	class "radio" : "container" {
+	class "button" : "button_base" {
+	};
+
+	class "radio" : "button_base" {
 		string "group_name";
 		bool "selected";
 	};
 
-	class "checkbox" : "container" {
+	class "checkbox" : "button_base" {
 		bool "selected";
 	};
 

@@ -25,9 +25,9 @@
 typedef struct _Eon_Theme_Button_Descriptor
 {
 	/* container needed functions */
-	Eon_Theme_Container_Content_Position_Get content_position_get;
-	Eon_Theme_Container_Decoration_Width_Get decoration_width_get;
-	Eon_Theme_Container_Decoration_Height_Get decoration_height_get;
+	Eon_Theme_Button_Base_Content_Position_Get content_position_get;
+	Eon_Theme_Button_Base_Decoration_Width_Get decoration_width_get;
+	Eon_Theme_Button_Base_Decoration_Height_Get decoration_height_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

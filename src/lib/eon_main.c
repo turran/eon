@@ -62,11 +62,13 @@ static void _register_enders(void)
 	eon_image_init();
 	/* widget inheritance */
 	eon_container_init();
+	eon_label_init();
 	/* layout inheritance */
 	eon_canvas_init();
 	eon_stack_init();
 	/* container inheritance */
-	eon_label_init();
+	eon_button_base_init();
+	/* basic button inheritance */
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
