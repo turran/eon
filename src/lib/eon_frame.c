@@ -47,23 +47,116 @@ static void _eon_frame_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _eon_frame_setup(Ender_Element *e)
+static Eina_Bool _eon_frame_setup(Ender_Element *e)
 {
 	Eon_Frame *thiz;
+	Ender_Element *content;
 	Enesim_Renderer *r;
+	Enesim_Renderer *description_r;
+	Eina_Bool ret = EINA_TRUE;
+	double rw;
+	double rh;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_frame_get(r);
-	if (!thiz->description)
+	/* setup the content */
+	eon_container_content_get(e, &content);
+	if (content)
 	{
-		return EINA_FALSE;
+		if (!eon_element_setup(content))
+		{
+			printf("impossible to setup the content\n");
+			return EINA_FALSE;
+		}
 	}
-	return eon_element_setup(thiz->description);
+	/* set the size and position of the description */
+	if (thiz->description)
+	{
+		description_r = ender_element_renderer_get(thiz->description);
+		eon_element_real_width_get(thiz->description, &rw);
+		eon_element_real_height_get(thiz->description, &rh);
+		eon_element_actual_size_set(description_r, rw, rh);
+		eon_element_actual_position_set(description_r, 5, 5);
+		printf("setting size %g %g\n", rw, rh);
+
+		ret = eon_element_setup(thiz->description);
+
+	}
+
+	return ret;
+}
+
+static double _eon_frame_min_width_get(Ender_Element *e, double cmv)
+{
+	Eon_Frame *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_frame_get(r);
+	if (thiz->description)
+	{
+		eon_element_real_width_get(thiz->description, &v);
+	}
+	
+	return v + cmv;
+}
+
+static double _eon_frame_max_width_get(Ender_Element *e, double cmv)
+{
+	Eon_Frame *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_frame_get(r);
+	if (thiz->description)
+	{
+		eon_element_real_width_get(thiz->description, &v);
+	}
+
+	return v + cmv;
+}
+
+static double _eon_frame_min_height_get(Ender_Element *e, double cmv)
+{
+	Eon_Frame *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_frame_get(r);
+	if (thiz->description)
+	{
+		eon_element_real_height_get(thiz->description, &v);
+	}
+
+	return v + cmv;
+}
+
+static double _eon_frame_max_height_get(Ender_Element *e, double cmv)
+{
+	Eon_Frame *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_frame_get(r);
+	if (thiz->description)
+	{
+		eon_element_real_height_get(thiz->description, &v);
+	}
+
+	return v + cmv;
 }
 
 static Eon_Container_Descriptor _descriptor = {
 	.free = _eon_frame_free,
 	.setup = _eon_frame_setup,
+	.min_width_get = _eon_frame_min_width_get,
+	.min_height_get = _eon_frame_min_height_get,
+	.max_width_get = _eon_frame_max_width_get,
+	.max_height_get = _eon_frame_max_height_get,
 	.name = "frame",
 };
 /*----------------------------------------------------------------------------*
@@ -95,12 +188,21 @@ static void _eon_frame_description_get(Enesim_Renderer *r, Ender_Element **e)
 	*e = thiz->description;
 }
 
-static void _eon_frame_description_set(Enesim_Renderer *r, Ender_Element *e)
+static void _eon_frame_description_set(Enesim_Renderer *r, Ender_Element *description)
 {
 	Eon_Frame *thiz;
+	Enesim_Renderer *description_r;
+	Enesim_Renderer *description_rr;
 
 	thiz = _eon_frame_get(r);
-	thiz->description = e;
+	if (!thiz) return;
+
+	description_r = ender_element_renderer_get(description);
+	if (!eon_is_element(description_r))
+		return;
+	thiz->description = description;
+	description_rr = eon_element_renderer_get(description);
+	eon_widget_property_set(r, "description", description_rr, NULL);
 }
 /*============================================================================*
  *                                 Global                                     *

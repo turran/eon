@@ -125,40 +125,48 @@ static double _eon_wrapper_preferred_width_get(Enesim_Renderer *r)
  * the affine transformation, if so we can just return inifinite for both values
  */
 
-static double _eon_wrapper_min_width_get(Enesim_Renderer *r)
+static double _eon_wrapper_min_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return 0;
 
 	return 0;
 }
 
-static double _eon_wrapper_max_width_get(Enesim_Renderer *r)
+static double _eon_wrapper_max_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return DBL_MAX;
 
 	return DBL_MAX;
 }
 
-static double _eon_wrapper_min_height_get(Enesim_Renderer *r)
+static double _eon_wrapper_min_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return 0;
 
 	return 0;
 }
 
-static double _eon_wrapper_max_height_get(Enesim_Renderer *r)
+static double _eon_wrapper_max_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return DBL_MAX;
 

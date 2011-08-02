@@ -22,6 +22,8 @@
  * For some container instances we might need to pass some events
  * to the content, we need to define such logic on the container
  * class
+ * Add new min/max_width/height functions to receive already the
+ * content size
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -34,6 +36,10 @@ typedef struct _Eon_Container
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
+	Eon_Container_Min_Width_Get min_width_get;
+	Eon_Container_Max_Width_Get max_width_get;
+	Eon_Container_Min_Height_Get min_height_get;
+	Eon_Container_Max_Height_Get max_height_get;
 	void *data;
 } Eon_Container;
 
@@ -88,51 +94,69 @@ static void _eon_container_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
-#if 0
-static Eina_Bool _eon_container_setup(Ender_Element *e)
+static double _eon_container_min_width_get(Ender_Element *e)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
+	double v = 0;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->content)
-	{
-		Enesim_Renderer *content_r;
-		Enesim_Renderer *theme_r;
-		double aw, ah;
-		double ax, ay;
-		double dw = 0;
-		double dh = 0;
-		double cx = 0;
-		double cy = 0;
+		eon_element_min_width_get(thiz->content, &v);
+	if (thiz->max_width_get)
+		v = thiz->min_width_get(e, v);
 
-		content_r = ender_element_renderer_get(thiz->content);
-		theme_r = eon_widget_theme_renderer_get(r);
-		/* set the size and position */
-		eon_element_actual_width_get(e, &aw);
-		eon_element_actual_height_get(e, &ah);
-		eon_element_actual_position_get(r, &ax, &ay);
-		printf("current geometry %g %g %g %g\n", aw, ah, ax, ay);
-		eon_theme_button_base_decoration_size_get(theme_r, &dw, &dh);
-		printf("decoration %g %g\n", dw, dh);
-		eon_element_actual_size_set(content_r, aw - dw, ah - dh);
-		if (!eon_element_setup(thiz->content))
-		{
-			printf("impossible to setup the content\n");
-			return EINA_FALSE;
-		}
-		eon_theme_button_base_content_position_get(theme_r, &cx, &cy);
-		printf("setting size %g %g and position %g %g (%g %g)\n", aw - dw, ah - dh, ax + cx, ay + cy, cx, cy);
-		//eon_element_actual_position_set(content_r, ax + cx, ay + cy);
-		eon_element_actual_position_set(content_r, cx, cy);
-	}
-	if (thiz->setup)
-		return thiz->setup(e);
-
-	return EINA_TRUE;
+	return v;
 }
-#endif
+
+static double _eon_container_max_width_get(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	if (thiz->content)
+		eon_element_max_width_get(thiz->content, &v);
+	if (thiz->max_width_get)
+		v = thiz->max_width_get(e, v);
+
+	return v;
+}
+
+static double _eon_container_min_height_get(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	if (thiz->content)
+		eon_element_min_height_get(thiz->content, &v);
+	if (thiz->max_height_get)
+		v = thiz->min_height_get(e, v);
+
+	return v;
+}
+
+static double _eon_container_max_height_get(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	if (thiz->content)
+		eon_element_max_height_get(thiz->content, &v);
+	if (thiz->max_height_get)
+		v = thiz->max_height_get(e, v);
+
+	return v;
+}
 
 static void _eon_container_free(Enesim_Renderer *r)
 {
@@ -173,15 +197,19 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->data = data;
 	thiz->free = descriptor->free;
 	thiz->initialize = descriptor->initialize;
+	thiz->min_width_get = descriptor->min_width_get;
+	thiz->max_width_get = descriptor->max_width_get;
+	thiz->min_height_get = descriptor->min_height_get;
+	thiz->max_height_get = descriptor->max_height_get;
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
 	pdescriptor.setup = descriptor->setup; //_eon_container_setup;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.min_width_get = descriptor->min_width_get;
-	pdescriptor.max_width_get = descriptor->max_width_get;
-	pdescriptor.min_height_get = descriptor->min_height_get;
-	pdescriptor.max_height_get = descriptor->max_height_get;
+	pdescriptor.min_width_get = _eon_container_min_width_get;
+	pdescriptor.max_width_get = _eon_container_max_width_get;
+	pdescriptor.min_height_get = _eon_container_min_height_get;
+	pdescriptor.max_height_get = _eon_container_max_height_get;
 
 	r = eon_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

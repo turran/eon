@@ -4,10 +4,10 @@
 typedef void (*Eon_Element_Initialize)(Ender_Element *ender);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *ender);
 typedef void (*Eon_Element_Free)(Enesim_Renderer *r);
-typedef double (*Eon_Element_Min_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Element_Max_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Element_Min_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Element_Max_Height_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Element_Min_Width_Get)(Ender_Element *e);
+typedef double (*Eon_Element_Max_Width_Get)(Ender_Element *e);
+typedef double (*Eon_Element_Min_Height_Get)(Ender_Element *e);
+typedef double (*Eon_Element_Max_Height_Get)(Ender_Element *e);
 typedef double (*Eon_Element_Preferred_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Preferred_Width_Get)(Enesim_Renderer *r);
 typedef void (*Eon_Element_Actual_X_Set)(Enesim_Renderer *r, double x);

@@ -52,6 +52,7 @@ void eon_theme_shutdown(void);
 #include "eon_basic_private.h"
 #include "private/eon_generated_private.h"
 #include "private/eon_backend_private.h"
+#include "private/eon_ecore_common_private.h"
 #include "private/eon_element_private.h"
 #include "private/eon_container_private.h"
 #include "private/eon_button_base_private.h"

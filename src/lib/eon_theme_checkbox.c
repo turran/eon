@@ -89,7 +89,7 @@ EAPI Enesim_Renderer * eon_theme_checkbox_new(Eon_Theme_Checkbox_Descriptor *des
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_checkbox_free;
 
-	r = eon_theme_container_new(&pdescriptor, thiz);
+	r = eon_theme_button_base_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;

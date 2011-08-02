@@ -81,8 +81,10 @@ static Eina_Bool _mouse_out(void *data, int type, void *event)
 
 static Eina_Bool _mouse_wheel(void *data, int type, void *event)
 {
+/*
 	SDL *thiz = data;
 	Ecore_Event_Mouse_Wheel *ev = event;
+*/
 
 	return ECORE_CALLBACK_RENEW;
 }
@@ -99,7 +101,6 @@ static Eina_Bool _mouse_move(void *data, int type, void *event)
 static Eina_Bool _mouse_button_down(void *data, int type, void *event)
 {
 	SDL *thiz = data;
-	Ecore_Event_Mouse_Button *ev = event;
 
 	eon_input_feed_mouse_down(thiz->input, thiz->layout);
 	return ECORE_CALLBACK_RENEW;
@@ -108,7 +109,6 @@ static Eina_Bool _mouse_button_down(void *data, int type, void *event)
 static Eina_Bool _mouse_button_up(void *data, int type, void *event)
 {
 	SDL *thiz = data;
-	Ecore_Event_Mouse_Button *ev = event;
 
 	eon_input_feed_mouse_up(thiz->input);
 	return ECORE_CALLBACK_RENEW;
@@ -116,16 +116,20 @@ static Eina_Bool _mouse_button_up(void *data, int type, void *event)
 
 static Eina_Bool _key_down(void *data, int type, void *event)
 {
+/*
 	SDL *thiz = data;
 	Ecore_Event_Key *ev = event;
+*/
 
 	return ECORE_CALLBACK_RENEW;
 }
 
 static Eina_Bool _key_up(void *data, int type, void *event)
 {
+/*
 	SDL *thiz = data;
 	Ecore_Event_Key *ev = event;
+*/
 
 	return ECORE_CALLBACK_RENEW;
 }
@@ -140,7 +144,7 @@ static Eina_Bool _idler_cb(void *data)
 {
 	SDL *thiz = data;
 	Eina_List *redraws = NULL;
-	Eina_List *l;
+	//Eina_List *l;
 	Enesim_Renderer *r;
 	Eina_Rectangle area;
 
@@ -213,7 +217,7 @@ static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned 
 
 static void _sdl_cleanup(Eon_Backend_Data *data)
 {
-	SDL *thiz = data->prv;
+	//SDL *thiz = data->prv;
 
 	if (_initialized)
 	{

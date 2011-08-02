@@ -29,6 +29,7 @@ typedef struct _Frame
 	Enesim_Renderer *rectangle;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
+	Enesim_Renderer *description;
 	Enesim_Renderer_Sw_Fill fill;
 } Frame;
 
@@ -63,8 +64,8 @@ static void _frame_update_rectangle(Enesim_Renderer *r)
 	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
-	enesim_renderer_rectangle_width_set(thiz->description_area, width);
-	enesim_renderer_rectangle_height_set(thiz->description_area, height);
+	enesim_renderer_rectangle_width_set(thiz->description_area, width / 2);
+	enesim_renderer_rectangle_height_set(thiz->description_area, height / 2);
 	/* always center */
 	enesim_renderer_origin_set(thiz->content, horizontal_padding,
 			vertical_padding);
@@ -93,6 +94,7 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Frame *thiz;
 	Enesim_Renderer *content;
+	Enesim_Renderer *description;
 	double ox, oy;
 
 	thiz = _frame_get(r);
@@ -106,7 +108,13 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		printf("frame no content\n");
 		return EINA_FALSE;
 	}
-	if (thiz->content != content)
+	eon_theme_frame_description_get(r, &description);
+	if (!description)
+	{
+		printf("frame no description\n");
+		return EINA_FALSE;
+	}
+	if (thiz->content != content || thiz->description != description)
 	{
 		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
@@ -114,7 +122,10 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->description_area);
 		/* FIXME at the cleanup we should restore this */
 		enesim_renderer_rop_set(content, ENESIM_BLEND);
+		enesim_renderer_rop_set(description, ENESIM_BLEND);
+		enesim_renderer_compound_layer_add(thiz->compound, description);
 		thiz->content = content;
+		thiz->description = description;
 	}
 	_frame_update_rectangle(r);
 
@@ -178,18 +189,22 @@ EAPI Enesim_Renderer * eon_basic_frame_new(void)
 	if (!r) goto rectangle_err;
 	thiz->rectangle = r;
 	/* setup the initial state */
-	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
+	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
+	enesim_renderer_shape_stroke_weight_set(r, 1);
 	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto description_area_err;
 	thiz->description_area = r;
-	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
+	enesim_renderer_shape_stroke_weight_set(r, 1);
 	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = eon_theme_frame_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;

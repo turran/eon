@@ -170,7 +170,7 @@ EAPI void eon_theme_widget_preferred_height_get(Enesim_Renderer *r, double *heig
 	else
 		*height = -1;
 }
-
+#if 1
 /**
  * To be documented
  * FIXME: To be fixed
@@ -236,7 +236,7 @@ EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height)
 	else
 		*height = DBL_MAX;
 }
-
+#endif
 /**
  * To be documented
  * FIXME: To be fixed

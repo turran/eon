@@ -64,6 +64,12 @@ static void _eon_theme_frame_free(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_theme_frame_content_position_get(Enesim_Renderer *r, Enesim_Rectangle
+	*description_area, double *left, double *top, double *right,
+	double *bottom)
+{
+
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -75,7 +81,7 @@ EAPI Enesim_Renderer * eon_theme_frame_new(Eon_Theme_Frame_Descriptor *descripto
 		void *data)
 {
 	Eon_Theme_Frame *thiz;
-	Eon_Theme_Container_Descriptor pdescriptor;
+	Eon_Theme_Container_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Frame));

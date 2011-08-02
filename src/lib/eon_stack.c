@@ -244,11 +244,13 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 	return _stack_relayout(e, thiz);
 }
 
-static double _eon_stack_min_width_get(Enesim_Renderer *r)
+static double _eon_stack_min_width_get(Ender_Element *e)
 {
 	Eon_Stack *thiz;
+	Enesim_Renderer *r;
 	double min_width;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return 0;
 
@@ -260,11 +262,13 @@ static double _eon_stack_min_width_get(Enesim_Renderer *r)
 	return min_width;
 }
 
-static double _eon_stack_min_height_get(Enesim_Renderer *r)
+static double _eon_stack_min_height_get(Ender_Element *e)
 {
 	Eon_Stack *thiz;
+	Enesim_Renderer *r;
 	double min_height;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return 0;
 

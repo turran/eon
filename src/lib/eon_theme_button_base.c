@@ -38,8 +38,6 @@
 typedef struct _Eon_Theme_Button_Base
 {
 	EINA_MAGIC;
-	/* properties */
-	Enesim_Renderer *content;
 	/* private */
 	Eon_Theme_Button_Base_Content_Position_Get content_position_get;
 	Eon_Theme_Button_Base_Decoration_Width_Get decoration_width_get;
@@ -182,33 +180,14 @@ void eon_theme_button_base_content_position_get(Enesim_Renderer *r, double *x, d
 
 	thiz = _eon_theme_button_base_get(r);
 
-	if (thiz->content_position_get) thiz->content_position_get(r, thiz->content, x, y);
+	if (thiz->content_position_get)
+	{
+		Enesim_Renderer *content;
+
+		eon_theme_container_content_get(r, &content);
+		thiz->content_position_get(r, content, x, y);
+	}
 }
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_button_base_content_set(Enesim_Renderer *r, Enesim_Renderer *content)
-{
-	Eon_Theme_Button_Base *thiz;
-
-	thiz = _eon_theme_button_base_get(r);
-	thiz->content = content;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_button_base_content_get(Enesim_Renderer *r, Enesim_Renderer **content)
-{
-	Eon_Theme_Button_Base *thiz;
-
-	thiz = _eon_theme_button_base_get(r);
-	*content = thiz->content;
-}
-
-

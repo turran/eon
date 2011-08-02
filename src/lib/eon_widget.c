@@ -169,62 +169,70 @@ static Enesim_Renderer * _eon_widget_renderer_get(Ender_Element *ender)
 	return thiz->theme_renderer;
 }
 
-static double _eon_widget_min_height_get(Enesim_Renderer *r)
+static double _eon_widget_min_height_get(Ender_Element *e)
 {
 	Eon_Widget *thiz;
+	Enesim_Renderer *r;
 	double tv = 0;
 	double ev = 0;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
 	if (!thiz) return ev;
 	ender_element_value_get(thiz->theme_element, "min_height", &tv, NULL);
 	if (thiz->min_height_get)
-		ev = thiz->min_height_get(r);
+		ev = thiz->min_height_get(e);
 	ev = ev > tv ? ev : tv;
 	return ev;
 }
 
-static double _eon_widget_min_width_get(Enesim_Renderer *r)
+static double _eon_widget_min_width_get(Ender_Element *e)
 {
 	Eon_Widget *thiz;
+	Enesim_Renderer *r;
 	double tv = 0;
 	double ev = 0;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
 	if (!thiz) return ev;
 	ender_element_value_get(thiz->theme_element, "min_width", &tv, NULL);
 	if (thiz->min_width_get)
-		ev = thiz->min_width_get(r);
+		ev = thiz->min_width_get(e);
 	ev = ev > tv ? ev : tv;
 	return ev;
 }
 
-static double _eon_widget_max_width_get(Enesim_Renderer *r)
+static double _eon_widget_max_width_get(Ender_Element *e)
 {
 	Eon_Widget *thiz;
+	Enesim_Renderer *r;
 	double tv = DBL_MAX;
 	double ev = DBL_MAX;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
 	if (!thiz) return ev;
 	ender_element_value_get(thiz->theme_element, "max_width", &tv, NULL);
 	if (thiz->max_width_get)
-		ev = thiz->max_width_get(r);
+		ev = thiz->max_width_get(e);
 	ev = ev < tv ? ev : tv;
 	return ev;
 }
 
-static double _eon_widget_max_height_get(Enesim_Renderer *r)
+static double _eon_widget_max_height_get(Ender_Element *e)
 {
 	Eon_Widget *thiz;
+	Enesim_Renderer *r;
 	double tv = DBL_MAX;
 	double ev = DBL_MAX;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
 	if (!thiz) return ev;
 	ender_element_value_get(thiz->theme_element, "max_height", &tv, NULL);
 	if (thiz->max_height_get)
-		ev = thiz->max_height_get(r);
+		ev = thiz->max_height_get(e);
 	ev = ev < tv ? ev : tv;
 	return ev;
 }
