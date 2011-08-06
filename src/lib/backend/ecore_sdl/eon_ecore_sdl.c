@@ -173,7 +173,7 @@ static Eina_Bool _idler_cb(void *data)
 static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned int height, Eon_Backend_Data *data)
 {
 	SDL *thiz;
-	Enesim_Buffer_Data buffer_data;
+	Enesim_Buffer_Sw_Data buffer_data;
 
 	/* SDL only supports one window, impossible to create
 	 * more than one eon_ecore
@@ -192,9 +192,9 @@ static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned 
 	/* TODO create a buffer based on the real format */
 	buffer_data.rgb888.plane0_stride = thiz->native_surface->pitch;
 	buffer_data.rgb888.plane0 = thiz->native_surface->pixels;
-	thiz->buffer = enesim_buffer_new_data_from(ENESIM_BACKEND_SOFTWARE, ENESIM_CONVERTER_BGR888, width, height, &buffer_data);
+	thiz->buffer = enesim_buffer_new_data_from(ENESIM_CONVERTER_BGR888, width, height, EINA_FALSE, &buffer_data);
 	thiz->idler = ecore_idle_enterer_add(_idler_cb, thiz);
-	thiz->surface = enesim_surface_new(ENESIM_BACKEND_SOFTWARE, ENESIM_FORMAT_ARGB8888, width, height);
+	thiz->surface = enesim_surface_new(ENESIM_FORMAT_ARGB8888, width, height);
 	/* fill the required data */
 	data->prv = thiz;
 
