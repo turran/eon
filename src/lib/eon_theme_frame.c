@@ -38,8 +38,9 @@
 typedef struct _Eon_Theme_Frame
 {
 	EINA_MAGIC;
-	Enesim_Renderer *description;
+	char *description;
 	void *data;
+	Eon_Theme_Frame_Margin_Get margin_get;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Frame;
 
@@ -64,11 +65,13 @@ static void _eon_theme_frame_free(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_frame_content_position_get(Enesim_Renderer *r, Enesim_Rectangle
-	*description_area, double *left, double *top, double *right,
-	double *bottom)
+void eon_theme_frame_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
+	Eon_Theme_Frame *thiz;
 
+	thiz = _eon_theme_frame_get(r);
+	if (thiz->margin_get)
+		thiz->margin_get(r, margin);
 }
 /*============================================================================*
  *                                   API                                      *
@@ -88,12 +91,8 @@ EAPI Enesim_Renderer * eon_theme_frame_new(Eon_Theme_Frame_Descriptor *descripto
 	EINA_MAGIC_SET(thiz, EON_THEME_FRAME_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
+	thiz->margin_get = descriptor->margin_get;
 
-#if THEME_OLD
-	pdescriptor.content_position_get = descriptor->content_position_get;
-	pdescriptor.decoration_width_get = descriptor->decoration_width_get;
-	pdescriptor.decoration_height_get = descriptor->decoration_height_get;
-#endif
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_frame_free;
@@ -134,12 +133,12 @@ EAPI void * eon_theme_frame_data_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_frame_description_set(Enesim_Renderer *r, Enesim_Renderer *description)
+EAPI void eon_theme_frame_description_set(Enesim_Renderer *r, const char *description)
 {
 	Eon_Theme_Frame *thiz;
 
 	thiz = _eon_theme_frame_get(r);
-	thiz->description = description;
+	thiz->description = strdup(description);
 }
 
 
@@ -147,7 +146,7 @@ EAPI void eon_theme_frame_description_set(Enesim_Renderer *r, Enesim_Renderer *d
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_frame_description_get(Enesim_Renderer *r, Enesim_Renderer **description)
+EAPI void eon_theme_frame_description_get(Enesim_Renderer *r, const char **description)
 {
 	Eon_Theme_Frame *thiz;
 

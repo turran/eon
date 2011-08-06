@@ -52,6 +52,6 @@ namespace "eon" {
 	};
 
 	abstract "theme_frame" : "theme_container" {
-		renderer "description";
+		string "description";
 	};
 };

@@ -127,6 +127,8 @@ escen {
 
 	basic_frame "frame" {
 		default {
+			set { description_size = 13; };
+			set { description_font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
 		};
 	};
 };

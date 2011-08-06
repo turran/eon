@@ -22,9 +22,13 @@
 /**
  * @{
  */
+
+typedef void (*Eon_Theme_Frame_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
+
 typedef struct _Eon_Theme_Frame_Descriptor
 {
-	/* container needed functions */
+	/* frame needed functions */
+	Eon_Theme_Frame_Margin_Get margin_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -35,6 +39,8 @@ EAPI Enesim_Renderer * eon_theme_frame_new(Eon_Theme_Frame_Descriptor *descripto
 		void *data);
 EAPI Eina_Bool eon_is_theme_frame(Enesim_Renderer *r);
 EAPI void * eon_theme_frame_data_get(Enesim_Renderer *r);
+EAPI void eon_theme_frame_description_set(Enesim_Renderer *r, const char *description);
+EAPI void eon_theme_frame_description_get(Enesim_Renderer *r, const char **description);
 
 /**
  * @}

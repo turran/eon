@@ -26,6 +26,8 @@
  */
 
 EAPI Ender_Element * eon_frame_new(void);
+EAPI void eon_frame_description_get(Ender_Element *e, const char **description);
+EAPI void eon_frame_description_set(Ender_Element *e, const char *description);
 
 /**
  * @}

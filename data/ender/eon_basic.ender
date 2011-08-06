@@ -37,6 +37,7 @@ namespace "eon" {
 	};
 
 	class "basic_frame" : "theme_frame" {
-
+		int "description_size";
+		string "description_font";
 	};
 };

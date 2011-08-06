@@ -101,7 +101,6 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	}
 	if (thiz->content != content)
 	{
-		
 		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->outter_circle);

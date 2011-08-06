@@ -33,9 +33,8 @@ typedef struct _Frame
 	Enesim_Renderer_Sw_Fill fill;
 } Frame;
 
-static const int horizontal_padding = 10;
-static const int vertical_padding = 3;
 static const int rectangle_radius = 8;
+static const int description_area_left_margin = 5;
 
 static inline Frame * _frame_get(Enesim_Renderer *r)
 {
@@ -53,51 +52,37 @@ static void _frame_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 
-static void _frame_update_rectangle(Enesim_Renderer *r)
-{
-	Frame *thiz;
-	double width, height;
-
-	thiz = _frame_get(r);
-	/* set the size of the rectangle based on the size of the string */
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
-	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
-	enesim_renderer_rectangle_width_set(thiz->description_area, width / 2);
-	enesim_renderer_rectangle_height_set(thiz->description_area, height / 2);
-	/* always center */
-	enesim_renderer_origin_set(thiz->content, horizontal_padding,
-			vertical_padding);
-}
 /*----------------------------------------------------------------------------*
  *                         The Frame theme interface                         *
  *----------------------------------------------------------------------------*/
-static double _frame_decoration_width_get(Enesim_Renderer *r)
+static void _frame_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	return horizontal_padding * 2;
-}
+	Frame *thiz;
+	Enesim_Rectangle description_boundings;
+	const char *description;
 
-static double _frame_decoration_height_get(Enesim_Renderer *r)
-{
-	return vertical_padding * 2;
-}
-
-static void _frame_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
-		double *x, double *y)
-{
-	*x = horizontal_padding;
-	*y = vertical_padding;
+	thiz = _frame_get(r);
+	eon_theme_frame_description_get(r, &description);
+	etex_span_text_set(thiz->description, description);
+	enesim_renderer_boundings(thiz->description, &description_boundings);
+	margin->left = description_area_left_margin;
+	margin->right = 0;
+	margin->top = description_boundings.h + 3;
+	margin->bottom = 0;
 }
 
 static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Frame *thiz;
 	Enesim_Renderer *content;
-	Enesim_Renderer *description;
+	Enesim_Rectangle description_boundings;
+	const char *description;
+	double width, height;
 	double ox, oy;
 
 	thiz = _frame_get(r);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
@@ -109,12 +94,9 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		return EINA_FALSE;
 	}
 	eon_theme_frame_description_get(r, &description);
-	if (!description)
-	{
-		printf("frame no description\n");
-		return EINA_FALSE;
-	}
-	if (thiz->content != content || thiz->description != description)
+	etex_span_text_set(thiz->description, description);
+	enesim_renderer_boundings(thiz->description, &description_boundings);
+	if (thiz->content != content)
 	{
 		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
@@ -122,12 +104,18 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->description_area);
 		/* FIXME at the cleanup we should restore this */
 		enesim_renderer_rop_set(content, ENESIM_BLEND);
-		enesim_renderer_rop_set(description, ENESIM_BLEND);
-		enesim_renderer_compound_layer_add(thiz->compound, description);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->description);
 		thiz->content = content;
-		thiz->description = description;
 	}
-	_frame_update_rectangle(r);
+	enesim_renderer_origin_set(thiz->rectangle, 0, description_boundings.h / 2);
+	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
+	enesim_renderer_rectangle_height_set(thiz->rectangle, height - (description_boundings.h / 2));
+
+	enesim_renderer_rectangle_width_set(thiz->description_area, width - description_area_left_margin);
+	enesim_renderer_rectangle_height_set(thiz->description_area, description_boundings.h + 2);
+	enesim_renderer_origin_set(thiz->description_area, description_area_left_margin, 0);
+
+	enesim_renderer_origin_set(thiz->description, 10, 1);
 
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
@@ -162,6 +150,7 @@ static void _frame_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Frame_Descriptor _descriptor = {
+	.margin_get = _frame_margin_get,
 	.sw_setup = _frame_setup,
 	.sw_cleanup = _frame_cleanup,
 	.free = _frame_free,
@@ -190,10 +179,17 @@ EAPI Enesim_Renderer * eon_basic_frame_new(void)
 	thiz->rectangle = r;
 	/* setup the initial state */
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
+	enesim_renderer_shape_fill_color_set(r, 0xffaaaaaa);
 	enesim_renderer_shape_stroke_weight_set(r, 1);
 	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+
+	r = etex_span_new();
+	if (!r) goto description_err;
+	thiz->description = r;
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_color_set(r, 0xff000000);
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto description_area_err;
@@ -214,6 +210,8 @@ EAPI Enesim_Renderer * eon_basic_frame_new(void)
 renderer_err:
 	enesim_renderer_delete(thiz->description_area);
 description_area_err:
+	enesim_renderer_delete(thiz->description);
+description_err:
 	enesim_renderer_delete(thiz->rectangle);
 rectangle_err:
 	enesim_renderer_delete(thiz->compound);
@@ -245,4 +243,30 @@ EAPI void eon_basic_frame_border_color_set(Enesim_Renderer *r, Enesim_Color colo
 	thiz = _frame_get(r);
 	enesim_renderer_shape_stroke_color_set(thiz->rectangle, color);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_frame_description_font_set(Enesim_Renderer *r, const char *font)
+{
+	Frame *thiz;
+
+	thiz = _frame_get(r);
+	etex_span_font_set(thiz->description, font);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_basic_frame_description_size_set(Enesim_Renderer *r, int size)
+{
+	Frame *thiz;
+
+	thiz = _frame_get(r);
+	etex_span_size_set(thiz->description, size);
+
+}
+
 

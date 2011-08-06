@@ -1,6 +1,14 @@
 #ifndef _EON_MAIN_H_
 #define _EON_MAIN_H_
 
+typedef struct _Eon_Margin
+{
+	double left;
+	double top;
+	double right;
+	double bottom;
+} Eon_Margin;
+
 /**
  * @{
  */

@@ -74,7 +74,7 @@ namespace "eon" {
 	};
 
 	class "frame" : "container" {
-		ender "description";
+		string "description";
 	};
 
 	class "wrapper" : "element" {

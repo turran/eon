@@ -24,9 +24,7 @@ int main(int argc, char **argv)
 
 	frame = eon_frame_new();
 
-	label = eon_label_new();
-	eon_label_text_set(label, "My Frame");
-	eon_frame_description_set(frame, label);
+	eon_frame_description_set(frame, "My Frame");
 
 	label = eon_label_new();
 	eon_label_text_set(label, "My Frame Content");
