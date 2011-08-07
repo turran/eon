@@ -57,29 +57,12 @@ static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 /*----------------------------------------------------------------------------*
  *                          The Radio theme interface                         *
  *----------------------------------------------------------------------------*/
-static double _radio_decoration_width_get(Enesim_Renderer *r)
+static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	return circle_radius * 2 + 2 + radio_to_content_padding;
-}
-
-static double _radio_decoration_height_get(Enesim_Renderer *r)
-{
-	return circle_radius * 2;
-}
-
-static void _radio_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
-		double *x, double *y)
-{
-	Radio *thiz;
-	double height;
-	double cheight = 0;
-
-	thiz = _radio_get(r);
-
-	eon_theme_widget_height_get(r, &height);
-	eon_theme_widget_height_get(content, &cheight);
-	*x = circle_radius * 2 + radio_to_content_padding;
-	*y = height/2 - cheight/2;
+	margin->left = circle_radius + 1 + radio_to_content_padding;
+	margin->right = 0;
+	margin->top = circle_radius;
+	margin->bottom = circle_radius;
 }
 
 static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -156,9 +139,7 @@ static void _radio_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Radio_Descriptor _descriptor = {
-	.content_position_get = _radio_content_position_get,
-	.decoration_width_get = _radio_decoration_width_get,
-	.decoration_height_get = _radio_decoration_height_get,
+	.margin_get = _radio_margin_get,
 	.sw_setup = _radio_setup,
 	.sw_cleanup = _radio_cleanup,
 	.free = _radio_free,

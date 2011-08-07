@@ -179,7 +179,7 @@ EAPI Enesim_Renderer * eon_basic_frame_new(void)
 	thiz->rectangle = r;
 	/* setup the initial state */
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
-	enesim_renderer_shape_fill_color_set(r, 0xffaaaaaa);
+	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 	enesim_renderer_shape_stroke_weight_set(r, 1);
 	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
@@ -195,7 +195,7 @@ EAPI Enesim_Renderer * eon_basic_frame_new(void)
 	if (!r) goto description_area_err;
 	thiz->description_area = r;
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
-	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+	enesim_renderer_shape_fill_color_set(r, 0xffaaaaaa);
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
 	enesim_renderer_shape_stroke_weight_set(r, 1);
 	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);

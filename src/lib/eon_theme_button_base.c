@@ -39,9 +39,7 @@ typedef struct _Eon_Theme_Button_Base
 {
 	EINA_MAGIC;
 	/* private */
-	Eon_Theme_Button_Base_Content_Position_Get content_position_get;
-	Eon_Theme_Button_Base_Decoration_Width_Get decoration_width_get;
-	Eon_Theme_Button_Base_Decoration_Height_Get decoration_height_get;
+	Eon_Theme_Button_Base_Margin_Get margin_get;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Button_Base;
@@ -71,8 +69,10 @@ static double _eon_theme_button_base_min_width_get(Enesim_Renderer *r)
 	double v = 0;
 
 	thiz = _eon_theme_button_base_get(r);
+#if 0
 	if (thiz->decoration_width_get)
 		v = thiz->decoration_width_get(r);
+#endif
 	return v;
 }
 
@@ -82,8 +82,10 @@ static double _eon_theme_button_base_max_width_get(Enesim_Renderer *r)
 	double v = 0;
 
 	thiz = _eon_theme_button_base_get(r);
+#if 0
 	if (thiz->decoration_width_get)
 		v = thiz->decoration_width_get(r);
+#endif
 	return v;
 }
 
@@ -93,8 +95,10 @@ static double _eon_theme_button_base_min_height_get(Enesim_Renderer *r)
 	double v = 0;
 
 	thiz = _eon_theme_button_base_get(r);
+#if 0
 	if (thiz->decoration_height_get)
 		v = thiz->decoration_height_get(r);
+#endif
 	return v;
 }
 
@@ -104,8 +108,10 @@ static double _eon_theme_button_base_max_height_get(Enesim_Renderer *r)
 	double v = 0;
 
 	thiz = _eon_theme_button_base_get(r);
+#if 0
 	if (thiz->decoration_height_get)
 		v = thiz->decoration_height_get(r);
+#endif
 	return v;
 }
 /*============================================================================*
@@ -122,9 +128,7 @@ Enesim_Renderer * eon_theme_button_base_new(Eon_Theme_Button_Base_Descriptor *de
 	EINA_MAGIC_SET(thiz, EON_THEME_CONTAINER_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
-	thiz->decoration_width_get = descriptor->decoration_width_get;
-	thiz->decoration_height_get = descriptor->decoration_height_get;
-	thiz->content_position_get = descriptor->content_position_get;
+	thiz->margin_get = descriptor->margin_get;
 	pdescriptor.max_width_get = _eon_theme_button_base_max_width_get;
 	pdescriptor.min_width_get = _eon_theme_button_base_min_width_get;
 	pdescriptor.max_height_get = _eon_theme_button_base_max_height_get;
@@ -164,29 +168,13 @@ void * eon_theme_button_base_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-void eon_theme_button_base_decoration_size_get(Enesim_Renderer *r, double *w, double *h)
+void eon_theme_button_base_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
 	Eon_Theme_Button_Base *thiz;
 
 	thiz = _eon_theme_button_base_get(r);
-
-	if (w && thiz->decoration_width_get) *w = thiz->decoration_width_get(r);
-	if (h && thiz->decoration_height_get) *h = thiz->decoration_height_get(r);
-}
-
-void eon_theme_button_base_content_position_get(Enesim_Renderer *r, double *x, double *y)
-{
-	Eon_Theme_Button_Base *thiz;
-
-	thiz = _eon_theme_button_base_get(r);
-
-	if (thiz->content_position_get)
-	{
-		Enesim_Renderer *content;
-
-		eon_theme_container_content_get(r, &content);
-		thiz->content_position_get(r, content, x, y);
-	}
+	if (thiz->margin_get)
+		thiz->margin_get(r, margin);
 }
 /*============================================================================*
  *                                   API                                      *

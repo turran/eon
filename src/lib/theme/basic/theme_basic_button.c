@@ -70,21 +70,12 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
-static double _button_decoration_width_get(Enesim_Renderer *r)
+static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	return horizontal_padding * 2;
-}
-
-static double _button_decoration_height_get(Enesim_Renderer *r)
-{
-	return vertical_padding * 2;
-}
-
-static void _button_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
-		double *x, double *y)
-{
-	*x = horizontal_padding;
-	*y = vertical_padding;
+	margin->left = horizontal_padding;
+	margin->right = horizontal_padding;
+	margin->top = vertical_padding;
+	margin->bottom = vertical_padding;
 }
 
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -148,9 +139,7 @@ static void _button_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Button_Descriptor _descriptor = {
-	.content_position_get = _button_content_position_get,
-	.decoration_width_get = _button_decoration_width_get,
-	.decoration_height_get = _button_decoration_height_get,
+	.margin_get = _button_margin_get,
 	.sw_setup = _button_setup,
 	.sw_cleanup = _button_cleanup,
 	.free = _button_free,

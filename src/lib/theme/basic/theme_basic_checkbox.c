@@ -57,34 +57,15 @@ static void _checkbox_draw(Enesim_Renderer *r, int x, int y, unsigned int len, u
 /*----------------------------------------------------------------------------*
  *                       The Checkbox theme interface                         *
  *----------------------------------------------------------------------------*/
-static double _checkbox_decoration_width_get(Enesim_Renderer *r)
+static void _checkbox_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	return thiz->size + checkbox_to_content_padding;
-}
-
-static double _checkbox_decoration_height_get(Enesim_Renderer *r)
-{
-	Checkbox *thiz;
-
-	thiz = _checkbox_get(r);
-	return thiz->size;
-}
-
-static void _checkbox_content_position_get(Enesim_Renderer *r, Enesim_Renderer *content,
-		double *x, double *y)
-{
-	Checkbox *thiz;
-	double height;
-	double cheight = 0;
-
-	thiz = _checkbox_get(r);
-	eon_theme_widget_height_get(r, &height);
-	eon_theme_widget_height_get(content, &cheight);
-	*x = thiz->size + checkbox_to_content_padding;
-	*y = height/2 - cheight/2;
+	margin->left = thiz->size + checkbox_to_content_padding;
+	margin->right = 0;
+	margin->top = thiz->size / 2;
+	margin->bottom = thiz->size / 2;
 }
 
 static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -164,9 +145,7 @@ static void _checkbox_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Checkbox_Descriptor _descriptor = {
-	.content_position_get = _checkbox_content_position_get,
-	.decoration_width_get = _checkbox_decoration_width_get,
-	.decoration_height_get = _checkbox_decoration_height_get,
+	.margin_get = _checkbox_margin_get,
 	.sw_setup = _checkbox_setup,
 	.sw_cleanup = _checkbox_cleanup,
 	.free = _checkbox_free,
