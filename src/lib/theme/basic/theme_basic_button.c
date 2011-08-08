@@ -57,15 +57,18 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	double width, height;
 
 	thiz = _button_get(r);
-	/* add 6px of padding to the text */
-	/* set the size of the rectangle based on the size of the string */
+	/* add 6px of padding to the content */
+	/* set the size of the rectangle based on the size of the theme */
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
 	/* always center */
-	enesim_renderer_origin_set(thiz->content, horizontal_padding,
-			vertical_padding);
+	if (thiz->content)
+	{
+		enesim_renderer_origin_set(thiz->content, horizontal_padding,
+				vertical_padding);
+	}
 }
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
@@ -90,19 +93,17 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
-	if (!content)
-	{
-		printf("button no content\n");
-		return EINA_FALSE;
-	}
-	if (thiz->content != content)
+	if (thiz->content != content || !content)
 	{
 		enesim_renderer_compound_layer_clear(thiz->compound);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->rectangle);
-		enesim_renderer_compound_layer_add(thiz->compound, content);
-		/* FIXME at the cleanup we should restore this */
-		enesim_renderer_rop_set(content, ENESIM_BLEND);
-		thiz->content = content;
+		if (content)
+		{
+			enesim_renderer_compound_layer_add(thiz->compound, content);
+			/* FIXME at the cleanup we should restore this */
+			enesim_renderer_rop_set(content, ENESIM_BLEND);
+			thiz->content = content;
+		}
 	}
 	_button_update_rectangle(r);
 

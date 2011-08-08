@@ -40,6 +40,8 @@ typedef struct _Eon_Container
 	Eon_Container_Max_Width_Get max_width_get;
 	Eon_Container_Min_Height_Get min_height_get;
 	Eon_Container_Max_Height_Get max_height_get;
+	Eon_Container_Preferred_Width_Get preferred_width_get;
+	Eon_Container_Preferred_Height_Get preferred_height_get;
 	void *data;
 } Eon_Container;
 
@@ -120,6 +122,8 @@ static double _eon_container_max_width_get(Ender_Element *e)
 	thiz = _eon_container_get(r);
 	if (thiz->content)
 		eon_element_max_width_get(thiz->content, &v);
+	else
+		return DBL_MAX;
 	if (thiz->max_width_get)
 		v = thiz->max_width_get(e, v);
 
@@ -152,8 +156,42 @@ static double _eon_container_max_height_get(Ender_Element *e)
 	thiz = _eon_container_get(r);
 	if (thiz->content)
 		eon_element_max_height_get(thiz->content, &v);
+	else
+		return DBL_MAX;
 	if (thiz->max_height_get)
 		v = thiz->max_height_get(e, v);
+
+	return v;
+}
+
+static double _eon_container_preferred_width_get(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	if (thiz->content)
+		eon_element_preferred_width_get(thiz->content, &v);
+	if (thiz->preferred_width_get)
+		v = thiz->preferred_width_get(e, v);
+
+	return v;
+}
+
+static double _eon_container_preferred_height_get(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	if (thiz->content)
+		eon_element_preferred_height_get(thiz->content, &v);
+	if (thiz->preferred_height_get)
+		v = thiz->preferred_height_get(e, v);
 
 	return v;
 }
@@ -210,6 +248,8 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	pdescriptor.max_width_get = _eon_container_max_width_get;
 	pdescriptor.min_height_get = _eon_container_min_height_get;
 	pdescriptor.max_height_get = _eon_container_max_height_get;
+	pdescriptor.preferred_width_get = _eon_container_preferred_width_get;
+	pdescriptor.preferred_height_get = _eon_container_preferred_height_get;
 
 	r = eon_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

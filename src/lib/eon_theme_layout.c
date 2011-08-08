@@ -68,10 +68,6 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 	thiz->child_add = descriptor->child_add;
 	thiz->child_remove = descriptor->child_remove;
 
-	pdescriptor.max_width_get = descriptor->max_width_get;
-	pdescriptor.min_width_get = descriptor->min_width_get;
-	pdescriptor.max_height_get = descriptor->max_height_get;
-	pdescriptor.min_height_get = descriptor->min_height_get;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_layout_free;

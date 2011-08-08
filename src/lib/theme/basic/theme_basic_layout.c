@@ -73,26 +73,6 @@ static void _layout_child_remove(Enesim_Renderer *r, Enesim_Renderer *rchild)
 	//printf("child %p removed from stack %p\n", rchild, r);
 }
 
-static double _layout_min_width_get(Enesim_Renderer *r)
-{
-	return 0;
-}
-
-static double _layout_max_width_get(Enesim_Renderer *r)
-{
-	return DBL_MAX;
-}
-
-static double _layout_min_height_get(Enesim_Renderer *r)
-{
-	return 0;
-}
-
-static double _layout_max_height_get(Enesim_Renderer *r)
-{
-	return DBL_MAX;
-}
-
 static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Theme_Basic_Layout *thiz;
@@ -139,10 +119,6 @@ static void _layout_free(Enesim_Renderer *r)
 static Eon_Theme_Layout_Descriptor _descriptor = {
 	.child_add = _layout_child_add,
 	.child_remove = _layout_child_remove,
-	.max_width_get = _layout_max_width_get,
-	.max_height_get = _layout_max_height_get,
-	.min_width_get = _layout_min_width_get,
-	.min_height_get = _layout_min_height_get,
 	.sw_setup = _layout_setup,
 	.sw_cleanup = _layout_cleanup,
 	.free = _layout_free,

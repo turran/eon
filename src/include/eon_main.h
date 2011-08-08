@@ -9,6 +9,18 @@ typedef struct _Eon_Margin
 	double bottom;
 } Eon_Margin;
 
+typedef struct _Eon_Position
+{
+	double x;
+	double y;
+} Eon_Position;
+
+typedef struct _Eon_Size
+{
+	double width;
+	double height;
+} Eon_Size;
+
 /**
  * @{
  */

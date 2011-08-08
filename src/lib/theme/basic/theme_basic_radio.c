@@ -59,8 +59,8 @@ static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
  *----------------------------------------------------------------------------*/
 static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	margin->left = circle_radius + 1 + radio_to_content_padding;
-	margin->right = 0;
+	margin->left = circle_radius + 2 + radio_to_content_padding;
+	margin->right = 2;
 	margin->top = circle_radius;
 	margin->bottom = circle_radius;
 }

@@ -30,6 +30,17 @@ Escen * eon_theme_get(void)
 	return _theme;
 }
 
+Escen * eon_theme_get_from_file(char *file)
+{
+	Escen *theme;
+
+	/* TODO check if the file is absolute, if it is, use directly that name
+	 * otherwise prepend the data_dir
+	 */
+	theme = escen_parser_load(file);
+	return theme;
+}
+
 Eina_Bool eon_theme_init(void)
 {
 	if (!_init)

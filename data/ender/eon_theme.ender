@@ -2,12 +2,6 @@ using "enesim";
 
 namespace "eon" {
 	abstract "theme_widget" : "renderer" {
-		double "min_width";
-		double "max_width";
-		double "min_height";
-		double "max_height";
-		double "preferred_width";
-		double "preferred_height";
 		double "width";
 		double "height";
 		double "x";
@@ -35,6 +29,12 @@ namespace "eon" {
 	};
 
 	abstract "theme_progressbar" : "theme_widget" {
+		double "min_width";
+		double "max_width";
+		double "min_height";
+		double "max_height";
+		double "preferred_width";
+		double "preferred_height";
 	};
 
 	abstract "theme_label" : "theme_widget" {
@@ -42,6 +42,12 @@ namespace "eon" {
 		string "text";
 		string "font";
 		int "size";
+		double "min_width";
+		double "max_width";
+		double "min_height";
+		double "max_height";
+		double "preferred_width";
+		double "preferred_height";
 	};
 	abstract "theme_scrollview" : "theme_container" {
 
@@ -49,6 +55,12 @@ namespace "eon" {
 
 	abstract "theme_image" : "theme_widget" {
 		surface "source";
+		double "min_width";
+		double "max_width";
+		double "min_height";
+		double "max_height";
+		double "preferred_width";
+		double "preferred_height";
 	};
 
 	abstract "theme_frame" : "theme_container" {

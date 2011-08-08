@@ -33,12 +33,6 @@ typedef struct _Eon_Theme_Widget
 	double y;
 	/* private */
 	void *data;
-	Eon_Theme_Widget_Max_Width_Get max_width_get;
-	Eon_Theme_Widget_Min_Width_Get min_width_get;
-	Eon_Theme_Widget_Max_Height_Get max_height_get;
-	Eon_Theme_Widget_Min_Height_Get min_height_get;
-	Eon_Theme_Widget_Preferred_Width_Get preferred_width_get;
-	Eon_Theme_Widget_Preferred_Height_Get preferred_height_get;
 	Enesim_Renderer_Descriptor descriptor;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Widget;
@@ -95,13 +89,6 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 	thiz->data = data;
 	thiz->free = descriptor->free;
 
-	thiz->max_width_get = descriptor->max_width_get;
-	thiz->min_width_get = descriptor->min_width_get;
-	thiz->max_height_get = descriptor->max_height_get;
-	thiz->min_height_get = descriptor->min_height_get;
-	thiz->preferred_width_get = descriptor->preferred_width_get;
-	thiz->preferred_height_get = descriptor->preferred_height_get;
-
 	thiz->descriptor.boundings = _eon_theme_widget_boundings;
 	thiz->descriptor.free = _eon_theme_widget_free;
 	thiz->descriptor.sw_setup = descriptor->sw_setup;
@@ -138,105 +125,6 @@ void * eon_theme_widget_data_get(Enesim_Renderer *r)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_preferred_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Widget *thiz;
-
-	thiz = _eon_theme_widget_get(r);
-	if (!thiz) return;
-	if (thiz->preferred_width_get)
-		*width = thiz->preferred_width_get(r);
-	else
-		*width = -1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_preferred_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Widget *thiz;
-
-	if (!height) return;
-	thiz = _eon_theme_widget_get(r);
-	if (!thiz) return;
-	if (thiz->preferred_height_get)
-		*height = thiz->preferred_height_get(r);
-	else
-		*height = -1;
-}
-#if 1
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_min_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Widget *thiz;
-
-	thiz = _eon_theme_widget_get(r);
-	if (!thiz) return;
-	if (thiz->min_width_get)
-		*width = thiz->min_width_get(r);
-	else
-		*width = 0;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_min_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Widget *thiz;
-
-	if (!height) return;
-	thiz = _eon_theme_widget_get(r);
-	if (!thiz) return;
-	if (thiz->min_height_get)
-		*height = thiz->min_height_get(r);
-	else
-		*height = 0;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_max_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Widget *thiz;
-
-	thiz = _eon_theme_widget_get(r);
-	if (!thiz) return;
-	if (thiz->max_width_get)
-		*width = thiz->max_width_get(r);
-	else
-		*width = DBL_MAX;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Widget *thiz;
-
-	if (!height) return;
-	thiz = _eon_theme_widget_get(r);
-	if (!thiz) return;
-	if (thiz->max_height_get)
-		*height = thiz->max_height_get(r);
-	else
-		*height = DBL_MAX;
-}
-#endif
 /**
  * To be documented
  * FIXME: To be fixed

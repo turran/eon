@@ -36,6 +36,102 @@ static inline Eon_Progressbar * _eon_progressbar_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                        *
  *----------------------------------------------------------------------------*/
+static double _eon_progressbar_min_width_get(Ender_Element *e)
+{
+	Eon_Progressbar *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_progressbar_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_progressbar_min_width_get(theme_r, &v);
+
+	return v;
+}
+
+static double _eon_progressbar_max_width_get(Ender_Element *e)
+{
+	Eon_Progressbar *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_progressbar_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_progressbar_max_width_get(theme_r, &v);
+
+	return v;
+}
+
+static double _eon_progressbar_min_height_get(Ender_Element *e)
+{
+	Eon_Progressbar *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_progressbar_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_progressbar_min_height_get(theme_r, &v);
+
+	return v;
+}
+
+static double _eon_progressbar_max_height_get(Ender_Element *e)
+{
+	Eon_Progressbar *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_progressbar_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_progressbar_max_height_get(theme_r, &v);
+
+	return v;
+}
+
+static double _eon_progressbar_preferred_width_get(Ender_Element *e)
+{
+	Eon_Progressbar *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_progressbar_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_progressbar_preferred_width_get(theme_r, &v);
+
+	return v;
+}
+
+static double _eon_progressbar_preferred_height_get(Ender_Element *e)
+{
+	Eon_Progressbar *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_progressbar_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_progressbar_preferred_height_get(theme_r, &v);
+
+	return v;
+}
+
 static void _eon_progressbar_initialize(Ender_Element *ender)
 {
 	/* register every needed callback */
@@ -44,6 +140,12 @@ static void _eon_progressbar_initialize(Ender_Element *ender)
 static Eon_Widget_Descriptor _eon_progressbar_widget_descriptor = {
 	.initialize = _eon_progressbar_initialize,
 	.name = "progressbar",
+	.min_width_get = _eon_progressbar_min_width_get,
+	.max_width_get = _eon_progressbar_max_width_get,
+	.min_height_get = _eon_progressbar_min_height_get,
+	.max_height_get = _eon_progressbar_max_height_get,
+	.preferred_width_get = _eon_progressbar_preferred_width_get,
+	.preferred_height_get = _eon_progressbar_preferred_height_get,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *

@@ -29,10 +29,6 @@ typedef struct _Eon_Widget
 	/* properties */
 	char *theme;
 	/* private */
-	Eon_Element_Min_Height_Get min_height_get;
-	Eon_Element_Min_Width_Get min_width_get;
-	Eon_Element_Min_Height_Get max_height_get;
-	Eon_Element_Min_Width_Get max_width_get;
 	/* the theme data */
 	Escen_Ender *theme_ender;
 	Escen_Instance *theme_instance;
@@ -169,94 +165,6 @@ static Enesim_Renderer * _eon_widget_renderer_get(Ender_Element *ender)
 	return thiz->theme_renderer;
 }
 
-static double _eon_widget_min_height_get(Ender_Element *e)
-{
-	Eon_Widget *thiz;
-	Enesim_Renderer *r;
-	double tv = 0;
-	double ev = 0;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_widget_get(r);
-	if (!thiz) return ev;
-	ender_element_value_get(thiz->theme_element, "min_height", &tv, NULL);
-	if (thiz->min_height_get)
-		ev = thiz->min_height_get(e);
-	ev = ev > tv ? ev : tv;
-	return ev;
-}
-
-static double _eon_widget_min_width_get(Ender_Element *e)
-{
-	Eon_Widget *thiz;
-	Enesim_Renderer *r;
-	double tv = 0;
-	double ev = 0;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_widget_get(r);
-	if (!thiz) return ev;
-	ender_element_value_get(thiz->theme_element, "min_width", &tv, NULL);
-	if (thiz->min_width_get)
-		ev = thiz->min_width_get(e);
-	ev = ev > tv ? ev : tv;
-	return ev;
-}
-
-static double _eon_widget_max_width_get(Ender_Element *e)
-{
-	Eon_Widget *thiz;
-	Enesim_Renderer *r;
-	double tv = DBL_MAX;
-	double ev = DBL_MAX;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_widget_get(r);
-	if (!thiz) return ev;
-	ender_element_value_get(thiz->theme_element, "max_width", &tv, NULL);
-	if (thiz->max_width_get)
-		ev = thiz->max_width_get(e);
-	ev = ev < tv ? ev : tv;
-	return ev;
-}
-
-static double _eon_widget_max_height_get(Ender_Element *e)
-{
-	Eon_Widget *thiz;
-	Enesim_Renderer *r;
-	double tv = DBL_MAX;
-	double ev = DBL_MAX;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_widget_get(r);
-	if (!thiz) return ev;
-	ender_element_value_get(thiz->theme_element, "max_height", &tv, NULL);
-	if (thiz->max_height_get)
-		ev = thiz->max_height_get(e);
-	ev = ev < tv ? ev : tv;
-	return ev;
-}
-
-static double _eon_widget_preferred_width_get(Enesim_Renderer *r)
-{
-	Eon_Widget *thiz;
-	double v;
-
-	thiz = _eon_widget_get(r);
-	ender_element_value_get(thiz->theme_element, "preferred_width", &v, NULL);
-	return v;
-}
-
-static double _eon_widget_preferred_height_get(Enesim_Renderer *r)
-{
-	Eon_Widget *thiz;
-	double v;
-
-	thiz = _eon_widget_get(r);
-	ender_element_value_get(thiz->theme_element, "preferred_height", &v, NULL);
-	return v;
-}
-
 static void _eon_widget_actual_width_set(Enesim_Renderer *r, double width)
 {
 	Eon_Widget *thiz;
@@ -335,21 +243,17 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	thiz->theme_instance = theme_instance;
 	thiz->theme_element = theme_element;
 	thiz->theme_renderer = theme_renderer;
-	thiz->min_width_get = descriptor->min_width_get;
-	thiz->min_height_get = descriptor->min_height_get;
-	thiz->max_width_get = descriptor->max_width_get;
-	thiz->max_height_get = descriptor->max_height_get;
 	thiz->setup = descriptor->setup;
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
-	pdescriptor.min_width_get = _eon_widget_min_width_get;
-	pdescriptor.max_width_get = _eon_widget_max_width_get;
-	pdescriptor.min_height_get = _eon_widget_min_height_get;
-	pdescriptor.max_height_get = _eon_widget_max_height_get;
-	pdescriptor.preferred_width_get = _eon_widget_preferred_width_get;
-	pdescriptor.preferred_height_get = _eon_widget_preferred_height_get;
+	pdescriptor.min_width_get = descriptor->min_width_get;
+	pdescriptor.max_width_get = descriptor->max_width_get;
+	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.max_height_get = descriptor->max_height_get;
+	pdescriptor.preferred_width_get = descriptor->preferred_width_get;
+	pdescriptor.preferred_height_get = descriptor->preferred_height_get;
 	pdescriptor.actual_x_set = _eon_widget_actual_x_set;
 	pdescriptor.actual_y_set = _eon_widget_actual_y_set;
 	pdescriptor.actual_width_set = _eon_widget_actual_width_set;
@@ -374,19 +278,74 @@ renderer_err:
 	return NULL;
 }
 
-void _eon_widget_theme_set(Enesim_Renderer *r, const char *file)
+static Eina_Bool _eon_widget_theme_setup(Eon_Widget *thiz, Ender_Element *e, Escen *theme_escen)
 {
-	Eon_Widget *thiz;
+	Escen_Ender *theme_ender;
+	Escen_Instance *theme_instance;
+	Ender_Element *theme_element;
+	Enesim_Renderer *theme_renderer;
+	const char *name;
 
-	thiz = _eon_widget_get(r);
-	thiz->theme = strdup(file);
 	/* remove the theme already associated with the element
 	 * and set this, get the correct escen_ender and set
 	 * the current state
 	 */
+	name = ender_element_name_get(e);
+	theme_ender = escen_ender_get(theme_escen, name);
+	if (!theme_ender)
+	{
+		printf("no ender %s\n", name);
+		return EINA_FALSE;
+	}
+
+	theme_instance = escen_instance_new(theme_ender);
+	if (!theme_instance)
+	{
+		printf("no instance %s\n", name);
+		return EINA_FALSE;
+	}
+
+	theme_element = escen_instance_ender_get(theme_instance);
+	theme_renderer = ender_element_renderer_get(theme_element);
+
+	thiz->theme_ender = theme_ender;
+	thiz->theme_instance = theme_instance;
+	thiz->theme_element = theme_element;
+	thiz->theme_renderer = theme_renderer;
+	ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, e);
+
+	return EINA_TRUE;
 }
 
-void _eon_widget_theme_get(Enesim_Renderer *r, const char **file)
+static void _eon_widget_theme_set(Enesim_Renderer *r, const char *file)
+{
+	Eon_Widget *thiz;
+	Ender_Element *e;
+	Ender_Element *old_element;
+	Escen_Instance *old_instance;
+	Escen *theme_escen;
+
+	thiz = _eon_widget_get(r);
+	e = ender_element_renderer_from(r);
+	theme_escen = eon_theme_get_from_file(file);
+	if (!theme_escen)
+	{
+		printf("no valid file %s\n", file);
+		return;
+	}
+
+	old_element = thiz->theme_element;
+	old_instance = thiz->theme_instance;
+
+	_eon_widget_theme_setup(thiz, e, theme_escen);
+	if (old_element)
+		ender_event_listener_remove(old_element, "Mutation", _theme_changed);
+	/* FIXME delete the old instance/element */
+
+	thiz->theme = strdup(file);
+}
+
+static void _eon_widget_theme_get(Enesim_Renderer *r, const char **file)
 {
 	Eon_Widget *thiz;
 

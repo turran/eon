@@ -62,58 +62,6 @@ static void _eon_theme_button_base_free(Enesim_Renderer *r)
 	if (thiz->free) thiz->free(r);
 	free(thiz);
 }
-
-static double _eon_theme_button_base_min_width_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Button_Base *thiz;
-	double v = 0;
-
-	thiz = _eon_theme_button_base_get(r);
-#if 0
-	if (thiz->decoration_width_get)
-		v = thiz->decoration_width_get(r);
-#endif
-	return v;
-}
-
-static double _eon_theme_button_base_max_width_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Button_Base *thiz;
-	double v = 0;
-
-	thiz = _eon_theme_button_base_get(r);
-#if 0
-	if (thiz->decoration_width_get)
-		v = thiz->decoration_width_get(r);
-#endif
-	return v;
-}
-
-static double _eon_theme_button_base_min_height_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Button_Base *thiz;
-	double v = 0;
-
-	thiz = _eon_theme_button_base_get(r);
-#if 0
-	if (thiz->decoration_height_get)
-		v = thiz->decoration_height_get(r);
-#endif
-	return v;
-}
-
-static double _eon_theme_button_base_max_height_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Button_Base *thiz;
-	double v = 0;
-
-	thiz = _eon_theme_button_base_get(r);
-#if 0
-	if (thiz->decoration_height_get)
-		v = thiz->decoration_height_get(r);
-#endif
-	return v;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -129,10 +77,6 @@ Enesim_Renderer * eon_theme_button_base_new(Eon_Theme_Button_Base_Descriptor *de
 	thiz->data = data;
 	thiz->free = descriptor->free;
 	thiz->margin_get = descriptor->margin_get;
-	pdescriptor.max_width_get = _eon_theme_button_base_max_width_get;
-	pdescriptor.min_width_get = _eon_theme_button_base_min_width_get;
-	pdescriptor.max_height_get = _eon_theme_button_base_max_height_get;
-	pdescriptor.min_height_get = _eon_theme_button_base_min_height_get;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_button_base_free;

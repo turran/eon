@@ -245,21 +245,27 @@ static void _eon_element_max_height_get(Enesim_Renderer *r, double *height)
 static void _eon_element_preferred_width_get(Enesim_Renderer *r, double *width)
 {
 	Eon_Element *thiz;
+	Ender_Element *e;
 
 	if (!width) return;
+	e = ender_element_renderer_from(r);
+	*width = -1;
 	thiz = _eon_element_get(r);
 	if (thiz->preferred_width_get)
-		*width = thiz->preferred_width_get(r);
+		*width = thiz->preferred_width_get(e);
 }
 
 static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height)
 {
 	Eon_Element *thiz;
+	Ender_Element *e;
 
 	if (!height) return;
+	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
+	*height = -1;
 	if (thiz->preferred_height_get)
-		*height = thiz->preferred_height_get(r);
+		*height = thiz->preferred_height_get(e);
 }
 
 static void _eon_element_force_redraw_set(Enesim_Renderer *r, Eina_Bool force)
@@ -483,7 +489,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->actual_y_set = descriptor->actual_y_set;
 	thiz->actual_width_set = descriptor->actual_width_set;
 	thiz->actual_height_set = descriptor->actual_height_set;
-	/* min */
+	/* preferred */
 	thiz->preferred_width_get = descriptor->preferred_width_get;
 	thiz->preferred_height_get = descriptor->preferred_height_get;
 	thiz->sw_setup = descriptor->sw_setup;

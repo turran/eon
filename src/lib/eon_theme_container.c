@@ -78,10 +78,6 @@ Enesim_Renderer * eon_theme_container_new(Eon_Theme_Container_Descriptor *descri
 	EINA_MAGIC_SET(thiz, EON_THEME_CONTAINER_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
-	pdescriptor.max_width_get = descriptor->max_width_get;
-	pdescriptor.min_width_get = descriptor->min_width_get;
-	pdescriptor.max_height_get = descriptor->max_height_get;
-	pdescriptor.min_height_get = descriptor->min_height_get;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_container_free;

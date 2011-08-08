@@ -22,21 +22,8 @@
 /**
  * @{
  */
-typedef double (*Eon_Theme_Widget_Max_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Widget_Max_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Widget_Min_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Widget_Min_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Widget_Preferred_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Widget_Preferred_Width_Get)(Enesim_Renderer *r);
-
 EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width);
 EAPI void eon_theme_widget_height_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_widget_max_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_widget_max_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_widget_min_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_widget_min_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_widget_preferred_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_widget_preferred_width_get(Enesim_Renderer *r, double *width);
 
 /**
  * @}

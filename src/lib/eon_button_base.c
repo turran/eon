@@ -63,7 +63,6 @@ static double _eon_button_base_min_max_width_get(Ender_Element *e, double cmv)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_button_base_get(r);
 
-
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_button_base_margin_get(theme_r, &margin);
 

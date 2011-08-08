@@ -38,6 +38,12 @@ typedef struct _Eon_Theme_Label
 	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
 	Eon_Theme_Label_Height_Get height_get;
 	Eon_Theme_Label_Width_Get width_get;
+	Eon_Theme_Label_Max_Width_Get max_width_get;
+	Eon_Theme_Label_Min_Width_Get min_width_get;
+	Eon_Theme_Label_Max_Height_Get max_height_get;
+	Eon_Theme_Label_Min_Height_Get min_height_get;
+	Eon_Theme_Label_Preferred_Width_Get preferred_width_get;
+	Eon_Theme_Label_Preferred_Height_Get preferred_height_get;
 	/* data needed for our own callbacks */
 	Enesim_Renderer *text;
 	Eina_Bool ellipsized;
@@ -108,30 +114,6 @@ static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 	{
 		return thiz->width_get(r);
 	}
-}
-
-static double _eon_theme_label_max_width_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	return thiz->width_get(r);
-}
-
-static double _eon_theme_label_min_height_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	return thiz->height_get(r);
-}
-
-static double _eon_theme_label_max_height_get(Enesim_Renderer *r)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	return thiz->height_get(r);
 }
 
 /* FIXME do we actually need this? */
@@ -216,27 +198,6 @@ EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descripto
 		thiz->ellipsize_set = descriptor->ellipsize_set;
 		thiz->ellipsize_get = descriptor->ellipsize_get;
 	}
-
-	/* the widget interface */
-	if (!descriptor->min_width_get)
-		pdescriptor.min_width_get = _eon_theme_label_min_width_get;
-	else
-		pdescriptor.min_width_get = descriptor->min_width_get;
-
-	if (!descriptor->max_width_get)
-		pdescriptor.max_width_get = _eon_theme_label_max_width_get;
-	else
-		pdescriptor.max_width_get = descriptor->max_width_get;
-
-	if (!descriptor->min_height_get)
-		pdescriptor.min_height_get = _eon_theme_label_min_height_get;
-	else
-		pdescriptor.min_height_get = descriptor->min_height_get;
-
-	if (!descriptor->max_height_get)
-		pdescriptor.max_height_get = _eon_theme_label_max_height_get;
-	else
-		pdescriptor.max_height_get = descriptor->max_height_get;
 
 	/* now the needed enesim functions */
 	pdescriptor.sw_setup = descriptor->sw_setup;
@@ -382,3 +343,103 @@ EAPI void eon_theme_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
 	thiz = _eon_theme_label_get(r);
 	thiz->ellipsize_set(r, enable);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_label_min_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(r);
+	if (!thiz) return;
+	if (thiz->min_width_get)
+		*width = thiz->min_width_get(r);
+	else
+		*width = thiz->width_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_label_min_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Label *thiz;
+
+	if (!height) return;
+	thiz = _eon_theme_label_get(r);
+	if (!thiz) return;
+	if (thiz->min_height_get)
+		*height = thiz->min_height_get(r);
+	else
+		*height = thiz->height_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_label_max_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(r);
+	if (!thiz) return;
+	if (thiz->max_width_get)
+		*width = thiz->max_width_get(r);
+	else
+		*width = thiz->width_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_label_max_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Label *thiz;
+
+	if (!height) return;
+	thiz = _eon_theme_label_get(r);
+	if (!thiz) return;
+	if (thiz->max_height_get)
+		*height = thiz->max_height_get(r);
+	else
+		*height = thiz->height_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_label_preferred_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(r);
+	if (!thiz) return;
+	if (thiz->preferred_width_get)
+		*width = thiz->preferred_width_get(r);
+	else
+		*width = _eon_theme_label_min_width_get(r);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_label_preferred_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Label *thiz;
+
+	if (!height) return;
+	thiz = _eon_theme_label_get(r);
+	if (!thiz) return;
+	if (thiz->preferred_height_get)
+		*height = thiz->preferred_height_get(r);
+	else
+		*height = -1;
+}
+

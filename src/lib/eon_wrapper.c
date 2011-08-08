@@ -97,11 +97,13 @@ static void _eon_wrapper_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static double _eon_wrapper_preferred_height_get(Enesim_Renderer *r)
+static double _eon_wrapper_preferred_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
 	Eina_Rectangle rect;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped_renderer) return 0;
 
@@ -109,11 +111,13 @@ static double _eon_wrapper_preferred_height_get(Enesim_Renderer *r)
 	return rect.h;
 }
 
-static double _eon_wrapper_preferred_width_get(Enesim_Renderer *r)
+static double _eon_wrapper_preferred_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
 	Eina_Rectangle rect;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped_renderer) return 0;
 
