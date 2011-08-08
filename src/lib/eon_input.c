@@ -27,13 +27,10 @@ struct _Eon_Input
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
 /**
  * Create a new input
  */
-EAPI Eon_Input * eon_input_new(void)
+Eon_Input * eon_input_new(void)
 {
 	Eon_Input *ei;
 
@@ -43,7 +40,7 @@ EAPI Eon_Input * eon_input_new(void)
 /**
  *
  */
-EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
+void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
 		unsigned int x, unsigned int y)
 {
 	Ender_Element *child;
@@ -107,7 +104,7 @@ EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
 /**
  *
  */
-EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l)
+void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l)
 {
 	Eon_Event_Mouse_In ev;
 	Ender_Element *child;
@@ -128,7 +125,7 @@ EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l)
 /**
  *
  */
-EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l)
+void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l)
 {
 	Eon_Event_Mouse_Out ev;
 	Ender_Element *child;
@@ -148,7 +145,7 @@ EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l)
 	ender_event_dispatch(child, "MouseOut", &ev);
 }
 
-EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l)
+void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l)
 {
 	Eon_Event_Mouse_Down ev;
 	Ender_Element *child;
@@ -169,7 +166,7 @@ EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l)
 	ender_event_dispatch(child, "MouseDown", &ev);
 }
 
-EAPI void eon_input_feed_mouse_up(Eon_Input *i)
+void eon_input_feed_mouse_up(Eon_Input *i)
 {
 	Eon_Event_Mouse_Up ev;
 	Ender_Element *child;
@@ -192,3 +189,17 @@ EAPI void eon_input_feed_mouse_up(Eon_Input *i)
 	}
 	i->pointer.grabbed = NULL;
 }
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+const char * eon_input_event_names[EON_INPUT_EVENTS] = {
+	"MouseMove",
+	"MouseIn",
+	"MouseOut",
+	"MouseDown",
+	"MouseUp",
+	"MouseClick",
+	"MouseDragStart",
+	"MouseDragEnd",
+};
+

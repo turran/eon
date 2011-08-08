@@ -50,6 +50,7 @@ Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
 
 #include "eon_basic_private.h"
+#include "private/eon_input_private.h"
 #include "private/eon_generated_private.h"
 #include "private/eon_backend_private.h"
 #include "private/eon_ecore_common_private.h"
@@ -68,8 +69,6 @@ typedef struct _Eon_Toggle_Descriptor
 {
 
 } Eon_Toggle_Descriptor;
-
-/* widget */
 
 #endif
 

@@ -42,6 +42,7 @@ typedef struct _Eon_Container
 	Eon_Container_Max_Height_Get max_height_get;
 	Eon_Container_Preferred_Width_Get preferred_width_get;
 	Eon_Container_Preferred_Height_Get preferred_height_get;
+	Eon_Input_Event_Mask event_mask;
 	void *data;
 } Eon_Container;
 
@@ -82,6 +83,12 @@ static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element *
 
 	*content = thiz->content;
 }
+
+static void _eon_container_pass_event(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	/* check that the event coordinates are on the content for mouse events */
+	printf("passing event %s\n", event_name);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -89,9 +96,20 @@ static void _eon_container_initialize(Ender_Element *e)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
+	int i;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
+	/* we first register our own events */
+	for (i = 0; i < EON_INPUT_EVENTS; i++)
+	{
+		if (thiz->event_mask & (1 << i))
+		{
+			/* register the event callback */
+
+		}
+	}
+
 	if (thiz->initialize)
 		thiz->initialize(e);
 }
@@ -239,6 +257,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->max_width_get = descriptor->max_width_get;
 	thiz->min_height_get = descriptor->min_height_get;
 	thiz->max_height_get = descriptor->max_height_get;
+	thiz->event_mask = descriptor->event_mask;
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;

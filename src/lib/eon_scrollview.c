@@ -41,17 +41,12 @@ static inline Eon_Scrollview * _eon_scrollview_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _scrollview_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static void _scrollview_mouse_drag_start(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	printf("mouse clicked\n");
+	printf("mouse drag\n");
 }
 
-static void _scrollview_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	printf("mouse move\n");
-}
-
-static void _scrollview_mouse_drag(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static void _scrollview_mouse_drag_stop(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	printf("mouse drag\n");
 }
@@ -65,8 +60,8 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
-	ender_event_listener_add(e, "MouseClick", _scrollview_mouse_click, NULL);
-	ender_event_listener_add(e, "MouseMove", _scrollview_mouse_move, NULL);
+	ender_event_listener_add(e, "MouseDragStart", _scrollview_mouse_drag_start, NULL);
+	ender_event_listener_add(e, "MouseDragStop", _scrollview_mouse_drag_stop, NULL);
 	/* register every event needed for a scrollview
 	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
 	 */
@@ -85,7 +80,7 @@ static Eon_Container_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-EAPI Enesim_Renderer * _eon_scrollview_new(void)
+static Enesim_Renderer * _eon_scrollview_new(void)
 {
 	Eon_Scrollview *thiz;
 	Enesim_Renderer *r;

@@ -6,13 +6,33 @@
  */
 typedef struct _Eon_Input Eon_Input;
 
-EAPI Eon_Input * eon_input_new(void);
-EAPI void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
-		unsigned int x, unsigned int y);
-EAPI void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l);
-EAPI void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l);
-EAPI void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l);
-EAPI void eon_input_feed_mouse_up(Eon_Input *i);
+typedef enum _Eon_Input_Event
+{
+	EON_INPUT_EVENT_MOUSE_MOVE,
+	EON_INPUT_EVENT_MOUSE_IN,
+	EON_INPUT_EVENT_MOUSE_OUT, 
+	EON_INPUT_EVENT_MOUSE_DOWN,
+	EON_INPUT_EVENT_MOUSE_UP,
+	EON_INPUT_EVENT_MOUSE_CLICK,
+	EON_INPUT_EVENT_MOUSE_DRAG_START,
+	EON_INPUT_EVENT_MOUSE_DRAG_STOP,
+	EON_INPUT_EVENTS,
+} Eon_Input_Event;
+
+/* some helpers */
+typedef enum _Eon_Input_Event_Mask
+{
+	EON_INPUT_EVENT_MASK_MOUSE_MOVE 	= (1 << EON_INPUT_EVENT_MOUSE_MOVE),
+	EON_INPUT_EVENT_MASK_MOUSE_IN 		= (1 << EON_INPUT_EVENT_MOUSE_IN),
+	EON_INPUT_EVENT_MASK_MOUSE_OUT 		= (1 << EON_INPUT_EVENT_MOUSE_OUT),
+	EON_INPUT_EVENT_MASK_MOUSE_DOWN 	= (1 << EON_INPUT_EVENT_MOUSE_DOWN),
+	EON_INPUT_EVENT_MASK_MOUSE_UP 		= (1 << EON_INPUT_EVENT_MOUSE_UP),
+	EON_INPUT_EVENT_MASK_MOUSE_CLICK 	= (1 << EON_INPUT_EVENT_MOUSE_CLICK),
+	EON_INPUT_EVENT_MASK_MOUSE_DRAG_START	= (1 << EON_INPUT_EVENT_MOUSE_DRAG_START),
+	EON_INPUT_EVENT_MASK_MOUSE_DRAG_STOP	= (1 << EON_INPUT_EVENT_MOUSE_DRAG_STOP),
+} Eon_Input_Event_Mask;
+
+extern const char * eon_input_event_names[EON_INPUT_EVENTS];
 
 /**
  * @}

@@ -62,15 +62,36 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 }
 #endif
 
-static void _eon_layout_initialize(Ender_Element *ender)
+static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+	Ender_Element *child;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+
+	/* ok we are inside the layout, now pass the event */
+	if (!thiz->child_at)
+		return;
+	//child = thiz->child_at(r, x, y);
+	printf("passing event %s\n", event_name);
+}
+
+static void _eon_layout_initialize(Ender_Element *e)
 {
 	Eon_Layout *thiz;
 	Enesim_Renderer *r;
+	int i;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_layout_mouse_move, NULL);
+	/* we should register all the callbacks so whenever
+	 * something happens on a child layout we propagate
+	 */
 	if (thiz->initialize)
-		thiz->initialize(ender);
+		thiz->initialize(e);
 }
 
 static void _eon_layout_free(Enesim_Renderer *r)
