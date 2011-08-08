@@ -13,6 +13,9 @@ namespace "eon" {
 	class "basic_button" : "theme_button" {
 		color "foreground_color";
 		color "border_color";
+		double "horizontal_padding";
+		double "vertical_padding";
+		double "radius";
 	};
 
 	class "basic_checkbox" : "theme_checkbox" {

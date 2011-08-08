@@ -24,16 +24,15 @@
 typedef struct _Button
 {
 	/* properties */
+	double horizontal_padding;
+	double vertical_padding;
+	double radius;
 	/* private */
 	Enesim_Renderer *rectangle;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
 	Enesim_Renderer_Sw_Fill fill;
 } Button;
-
-static const int horizontal_padding = 10;
-static const int vertical_padding = 3;
-static const int rectangle_radius = 8;
 
 static inline Button * _button_get(Enesim_Renderer *r)
 {
@@ -57,28 +56,23 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	double width, height;
 
 	thiz = _button_get(r);
-	/* add 6px of padding to the content */
-	/* set the size of the rectangle based on the size of the theme */
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
-	/* always center */
-	if (thiz->content)
-	{
-		enesim_renderer_origin_set(thiz->content, horizontal_padding,
-				vertical_padding);
-	}
 }
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
 static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	margin->left = horizontal_padding;
-	margin->right = horizontal_padding;
-	margin->top = vertical_padding;
-	margin->bottom = vertical_padding;
+	Button *thiz;
+
+	thiz = _button_get(r);
+	margin->left = thiz->radius + thiz->horizontal_padding;
+	margin->right = thiz->radius + thiz->horizontal_padding;
+	margin->top = thiz->radius + thiz->vertical_padding;
+	margin->bottom = thiz->radius + thiz->vertical_padding;
 }
 
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -159,6 +153,9 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 
 	thiz = calloc(1, sizeof(Button));
 	if (!thiz) return NULL;
+	thiz->horizontal_padding = 0;
+	thiz->vertical_padding = 0;
+	thiz->radius = 8;
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
@@ -169,7 +166,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->rectangle = r;
 	/* setup the initial state */
 	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 1);
-	enesim_renderer_rectangle_corner_radius_set(r, rectangle_radius);
+	enesim_renderer_rectangle_corner_radius_set(r, thiz->radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
@@ -210,3 +207,31 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
 	thiz = _button_get(r);
 	enesim_renderer_shape_stroke_color_set(thiz->rectangle, color);
 }
+
+EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double padding)
+{
+
+	Button *thiz;
+
+	thiz = _button_get(r);
+	thiz->horizontal_padding = padding;
+}
+
+EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double padding)
+{
+
+	Button *thiz;
+
+	thiz = _button_get(r);
+	thiz->vertical_padding = padding;
+}
+
+EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
+{
+
+	Button *thiz;
+
+	thiz = _button_get(r);
+	thiz->radius = radius;
+}
+
