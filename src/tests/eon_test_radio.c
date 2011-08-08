@@ -34,7 +34,6 @@ int main(int argc, char **argv)
 		eon_layout_child_add(layout, radio);
 	}
 
-
 	ecore_main_loop_begin();
 	ecore_shutdown();
 	eon_shutdown();

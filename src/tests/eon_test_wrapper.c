@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	rectangle = ender_element_new("rectangle");
 	ender_element_value_set(rectangle, "fill_color", 0xff00ffff, NULL);
 	ender_element_value_set(rectangle, "stroke_color", 0xffff0000, NULL);
-	ender_element_value_set(rectangle, "stroke_weight", 2, NULL);
+	ender_element_value_set(rectangle, "stroke_weight", 2.0, NULL);
 	ender_element_value_set(rectangle, "draw_mode", 2, NULL);
 	ender_element_value_set(rectangle, "width", 100, NULL);
 	ender_element_value_set(rectangle, "height", 100, NULL);

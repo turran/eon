@@ -129,48 +129,56 @@ static double _eon_wrapper_min_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
+	Eina_Rectangle rect;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return 0;
+	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
-	return 0;
+	return rect.w;
 }
 
 static double _eon_wrapper_max_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
+	Eina_Rectangle rect;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return DBL_MAX;
+	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
-	return DBL_MAX;
+	return rect.w;
 }
 
 static double _eon_wrapper_min_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
+	Eina_Rectangle rect;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return 0;
+	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
-	return 0;
+	return rect.h;
 }
 
 static double _eon_wrapper_max_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
+	Eina_Rectangle rect;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return DBL_MAX;
+	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
-	return DBL_MAX;
+	return rect.h;
 }
 
 static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
