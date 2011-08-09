@@ -43,6 +43,7 @@ typedef struct _Eon_Layout
 	unsigned int width;
 	unsigned int height;
 	void *data;
+	Eina_Hash *input_states;
 } Eon_Layout;
 
 #define _eon_layout_get(r) \
@@ -62,20 +63,94 @@ static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
 }
 #endif
 
-static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static Eon_Input_State * _eon_layout_input_state_get(Eon_Layout *thiz, Ender_Element *e, Eon_Input *input)
+{
+	Eon_Input_State *eis;
+
+	if (!thiz->input_states)
+		thiz->input_states = eina_hash_pointer_new(NULL);
+	eis = eina_hash_find(thiz->input_states, (const void *)&input);
+	if (!eis)
+	{
+		eis = eon_layout_input_state_new(e, input);
+		eina_hash_add(thiz->input_states, (const void *)&input, eis);
+	}
+	return eis;
+}
+
+static void _eon_layout_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Layout *thiz;
-	Ender_Element *child;
+	Eon_Event_Mouse_Down *ev = event_data;
+	Eon_Input_State *eis;
 	Enesim_Renderer *r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
 
-	/* ok we are inside the layout, now pass the event */
-	if (!thiz->child_at)
-		return;
-	//child = thiz->child_at(r, x, y);
-	printf("passing event %s\n", event_name);
+	eis = _eon_layout_input_state_get(thiz, e, ev->input);
+	printf("passing mouse down\n");
+	eon_input_state_feed_mouse_down(eis);
+}
+
+static void _eon_layout_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+	Eon_Event_Mouse_Up *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+
+	eis = _eon_layout_input_state_get(thiz, e, ev->input);
+	printf("passing mouse up\n");
+	eon_input_state_feed_mouse_up(eis);
+}
+
+static void _eon_layout_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+	Eon_Event_Mouse_In *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+
+	eis = _eon_layout_input_state_get(thiz, e, ev->input);
+	printf("passing mouse in\n");
+	eon_input_state_feed_mouse_in(eis);
+}
+
+static void _eon_layout_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+	Eon_Event_Mouse_Out *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+
+	eis = _eon_layout_input_state_get(thiz, e, ev->input);
+	printf("passing mouse out\n");
+	eon_input_state_feed_mouse_out(eis);
+}
+
+static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+	Eon_Event_Mouse_Move *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+
+	eis = _eon_layout_input_state_get(thiz, e, ev->input);
+	printf("passing mouse move\n");
+	eon_input_state_feed_mouse_move(eis, 0, 0);
 }
 
 static void _eon_layout_initialize(Ender_Element *e)
@@ -87,6 +162,10 @@ static void _eon_layout_initialize(Ender_Element *e)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_layout_mouse_move, NULL);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], _eon_layout_mouse_in, NULL);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], _eon_layout_mouse_out, NULL);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN], _eon_layout_mouse_down, NULL);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP], _eon_layout_mouse_up, NULL);
 	/* we should register all the callbacks so whenever
 	 * something happens on a child layout we propagate
 	 */
@@ -148,6 +227,18 @@ static void _eon_layout_child_clear(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eon_Input_State * eon_layout_input_state_new(Ender_Element *e, Eon_Input *input)
+{
+	Eon_Layout *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+	if (thiz->child_at)
+		return eon_input_state_new(input, e, thiz->child_at);
+	return NULL;
+}
+
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data)
 {
@@ -380,6 +471,7 @@ EAPI void eon_layout_child_clear(Ender_Element *e)
 	ender_element_value_clear(e, "child");
 }
 
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -427,3 +519,4 @@ EAPI Ender_Element * eon_layout_child_get_at_destination_coord(Enesim_Renderer *
 	}
 	return eon_layout_child_get_at_coord(r, rx, ry);
 }
+#endif

@@ -75,6 +75,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
+	.pass_events = EINA_TRUE,
 	.name = "scrollview",
 };
 /*----------------------------------------------------------------------------*

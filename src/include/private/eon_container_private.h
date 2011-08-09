@@ -20,7 +20,7 @@ typedef struct _Eon_Container_Descriptor
 	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
 	const char *name;
-	Eon_Input_Event_Mask event_mask;
+	Eina_Bool pass_events;
 } Eon_Container_Descriptor;
 
 Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *data);

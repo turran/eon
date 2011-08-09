@@ -282,16 +282,18 @@ static double _eon_stack_min_height_get(Ender_Element *e)
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
-static Ender_Element * _eon_stack_child_at(Enesim_Renderer *r, double x, double y)
+static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
-	Eina_List *l;
 	Ender_Element *child = NULL;
+	Enesim_Renderer *r;
+	Eina_List *l;
 
+	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return NULL;
-	//printf("stack looking for a child at %g %g\n", x, y);
+	printf("stack looking for a child at %g %g\n", x, y);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *rchild;
@@ -318,13 +320,16 @@ static Ender_Element * _eon_stack_child_at(Enesim_Renderer *r, double x, double 
 		}
 		if (child_x <= child_w && child_y <= child_h)
 		{
+#if 0
 			if (eon_is_layout(rchild))
 			{
 				printf("inside a layout %p %g %g\n", rchild, child_x, child_y);
 				return eon_layout_child_get_at_coord(rchild, child_x, child_y);
 			}
 			/* now check if the renderer is really at that coordinate */
-			else if (enesim_renderer_is_inside(rchild, child_x, child_y))
+			else
+#endif
+			if (enesim_renderer_is_inside(rchild, child_x, child_y))
 			{
 				child = ech->ender;
 				break;

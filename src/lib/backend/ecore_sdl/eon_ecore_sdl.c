@@ -33,6 +33,7 @@ typedef struct _SDL
 	SDL_Surface *native_surface;
 	Enesim_Surface *surface;
 	Eon_Input *input;
+	Eon_Input_State *input_state;
 	Ender_Element *layout;
 	Enesim_Buffer *buffer;
 	unsigned int width;
@@ -64,8 +65,8 @@ static Eina_Bool _mouse_in(void *data, int type, void *event)
 	SDL *thiz = data;
 	Ecore_Event_Mouse_IO *ev = event;
 
-	eon_input_feed_mouse_in(thiz->input, thiz->layout);
-	eon_input_feed_mouse_move(thiz->input, thiz->layout, ev->x, ev->y);
+	eon_input_state_feed_mouse_in(thiz->input_state);
+	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -74,8 +75,8 @@ static Eina_Bool _mouse_out(void *data, int type, void *event)
 	SDL *thiz = data;
 	Ecore_Event_Mouse_IO *ev = event;
 
-	eon_input_feed_mouse_move(thiz->input, thiz->layout, ev->x, ev->y);
-	eon_input_feed_mouse_out(thiz->input, thiz->layout);
+	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y);
+	eon_input_state_feed_mouse_out(thiz->input_state);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -94,7 +95,7 @@ static Eina_Bool _mouse_move(void *data, int type, void *event)
 	SDL *thiz = data;
 	Ecore_Event_Mouse_Move *ev = event;
 
-	eon_input_feed_mouse_move(thiz->input, thiz->layout, ev->x, ev->y);
+	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -102,7 +103,7 @@ static Eina_Bool _mouse_button_down(void *data, int type, void *event)
 {
 	SDL *thiz = data;
 
-	eon_input_feed_mouse_down(thiz->input, thiz->layout);
+	eon_input_state_feed_mouse_down(thiz->input_state);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -110,7 +111,7 @@ static Eina_Bool _mouse_button_up(void *data, int type, void *event)
 {
 	SDL *thiz = data;
 
-	eon_input_feed_mouse_up(thiz->input);
+	eon_input_state_feed_mouse_up(thiz->input_state);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -189,6 +190,9 @@ static Eina_Bool _sdl_setup(Ender_Element *layout, unsigned int width, unsigned 
 	thiz->width = width;
 	thiz->height = height;
 	thiz->input = eon_input_new();
+
+	thiz->input_state = eon_layout_input_state_new(layout, thiz->input);
+
 	/* TODO create a buffer based on the real format */
 	buffer_data.rgb888.plane0_stride = thiz->native_surface->pitch;
 	buffer_data.rgb888.plane0 = thiz->native_surface->pixels;

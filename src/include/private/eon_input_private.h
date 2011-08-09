@@ -18,17 +18,18 @@
  * the code on the input system (something
  * like and interface)
  */
-typedef struct _Eon_Input_State
-{
 
-} Eon_Input_State;
+typedef struct _Eon_Input_State Eon_Input_State;
+typedef Ender_Element * (*Eon_Input_Element_Get)(Ender_Element *e, double x, double y);
 
 Eon_Input * eon_input_new(void);
-void eon_input_feed_mouse_move(Eon_Input *ei, Ender_Element *l,
+
+Eon_Input_State * eon_input_state_new(Eon_Input *i, Ender_Element *e, Eon_Input_Element_Get element_get);
+void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		unsigned int x, unsigned int y);
-void eon_input_feed_mouse_in(Eon_Input *ei, Ender_Element *l);
-void eon_input_feed_mouse_out(Eon_Input *ei, Ender_Element *l);
-void eon_input_feed_mouse_down(Eon_Input *ei, Ender_Element *l);
-void eon_input_feed_mouse_up(Eon_Input *i);
+void eon_input_state_feed_mouse_in(Eon_Input_State *eis);
+void eon_input_state_feed_mouse_out(Eon_Input_State *eis);
+void eon_input_state_feed_mouse_down(Eon_Input_State *eis);
+void eon_input_state_feed_mouse_up(Eon_Input_State *eis);
 
 #endif

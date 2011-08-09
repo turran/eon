@@ -4,7 +4,7 @@
 typedef void (*Eon_Layout_Child_Add)(Enesim_Renderer *r, Ender_Element *child);
 typedef void (*Eon_Layout_Child_Remove)(Enesim_Renderer *r, Ender_Element *child);
 typedef void (*Eon_Layout_Child_Clear)(Enesim_Renderer *r);
-typedef Ender_Element * (*Eon_Layout_Child_At)(Enesim_Renderer *r, double x, double y);
+typedef Ender_Element * (*Eon_Layout_Child_At)(Ender_Element *e, double x, double y);
 
 typedef struct _Eon_Layout_Descriptor
 {
@@ -29,5 +29,7 @@ void eon_layout_actual_height_get(Ender_Element *e, double *height);
 
 void eon_layout_child_real_width_get(Ender_Element *e, Ender_Element *child, double *width);
 void eon_layout_child_real_height_get(Ender_Element *e, Ender_Element *child, double *height);
+
+Eon_Input_State * eon_layout_input_state_new(Ender_Element *e, Eon_Input *i);
 
 #endif

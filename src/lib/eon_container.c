@@ -42,8 +42,9 @@ typedef struct _Eon_Container
 	Eon_Container_Max_Height_Get max_height_get;
 	Eon_Container_Preferred_Width_Get preferred_width_get;
 	Eon_Container_Preferred_Height_Get preferred_height_get;
-	Eon_Input_Event_Mask event_mask;
+	Eina_Bool pass_events;
 	void *data;
+	Eina_Hash *input_states;
 } Eon_Container;
 
 static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
@@ -52,6 +53,113 @@ static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
 
 	thiz = eon_widget_data_get(r);
 	return thiz;
+}
+
+Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	double ax, ay;
+	double aw, ah;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	r = ender_element_renderer_get(thiz->content);
+	eon_element_actual_size_get(r, &aw, &ah);
+	eon_element_actual_position_get(r, &ax, &ay);
+	printf("FIXME double check the position %gx%g-%gx%g\n", ax, ay, aw, ah);
+	return thiz->content;
+}
+
+static Eon_Input_State * _eon_container_input_state_get(Eon_Container *thiz, Ender_Element *e, Eon_Input *input)
+{
+	Eon_Input_State *eis;
+
+	if (!thiz->input_states)
+		thiz->input_states = eina_hash_pointer_new(NULL);
+	eis = eina_hash_find(thiz->input_states, (const void *)&input);
+	if (!eis)
+	{
+		eis = eon_input_state_new(input, e, _eon_container_element_get);
+		eina_hash_add(thiz->input_states, (const void *)&input, eis);
+	}
+	return eis;
+}
+
+static void _eon_container_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Container *thiz;
+	Eon_Event_Mouse_Down *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	eis = _eon_container_input_state_get(thiz, e, ev->input);
+	printf("passing mouse down\n");
+	eon_input_state_feed_mouse_down(eis);
+}
+
+static void _eon_container_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Container *thiz;
+	Eon_Event_Mouse_Up *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	eis = _eon_container_input_state_get(thiz, e, ev->input);
+	printf("passing mouse up\n");
+	eon_input_state_feed_mouse_up(eis);
+}
+
+static void _eon_container_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Container *thiz;
+	Eon_Event_Mouse_In *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	eis = _eon_container_input_state_get(thiz, e, ev->input);
+	printf("passing mouse in\n");
+	eon_input_state_feed_mouse_in(eis);
+}
+
+static void _eon_container_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Container *thiz;
+	Eon_Event_Mouse_Out *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	eis = _eon_container_input_state_get(thiz, e, ev->input);
+	printf("passing mouse out\n");
+	eon_input_state_feed_mouse_out(eis);
+}
+
+static void _eon_container_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Container *thiz;
+	Eon_Event_Mouse_Move *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	eis = _eon_container_input_state_get(thiz, e, ev->input);
+	printf("passing mouse move\n");
+	eon_input_state_feed_mouse_move(eis, 0, 0);
 }
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -83,12 +191,6 @@ static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element *
 
 	*content = thiz->content;
 }
-
-static void _eon_container_pass_event(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	/* check that the event coordinates are on the content for mouse events */
-	printf("passing event %s\n", event_name);
-}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -96,18 +198,17 @@ static void _eon_container_initialize(Ender_Element *e)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
-	int i;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
 	/* we first register our own events */
-	for (i = 0; i < EON_INPUT_EVENTS; i++)
+	if (thiz->pass_events)
 	{
-		if (thiz->event_mask & (1 << i))
-		{
-			/* register the event callback */
-
-		}
+		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_container_mouse_move, NULL);
+		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], _eon_container_mouse_in, NULL);
+		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], _eon_container_mouse_out, NULL);
+		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN], _eon_container_mouse_down, NULL);
+		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP], _eon_container_mouse_up, NULL);
 	}
 
 	if (thiz->initialize)
@@ -257,7 +358,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->max_width_get = descriptor->max_width_get;
 	thiz->min_height_get = descriptor->min_height_get;
 	thiz->max_height_get = descriptor->max_height_get;
-	thiz->event_mask = descriptor->event_mask;
+	thiz->pass_events = descriptor->pass_events;
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;

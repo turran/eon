@@ -41,26 +41,32 @@ extern const char * eon_input_event_names[EON_INPUT_EVENTS];
 
 typedef struct _Eon_Event_Mouse_Click
 {
+	Eon_Input *input;
 } Eon_Event_Mouse_Click;
 
 typedef struct _Eon_Event_Mouse_Up
 {
+	Eon_Input *input;
 } Eon_Event_Mouse_Up;
 
 typedef struct _Eon_Event_Mouse_Down
 {
+	Eon_Input *input;
 } Eon_Event_Mouse_Down;
 
 typedef struct _Eon_Event_Mouse_Move
 {
+	Eon_Input *input;
 } Eon_Event_Mouse_Move;
 
 typedef struct _Eon_Event_Mouse_In
 {
+	Eon_Input *input;
 } Eon_Event_Mouse_In;
 
 typedef struct _Eon_Event_Mouse_Out
 {
+	Eon_Input *input;
 } Eon_Event_Mouse_Out;
 
 
