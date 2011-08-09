@@ -153,6 +153,23 @@ static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, voi
 	eon_input_state_feed_mouse_move(eis, 0, 0);
 }
 
+static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Layout *thiz;
+	Eon_Event_Mouse_Wheel *ev = event_data;
+	Eon_Input_State *eis;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+
+	eis = _eon_layout_input_state_get(thiz, e, ev->input);
+	printf("passing mouse wheel\n");
+	/* FIXME */
+	eon_input_state_feed_mouse_wheel(eis, 0);
+}
+
+
 static void _eon_layout_initialize(Ender_Element *e)
 {
 	Eon_Layout *thiz;
@@ -166,6 +183,7 @@ static void _eon_layout_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], _eon_layout_mouse_out, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN], _eon_layout_mouse_down, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP], _eon_layout_mouse_up, NULL);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], _eon_layout_mouse_wheel, NULL);
 	/* we should register all the callbacks so whenever
 	 * something happens on a child layout we propagate
 	 */

@@ -50,6 +50,11 @@ static void _scrollview_mouse_drag_stop(Ender_Element *e, const char *event_name
 {
 	printf("mouse drag\n");
 }
+
+static void _scrollview_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	printf("mouse wheel\n");
+}
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
@@ -62,6 +67,7 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 	thiz = _eon_scrollview_get(r);
 	ender_event_listener_add(e, "MouseDragStart", _scrollview_mouse_drag_start, NULL);
 	ender_event_listener_add(e, "MouseDragStop", _scrollview_mouse_drag_stop, NULL);
+	ender_event_listener_add(e, "MouseWheel", _scrollview_mouse_wheel, NULL);
 	/* register every event needed for a scrollview
 	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
 	 */

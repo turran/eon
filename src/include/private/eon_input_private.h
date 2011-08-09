@@ -31,5 +31,6 @@ void eon_input_state_feed_mouse_in(Eon_Input_State *eis);
 void eon_input_state_feed_mouse_out(Eon_Input_State *eis);
 void eon_input_state_feed_mouse_down(Eon_Input_State *eis);
 void eon_input_state_feed_mouse_up(Eon_Input_State *eis);
+void eon_input_state_feed_mouse_wheel(Eon_Input_State *eis, int direction);
 
 #endif

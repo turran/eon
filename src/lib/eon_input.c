@@ -220,6 +220,19 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 	}
 	eis->pointer.grabbed = NULL;
 }
+
+void eon_input_state_feed_mouse_wheel(Eon_Input_State *eis, int direction)
+{
+	Eon_Event_Mouse_Wheel ev;
+	Ender_Element *child;
+
+	/* send the event to the grabbed object */
+	child = eis->pointer.last;
+	if (!child)
+		return;
+	ev.input = eis->input;
+	ender_event_dispatch(eis->pointer.last, "MouseWheel", &ev);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -229,6 +242,7 @@ const char * eon_input_event_names[EON_INPUT_EVENTS] = {
 	"MouseOut",
 	"MouseDown",
 	"MouseUp",
+	"MouseWheel",
 	"MouseClick",
 	"MouseDragStart",
 	"MouseDragEnd",

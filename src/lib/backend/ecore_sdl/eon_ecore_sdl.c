@@ -82,11 +82,10 @@ static Eina_Bool _mouse_out(void *data, int type, void *event)
 
 static Eina_Bool _mouse_wheel(void *data, int type, void *event)
 {
-/*
 	SDL *thiz = data;
 	Ecore_Event_Mouse_Wheel *ev = event;
-*/
 
+	eon_input_state_feed_mouse_wheel(thiz->input_state, ev->direction);
 	return ECORE_CALLBACK_RENEW;
 }
 
