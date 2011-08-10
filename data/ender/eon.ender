@@ -28,6 +28,7 @@ namespace "eon" {
 		rel int "child_horizontal_alignment";
 		int "direction";
 		bool "last_expand";
+		bool "homogeneous";
 	};
 
 	class "canvas" : "layout" {
