@@ -22,15 +22,9 @@
 /**
  * @{
  */
-typedef void (*Eon_Theme_Scrollview_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
-typedef void (*Eon_Theme_Scrollview_HBar_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geom);
-typedef void (*Eon_Theme_Scrollview_VBar_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geom);
 
 typedef struct _Eon_Theme_Scrollview_Descriptor
 {
-	Eon_Theme_Scrollview_Margin_Get margin_get;
-	Eon_Theme_Scrollview_HBar_Geometry_Get hbar_geometry_get;
-	Eon_Theme_Scrollview_VBar_Geometry_Get vbar_geometry_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -41,6 +35,10 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 		void *data);
 EAPI Eina_Bool eon_is_theme_scrollview(Enesim_Renderer *r);
 EAPI void * eon_theme_scrollview_data_get(Enesim_Renderer *r);
+EAPI void eon_theme_scrollview_hbar_set(Enesim_Renderer *r, Enesim_Renderer *hbar);
+EAPI void eon_theme_scrollview_hbar_get(Enesim_Renderer *r, Enesim_Renderer **hbar);
+EAPI void eon_theme_scrollview_vbar_set(Enesim_Renderer *r, Enesim_Renderer *vbar);
+EAPI void eon_theme_scrollview_vbar_get(Enesim_Renderer *r, Enesim_Renderer **vbar);
 
 /**
  * @}

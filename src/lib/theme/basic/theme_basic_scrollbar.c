@@ -59,7 +59,13 @@ static double _scrollbar_min_width_get(Enesim_Renderer *r)
 
 static double _scrollbar_max_width_get(Enesim_Renderer *r)
 {
-	return DBL_MAX;
+	Eon_Orientation orientation;
+
+	eon_theme_scrollbar_orientation_get(r, &orientation);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+		return DBL_MAX;
+	else
+		return 16;
 }
 
 static double _scrollbar_min_height_get(Enesim_Renderer *r)
@@ -69,7 +75,13 @@ static double _scrollbar_min_height_get(Enesim_Renderer *r)
 
 static double _scrollbar_max_height_get(Enesim_Renderer *r)
 {
-	return DBL_MAX;
+	Eon_Orientation orientation;
+
+	eon_theme_scrollbar_orientation_get(r, &orientation);
+	if (orientation == EON_ORIENTATION_VERTICAL)
+		return DBL_MAX;
+	else
+		return 16;
 }
 
 static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
@@ -82,8 +94,8 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	enesim_renderer_rectangle_width_set(thiz->bar, 22);
-	enesim_renderer_rectangle_height_set(thiz->bar, 22);
+	enesim_renderer_rectangle_width_set(thiz->bar, 16);
+	enesim_renderer_rectangle_height_set(thiz->bar, 16);
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
 		printf("failed 1\n");
@@ -148,6 +160,9 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto bar_err;
 	thiz->bar = r;
+	enesim_renderer_shape_fill_color_set(r, 0xff222222);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_checker_new();
 	if (!r) goto background_err;
@@ -156,6 +171,7 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	enesim_renderer_checker_height_set(r, 4);
 	enesim_renderer_checker_even_color_set(r, 0xaaaaaaaa);
 	enesim_renderer_checker_odd_color_set(r, 0xaa000000);
+	enesim_renderer_rop_set(r, ENESIM_FILL);
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;

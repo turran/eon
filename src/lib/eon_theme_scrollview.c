@@ -38,8 +38,10 @@
 typedef struct _Eon_Theme_Scrollview
 {
 	EINA_MAGIC;
+	/* properties */
+	Enesim_Renderer *hbar;
+	Enesim_Renderer *vbar;
 	/* private */
-	Eon_Theme_Scrollview_Margin_Get margin_get;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Scrollview;
@@ -65,14 +67,6 @@ static void _eon_theme_scrollview_free(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_scrollview_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
-{
-	Eon_Theme_Scrollview *thiz;
-
-	thiz = _eon_theme_scrollview_get(r);
-	if (thiz->margin_get)
-		thiz->margin_get(r, margin);
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -92,12 +86,6 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 	thiz->data = data;
 	thiz->free = descriptor->free;
 
-	thiz->margin_get = descriptor->margin_get;
-#if THEME_NEW	
-	pdescriptor.content_position_get = descriptor->content_position_get;
-	pdescriptor.decoration_width_get = descriptor->decoration_width_get;
-	pdescriptor.decoration_height_get = descriptor->decoration_height_get;
-#endif
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_scrollview_free;
@@ -132,5 +120,53 @@ EAPI void * eon_theme_scrollview_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_theme_scrollview_get(r);
 	return thiz->data;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollview_hbar_set(Enesim_Renderer *r, Enesim_Renderer *hbar)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	thiz->hbar = hbar;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollview_hbar_get(Enesim_Renderer *r, Enesim_Renderer **hbar)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	*hbar = thiz->hbar;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollview_vbar_set(Enesim_Renderer *r, Enesim_Renderer *vbar)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	thiz->vbar = vbar;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollview_vbar_get(Enesim_Renderer *r, Enesim_Renderer **vbar)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	*vbar = thiz->vbar;
 }
 

@@ -56,42 +56,6 @@ static void _scrollview_draw(Enesim_Renderer *r, int x, int y, unsigned int len,
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollview interface                     *
  *----------------------------------------------------------------------------*/
-static void _scrollview_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
-{
-	Theme_Basic_Scrollview *thiz;
-
-	thiz = _scrollview_get(r);
-	if (thiz->over)
-	{
-		margin->left = 0;
-		margin->right = 0;
-		margin->top = 0;
-		margin->bottom = 0;
-	}
-	else
-	{
-		margin->left = 0;
-		margin->right = thiz->bar_width;
-		margin->top = 0;
-		margin->bottom = thiz->bar_width;
-	}
-}
-
-#if 0
-static void _scrollview_hbar_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geom)
-{
-	Theme_Basic_Scrollview *thiz;
-
-	thiz = _scrollview_get(r);
-	margin->left = 
-}
-
-static void _scrollview_vbar_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geom)
-{
-
-}
-#endif
-
 static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Theme_Basic_Scrollview *thiz;
@@ -104,6 +68,9 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
+
+	eon_theme_scrollview_hbar_get(r, &thiz->hbar); 
+	eon_theme_scrollview_vbar_get(r, &thiz->vbar); 
 	/* the clipped width/height */
 	//eon_theme_widget_width_get(r, &width);
 	//eon_theme_widget_height_get(r, &height);
@@ -128,18 +95,6 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	enesim_renderer_origin_get(thiz->content, &ox, &oy);
 	printf(">>>> content position %g %g\n", ox, oy);
 	/* set the needed properties */
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-
-	enesim_renderer_rectangle_width_set(thiz->hbar, width - thiz->bar_width);
-	enesim_renderer_rectangle_height_set(thiz->hbar, thiz->bar_width);
-	enesim_renderer_origin_set(thiz->hbar, 0, height - thiz->bar_width);
-
-	enesim_renderer_rectangle_width_set(thiz->vbar, thiz->bar_width);
-	enesim_renderer_rectangle_height_set(thiz->vbar, height - thiz->bar_width);
-	enesim_renderer_origin_set(thiz->vbar, width - thiz->bar_width, 0);
-
-	printf("SC size %g %g\n", width, height);
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{
 		printf("the scrollview cannot setup yet\n");
@@ -176,7 +131,6 @@ static void _scrollview_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Scrollview_Descriptor _descriptor = {
-	.margin_get = _scrollview_margin_get,
 	.sw_setup = _scrollview_setup,
 	.sw_cleanup = _scrollview_cleanup,
 	.free = _scrollview_free,
@@ -207,34 +161,12 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	thiz->background = r;
 	enesim_renderer_background_color_set(r, 0xff777777);
 
-	r = enesim_renderer_rectangle_new();
-	if (!r) goto hbar_err;
-	thiz->hbar = r;
-	enesim_renderer_rectangle_corner_radius_set(r, thiz->bar_radius);
-	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_color_set(r, 0xff222222);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-
-	r = enesim_renderer_rectangle_new();
-	if (!r) goto vbar_err;
-	thiz->vbar = r;
-	enesim_renderer_rectangle_corner_radius_set(r, thiz->bar_radius);
-	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_color_set(r, 0xff222222);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-
 	r = eon_theme_scrollview_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->vbar);
-vbar_err:
-	enesim_renderer_delete(thiz->hbar);
-hbar_err:
 	enesim_renderer_delete(thiz->background);
 background_err:
 	enesim_renderer_delete(thiz->compound);
