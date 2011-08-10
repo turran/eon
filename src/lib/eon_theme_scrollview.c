@@ -39,6 +39,7 @@ typedef struct _Eon_Theme_Scrollview
 {
 	EINA_MAGIC;
 	/* private */
+	Eon_Theme_Scrollview_Margin_Get margin_get;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Scrollview;
@@ -64,6 +65,14 @@ static void _eon_theme_scrollview_free(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_theme_scrollview_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	if (thiz->margin_get)
+		thiz->margin_get(r, margin);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -83,6 +92,7 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 	thiz->data = data;
 	thiz->free = descriptor->free;
 
+	thiz->margin_get = descriptor->margin_get;
 #if THEME_NEW	
 	pdescriptor.content_position_get = descriptor->content_position_get;
 	pdescriptor.decoration_width_get = descriptor->decoration_width_get;

@@ -22,9 +22,15 @@
 /**
  * @{
  */
+typedef void (*Eon_Theme_Scrollview_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
+typedef void (*Eon_Theme_Scrollview_HBar_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geom);
+typedef void (*Eon_Theme_Scrollview_VBar_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geom);
+
 typedef struct _Eon_Theme_Scrollview_Descriptor
 {
-	/* container needed functions */
+	Eon_Theme_Scrollview_Margin_Get margin_get;
+	Eon_Theme_Scrollview_HBar_Geometry_Get hbar_geometry_get;
+	Eon_Theme_Scrollview_VBar_Geometry_Get vbar_geometry_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

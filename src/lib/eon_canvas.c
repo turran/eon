@@ -95,6 +95,59 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e)
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
+/* FIXME same code as the stack we cannot share so easily given that the list
+ * is part of the private data
+ */
+static Ender_Element * _eon_canvas_child_at(Ender_Element *e, double x, double y)
+{
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *ech;
+	Ender_Element *child = NULL;
+	Enesim_Renderer *r;
+	Eina_List *l;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_canvas_get(r);
+	if (!thiz) return NULL;
+	printf("canvas looking for a child at %g %g\n", x, y);
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		Enesim_Renderer *rchild;
+		double child_x, child_y;
+		double child_w, child_h;
+
+		child_x = x - ech->x;
+		if (child_x < 0) continue;
+		child_y = y - ech->y;
+		if (child_y < 0) continue;
+
+		/* TODO still need the width and height */
+		rchild = ender_element_renderer_get(ech->ender);
+		if (eon_is_element(rchild))
+		{
+			eon_element_actual_size_get(rchild, &child_w, &child_h);
+		}
+		else
+		{
+			Enesim_Rectangle bounds;
+			enesim_renderer_boundings(rchild, &bounds);
+			child_w = bounds.w;
+			child_h = bounds.h;
+		}
+		if (child_x <= child_w && child_y <= child_h)
+		{
+			if (enesim_renderer_is_inside(rchild, child_x, child_y))
+			{
+				child = ech->ender;
+				break;
+			}
+		}
+	}
+	//printf("returning %p\n", child);
+
+	return child;
+}
+
 static void _eon_canvas_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
@@ -115,6 +168,7 @@ static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
 }
 
 static Eon_Layout_Descriptor _descriptor = {
+	.child_at = _eon_canvas_child_at,
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
 	.free = _eon_canvas_free,

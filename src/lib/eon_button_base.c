@@ -53,6 +53,17 @@ static void _eon_button_base_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
+/* TODO if we allow that the button base elements (radio, checkbox, button, whatever)
+ * can be bigger than its contents maximum size, then we need to add another function
+ * beside the margin. Something like what we have before, a position_get or something
+ * like that that should receive also the size of the content, this way we can center
+ * left-align or whatever the content itself when it the container area is bigger
+ * than the content. Note that, for some cases we might need also to say that the
+ * button_base should or should not scale its content if the size of the content
+ * is set to -1. Right now we always use the preferred size, but it might not be
+ * the case with this flag
+ */
+
 static double _eon_button_base_min_max_width_get(Ender_Element *e, double cmv)
 {
 	Eon_Button_Base *thiz;

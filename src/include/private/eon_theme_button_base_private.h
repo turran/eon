@@ -15,7 +15,6 @@ Enesim_Renderer * eon_theme_button_base_new(Eon_Theme_Button_Base_Descriptor *de
 Eina_Bool eon_is_theme_button_base(Enesim_Renderer *r);
 void * eon_theme_button_base_data_get(Enesim_Renderer *r);
 void eon_theme_button_base_margin_get(Enesim_Renderer *r, Eon_Margin *margin);
-void eon_theme_button_base_content_position_get(Enesim_Renderer *r, double *x, double *y);
 
 #endif
 

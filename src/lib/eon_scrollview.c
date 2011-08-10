@@ -58,6 +58,36 @@ static void _scrollview_mouse_wheel(Ender_Element *e, const char *event_name, vo
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
+static double _eon_scrollview_min_max_width_get(Ender_Element *e, double cmv)
+{
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
+	Eon_Margin margin;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_scrollview_margin_get(theme_r, &margin);
+
+	return cmv + margin.left + margin.right;
+}
+
+static double _eon_scrollview_min_max_height_get(Ender_Element *e, double cmv)
+{
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
+	Eon_Margin margin;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_scrollview_margin_get(theme_r, &margin);
+
+	return cmv + margin.top + margin.bottom;
+}
+
 static void _eon_scrollview_initialize(Ender_Element *e)
 {
 	Eon_Scrollview *thiz;
@@ -68,19 +98,65 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 	ender_event_listener_add(e, "MouseDragStart", _scrollview_mouse_drag_start, NULL);
 	ender_event_listener_add(e, "MouseDragStop", _scrollview_mouse_drag_stop, NULL);
 	ender_event_listener_add(e, "MouseWheel", _scrollview_mouse_wheel, NULL);
-	/* register every event needed for a scrollview
-	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
-	 */
 }
 
 static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 {
-	return EINA_TRUE;
+	Eon_Scrollview *thiz;
+	Ender_Element *content;
+	Enesim_Renderer *r;
+	Eina_Bool ret = EINA_TRUE;
+	double rw;
+	double rh;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+	/* setup the content */
+	eon_container_content_get(e, &content);
+	if (content)
+	{
+		Eon_Margin margin;
+		Enesim_Renderer *theme_r;
+		Enesim_Renderer *content_r;
+		double aw, ah;
+		double ax, ay;
+		double cw, ch;
+
+		theme_r = eon_widget_theme_renderer_get(r);
+		content_r = ender_element_renderer_get(content);
+
+		eon_element_actual_width_get(e, &aw);
+		eon_element_actual_height_get(e, &ah);
+		eon_element_actual_position_get(r, &ax, &ay);
+
+		/* so far the margin was used only for the min/max/pref thing
+		 * the actual size should be the real one or the scrollview one minus
+		 * the margins
+		 */
+		eon_element_real_width_get(content, &cw);
+		eon_element_real_height_get(content, &ch);
+
+		eon_theme_scrollview_margin_get(theme_r, &margin);
+		eon_element_actual_size_set(content_r, cw, ch);
+		eon_element_actual_position_set(content_r, margin.left, margin.top);
+		printf("setting scrollview position!\n");
+		if (!eon_element_setup(content))
+		{
+			printf("impossible to setup the content\n");
+			return EINA_FALSE;
+		}
+	}
+
+	return ret;
 }
 
 static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
+	.min_width_get = _eon_scrollview_min_max_width_get,
+	.min_height_get = _eon_scrollview_min_max_height_get,
+	.max_width_get = _eon_scrollview_min_max_width_get,
+	.max_height_get = _eon_scrollview_min_max_height_get,
 	.pass_events = EINA_TRUE,
 	.name = "scrollview",
 };
