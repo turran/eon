@@ -63,6 +63,8 @@ void eon_theme_shutdown(void);
 #include "private/eon_theme_container_private.h"
 #include "private/eon_theme_button_base_private.h"
 #include "private/eon_theme_frame_private.h"
+#include "private/eon_theme_scrollbar_private.h"
+#include "private/eon_theme_scrollview_private.h"
 
 /* toggle */
 typedef struct _Eon_Toggle_Descriptor

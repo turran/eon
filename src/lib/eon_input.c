@@ -23,6 +23,7 @@ struct _Eon_Input_State
 		unsigned int px;
 		unsigned int py;
 		Eina_Bool inside;
+		Eina_Bool dragging;
 		Ender_Element *grabbed;
 		Ender_Element *last;
 	} pointer;
@@ -97,15 +98,21 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 	{
 		Eon_Event_Mouse_Move ev;
 
+		/* we first send the drag start */
+		if (!eis->pointer.dragging)
+		{
+			Eon_Event_Mouse_Drag_Start ev_ds;
+
+			ev_ds.input = eis->input;
+			ender_event_dispatch(eis->pointer.grabbed, "MouseDragStart", &ev_ds);
+			eis->pointer.dragging = EINA_TRUE;
+		}
+
 		ev.input = eis->input;
 		ender_event_dispatch(eis->pointer.grabbed, "MouseMove", &ev);
 
 		return;
 	}
-	/* TODO handle the subcanvas
-	 * if mouse in an object and canvas(obj) != canvas => in canvas(obj) ?
-	 * if mouse out an object and canvas(obj) != canvas => out canvas(obj) ?
-	 */
 	child = _eon_input_element_get(eis, x, y);
 	if (child == eis->pointer.last)
 	{
@@ -217,6 +224,15 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 
 		ev_click.input = eis->input;
 		ender_event_dispatch(child, "MouseClick", &ev_click);
+	}
+	/* we first send the drag start */
+	if (eis->pointer.dragging)
+	{
+		Eon_Event_Mouse_Drag_Stop ev_ds;
+
+		ev_ds.input = eis->input;
+		ender_event_dispatch(eis->pointer.grabbed, "MouseDragStop", &ev_ds);
+		eis->pointer.dragging = EINA_FALSE;
 	}
 	eis->pointer.grabbed = NULL;
 }

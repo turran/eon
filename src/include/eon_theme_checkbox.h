@@ -25,6 +25,7 @@
 typedef struct _Eon_Theme_Checkbox_Descriptor
 {
 	/* container needed functions */
+	Eon_Theme_Button_Base_Position_Get position_get;
 	Eon_Theme_Button_Base_Margin_Get margin_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;

@@ -40,6 +40,7 @@ typedef struct _Eon_Theme_Button_Base
 	EINA_MAGIC;
 	/* private */
 	Eon_Theme_Button_Base_Margin_Get margin_get;
+	Eon_Theme_Button_Base_Position_Get position_get;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Button_Base;
@@ -76,7 +77,9 @@ Enesim_Renderer * eon_theme_button_base_new(Eon_Theme_Button_Base_Descriptor *de
 	EINA_MAGIC_SET(thiz, EON_THEME_CONTAINER_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
+	thiz->position_get = descriptor->position_get;
 	thiz->margin_get = descriptor->margin_get;
+
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_button_base_free;
@@ -118,7 +121,35 @@ void eon_theme_button_base_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 
 	thiz = _eon_theme_button_base_get(r);
 	if (thiz->margin_get)
+	{
 		thiz->margin_get(r, margin);
+	}
+	else
+	{
+		margin->left = 0;
+		margin->right = 0;
+		margin->top = 0;
+		margin->bottom = 0;
+	}
+}
+
+void eon_theme_button_base_position_get(Enesim_Renderer *r, Eon_Size *size, Eon_Position *position)
+{
+	Eon_Theme_Button_Base *thiz;
+
+	thiz = _eon_theme_button_base_get(r);
+	if (thiz->position_get)
+	{
+		thiz->position_get(r, size, position);
+	}
+	else
+	{
+		Eon_Margin margin;
+
+		eon_theme_button_base_margin_get(r, &margin);
+		position->x = margin.left;
+		position->y = margin.top;
+	}
 }
 /*============================================================================*
  *                                   API                                      *

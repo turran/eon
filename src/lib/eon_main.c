@@ -63,6 +63,8 @@ static void _register_enders(void)
 	/* widget inheritance */
 	eon_container_init();
 	eon_label_init();
+	eon_scrollbar_init();
+	eon_progressbar_init();
 	/* layout inheritance */
 	eon_canvas_init();
 	eon_stack_init();
@@ -72,7 +74,6 @@ static void _register_enders(void)
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
-	eon_progressbar_init();
 	eon_scrollview_init();
 	eon_frame_init();
 }

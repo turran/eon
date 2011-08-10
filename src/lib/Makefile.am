@@ -27,6 +27,7 @@ eon_checkbox.c \
 eon_progressbar.c \
 eon_radio.c \
 eon_stack.c \
+eon_scrollbar.c \
 eon_scrollview.c \
 eon_theme.c \
 eon_theme_checkbox.c \
@@ -39,6 +40,7 @@ eon_theme_label.c \
 eon_theme_layout.c \
 eon_theme_progressbar.c \
 eon_theme_radio.c \
+eon_theme_scrollbar.c \
 eon_theme_scrollview.c \
 eon_theme_widget.c \
 eon_toggle.c \

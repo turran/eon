@@ -177,10 +177,6 @@ static void _scrollview_free(Enesim_Renderer *r)
 
 static Eon_Theme_Scrollview_Descriptor _descriptor = {
 	.margin_get = _scrollview_margin_get,
-/*
-	.decoration_width_get = _scrollview_decoration_width_get,
-	.decoration_height_get = _scrollview_decoration_height_get,
-*/
 	.sw_setup = _scrollview_setup,
 	.sw_cleanup = _scrollview_cleanup,
 	.free = _scrollview_free,

@@ -16,22 +16,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_SCROLLBAR_H_
+#define _EON_SCROLLBAR_H_
 
+/**
+ * @defgroup Eon_Scrollbar Scrollbar
+ * @ingroup Eon_Widget
+ * @{
+ */
 
-#include "eon_theme_widget.h"
-#include "eon_theme_container.h"
-#include "eon_theme_button_base.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_frame.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollbar.h"
-#include "eon_theme_scrollview.h"
+EAPI Ender_Element * eon_scrollbar_new(void);
+EAPI void eon_scrollbar_orientation_set(Ender_Element *e, Eon_Orientation orientation);
+EAPI void eon_scrollbar_orientation_get(Ender_Element *e, Eon_Orientation *orientation);
+
+/**
+ * @}
+ */
 
 #endif
+

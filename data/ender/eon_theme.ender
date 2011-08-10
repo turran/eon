@@ -66,4 +66,14 @@ namespace "eon" {
 	abstract "theme_frame" : "theme_container" {
 		string "description";
 	};
+
+	abstract "theme_scrollbar" : "theme_widget" {
+		int "orientation";
+		double "min_width";
+		double "max_width";
+		double "min_height";
+		double "max_height";
+		double "preferred_width";
+		double "preferred_height";
+	};
 };

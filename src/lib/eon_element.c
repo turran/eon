@@ -600,6 +600,51 @@ void eon_element_actual_position_get(Enesim_Renderer *r, double *x, double *y)
 	if (y) *y = thiz->actual_y;
 }
 
+void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size)
+{
+	Enesim_Renderer *r;
+	Eon_Element *thiz;
+	double rw, rh;
+	double min, set, max;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+
+	set = thiz->width;
+	/* if the user has not set a value we better use the preferred one */
+	if (set < 0)
+		set = relative->width;
+	_eon_element_min_width_get(r, &min);
+	_eon_element_max_width_get(r, &max);
+	rw = set > max ? max : set;
+	rw = rw < min ? min : rw;
+	size->width = rw;
+	printf("relative width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
+
+	set = thiz->height;
+	/* if the user has not set a value we better use the preferred one */
+	if (set < 0)
+		set = relative->height;
+	_eon_element_min_height_get(r, &min);
+	_eon_element_max_height_get(r, &max);
+	rh = set > max ? max : set;
+	rh = rh < min ? min : rh;
+	size->height = rh;
+	printf("relative height %s = %g (%g %g %g)\n", thiz->name, rh, min, set, max);
+
+	printf("relative size %s = %gx%g\n", thiz->name, size->width, size->height);
+}
+
+void eon_element_real_size_get(Ender_Element *e, Eon_Size *size)
+{
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	_eon_element_real_width_get(r, &size->width);
+	_eon_element_real_height_get(r, &size->height);
+}
+
 void eon_element_real_width_get(Ender_Element *e, double *width)
 {
 	Enesim_Renderer *r;

@@ -47,6 +47,8 @@
 #include "eon_stack.h"
 #include "eon_input.h"
 #include "eon_progressbar.h"
+#include "eon_scrollbar.h"
+#include "eon_scrollview.h"
 #include "eon_radio.h"
 #include "eon_checkbox.h"
 #include "eon_button.h"

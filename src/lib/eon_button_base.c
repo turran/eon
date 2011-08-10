@@ -64,7 +64,7 @@ static void _eon_button_base_initialize(Ender_Element *e)
  * the case with this flag
  */
 
-static double _eon_button_base_min_max_width_get(Ender_Element *e, double cmv)
+static double _eon_button_base_min_width_get(Ender_Element *e, double cmv)
 {
 	Eon_Button_Base *thiz;
 	Eon_Margin margin;
@@ -80,7 +80,7 @@ static double _eon_button_base_min_max_width_get(Ender_Element *e, double cmv)
 	return cmv + margin.top + margin.bottom;
 }
 
-static double _eon_button_base_min_max_height_get(Ender_Element *e, double cmv)
+static double _eon_button_base_min_height_get(Ender_Element *e, double cmv)
 {
 	Eon_Button_Base *thiz;
 	Eon_Margin margin;
@@ -94,6 +94,16 @@ static double _eon_button_base_min_max_height_get(Ender_Element *e, double cmv)
 	eon_theme_button_base_margin_get(theme_r, &margin);
 
 	return cmv + margin.top + margin.bottom;
+}
+
+static double _eon_button_base_max_width_get(Ender_Element *e, double cmv)
+{
+	return DBL_MAX;
+}
+
+static double _eon_button_base_max_height_get(Ender_Element *e, double cmv)
+{
+	return DBL_MAX;
 }
 
 static Eina_Bool _eon_button_base_setup(Ender_Element *e)
@@ -108,6 +118,8 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e)
 	if (content)
 	{
 		Eon_Margin margin;
+		Eon_Position position;
+		Eon_Size size;
 		Enesim_Renderer *content_r;
 		Enesim_Renderer *theme_r;
 		double aw, ah;
@@ -115,16 +127,21 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e)
 
 		content_r = ender_element_renderer_get(content);
 		theme_r = eon_widget_theme_renderer_get(r);
-		/* set the size and position */
+		/* set the size and position of the content */
+		
 		eon_element_actual_width_get(e, &aw);
 		eon_element_actual_height_get(e, &ah);
 		eon_element_actual_position_get(r, &ax, &ay);
-		printf("current geometry %g %g %g %g\n", aw, ah, ax, ay);
+
 		eon_theme_button_base_margin_get(theme_r, &margin);
-		eon_element_actual_size_set(content_r, aw - margin.left - margin.right,
-				ah - margin.top - margin.bottom);
+		size.width = aw - margin.left - margin.right;
+		size.height = ah - margin.top - margin.bottom;
+
+		eon_element_real_relative_size_get(content, &size, &size);
+		eon_element_actual_size_set(content_r, size.width, size.height);
+		eon_theme_button_base_position_get(theme_r, &size, &position);
 		//eon_element_actual_position_set(content_r, ax + margin.left, ay + margin.top);
-		eon_element_actual_position_set(content_r, margin.left, margin.top);
+		eon_element_actual_position_set(content_r, position.x, position.y);
 		if (!eon_element_setup(content))
 		{
 			printf("impossible to setup the content\n");
@@ -176,10 +193,10 @@ Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, vo
 	pdescriptor.free = _eon_button_base_free;
 	pdescriptor.setup = _eon_button_base_setup;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.min_width_get = _eon_button_base_min_max_width_get;
-	pdescriptor.max_width_get = _eon_button_base_min_max_width_get;
-	pdescriptor.min_height_get = _eon_button_base_min_max_height_get;
-	pdescriptor.max_height_get = _eon_button_base_min_max_height_get;
+	pdescriptor.min_width_get = _eon_button_base_min_width_get;
+	pdescriptor.max_width_get = _eon_button_base_max_width_get;
+	pdescriptor.min_height_get = _eon_button_base_min_height_get;
+	pdescriptor.max_height_get = _eon_button_base_max_height_get;
 
 	r = eon_container_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

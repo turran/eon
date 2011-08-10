@@ -336,7 +336,7 @@ static void _eon_container_free(Enesim_Renderer *r)
 }
 
 /* TODO */
-/* register the intiialize and free too
+/* register the initialize and free too
  * on initialize we should just check whenever the content has changed
  * (i.e mutation event) if so, inform that we have changed too
  */
@@ -390,7 +390,6 @@ renderer_err:
 	free(thiz);
 	return NULL;
 }
-
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

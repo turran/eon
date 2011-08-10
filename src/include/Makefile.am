@@ -20,6 +20,8 @@ eon_label.h \
 eon_layout.h \
 eon_progressbar.h \
 eon_radio.h \
+eon_scrollbar.h \
+eon_scrollview.h \
 eon_stack.h \
 eon_theme.h \
 eon_theme_button_base.h \
@@ -33,6 +35,7 @@ eon_theme_checkbox.h \
 eon_theme_widget.h \
 eon_theme_label.h \
 eon_theme_progressbar.h \
+eon_theme_scrollbar.h \
 eon_theme_scrollview.h \
 eon_widget.h \
 eon_window.h \

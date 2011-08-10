@@ -76,6 +76,16 @@ typedef struct _Eon_Event_Mouse_Wheel
 	Eon_Input *input;
 } Eon_Event_Mouse_Wheel;
 
+typedef struct _Eon_Event_Mouse_Drag_Start
+{
+	Eon_Input *input;
+} Eon_Event_Mouse_Drag_Start;
+
+typedef struct _Eon_Event_Mouse_Drag_Stop
+{
+	Eon_Input *input;
+} Eon_Event_Mouse_Drag_Stop;
+
 /**
  * @}
  */

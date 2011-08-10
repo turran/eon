@@ -5,6 +5,7 @@ typedef struct _Eon_Theme_Button_Base_Descriptor
 {
 	/* button base needed functions */
 	Eon_Theme_Button_Base_Margin_Get margin_get;
+	Eon_Theme_Button_Base_Position_Get position_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -15,6 +16,7 @@ Enesim_Renderer * eon_theme_button_base_new(Eon_Theme_Button_Base_Descriptor *de
 Eina_Bool eon_is_theme_button_base(Enesim_Renderer *r);
 void * eon_theme_button_base_data_get(Enesim_Renderer *r);
 void eon_theme_button_base_margin_get(Enesim_Renderer *r, Eon_Margin *margin);
+void eon_theme_button_base_position_get(Enesim_Renderer *r, Eon_Size *size, Eon_Position *position);
 
 #endif
 

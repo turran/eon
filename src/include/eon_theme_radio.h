@@ -27,6 +27,7 @@ typedef void (*Eon_Theme_Radio_Selected_Set)(Enesim_Renderer *r, Eina_Bool selec
 typedef struct _Eon_Theme_Radio_Descriptor
 {
 	/* container needed functions */
+	Eon_Theme_Button_Base_Position_Get position_get;
 	Eon_Theme_Button_Base_Margin_Get margin_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;

@@ -16,22 +16,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_SCROLLVIEW_H_
+#define _EON_SCROLLVIEW_H_
 
+/**
+ * @defgroup Eon_Scrollview Scrollview
+ * @ingroup Eon_Container
+ * @{
+ */
 
-#include "eon_theme_widget.h"
-#include "eon_theme_container.h"
-#include "eon_theme_button_base.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_frame.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollbar.h"
-#include "eon_theme_scrollview.h"
+EAPI Ender_Element * eon_scrollview_new(void);
+EAPI void eon_scrollview_x_position_set(Ender_Element *e, double x);
+EAPI void eon_scrollview_x_position_get(Ender_Element *e, double *x);
+EAPI void eon_scrollview_y_position_set(Ender_Element *e, double y);
+EAPI void eon_scrollview_y_position_get(Ender_Element *e, double *y);
+
+/**
+ * @}
+ */
 
 #endif
+
+

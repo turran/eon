@@ -54,6 +54,10 @@ static void _scrollview_mouse_drag_stop(Ender_Element *e, const char *event_name
 static void _scrollview_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	printf("mouse wheel\n");
+	/* FIXME what will happen if the theres something inside the scrollview which also
+	 * scrolls, i.e receives the mouse_wheel callback? from the current state, we will get
+	 * two scrolls, one on the child object and another on the current object
+	 */
 }
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
@@ -116,11 +120,11 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 	if (content)
 	{
 		Eon_Margin margin;
+		Eon_Size size;
 		Enesim_Renderer *theme_r;
 		Enesim_Renderer *content_r;
 		double aw, ah;
 		double ax, ay;
-		double cw, ch;
 
 		theme_r = eon_widget_theme_renderer_get(r);
 		content_r = ender_element_renderer_get(content);
@@ -129,16 +133,14 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		eon_element_actual_height_get(e, &ah);
 		eon_element_actual_position_get(r, &ax, &ay);
 
-		/* so far the margin was used only for the min/max/pref thing
-		 * the actual size should be the real one or the scrollview one minus
-		 * the margins
-		 */
-		eon_element_real_width_get(content, &cw);
-		eon_element_real_height_get(content, &ch);
-
 		eon_theme_scrollview_margin_get(theme_r, &margin);
-		eon_element_actual_size_set(content_r, cw, ch);
+		size.width = aw - margin.left - margin.right;
+		size.height = ah - margin.top - margin.bottom;
+		eon_element_real_relative_size_get(content, &size, &size);
+
+		eon_element_actual_size_set(content_r, size.width, size.height);
 		eon_element_actual_position_set(content_r, margin.left, margin.top);
+		/* add the real offset of the scrolling */
 		printf("setting scrollview position!\n");
 		if (!eon_element_setup(content))
 		{

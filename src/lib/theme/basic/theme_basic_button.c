@@ -75,6 +75,16 @@ static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = thiz->radius + thiz->vertical_padding;
 }
 
+static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
+		Eon_Position *position)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	position->x = thiz->radius + thiz->horizontal_padding;
+	position->y = thiz->radius + thiz->vertical_padding;
+}
+
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Button *thiz;
@@ -135,6 +145,7 @@ static void _button_free(Enesim_Renderer *r)
 
 static Eon_Theme_Button_Descriptor _descriptor = {
 	.margin_get = _button_margin_get,
+	.position_get = _button_position_get,
 	.sw_setup = _button_setup,
 	.sw_cleanup = _button_cleanup,
 	.free = _button_free,

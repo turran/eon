@@ -60,6 +60,10 @@ namespace "eon" {
 		double "y_position";
 	};
 
+	class "scrollbar" : "widget" {
+		int "orientation";
+	};
+
 	class "progressbar" : "widget" {
 		double "progression";
 	};
