@@ -11,6 +11,7 @@ eon_test_label \
 eon_test_progressbar \
 eon_test_radio \
 eon_test_scrollview \
+eon_test_scrollbar \
 eon_test_wrapper
 
 eon_test_button_SOURCES = eon_test_button.c
@@ -67,4 +68,9 @@ eon_test_frame_SOURCES = eon_test_frame.c
 eon_test_frame_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_frame_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_frame_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_scrollbar_SOURCES = eon_test_scrollbar.c
+eon_test_scrollbar_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_scrollbar_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_scrollbar_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 

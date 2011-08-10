@@ -43,4 +43,7 @@ namespace "eon" {
 		int "description_size";
 		string "description_font";
 	};
+	class "basic_scrollbar" : "theme_scrollbar" {
+
+	};
 };

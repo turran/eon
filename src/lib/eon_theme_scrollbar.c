@@ -54,7 +54,7 @@ static inline Eon_Theme_Scrollbar * _eon_theme_scrollbar_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Scrollbar *thiz;
 
-	thiz = eon_theme_container_data_get(r);
+	thiz = eon_theme_widget_data_get(r);
 	EON_THEME_SCROLLBAR_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
