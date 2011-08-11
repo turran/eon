@@ -19,6 +19,11 @@
 #ifndef _EON_THEME_H_
 #define _EON_THEME_H_
 
+/**
+ * @defgroup Eon_Theme Theme
+ * @{
+ */
+
 
 #include "eon_theme_widget.h"
 #include "eon_theme_container.h"
@@ -33,5 +38,9 @@
 #include "eon_theme_image.h"
 #include "eon_theme_scrollbar.h"
 #include "eon_theme_scrollview.h"
+
+/**
+ * @}
+ */
 
 #endif

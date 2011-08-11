@@ -21,9 +21,13 @@
 
 /**
  * @defgroup Eon_Widget Widget
+ * @ingroup Eon_Element
  * Represents a widget of the user interface
  * @{
  */
+
+EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r);
+EAPI void eon_widget_theme_set(Ender_Element *e, const char *file);
 
 /**
  * @}

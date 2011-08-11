@@ -288,16 +288,28 @@ static void _eon_wrapper_wrapped_get(Enesim_Renderer *r, Ender_Element **wrapped
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Ender_Element * eon_wrapper_new(void)
 {
 	return ender_element_new_with_namespace("wrapper", "eon");
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_wrapper_wrapped_set(Ender_Element *e, Ender_Element *wrapped)
 {
 	ender_element_value_set(e, "wrapped", wrapped, NULL);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_wrapper_wrapped_get(Ender_Element *e, Ender_Element **wrapped)
 {
 	ender_element_value_get(e, "wrapped", wrapped, NULL);

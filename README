@@ -1,8 +1,0 @@
-  Widget            Theme
-  ======            =====
-width (RW)
-height (RW)
-min_width (RW)  ... min_width (RO)
-min_height (RW) ... min_height (RO)
-max_width (RW)  ... max_width (RO)
-max_height (RW) ... max_height (RO)

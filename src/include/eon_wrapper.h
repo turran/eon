@@ -20,8 +20,8 @@
 #define _EON_WRAPPER_H_
 
 /**
- * @defgroup Eon_Button Button
- * @ingroup Eon_Container
+ * @defgroup Eon_Wrapper Wrapper
+ * @ingroup Eon_Element
  * @{
  */
 
