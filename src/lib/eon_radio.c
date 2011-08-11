@@ -111,7 +111,6 @@ static void _eon_radio_group_name_set(Enesim_Renderer *r, const char *group)
 		radios = eina_list_remove(radios, r);
 		if (!radios)
 			eina_hash_del(_groups, thiz->group_name, l);
-		
 	}
 	/* append to the new group */
 	thiz->group_name = strdup(group);
@@ -119,7 +118,7 @@ static void _eon_radio_group_name_set(Enesim_Renderer *r, const char *group)
 	radios = eina_list_append(radios, r);
 	if (!l)
 	{
-		eina_hash_add(_groups, thiz->group_name, radios);	
+		eina_hash_add(_groups, thiz->group_name, radios);
 	}
 }
 
@@ -173,7 +172,7 @@ static void _eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 				Ender_Element *other_radio_ender;
 
 				other_radio_ender = ender_element_renderer_from(other_radio);
-				eon_radio_selected_set(other_radio_ender, EINA_FALSE);	
+				eon_radio_selected_set(other_radio_ender, EINA_FALSE);
 			}
 		}
 	}
