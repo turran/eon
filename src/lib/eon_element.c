@@ -690,12 +690,17 @@ void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 {
 	Eon_Element *thiz;
-
 	Enesim_Renderer *r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
-	return thiz->renderer_get(e);
+	r =  thiz->renderer_get(e);
+	if (!r)
+	{
+		printf("FIXME!!!!!!!! the implementation of %s does not returned a renderer\n", ender_element_name_get(e));
+	}
+
+	return r;
 }
 
 #define _eon_element_force_redraw_get NULL

@@ -200,7 +200,7 @@ static void _eon_progressbar_progression_set(Enesim_Renderer *r, double progress
  */
 EAPI Ender_Element * eon_progressbar_new(void)
 {
-	return ender_element_new("progressbar");
+	return ender_element_new_with_namespace("progressbar", "eon");
 }
 
 /**

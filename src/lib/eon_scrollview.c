@@ -168,7 +168,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		eon_element_real_relative_size_get(content, &content_size, &size);
 
 		eon_element_actual_size_set(content_r, size.width, size.height);
-		eon_element_actual_position_set(content_r, margin.left, margin.top);
+		eon_element_actual_position_set(content_r, 0, 0);
 		/* add the real offset of the scrolling */
 		printf("setting scrollview position!\n");
 		if (!eon_element_setup(content))
@@ -266,7 +266,7 @@ static void _eon_scrollview_y_position_get(Enesim_Renderer *r, double *y)
  */
 EAPI Ender_Element * eon_scrollview_new(void)
 {
-	return ender_element_new("scrollview");
+	return ender_element_new_with_namespace("scrollview", "eon");
 }
 
 /**

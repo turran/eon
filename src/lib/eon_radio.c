@@ -192,7 +192,7 @@ static void _eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
  */
 EAPI Ender_Element * eon_radio_new(void)
 {
-	return ender_element_new("radio");
+	return ender_element_new_with_namespace("radio", "eon");
 }
 
 /**

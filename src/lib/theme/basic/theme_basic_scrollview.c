@@ -92,8 +92,6 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->vbar);
 		thiz->content = content;
 	}
-	enesim_renderer_origin_get(thiz->content, &ox, &oy);
-	printf(">>>> content position %g %g\n", ox, oy);
 	/* set the needed properties */
 	if (!enesim_renderer_sw_setup(thiz->compound))
 	{

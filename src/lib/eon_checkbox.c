@@ -119,7 +119,7 @@ static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
  */
 EAPI Ender_Element * eon_checkbox_new(void)
 {
-	return ender_element_new("checkbox");
+	return ender_element_new_with_namespace("checkbox", "eon");
 }
 
 /**

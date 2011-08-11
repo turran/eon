@@ -143,14 +143,24 @@ static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, voi
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Input_State *eis;
+	Eon_Position position;
 	Enesim_Renderer *r;
+	double px, py;
+	double cx, cy;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	printf("passing mouse move\n");
-	eon_input_state_feed_mouse_move(eis, 0, 0);
+	px = ev->x;
+	py = ev->y;
+	eon_element_actual_position_get(r, &cx, &cy);
+	printf("received mouse move at %g %g - %g %g\n", px, py, cx, cy);
+	px -= cx;
+	py -= cy;
+	/* transform the position relative to the layout position */
+	printf("passing mouse move %g %g\n", px, py);
+	eon_input_state_feed_mouse_move(eis, px, py);
 }
 
 static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -218,19 +228,21 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	Ender_Element *curr_parent;
 	Ender_Element *theme;
 	Enesim_Renderer *child_r;
+	Enesim_Renderer *child_rr;
 
 	thiz = _eon_layout_get(r);
 	child_r = ender_element_renderer_get(child);
 	if (!eon_is_element(child_r))
 		return;
+
+	child_rr = eon_element_renderer_get(child);
 	curr_parent = ender_element_parent_get(child);
 	if (curr_parent)
 	{
-		ender_element_value_remove(curr_parent, "child", child, NULL);
+		/* FIXME this is wrong, we should remove from the theme the child_rr */
+		ender_element_value_remove(curr_parent, "child", child_rr, NULL);
 	}
-	//theme = eon_widget_theme_element_get(child_r);
-	//eon_widget_property_add(r, "child", theme, NULL);
-	eon_widget_property_add(r, "child", child_r, NULL);
+	eon_widget_property_add(r, "child", child_rr, NULL);
 	thiz->child_add(r, child);
 }
 

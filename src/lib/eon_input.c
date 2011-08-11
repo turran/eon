@@ -15,13 +15,16 @@ struct _Eon_Input_State
 	Ender_Element *element;
 	struct
 	{
-		unsigned int downx;
-		unsigned int downy;
+		/* the coordinates where the mouse down happened */
+		double downx;
+		double downy;
+		/* the coordinates where the pointer is right now */
+		double x;
+		double y;
+		/* ?? */
+		double px;
+		double py;
 		unsigned int button;
-		unsigned int x;
-		unsigned int y;
-		unsigned int px;
-		unsigned int py;
 		Eina_Bool inside;
 		Eina_Bool dragging;
 		Ender_Element *grabbed;
@@ -34,7 +37,7 @@ struct _Eon_Input_State
 	} keyboard;
 };
 
-Ender_Element * _eon_input_element_get(Eon_Input_State *eis, unsigned int x, unsigned int y)
+Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y)
 {
 	Enesim_Renderer *r;
 	double px, py;
@@ -78,10 +81,10 @@ Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
  *
  */
 void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
-		unsigned int x, unsigned int y)
+		double x, double y)
 {
 	Ender_Element *child;
-	unsigned int px, py;
+	double px, py;
 
 	/* SDL eon_ecore does not send an in/out event */
 	if (!eis->pointer.inside)
@@ -109,6 +112,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		}
 
 		ev.input = eis->input;
+		ev.x = x;
+		ev.y = y;
 		ender_event_dispatch(eis->pointer.grabbed, "MouseMove", &ev);
 
 		return;
@@ -121,6 +126,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		{
 			Eon_Event_Mouse_Move ev;
 			ev.input = eis->input;
+			ev.x = x;
+			ev.y = y;
 			ender_event_dispatch(child, "MouseMove", &ev);
 		}
 	}
@@ -217,8 +224,8 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */
-	if ((eis->pointer.downx == eis->pointer.x) &&
-			 (eis->pointer.downy == eis->pointer.y))
+	if ((fabs(eis->pointer.downx - eis->pointer.x) < DBL_EPSILON) &&
+			(fabs(eis->pointer.downy - eis->pointer.y) < DBL_EPSILON))
 	{
 		Eon_Event_Mouse_Click ev_click;
 

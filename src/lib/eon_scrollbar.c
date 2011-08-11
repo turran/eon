@@ -231,7 +231,7 @@ static void _eon_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *
  */
 EAPI Ender_Element * eon_scrollbar_new(void)
 {
-	return ender_element_new("scrollbar");
+	return ender_element_new_with_namespace("scrollbar", "eon");
 }
 
 

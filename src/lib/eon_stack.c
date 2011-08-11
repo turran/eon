@@ -203,6 +203,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, x, last_y);
 		eon_element_setup(ech->ender);
+		/* now add the renderer associated with the widget into the theme */
 		ech->curr_x = x;
 		ech->curr_y = last_y;
 		last_y += h;
@@ -321,15 +322,6 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 		}
 		if (child_x <= child_w && child_y <= child_h)
 		{
-#if 0
-			if (eon_is_layout(rchild))
-			{
-				printf("inside a layout %p %g %g\n", rchild, child_x, child_y);
-				return eon_layout_child_get_at_coord(rchild, child_x, child_y);
-			}
-			/* now check if the renderer is really at that coordinate */
-			else
-#endif
 			if (enesim_renderer_is_inside(rchild, child_x, child_y))
 			{
 				child = ech->ender;

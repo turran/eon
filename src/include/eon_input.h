@@ -59,6 +59,8 @@ typedef struct _Eon_Event_Mouse_Down
 typedef struct _Eon_Event_Mouse_Move
 {
 	Eon_Input *input;
+	double x; /** in eon_element coordinate space */
+	double y; /** in eon_element coordinate space */
 } Eon_Event_Mouse_Move;
 
 typedef struct _Eon_Event_Mouse_In

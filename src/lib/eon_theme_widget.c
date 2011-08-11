@@ -190,7 +190,6 @@ EAPI void eon_theme_widget_x_set(Enesim_Renderer *r, double x)
 	thiz->x = x;
 	/* FIXME for now */
 	enesim_renderer_x_origin_set(r, x);
-	//printf("setting x @ %g\n", x);
 }
 
 /**
