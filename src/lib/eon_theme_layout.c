@@ -27,6 +27,7 @@ typedef struct _Eon_Theme_Layout
 	/* private */
 	Eon_Theme_Layout_Child_Add child_add;
 	Eon_Theme_Layout_Child_Remove child_remove;
+	Eon_Theme_Layout_Child_Clear child_clear;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Layout;
@@ -67,6 +68,7 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 	thiz->free = descriptor->free;
 	thiz->child_add = descriptor->child_add;
 	thiz->child_remove = descriptor->child_remove;
+	thiz->child_clear = descriptor->child_clear;
 
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
@@ -121,3 +123,11 @@ EAPI void eon_theme_layout_child_remove(Enesim_Renderer *r, Enesim_Renderer *chi
 		thiz->child_remove(r, child);
 }
 
+EAPI void eon_theme_layout_child_clear(Enesim_Renderer *r)
+{
+	Eon_Theme_Layout *thiz;
+
+	thiz = _eon_theme_layout_get(r);
+	if (thiz->child_remove)
+		thiz->child_clear(r);
+}

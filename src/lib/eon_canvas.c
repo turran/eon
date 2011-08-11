@@ -17,10 +17,6 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-/**
- * @todo Every layout only accepts eon_elements as it child, maybe we should
- * change the canvas to also support any kind of renderer?
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

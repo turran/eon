@@ -365,7 +365,6 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 
 static void _eon_stack_child_clear(Enesim_Renderer *r)
 {
-#if 0
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
 	Eina_List *l, *l_next;
@@ -373,9 +372,8 @@ static void _eon_stack_child_clear(Enesim_Renderer *r)
 	thiz = _eon_stack_get(r);
 	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, thiz_child)
 	{
-		eon_layout_child_remove(r, thiz_child->ender);
+		thiz->children = eina_list_remove_list(thiz->children, l);
 	}
-#endif
 }
 
 static Eon_Layout_Descriptor _descriptor = {

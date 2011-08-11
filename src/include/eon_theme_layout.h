@@ -25,12 +25,14 @@
 
 typedef void (*Eon_Theme_Layout_Child_Add)(Enesim_Renderer *r, Enesim_Renderer *child);
 typedef void (*Eon_Theme_Layout_Child_Remove)(Enesim_Renderer *r, Enesim_Renderer *child);
+typedef void (*Eon_Theme_Layout_Child_Clear)(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Layout_Descriptor
 {
 	/* layout needed functions */
 	Eon_Theme_Layout_Child_Add child_add;
 	Eon_Theme_Layout_Child_Remove child_remove;
+	Eon_Theme_Layout_Child_Clear child_clear;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

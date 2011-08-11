@@ -251,6 +251,8 @@ static void _eon_layout_child_clear(Enesim_Renderer *r)
 	Eon_Layout *thiz;
 
 	thiz = _eon_layout_get(r);
+
+	eon_widget_property_clear(r, "child");
 	thiz->child_clear(r);
 }
 

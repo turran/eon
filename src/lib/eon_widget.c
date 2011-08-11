@@ -409,6 +409,14 @@ void eon_widget_property_remove(Enesim_Renderer *r, const char *name, ...)
 	va_end(va_args);
 }
 
+void eon_widget_property_clear(Enesim_Renderer *r, const char *name)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(r);
+	ender_element_value_clear(thiz->theme_element, name);
+}
+
 void eon_widget_state_set(Enesim_Renderer *r, const char *name, Eina_Bool be_finalized)
 {
 	Eon_Widget *thiz;

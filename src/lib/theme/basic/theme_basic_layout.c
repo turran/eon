@@ -62,6 +62,15 @@ static void _layout_child_remove(Enesim_Renderer *r, Enesim_Renderer *rchild)
 	enesim_renderer_compound_layer_remove(thiz->compound, rchild);
 }
 
+static void _layout_child_clear(Enesim_Renderer *r)
+{
+	Theme_Basic_Layout *thiz;
+
+	thiz = _layout_get(r);
+	enesim_renderer_compound_layer_clear(thiz->compound);
+}
+
+
 static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 {
 	Theme_Basic_Layout *thiz;
@@ -108,6 +117,7 @@ static void _layout_free(Enesim_Renderer *r)
 static Eon_Theme_Layout_Descriptor _descriptor = {
 	.child_add = _layout_child_add,
 	.child_remove = _layout_child_remove,
+	.child_clear = _layout_child_clear,
 	.sw_setup = _layout_setup,
 	.sw_cleanup = _layout_cleanup,
 	.free = _layout_free,
