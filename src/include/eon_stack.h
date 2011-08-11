@@ -48,8 +48,15 @@ typedef enum _Eon_Stack_Direction
 
 EAPI Ender_Element * eon_stack_new(void);
 EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Stack_Direction direction);
-EAPI void eon_stack_width_set(Ender_Element *e, unsigned int width);
-EAPI void eon_stack_height_set(Ender_Element *e, unsigned int height);
+EAPI void eon_stack_direction_get(Ender_Element *e, Eon_Stack_Direction *direction);
+EAPI void eon_stack_child_horizontal_alignment_set(Ender_Element *e, Ender_Element *child,
+		Eon_Horizontal_Alignment alignment);
+EAPI void eon_stack_child_vertical_alignment_set(Ender_Element *e, Ender_Element *child,
+		Eon_Vertical_Alignment alignment);
+EAPI void eon_stack_last_expand_set(Ender_Element *e, Eina_Bool expand);
+EAPI void eon_stack_last_expand_get(Ender_Element *e, Eina_Bool *expand);
+EAPI void eon_stack_homogeneous_set(Ender_Element *e, Eina_Bool homogeneous);
+EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous);
 
 /**
  * @}

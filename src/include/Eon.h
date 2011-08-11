@@ -33,6 +33,7 @@
  * @section optional_dependencies Optional Dependencies
  * @section backends Backends
  * - Ecore_SDL
+ * @section Design
  */
 
 #include "Enesim.h"
