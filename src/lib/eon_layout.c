@@ -307,7 +307,7 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-void eon_layout_actual_size_get(Ender_Element *e, double *width, double *height)
+void eon_layout_actual_size_get(Ender_Element *e, Eon_Size *size)
 {
 	Enesim_Renderer *r;
 
@@ -317,13 +317,13 @@ void eon_layout_actual_size_get(Ender_Element *e, double *width, double *height)
 	 */
 	if (eon_layout_is_topmost(r))
 	{
-		eon_element_width_get(e, width);
-		eon_element_height_get(e, height);
+		eon_element_width_get(e, &size->width);
+		eon_element_height_get(e, &size->height);
 	}
 	else
 	{
-		eon_element_actual_width_get(e, width);
-		eon_element_actual_height_get(e, height);
+		eon_element_actual_width_get(e, &size->width);
+		eon_element_actual_height_get(e, &size->height);
 	}
 }
 

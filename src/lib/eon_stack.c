@@ -212,15 +212,15 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 
 static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
 {
-	double aw, ah;
+	Eon_Size size;
 	/* the idea on a layout setup is the set the actual width and height
 	 * of every child before calling the setup of each child
 	 */
-	eon_layout_actual_size_get(e, &aw, &ah);
+	eon_layout_actual_size_get(e, &size);
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
-		_stack_horizontal_arrange(e, thiz, aw, ah);
+		_stack_horizontal_arrange(e, thiz, size.width, size.height);
 	else
-		_stack_vertical_arrange(e, thiz, aw, ah);
+		_stack_vertical_arrange(e, thiz, size.width, size.height);
 	/* FIXME */
 	return EINA_TRUE;
 }
@@ -298,8 +298,8 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *rchild;
+		Eon_Size child_size;
 		double child_x, child_y;
-		double child_w, child_h;
 
 		child_x = x - ech->curr_x;
 		if (child_x < 0) continue;
@@ -310,16 +310,16 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 		rchild = ender_element_renderer_get(ech->ender);
 		if (eon_is_element(rchild))
 		{
-			eon_element_actual_size_get(rchild, &child_w, &child_h);
+			eon_element_actual_size_get(rchild, &child_size);
 		}
 		else
 		{
 			Enesim_Rectangle bounds;
 			enesim_renderer_boundings(rchild, &bounds);
-			child_w = bounds.w;
-			child_h = bounds.h;
+			child_size.width = bounds.w;
+			child_size.height = bounds.h;
 		}
-		if (child_x <= child_w && child_y <= child_h)
+		if (child_x <= child_size.width && child_y <= child_size.height)
 		{
 			if (enesim_renderer_is_inside(rchild, child_x, child_y))
 			{

@@ -23,7 +23,7 @@ typedef struct _Eon_Layout_Descriptor
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data);
 void * eon_layout_data_get(Enesim_Renderer *r);
-void eon_layout_actual_size_get(Ender_Element *e, double *width, double *height);
+void eon_layout_actual_size_get(Ender_Element *e, Eon_Size *size);
 void eon_layout_actual_width_get(Ender_Element *e, double *width);
 void eon_layout_actual_height_get(Ender_Element *e, double *height);
 

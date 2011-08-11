@@ -107,6 +107,7 @@ static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, do
 	Eon_Scrollview *thiz;
 	Enesim_Renderer *r;
 	Enesim_Renderer *bar_r;
+	Eon_Size size;
 	double aw, ah;
 	double ax, ay;
 
@@ -114,15 +115,15 @@ static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, do
 	thiz = _eon_scrollview_get(r);
 
 	bar_r = ender_element_renderer_get(thiz->hbar);
-	eon_element_actual_size_get(bar_r, &aw, &ah);
+	eon_element_actual_size_get(bar_r, &size);
 	eon_element_actual_position_get(bar_r, &ax, &ay);
-	if ((x >= ax && x < ax + aw) && (y >= ay && y < ay + ah))
+	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 		return thiz->hbar;
 
 	bar_r = ender_element_renderer_get(thiz->vbar);
-	eon_element_actual_size_get(bar_r, &aw, &ah);
+	eon_element_actual_size_get(bar_r, &size);
 	eon_element_actual_position_get(bar_r, &ax, &ay);
-	if ((x >= ax && x < ax + aw) && (y >= ay && y < ay + ah))
+	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 		return thiz->vbar;
 
 	return NULL;
