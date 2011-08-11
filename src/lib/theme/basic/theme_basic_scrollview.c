@@ -157,7 +157,7 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
 	thiz->background = r;
-	enesim_renderer_background_color_set(r, 0xff777777);
+	enesim_renderer_background_color_set(r, 0xfffffff);
 
 	r = eon_theme_scrollview_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;

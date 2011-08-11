@@ -89,7 +89,6 @@ static void _eon_layout_mouse_down(Ender_Element *e, const char *event_name, voi
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	printf("passing mouse down\n");
 	eon_input_state_feed_mouse_down(eis);
 }
 
@@ -104,7 +103,6 @@ static void _eon_layout_mouse_up(Ender_Element *e, const char *event_name, void 
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	printf("passing mouse up\n");
 	eon_input_state_feed_mouse_up(eis);
 }
 
@@ -119,7 +117,6 @@ static void _eon_layout_mouse_in(Ender_Element *e, const char *event_name, void 
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	printf("passing mouse in\n");
 	eon_input_state_feed_mouse_in(eis);
 }
 
@@ -134,7 +131,6 @@ static void _eon_layout_mouse_out(Ender_Element *e, const char *event_name, void
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	printf("passing mouse out\n");
 	eon_input_state_feed_mouse_out(eis);
 }
 
@@ -155,11 +151,9 @@ static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, voi
 	px = ev->x;
 	py = ev->y;
 	eon_element_actual_position_get(r, &cx, &cy);
-	printf("received mouse move at %g %g - %g %g\n", px, py, cx, cy);
 	px -= cx;
 	py -= cy;
 	/* transform the position relative to the layout position */
-	printf("passing mouse move %g %g\n", px, py);
 	eon_input_state_feed_mouse_move(eis, px, py);
 }
 
@@ -174,8 +168,8 @@ static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, vo
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	printf("passing mouse wheel\n");
-	/* FIXME */
+	/* FIXME pass a mouse wheel? the mouse wheel should be set only on the focus element and an input must
+	 * have only one focus. i.e the focus is not per input state */
 	eon_input_state_feed_mouse_wheel(eis, 0);
 }
 

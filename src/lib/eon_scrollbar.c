@@ -33,22 +33,12 @@ static inline Eon_Scrollbar * _eon_scrollbar_get(Enesim_Renderer *r)
 	thiz = eon_widget_data_get(r);
 	return thiz;
 }
-#if 0
-static void _eon_scrollbar_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+
+static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Scrollbar *thiz;
-	Eon_Event_Mouse_Down *ev = event_data;
-	Eon_Input_State *eis;
-	Enesim_Renderer *r;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_scrollbar_get(r);
-
-	eis = _eon_scrollbar_input_state_get(thiz, e, ev->input);
-	printf("passing mouse down\n");
-	eon_input_state_feed_mouse_down(eis);
+	printf("scrollbar clicked\n");
 }
-#endif
+
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
  *----------------------------------------------------------------------------*/
@@ -59,6 +49,8 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
+
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_scrollbar_mouse_click, NULL);
 }
 
 static void _eon_scrollbar_free(Enesim_Renderer *r)
@@ -94,7 +86,7 @@ static double _eon_scrollbar_max_width_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
-	
+
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_scrollbar_max_width_get(theme_r, &v);
 

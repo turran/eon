@@ -295,7 +295,6 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return NULL;
-	printf("stack looking for a child at %g %g\n", x, y);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *rchild;
