@@ -34,6 +34,7 @@ typedef struct _Eon_Container
 	Eon_Container_Max_Height_Get max_height_get;
 	Eon_Container_Preferred_Width_Get preferred_width_get;
 	Eon_Container_Preferred_Height_Get preferred_height_get;
+	Eon_Container_Element_At element_at;
 	Eina_Bool pass_events;
 	void *data;
 	Eina_Hash *input_states;
@@ -63,8 +64,10 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 
 	if ((x >= ax && x < ax + aw) && (y >= ay && y < ay + ah))
 		return thiz->content;
-	else 
-		return NULL;
+	if (thiz->element_at)
+		return thiz->element_at(e, x, y);
+
+	return NULL;
 }
 
 static Eon_Input_State * _eon_container_input_state_get(Eon_Container *thiz, Ender_Element *e, Eon_Input *input)
@@ -381,6 +384,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->min_height_get = descriptor->min_height_get;
 	thiz->max_height_get = descriptor->max_height_get;
 	thiz->pass_events = descriptor->pass_events;
+	thiz->element_at = descriptor->element_at;
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;

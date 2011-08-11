@@ -102,6 +102,32 @@ static double _eon_scrollview_max_height_get(Ender_Element *e, double cmv)
 	return DBL_MAX;
 }
 
+static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, double y)
+{
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+	Enesim_Renderer *bar_r;
+	double aw, ah;
+	double ax, ay;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+
+	bar_r = ender_element_renderer_get(thiz->hbar);
+	eon_element_actual_size_get(bar_r, &aw, &ah);
+	eon_element_actual_position_get(bar_r, &ax, &ay);
+	if ((x >= ax && x < ax + aw) && (y >= ay && y < ay + ah))
+		return thiz->hbar;
+
+	bar_r = ender_element_renderer_get(thiz->vbar);
+	eon_element_actual_size_get(bar_r, &aw, &ah);
+	eon_element_actual_position_get(bar_r, &ax, &ay);
+	if ((x >= ax && x < ax + aw) && (y >= ay && y < ay + ah))
+		return thiz->vbar;
+
+	return NULL;
+}
+
 static void _eon_scrollview_initialize(Ender_Element *e)
 {
 	Eon_Scrollview *thiz;
@@ -120,8 +146,6 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 	Ender_Element *content;
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
-	double rw;
-	double rh;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
@@ -129,7 +153,6 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 	eon_container_content_get(e, &content);
 	if (content)
 	{
-		Eon_Margin margin;
 		Eon_Size size;
 		Eon_Size content_size;
 		Enesim_Renderer *theme_r;
@@ -188,6 +211,7 @@ static Eon_Container_Descriptor _descriptor = {
 	.min_height_get = _eon_scrollview_min_height_get,
 	.max_width_get = _eon_scrollview_max_width_get,
 	.max_height_get = _eon_scrollview_max_height_get,
+	.element_at = _eon_scrollview_element_at,
 	.pass_events = EINA_TRUE,
 	.name = "scrollview",
 };

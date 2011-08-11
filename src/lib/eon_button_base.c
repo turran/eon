@@ -180,7 +180,7 @@ void * eon_button_base_data_get(Enesim_Renderer *r)
 Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *data)
 {
 	Eon_Button_Base *thiz;
-	Eon_Container_Descriptor pdescriptor;
+	Eon_Container_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Button_Base));
