@@ -81,6 +81,20 @@ static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *ev
 	r = ender_element_renderer_get(e);
 	eon_widget_state_set(r, "mouse_out", EINA_TRUE);
 }
+
+static void _widget_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Enesim_Renderer *r;
+	r = ender_element_renderer_get(e);
+	eon_widget_state_set(r, "mouse_down", EINA_FALSE);
+}
+
+static void _widget_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Enesim_Renderer *r;
+	r = ender_element_renderer_get(e);
+	eon_widget_state_set(r, "mouse_up", EINA_FALSE);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -133,8 +147,11 @@ static void _eon_widget_initialize(Ender_Element *ender)
 	if (thiz->theme_element)
 		ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, ender);
 	/* register every needed callback */
+	/* FIXME we should not add this events here, but let every widget do what it wants to do with the events */
 	ender_event_listener_add(ender, "MouseIn", _widget_mouse_in, NULL);
 	ender_event_listener_add(ender, "MouseOut", _widget_mouse_out, NULL);
+	ender_event_listener_add(ender, "MouseDown", _widget_mouse_down, NULL);
+	ender_event_listener_add(ender, "MouseUp", _widget_mouse_up, NULL);
 	if (thiz->initialize)
 		thiz->initialize(ender);
 }

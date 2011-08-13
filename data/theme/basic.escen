@@ -9,7 +9,7 @@ escen {
 
 	};
 	basic_button "button" {
-		default : "mouse_out" {
+		default : "mouse_out", "mouse_up" {
 			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
@@ -17,7 +17,7 @@ escen {
 			set { end_bevel = 0xff000000; };
 		};
 
-		state "disabled" {
+		state "disabled" : "mouse_down" {
 			set { fill_color = 0xffa8a8a8; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
