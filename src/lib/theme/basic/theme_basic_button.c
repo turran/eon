@@ -26,6 +26,8 @@ typedef struct _Button
 	/* properties */
 	Enesim_Color start_shadow;
 	Enesim_Color end_shadow;
+	Enesim_Color start_bevel;
+	Enesim_Color end_bevel;
 	uint8_t highlight;
 	uint8_t shadow;
 	double horizontal_padding;
@@ -86,7 +88,7 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	enesim_renderer_gradient_linear_y0_set(r, 0);
 	enesim_renderer_gradient_linear_x1_set(r, 0);
 	enesim_renderer_gradient_linear_y1_set(r, height - thiz->radius);
-	stop.argb = 0xffffffff;
+	stop.argb = thiz->start_bevel;
 	stop.pos = 0;
 	enesim_renderer_gradient_stop_add(r, &stop);
 	stop.argb = thiz->fill_color;
@@ -95,7 +97,7 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	stop.argb = thiz->fill_color;
 	stop.pos = 1 - stop.pos;
 	enesim_renderer_gradient_stop_add(r, &stop);
-	stop.argb = 0xff000000;
+	stop.argb = thiz->end_bevel;
 	stop.pos = 1;
 	enesim_renderer_gradient_stop_add(r, &stop);
 
@@ -229,6 +231,8 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->shadow = 0x00;
 	thiz->border_color = 0xff555555;
 	thiz->fill_color = 0xffcccccc;
+	thiz->start_bevel = 0xfffffff;
+	thiz->end_bevel = 0xff000000;
 
 	r = enesim_renderer_stripes_new();
 	enesim_renderer_stripes_odd_color_set(r, thiz->start_shadow);
@@ -340,3 +344,20 @@ EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color
 	rr = thiz->background_fill;
 	enesim_renderer_stripes_even_color_set(rr, thiz->end_shadow);
 }
+
+EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	thiz->start_bevel = color;
+}
+
+EAPI void eon_basic_button_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Button *thiz;
+
+	thiz = _button_get(r);
+	thiz->end_bevel = color;
+}
+
