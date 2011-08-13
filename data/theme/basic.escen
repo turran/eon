@@ -10,17 +10,21 @@ escen {
 	};
 	basic_button "button" {
 		default : "mouse_out" {
-			set { foreground_color = 0xff222222; };
-			set { border_color = 0xff4f4f4f; };
+			set { fill_color = 0xffcccccc; };
+			set { start_shadow = 0x77000000; };
+			set { end_shadow = 0x22000000; };
 		};
 
 		state "disabled" {
-			set { foreground_color = 0xffff0000; };
+			set { fill_color = 0xffa8a8a8; };
+			set { start_shadow = 0x77000000; };
+			set { end_shadow = 0x22000000; };
 		};
 
 		state "mouse_in" {
-			set { foreground_color = 0xff555555; };
-			set { border_color = 0xff4f4f4f; };
+			set { fill_color = 0xffcccccc; };
+			set { start_shadow = 0xff557cb8; };
+			set { end_shadow = 0xff557cb8; };
 		};
 	};
 

@@ -11,8 +11,10 @@ namespace "eon" {
 	};
 
 	class "basic_button" : "theme_button" {
-		color "foreground_color";
+		color "fill_color";
 		color "border_color";
+		color "start_shadow";
+		color "end_shadow";
 		double "horizontal_padding";
 		double "vertical_padding";
 		double "radius";
