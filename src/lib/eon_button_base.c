@@ -22,6 +22,8 @@
  *============================================================================*/
 typedef struct _Eon_Button_Base
 {
+	/* properties */
+	Eina_Bool enabled;
 	/* private */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
@@ -128,7 +130,6 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e)
 		content_r = ender_element_renderer_get(content);
 		theme_r = eon_widget_theme_renderer_get(r);
 		/* set the size and position of the content */
-		
 		eon_element_actual_width_get(e, &aw);
 		eon_element_actual_height_get(e, &ah);
 		eon_element_actual_position_get(r, &ax, &ay);
@@ -163,8 +164,37 @@ static void _eon_button_base_free(Enesim_Renderer *r)
 		thiz->free(r);
 	free(thiz);
 }
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static void _eon_button_base_enabled_set(Enesim_Renderer *r, Eina_Bool enabled)
+{
+	Eon_Button_Base *thiz;
+	Ender_Element *e;
 
-#include "eon_generated_button_base.c"
+	thiz = _eon_button_base_get(r);
+	if (thiz->enabled == enabled) return;
+
+	thiz->enabled = enabled;
+	e = ender_element_renderer_from(r);
+	if (enabled)
+	{
+		eon_widget_state_set(r, "enabled", EINA_FALSE);
+	}
+	else
+	{
+		eon_widget_state_set(r, "disabled", EINA_FALSE);
+
+	}
+}
+
+static void _eon_button_base_enabled_get(Enesim_Renderer *r, Eina_Bool *enabled)
+{
+	Eon_Button_Base *thiz;
+
+	thiz = _eon_button_base_get(r);
+	*enabled = thiz->enabled;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -188,6 +218,7 @@ Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, vo
 	thiz->data = data;
 	thiz->free = descriptor->free;
 	thiz->initialize = descriptor->initialize;
+	thiz->enabled = EINA_TRUE;
 
 	pdescriptor.initialize = _eon_button_base_initialize;
 	pdescriptor.free = _eon_button_base_free;
@@ -208,6 +239,25 @@ renderer_err:
 	return NULL;
 }
 
+#include "eon_generated_button_base.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_button_base_enabled_set(Ender_Element *e, Eina_Bool enabled)
+{
+	ender_element_value_set(e, "enabled", enabled, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_button_base_enabled_get(Ender_Element *e, Eina_Bool *enabled)
+{
+	ender_element_value_get(e, "enabled", enabled, NULL);
+}
+

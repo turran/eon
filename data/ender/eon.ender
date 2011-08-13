@@ -41,7 +41,7 @@ namespace "eon" {
 	};
 
 	abstract "button_base" : "container" {
-
+		bool "enabled";
 	};
 
 	class "button" : "button_base" {

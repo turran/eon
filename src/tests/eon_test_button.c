@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	Eon_Window *win;
 	Ender_Element *layout;
 	Eon_Backend *backend;
+	Ender_Element *button;
 	int i;
 
 	eon_init();
@@ -31,10 +32,15 @@ int main(int argc, char **argv)
 	win = eon_window_new(backend, layout, 320, 240);
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
 
+	/* normal button */
+	/* something more than a label */
+	/* disabled button */
+	button = eon_button_new();
+	eon_button_base_enabled_set(button, EINA_FALSE);
+	eon_layout_child_add(layout, button);
 
 	for (i = 0; i < 5; i++)
 	{
-		Ender_Element *button;
 
 		button = eon_button_new();
 		_add_label(button, i);
