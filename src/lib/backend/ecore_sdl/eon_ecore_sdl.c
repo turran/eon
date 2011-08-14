@@ -225,7 +225,7 @@ static void _sdl_cleanup(Eon_Backend_Data *data)
 	if (_initialized)
 	{
 		ecore_sdl_shutdown();
-		enesim_surface_delete(data->surface);
+		enesim_surface_unref(data->surface);
 		free(data->prv);
 
 		_initialized = EINA_FALSE;
