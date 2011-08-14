@@ -26,6 +26,7 @@
  */
 
 EAPI Ender_Element * eon_button_new(void);
+EAPI Ender_Element * eon_button_new_with_label(const char *text);
 
 /**
  * @}

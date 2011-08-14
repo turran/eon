@@ -26,6 +26,7 @@
  */
 
 EAPI Ender_Element * eon_label_new(void);
+EAPI Ender_Element * eon_label_new_with_text(const char *text);
 EAPI void eon_label_text_set(Ender_Element *e, const char *text);
 EAPI void eon_label_text_get(Ender_Element *e, const char **text);
 

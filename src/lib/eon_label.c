@@ -213,6 +213,21 @@ EAPI Ender_Element * eon_label_new(void)
 	return ender_element_new("label");
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_label_new_with_text(const char *text)
+{
+	Ender_Element *e;
+
+	e = eon_label_new();
+	if (!e) return NULL;
+
+	eon_label_text_set(e, text);
+	return e;
+}
+
 
 /**
  * To be documented

@@ -17,10 +17,6 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-/* TODO
- * Add a simple
- * eon_button_new_with_label(char *label);
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -92,4 +88,25 @@ renderer_err:
 EAPI Ender_Element * eon_button_new(void)
 {
 	return ender_element_new_with_namespace("button", "eon");
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_button_new_with_label(const char *text)
+{
+	Ender_Element *e;
+	Ender_Element *label;
+
+	e = eon_button_new();
+	if (!e) return NULL;
+
+	label = eon_label_new_with_text(text);
+	if (!label)
+	{
+		return NULL;
+	}
+	eon_container_content_set(e, label);
+	return e;
 }
