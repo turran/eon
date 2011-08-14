@@ -205,9 +205,9 @@ static Enesim_Renderer * _eon_canvas_new(void)
 	return thiz;
 
 renderer_err:
-	enesim_renderer_delete(e->background);
+	enesim_renderer_unref(e->background);
 background_err:
-	enesim_renderer_delete(e->compound);
+	enesim_renderer_unref(e->compound);
 compound_err:
 	free(e);
 	return NULL;

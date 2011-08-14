@@ -140,7 +140,7 @@ static void _checkbox_free(Enesim_Renderer *r)
 
 	thiz = _checkbox_get(r);
 	if (thiz->compound)
-		enesim_renderer_delete(thiz->compound);
+		enesim_renderer_unref(thiz->compound);
 	free(thiz);
 }
 
@@ -199,13 +199,13 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->background);
+	enesim_renderer_unref(thiz->background);
 background_err:
-	enesim_renderer_delete(thiz->box);
+	enesim_renderer_unref(thiz->box);
 rectangle_err:
-	enesim_renderer_delete(thiz->check);
+	enesim_renderer_unref(thiz->check);
 path_err:
-	enesim_renderer_delete(thiz->compound);
+	enesim_renderer_unref(thiz->compound);
 compound_err:
 	free(thiz);
 	return NULL;

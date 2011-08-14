@@ -171,19 +171,19 @@ static void _free(Enesim_Renderer *r)
 	thiz = enesim_renderer_data_get(r);
 
 	if (thiz->widget.rectangle)
-		enesim_renderer_delete(thiz->widget.rectangle);
+		enesim_renderer_unref(thiz->widget.rectangle);
 	if (thiz->widget.content)
-		enesim_renderer_delete(thiz->widget.content);
+		enesim_renderer_unref(thiz->widget.content);
 	if (thiz->content.background)
-		enesim_renderer_delete(thiz->content.background);
+		enesim_renderer_unref(thiz->content.background);
 	if (thiz->content.bar)
-		enesim_renderer_delete(thiz->content.bar);
+		enesim_renderer_unref(thiz->content.bar);
 	if (thiz->bar.content)
-		enesim_renderer_delete(thiz->bar.content);
+		enesim_renderer_unref(thiz->bar.content);
 	if (thiz->bar_content.shade)
-		enesim_renderer_delete(thiz->bar_content.shade);
+		enesim_renderer_unref(thiz->bar_content.shade);
 	if (thiz->bar_content.pattern)
-		enesim_renderer_delete(thiz->bar_content.pattern);
+		enesim_renderer_unref(thiz->bar_content.pattern);
 }
 
 static Eon_Theme_Progressbar_Descriptor _descriptor = {
@@ -279,19 +279,19 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->widget.rectangle);
+	enesim_renderer_unref(thiz->widget.rectangle);
 widget_rectangle_err:
-	enesim_renderer_delete(thiz->widget.content);
+	enesim_renderer_unref(thiz->widget.content);
 widget_content_err:
-	enesim_renderer_delete(thiz->content.background);
+	enesim_renderer_unref(thiz->content.background);
 content_background_err:
-	enesim_renderer_delete(thiz->content.bar);
+	enesim_renderer_unref(thiz->content.bar);
 content_bar_err:
-	enesim_renderer_delete(thiz->bar.content);
+	enesim_renderer_unref(thiz->bar.content);
 bar_content_err:
-	enesim_renderer_delete(thiz->bar_content.shade);
+	enesim_renderer_unref(thiz->bar_content.shade);
 bar_content_shade_err:
-	enesim_renderer_delete(thiz->bar_content.pattern);
+	enesim_renderer_unref(thiz->bar_content.pattern);
 bar_content_pattern_err:
 	free(thiz);
 	return NULL;

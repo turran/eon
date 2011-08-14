@@ -126,9 +126,9 @@ static void _free(Enesim_Renderer *r)
 	thiz = enesim_renderer_data_get(r);
 
 	if (thiz->bar)
-		enesim_renderer_delete(thiz->bar);
+		enesim_renderer_unref(thiz->bar);
 	if (thiz->compound)
-		enesim_renderer_delete(thiz->compound);
+		enesim_renderer_unref(thiz->compound);
 }
 
 static Eon_Theme_Scrollbar_Descriptor _descriptor = {
@@ -185,11 +185,11 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->compound);
+	enesim_renderer_unref(thiz->compound);
 compound_err:
-	enesim_renderer_delete(thiz->background);
+	enesim_renderer_unref(thiz->background);
 background_err:
-	enesim_renderer_delete(thiz->bar);
+	enesim_renderer_unref(thiz->bar);
 bar_err:
 	free(thiz);
 	return NULL;

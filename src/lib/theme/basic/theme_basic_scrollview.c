@@ -124,7 +124,7 @@ static void _scrollview_free(Enesim_Renderer *r)
 
 	thiz = _scrollview_get(r);
 	if (thiz->compound)
-		enesim_renderer_delete(thiz->compound);
+		enesim_renderer_unref(thiz->compound);
 	free(thiz);
 }
 
@@ -165,9 +165,9 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->background);
+	enesim_renderer_unref(thiz->background);
 background_err:
-	enesim_renderer_delete(thiz->compound);
+	enesim_renderer_unref(thiz->compound);
 compound_err:
 	free(thiz);
 	return NULL;

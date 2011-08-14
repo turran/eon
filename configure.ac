@@ -51,7 +51,7 @@ esac
 AC_SUBST(create_shared_lib)
 
 # Common
-PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.5])
+PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.9])
 PKG_CHECK_MODULES(ENESIM, [emage >= 0.0.1])
 PKG_CHECK_MODULES(ENDER, [ender >= 0.0.1])
 PKG_CHECK_MODULES(ESCEN, [escen >= 0.0.1])

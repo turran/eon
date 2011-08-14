@@ -159,7 +159,7 @@ static void _label_free(Enesim_Renderer *r)
 
 	thiz = _label_get(r);
 	if (thiz->text)
-		enesim_renderer_delete(thiz->text);
+		enesim_renderer_unref(thiz->text);
 	free(thiz);
 }
 
@@ -200,7 +200,7 @@ EAPI Enesim_Renderer * eon_basic_label_new(void)
 
 	return r;
 renderer_err:
-	enesim_renderer_delete(thiz->text);
+	enesim_renderer_unref(thiz->text);
 etex_err:
 	free(thiz);
 	return NULL;

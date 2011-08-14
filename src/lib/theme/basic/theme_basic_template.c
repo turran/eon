@@ -73,7 +73,7 @@ static void _template_free(Enesim_Renderer *r)
 
 	thiz = _template_get(r);
 	if (thiz->compound)
-		enesim_renderer_delete(thiz->compound);
+		enesim_renderer_unref(thiz->compound);
 	free(thiz);
 }
 
@@ -124,7 +124,7 @@ EAPI Enesim_Renderer * eon_basic_template_new(void)
 
 	return r;
 renderer_err:
-	enesim_renderer_delete(thiz->compound);
+	enesim_renderer_unref(thiz->compound);
 compound_err:
 	free(thiz);
 	return NULL;

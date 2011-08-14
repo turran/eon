@@ -130,11 +130,11 @@ static void _radio_free(Enesim_Renderer *r)
 
 	rad = _radio_get(r);
 	if (rad->compound)
-		enesim_renderer_delete(rad->compound);
+		enesim_renderer_unref(rad->compound);
 	if (rad->outter_circle)
-		enesim_renderer_delete(rad->outter_circle);
+		enesim_renderer_unref(rad->outter_circle);
 	if (rad->inner_circle)
-		enesim_renderer_delete(rad->inner_circle);
+		enesim_renderer_unref(rad->inner_circle);
 	free(rad);
 }
 
@@ -188,13 +188,13 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 
 	return r;
 renderer_err:
-	enesim_renderer_delete(thiz->background);
+	enesim_renderer_unref(thiz->background);
 background_err:
-	enesim_renderer_delete(thiz->inner_circle);
+	enesim_renderer_unref(thiz->inner_circle);
 inner_err:
-	enesim_renderer_delete(thiz->outter_circle);
+	enesim_renderer_unref(thiz->outter_circle);
 outter_err:
-	enesim_renderer_delete(thiz->compound);
+	enesim_renderer_unref(thiz->compound);
 compound_err:
 	free(thiz);
 	return NULL;

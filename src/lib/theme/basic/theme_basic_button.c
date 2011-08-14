@@ -199,7 +199,7 @@ static void _button_free(Enesim_Renderer *r)
 
 	thiz = _button_get(r);
 	if (thiz->compound)
-		enesim_renderer_delete(thiz->compound);
+		enesim_renderer_unref(thiz->compound);
 	free(thiz);
 }
 

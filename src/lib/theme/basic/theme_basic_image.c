@@ -109,7 +109,7 @@ static void _image_free(Enesim_Renderer *r)
 
 	thiz = _image_get(r);
 	if (thiz->image)
-		enesim_renderer_delete(thiz->image);
+		enesim_renderer_unref(thiz->image);
 	free(thiz);
 }
 
@@ -143,7 +143,7 @@ EAPI Enesim_Renderer * eon_basic_image_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_delete(thiz->image);
+	enesim_renderer_unref(thiz->image);
 image_err:
 	free(thiz);
 	return NULL;
