@@ -38,6 +38,54 @@ static inline Eon_Button_Base * _eon_button_base_get(Enesim_Renderer *r)
 	thiz = eon_container_data_get(r);
 	return thiz;
 }
+
+static void _button_base_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Button_Base *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_button_base_get(r);
+
+	if (!thiz->enabled) return;
+	eon_widget_state_set(r, "mouse_in", EINA_FALSE);
+}
+
+static void _button_base_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Button_Base *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_button_base_get(r);
+
+	if (!thiz->enabled) return;
+	eon_widget_state_set(r, "mouse_out", EINA_TRUE);
+}
+
+static void _button_base_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Button_Base *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_button_base_get(r);
+
+	if (!thiz->enabled) return;
+	eon_widget_state_set(r, "mouse_down", EINA_FALSE);
+}
+
+static void _button_base_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Button_Base *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_button_base_get(r);
+
+	if (!thiz->enabled) return;
+	eon_widget_state_set(r, "mouse_up", EINA_FALSE);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -51,6 +99,10 @@ static void _eon_button_base_initialize(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_button_base_get(r);
+	ender_event_listener_add(e, "MouseIn", _button_base_mouse_in, NULL);
+	ender_event_listener_add(e, "MouseOut", _button_base_mouse_out, NULL);
+	ender_event_listener_add(e, "MouseDown", _button_base_mouse_down, NULL);
+	ender_event_listener_add(e, "MouseUp", _button_base_mouse_up, NULL);
 	if (thiz->initialize)
 		thiz->initialize(e);
 }
