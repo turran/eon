@@ -34,7 +34,7 @@ static void _add_image(Ender_Element *button, const char *file)
 	eon_element_preferred_width_get(image, &w);
 	eon_element_preferred_width_get(image, &h);
 	eon_element_min_width_set(image, w);
-	eon_element_min_height_set(image, 40);
+	eon_element_min_height_set(image, 20);
 	ender_event_listener_add(button, "MouseClick", _button_clicked, image);
 }
 
