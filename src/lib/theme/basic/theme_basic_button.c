@@ -198,8 +198,11 @@ static void _button_free(Enesim_Renderer *r)
 	Button *thiz;
 
 	thiz = _button_get(r);
-	if (thiz->compound)
-		enesim_renderer_unref(thiz->compound);
+	enesim_renderer_unref(thiz->compound);
+	enesim_renderer_unref(thiz->inner_button);
+	enesim_renderer_unref(thiz->inner_button_fill);
+	enesim_renderer_unref(thiz->background);
+	enesim_renderer_unref(thiz->background_fill);
 	free(thiz);
 }
 
@@ -237,6 +240,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->end_bevel = 0xff000000;
 
 	r = enesim_renderer_stripes_new();
+	if (!r) goto background_fill_err;
 	enesim_renderer_stripes_odd_color_set(r, thiz->start_shadow);
 	enesim_renderer_stripes_even_color_set(r, thiz->end_shadow);
 	enesim_renderer_stripes_even_thickness_set(r, 1);
@@ -244,6 +248,7 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->background_fill = r;
 
 	r = enesim_renderer_rectangle_new();
+	if (!r) goto background_err;
 	enesim_renderer_rectangle_corner_radius_set(r, thiz->radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->background_fill);
@@ -251,9 +256,11 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->background = r;
 
 	r = enesim_renderer_gradient_linear_new();
+	if (!r) goto inner_button_fill_err;
 	thiz->inner_button_fill = r;
 
 	r = enesim_renderer_rectangle_new();
+	if (!r) goto inner_button_err;
 	enesim_renderer_origin_set(r, thiz->horizontal_padding, thiz->vertical_padding);
 	enesim_renderer_rectangle_corner_radius_set(r, thiz->radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
@@ -265,10 +272,26 @@ EAPI Enesim_Renderer * eon_basic_button_new(void)
 	thiz->inner_button = r;
 
 	r = enesim_renderer_compound_new();
+	if (!r) goto compound_err;
 	thiz->compound = r;
 
 	r = eon_theme_button_new(&_descriptor, thiz);
+	if (!r) goto renderer_err;
 	return r;
+
+renderer_err:
+	enesim_renderer_unref(thiz->compound);
+compound_err:
+	enesim_renderer_unref(thiz->inner_button);
+inner_button_err:
+	enesim_renderer_unref(thiz->inner_button_fill);
+inner_button_fill_err:
+	enesim_renderer_unref(thiz->background);
+background_err:
+	enesim_renderer_unref(thiz->background_fill);
+background_fill_err:
+	free(thiz);
+	return NULL;
 }
 
 /**
@@ -299,6 +322,10 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
 	enesim_renderer_shape_stroke_color_set(rr, thiz->border_color);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double padding)
 {
 	Button *thiz;
@@ -307,6 +334,10 @@ EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double pad
 	thiz->horizontal_padding = padding;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double padding)
 {
 	Button *thiz;
@@ -315,6 +346,10 @@ EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double paddi
 	thiz->vertical_padding = padding;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
 {
 	Button *thiz;
@@ -323,6 +358,10 @@ EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
 	thiz->radius = radius;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Button *thiz;
@@ -335,6 +374,10 @@ EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color col
 	enesim_renderer_stripes_odd_color_set(rr, thiz->start_shadow);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Button *thiz;
@@ -347,6 +390,10 @@ EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color
 	enesim_renderer_stripes_even_color_set(rr, thiz->end_shadow);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Button *thiz;
@@ -355,6 +402,10 @@ EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color colo
 	thiz->start_bevel = color;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_button_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Button *thiz;
@@ -362,4 +413,3 @@ EAPI void eon_basic_button_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 	thiz = _button_get(r);
 	thiz->end_bevel = color;
 }
-
