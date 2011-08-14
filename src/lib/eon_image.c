@@ -78,10 +78,68 @@ static Eina_Bool _eon_image_setup(Ender_Element *e)
 	return EINA_TRUE;
 }
 
+static double _eon_image_max_width_height_get(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+	return 2048;
+}
+
+static double _eon_image_min_width_height_get(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+	return 1;
+}
+
+static double _eon_image_preferred_width_get(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_image_preferred_width_get(theme_r, &v);
+
+	return v;
+}
+
+static double _eon_image_preferred_height_get(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *r;
+	double v;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_image_preferred_height_get(theme_r, &v);
+
+	return v;
+}
+
 static Eon_Widget_Descriptor _descriptor = {
 	.name = "image",
 	.setup = _eon_image_setup,
 	.free = _eon_image_free,
+	.min_width_get = _eon_image_min_width_height_get,
+	.min_height_get = _eon_image_min_width_height_get,
+	.max_width_get = _eon_image_max_width_height_get,
+	.max_height_get = _eon_image_max_width_height_get,
+	.preferred_width_get = _eon_image_preferred_width_get,
+	.preferred_height_get = _eon_image_preferred_height_get,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -160,4 +218,3 @@ EAPI void eon_image_file_get(Ender_Element *e, const char **file)
 {
 	ender_element_value_get(e, "file", file, NULL);
 }
-

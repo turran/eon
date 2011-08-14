@@ -28,6 +28,7 @@ typedef double (*Eon_Theme_Image_Min_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Image_Min_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Image_Preferred_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Image_Preferred_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Image_Source_Set)(Enesim_Renderer *r, Enesim_Surface *src);
 
 typedef struct _Eon_Theme_Image_Descriptor
 {
@@ -38,6 +39,7 @@ typedef struct _Eon_Theme_Image_Descriptor
 	Eon_Theme_Image_Min_Height_Get min_height_get;
 	Eon_Theme_Image_Preferred_Width_Get preferred_width_get;
 	Eon_Theme_Image_Preferred_Height_Get preferred_height_get;
+	Eon_Theme_Image_Source_Set source_set;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
