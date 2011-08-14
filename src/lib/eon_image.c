@@ -24,6 +24,9 @@ typedef struct _Eon_Image
 {
 	/* properties */
 	char *file;
+	/* private */
+	int original_width;
+	int original_height;
 	Eina_Bool file_changed;
 } Eon_Image;
 
@@ -39,13 +42,18 @@ static inline Eon_Image * _eon_image_get(Enesim_Renderer *r)
 
 static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
 {
+	Eon_Image *thiz;
 	Enesim_Renderer *r = data;
 
+	thiz = _eon_image_get(r);
 	if (error)
 	{
 		eon_widget_state_set(r, "failed", EINA_FALSE);
+		thiz->original_width = -1;
+		thiz->original_height = -1;
 		return;
 	}
+	enesim_surface_size_get(s, &thiz->original_width, &thiz->original_height);
 	/* set the new new surface to the theme associated */
 	eon_widget_property_set(r, "source", s, NULL);
 	eon_widget_state_set(r, "loaded", EINA_FALSE);
@@ -101,33 +109,21 @@ static double _eon_image_min_width_height_get(Ender_Element *e)
 static double _eon_image_preferred_width_get(Ender_Element *e)
 {
 	Eon_Image *thiz;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
-	double v;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_image_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_image_preferred_width_get(theme_r, &v);
-
-	return v;
+	return thiz->original_width;
 }
 
 static double _eon_image_preferred_height_get(Ender_Element *e)
 {
 	Eon_Image *thiz;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
-	double v;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_image_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_image_preferred_height_get(theme_r, &v);
-
-	return v;
+	return thiz->original_height;
 }
 
 static Eon_Widget_Descriptor _descriptor = {
