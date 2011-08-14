@@ -39,6 +39,9 @@ int main(int argc, char **argv)
 	eon_button_base_enabled_set(button, EINA_FALSE);
 	eon_layout_child_add(layout, button);
 
+	button = eon_button_new_with_label("Button 01");
+	eon_layout_child_add(layout, button);
+
 	for (i = 0; i < 5; i++)
 	{
 
