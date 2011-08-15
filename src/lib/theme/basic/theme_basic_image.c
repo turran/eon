@@ -66,7 +66,6 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_origin_set(thiz->image, ox, oy);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->image, color);
-
 	if (!thiz->src)
 	{
 		*fill = _empty_draw;

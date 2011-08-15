@@ -41,12 +41,9 @@ typedef struct _Eon_Theme_Image
 	/* properties */
 	Enesim_Surface *source;
 	/* private */
-	Eon_Theme_Image_Max_Width_Get max_width_get;
-	Eon_Theme_Image_Min_Width_Get min_width_get;
-	Eon_Theme_Image_Max_Height_Get max_height_get;
-	Eon_Theme_Image_Min_Height_Get min_height_get;
-	Eon_Theme_Image_Preferred_Width_Get preferred_width_get;
-	Eon_Theme_Image_Preferred_Height_Get preferred_height_get;
+	Eon_Theme_Image_Max_Size_Get max_size_get;
+	Eon_Theme_Image_Min_Size_Get min_size_get;
+	Eon_Theme_Image_Preferred_Size_Get preferred_size_get;
 	Eon_Theme_Image_Source_Set source_set;
 	Eina_Bool source_changed;
 	int original_width;
@@ -109,12 +106,9 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 	thiz->data = data;
 	thiz->free = descriptor->free;
 
-	thiz->max_width_get = descriptor->max_width_get;
-	thiz->min_width_get = descriptor->min_width_get;
-	thiz->max_height_get = descriptor->max_height_get;
-	thiz->min_height_get = descriptor->min_height_get;
-	thiz->preferred_width_get = descriptor->preferred_width_get;
-	thiz->preferred_height_get = descriptor->preferred_height_get;
+	thiz->min_size_get = descriptor->min_size_get;
+	thiz->max_size_get = descriptor->max_size_get;
+	thiz->preferred_size_get = descriptor->preferred_size_get;
 	thiz->source_set = descriptor->source_set;
 
 	pdescriptor.sw_setup = descriptor->sw_setup;
@@ -176,94 +170,43 @@ EAPI void eon_theme_image_source_set(Enesim_Renderer *r, Enesim_Surface *source)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_image_max_width_get(Enesim_Renderer *r, double *width)
+EAPI void eon_theme_image_max_size_get(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out)
 {
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(r);
-	if (thiz->max_width_get)
-		*width = thiz->max_width_get(r);
+	if (thiz->max_size_get)
+		thiz->max_size_get(r, image_size, out);
 	else
-		*width = 2048;
+		*out = *image_size;
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_image_max_height_get(Enesim_Renderer *r, double *height)
+EAPI void eon_theme_image_min_size_get(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out)
 {
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(r);
-	if (thiz->max_height_get)
-		*height = thiz->max_height_get(r);
+	if (thiz->min_size_get)
+		thiz->min_size_get(r, image_size, out);
 	else
-		*height = 2048;
+		*out = *image_size;
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_image_min_width_get(Enesim_Renderer *r, double *width)
+EAPI void eon_theme_image_preferred_size_get(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out)
 {
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(r);
-	if (thiz->min_width_get)
-		*width = thiz->min_width_get(r);
+	if (thiz->preferred_size_get)
+		thiz->preferred_size_get(r, image_size, out);
 	else
-		*width = 1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_image_min_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Image *thiz;
-
-	thiz = _eon_theme_image_get(r);
-	if (thiz->min_height_get)
-		*height = thiz->min_height_get(r);
-	else
-		*height = 1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_image_preferred_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Image *thiz;
-
-	thiz = _eon_theme_image_get(r);
-	if (thiz->preferred_height_get)
-		*height = thiz->preferred_height_get(r);
-	else
-	{
-		_eon_theme_image_original_size_get(thiz);
-		*height = thiz->original_height;
-	}
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_image_preferred_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Image *thiz;
-
-	thiz = _eon_theme_image_get(r);
-	if (thiz->preferred_width_get)
-		*width = thiz->preferred_width_get(r);
-	else
-	{
-		_eon_theme_image_original_size_get(thiz);
-		*width = thiz->original_width;
-	}
+		*out = *image_size;
 }

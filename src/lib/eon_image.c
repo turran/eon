@@ -86,54 +86,128 @@ static Eina_Bool _eon_image_setup(Ender_Element *e)
 	return EINA_TRUE;
 }
 
-static double _eon_image_max_width_height_get(Ender_Element *e)
+static double _eon_image_max_width_get(Ender_Element *e)
 {
 	Eon_Image *thiz;
+	Eon_Size image_size, out;
 	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_image_get(r);
-	return 2048;
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	image_size.width = 2048;
+	image_size.height = 2048;
+	eon_theme_image_max_size_get(theme_r, &image_size, &out);
+
+	return out.width;
 }
 
-static double _eon_image_min_width_height_get(Ender_Element *e)
+static double _eon_image_max_height_get(Ender_Element *e)
 {
 	Eon_Image *thiz;
+	Eon_Size image_size, out;
 	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_image_get(r);
-	return 1;
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	image_size.width = 2048;
+	image_size.height = 2048;
+	eon_theme_image_max_size_get(theme_r, &image_size, &out);
+
+	return out.height;
+}
+
+static double _eon_image_min_width_get(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Eon_Size image_size, out;
+	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	image_size.width = 1;
+	image_size.height = 1;
+	eon_theme_image_min_size_get(theme_r, &image_size, &out);
+
+	return out.width;
+}
+
+static double _eon_image_min_height_get(Ender_Element *e)
+{
+	Eon_Image *thiz;
+	Eon_Size image_size, out;
+	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_image_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	image_size.width = 1;
+	image_size.height = 1;
+	eon_theme_image_min_size_get(theme_r, &image_size, &out);
+
+	return out.height;
 }
 
 static double _eon_image_preferred_width_get(Ender_Element *e)
 {
 	Eon_Image *thiz;
+	Eon_Size image_size, out;
 	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_image_get(r);
-	return thiz->original_width;
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	if (thiz->original_width < 0 || thiz->original_height < 0)
+		return -1;
+
+	image_size.width = thiz->original_width;
+	image_size.height = thiz->original_height;
+	eon_theme_image_preferred_size_get(theme_r, &image_size, &out);
+
+	return out.width;
 }
 
 static double _eon_image_preferred_height_get(Ender_Element *e)
 {
 	Eon_Image *thiz;
+	Eon_Size image_size, out;
 	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_image_get(r);
-	return thiz->original_height;
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	if (thiz->original_width < 0 || thiz->original_height < 0)
+		return -1;
+
+	image_size.width = thiz->original_width;
+	image_size.height = thiz->original_height;
+	eon_theme_image_preferred_size_get(theme_r, &image_size, &out);
+
+	return out.height;
 }
 
 static Eon_Widget_Descriptor _descriptor = {
 	.name = "image",
 	.setup = _eon_image_setup,
 	.free = _eon_image_free,
-	.min_width_get = _eon_image_min_width_height_get,
-	.min_height_get = _eon_image_min_width_height_get,
-	.max_width_get = _eon_image_max_width_height_get,
-	.max_height_get = _eon_image_max_width_height_get,
+	.min_width_get = _eon_image_min_width_get,
+	.min_height_get = _eon_image_min_height_get,
+	.max_width_get = _eon_image_max_width_get,
+	.max_height_get = _eon_image_max_height_get,
 	.preferred_width_get = _eon_image_preferred_width_get,
 	.preferred_height_get = _eon_image_preferred_height_get,
 };

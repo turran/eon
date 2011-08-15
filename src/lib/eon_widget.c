@@ -131,8 +131,6 @@ static Eina_Bool _eon_widget_setup(Ender_Element *ender)
 	r = ender_element_renderer_get(ender);
 	thiz = _eon_widget_get(r);
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
-	enesim_renderer_color_get(r, &color);
-	enesim_renderer_color_set(thiz->theme_renderer, color);
 	if (thiz->setup)
 		thiz->setup(ender);
 	return EINA_TRUE;
