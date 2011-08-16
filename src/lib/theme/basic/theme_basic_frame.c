@@ -253,7 +253,7 @@ EAPI void eon_basic_frame_description_font_set(Enesim_Renderer *r, const char *f
 	Frame *thiz;
 
 	thiz = _frame_get(r);
-	etex_span_font_set(thiz->description, font);
+	etex_base_font_set(thiz->description, font);
 }
 
 /**
@@ -265,7 +265,7 @@ EAPI void eon_basic_frame_description_size_set(Enesim_Renderer *r, int size)
 	Frame *thiz;
 
 	thiz = _frame_get(r);
-	etex_span_size_set(thiz->description, size);
+	etex_base_size_set(thiz->description, size);
 
 }
 

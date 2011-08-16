@@ -50,7 +50,7 @@ static void _label_font_set(Enesim_Renderer *r, const char *name)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	etex_span_font_set(thiz->text, name);
+	etex_base_font_set(thiz->text, name);
 }
 
 static const char * _label_font_get(Enesim_Renderer *r)
@@ -59,7 +59,7 @@ static const char * _label_font_get(Enesim_Renderer *r)
 	const char *name;
 
 	thiz = _label_get(r);
-	etex_span_font_get(thiz->text, &name);
+	etex_base_font_get(thiz->text, &name);
 	return name;
 }
 
@@ -68,7 +68,7 @@ static void _label_size_set(Enesim_Renderer *r, int size)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	etex_span_size_set(thiz->text, size);
+	etex_base_size_set(thiz->text, size);
 }
 
 static int _label_size_get(Enesim_Renderer *r)
@@ -77,7 +77,7 @@ static int _label_size_get(Enesim_Renderer *r)
 	unsigned int size;
 
 	thiz = _label_get(r);
-	etex_span_size_get(thiz->text, &size);
+	etex_base_size_get(thiz->text, &size);
 	return size;
 }
 

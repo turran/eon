@@ -238,7 +238,7 @@ static Enesim_Renderer * _eon_wrapper_new(void)
 	r = enesim_renderer_background_new();
 	thiz->fallback = r;
 	enesim_renderer_background_color_set(r, 0xff00ffff);
-	
+
 	r = enesim_renderer_compound_new();
 	thiz->compound = r;
 	enesim_renderer_compound_layer_add(r, thiz->fallback);
