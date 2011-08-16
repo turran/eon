@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 	/* normal button */
 	/* something more than a label */
 	/* disabled button */
-	button = eon_button_new();
+	button = eon_button_new_with_label("Disabled");
 	eon_button_base_enabled_set(button, EINA_FALSE);
 	eon_layout_child_add(layout, button);
 
