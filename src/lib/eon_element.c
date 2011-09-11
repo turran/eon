@@ -364,7 +364,8 @@ static void _eon_element_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Ender_Element *e;
 	Eon_Element *thiz;
@@ -382,7 +383,7 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 		printf("cannot sw setup the eon element\n");
 		return EINA_FALSE;
 	}
-	return thiz->sw_setup(r, fill);
+	return thiz->sw_setup(r, s, fill, error);
 }
 
 static void _eon_element_sw_cleanup(Enesim_Renderer *r)

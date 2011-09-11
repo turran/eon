@@ -56,7 +56,8 @@ static void _scrollview_draw(Enesim_Renderer *r, int x, int y, unsigned int len,
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollview interface                     *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Theme_Basic_Scrollview *thiz;
 	Enesim_Renderer *content;
@@ -69,8 +70,8 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	eon_theme_scrollview_hbar_get(r, &thiz->hbar); 
-	eon_theme_scrollview_vbar_get(r, &thiz->vbar); 
+	eon_theme_scrollview_hbar_get(r, &thiz->hbar);
+	eon_theme_scrollview_vbar_get(r, &thiz->vbar);
 	/* the clipped width/height */
 	//eon_theme_widget_width_get(r, &width);
 	//eon_theme_widget_height_get(r, &height);
@@ -93,7 +94,7 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *
 		thiz->content = content;
 	}
 	/* set the needed properties */
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("the scrollview cannot setup yet\n");
 		return EINA_FALSE;

@@ -53,7 +53,8 @@ static void _empty_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint
 /*----------------------------------------------------------------------------*
  *                         The Image theme interface                         *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Image *thiz;
 	double ox, oy;
@@ -79,7 +80,7 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_image_h_set(thiz->image, (int)height);
 	enesim_renderer_image_src_set(thiz->image, thiz->src);
 
-	if (!enesim_renderer_sw_setup(thiz->image))
+	if (!enesim_renderer_sw_setup(thiz->image, s, error))
 	{
 		printf("not available to setup yet\n");
 		return EINA_FALSE;

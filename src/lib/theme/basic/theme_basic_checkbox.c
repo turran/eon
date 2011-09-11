@@ -68,7 +68,8 @@ static void _checkbox_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = thiz->size / 2;
 }
 
-static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Checkbox *thiz;
 	Enesim_Renderer *content;
@@ -117,7 +118,7 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fi
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 
-	if (!enesim_renderer_sw_setup(thiz->compound)) return EINA_FALSE;
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error)) return EINA_FALSE;
 	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
 	if (!thiz->fill) return EINA_FALSE;
 

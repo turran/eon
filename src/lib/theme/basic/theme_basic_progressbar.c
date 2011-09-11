@@ -118,7 +118,8 @@ static double _progressbar_max_height_get(Enesim_Renderer *r)
 	return DBL_MAX;
 }
 
-static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Progressbar *thiz;
 	Enesim_Matrix matrix;
@@ -141,7 +142,7 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	}
 	_progressbar_update_size(r);
 
-	if (!enesim_renderer_sw_setup(thiz->widget.rectangle))
+	if (!enesim_renderer_sw_setup(thiz->widget.rectangle, s, error))
 	{
 		printf("failed 1\n");
 		return EINA_FALSE;

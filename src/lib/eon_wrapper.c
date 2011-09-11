@@ -64,7 +64,8 @@ static void _wrapped_changed(Ender_Element *e, const char *event_name, void *eve
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Rectangle rect;
@@ -76,7 +77,7 @@ static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fi
 	 */
 	//enesim_renderer_boundings(r, &rect);
 	//enesim_renderer_origin_set(thiz->compound, rect.x, rect.y);
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("the theme can not setup yet\n");
 		return EINA_FALSE;

@@ -65,7 +65,8 @@ static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = circle_radius;
 }
 
-static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Radio *thiz;
 	Enesim_Renderer *content;
@@ -99,7 +100,7 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 	/* get the fill function */
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("cannot setup the compound\n");
 		return EINA_FALSE;

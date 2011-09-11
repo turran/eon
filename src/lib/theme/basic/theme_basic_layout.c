@@ -71,7 +71,8 @@ static void _layout_child_clear(Enesim_Renderer *r)
 }
 
 
-static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Theme_Basic_Layout *thiz;
 	double ox;
@@ -82,7 +83,7 @@ static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("compound cannot setup yet\n");
 		return EINA_FALSE;

@@ -84,7 +84,8 @@ static double _scrollbar_max_height_get(Enesim_Renderer *r)
 		return 16;
 }
 
-static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Scrollbar *thiz;
 	double ox, oy;
@@ -96,7 +97,7 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 
 	enesim_renderer_rectangle_width_set(thiz->bar, 16);
 	enesim_renderer_rectangle_height_set(thiz->bar, 16);
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("failed 1\n");
 		return EINA_FALSE;

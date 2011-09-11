@@ -71,7 +71,8 @@ static void _frame_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = 0;
 }
 
-static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Frame *thiz;
 	Enesim_Renderer *content;
@@ -117,7 +118,7 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 
 	enesim_renderer_origin_set(thiz->description, 10, 1);
 
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("not available to setup yet\n");
 		return EINA_FALSE;

@@ -107,7 +107,7 @@ static unsigned int _label_height_get(Enesim_Renderer *r)
 	thiz = _label_get(r);
 	enesim_renderer_boundings(thiz->text, &boundings);
 	return boundings.h;
-} 
+}
 
 static unsigned int _label_width_get(Enesim_Renderer *r)
 {
@@ -117,9 +117,10 @@ static unsigned int _label_width_get(Enesim_Renderer *r)
 	thiz = _label_get(r);
 	enesim_renderer_boundings(thiz->text, &boundings);
 	return boundings.w;
-} 
+}
 
-static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Label *thiz;
 	Enesim_Color color;
@@ -130,7 +131,7 @@ static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
 	enesim_renderer_origin_set(thiz->text, ox, oy);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
-	if (!enesim_renderer_sw_setup(thiz->text))
+	if (!enesim_renderer_sw_setup(thiz->text, s, error))
 	{
 		return EINA_FALSE;
 	}

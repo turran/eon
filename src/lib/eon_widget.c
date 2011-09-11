@@ -69,13 +69,14 @@ static void _theme_changed(Ender_Element *e, const char *event_name, void *event
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _eon_widget_sw_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _eon_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(r);
 
-	if (!enesim_renderer_sw_setup(thiz->theme_renderer))
+	if (!enesim_renderer_sw_setup(thiz->theme_renderer, s, error))
 	{
 		printf("the theme can not setup yet\n");
 		return EINA_FALSE;

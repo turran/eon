@@ -144,7 +144,8 @@ static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
 	position->y = thiz->vertical_padding + _border_weight + thiz->radius;
 }
 
-static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Button *thiz;
 	Enesim_Renderer *content;
@@ -171,7 +172,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill
 	}
 	_button_update_rectangle(r);
 
-	if (!enesim_renderer_sw_setup(thiz->compound))
+	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		printf("not available to setup yet\n");
 		return EINA_FALSE;
