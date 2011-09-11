@@ -156,7 +156,7 @@ static Eina_Bool _idler_cb(void *data)
 	/* get the damage rectangles */
 	eon_layout_redraw_get(r, &redraws);
 	/* render only those rectangles */
-	enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0);
+	enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, NULL);
 	/* call the flush on the backend of such rectangles */
 	/* FIXME for now the layout always returns nothing, force a render anyway */
 	//ee->flush(ee->data, redraws);
