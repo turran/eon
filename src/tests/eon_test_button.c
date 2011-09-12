@@ -26,10 +26,10 @@ int main(int argc, char **argv)
 	backend = eon_ecore_sdl_new();
 
 	layout = eon_stack_new();
-	eon_element_width_set(layout, 320.0);
+	eon_element_width_set(layout, 321.0);
 	eon_element_height_set(layout, 240.0);
 
-	win = eon_window_new(backend, layout, 320, 240);
+	win = eon_window_new(backend, layout, 321, 240);
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
 
 	/* normal button */

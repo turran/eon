@@ -335,7 +335,7 @@ static void _client_constructor_callback(Ender_Element *e, void *data)
 /*----------------------------------------------------------------------------*
  *                           Eon backend interface                            *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsigned int height, Eon_Backend_Data *data)
+static Eina_Bool _remote_window_new(void *data, Ender_Element *layout, unsigned int width, unsigned int height, void **window_data)
 {
 	Eix_Server *srv;
 	Eon_Ecore_Remote *thiz;
@@ -371,7 +371,6 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 	 */
 	ender_element_new_listener_add(_client_constructor_callback, thiz);
 	thiz->srv = srv;
-	data->prv = thiz;
 
 	eon_ecore_remote_server_setup(thiz->srv);
 	/* FIXME once the Eon_Window is refactored to be an Ender itself
@@ -387,15 +386,15 @@ static Eina_Bool _remote_setup(Ender_Element *layout, unsigned int width, unsign
 	client_new.layout_id = re->id;
 	eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_CLIENT_NEW, &client_new, 0, 0);
 
+	*window_data = thiz;
+
 	return EINA_TRUE;
 }
 
-static void _remote_cleanup(Eon_Backend_Data *data)
+static void _remote_window_delete(void *window_data)
 {
-	Eon_Ecore_Remote *thiz;
+	Eon_Ecore_Remote *thiz = window_data;
 
-
-	thiz = data->prv;
 	if (_initialized == 1)
 		ender_element_new_listener_remove(_global_constructor_callback, NULL);
 	ender_element_new_listener_remove(_client_constructor_callback, thiz);
@@ -405,9 +404,9 @@ static void _remote_cleanup(Eon_Backend_Data *data)
 	ecore_shutdown();
 }
 
-static Eon_Backend _backend = {
-	.setup = _remote_setup,
-	.cleanup = _remote_cleanup,
+static Eon_Backend_Descriptor _backend = {
+	/* .window_new =    */ _remote_window_new,
+	/* .window_delete = */ _remote_window_delete,
 };
 
 #endif
@@ -417,8 +416,11 @@ static Eon_Backend _backend = {
 EAPI Eon_Backend * eon_ecore_remote_new(void)
 {
 #ifdef BUILD_BACKEND_REMOTE
+	Eon_Backend *backend;
+
 	eon_ecore_common_init();
-	return &_backend;
+	backend = eon_backend_new(&_backend, NULL);
+	return backend;
 #else
 	return NULL;
 #endif

@@ -32,7 +32,7 @@ struct _Eon_Window
 	unsigned int width;
 	unsigned int height;
 	Eon_Backend *backend;
-	Eon_Backend_Data data;
+	void *data;
 };
 
 static Ecore_Idle_Enterer * _global_idler = NULL;
@@ -55,17 +55,17 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 		unsigned int width, unsigned int height)
 {
 	Eon_Window *ee;
-	Eon_Backend_Data data;
 	Enesim_Renderer *l;
+	void *data;
 
-	if (!backend || !backend->setup) return NULL;
+	if (!backend) return NULL;
 	if (!layout) return NULL;
 	/* FIXME we should just compare the type name */
 	l = ender_element_renderer_get(layout);
 	if (!l) return NULL;
 	if (!eon_is_layout(l)) return NULL;
 
-	if (!backend->setup(layout, width, height, &data))
+	if (!eon_backend_window_new(backend, layout, width, height, &data))
 		return NULL;
 
 	if (!_global_idler)
