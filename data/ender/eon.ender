@@ -63,6 +63,10 @@ namespace "eon" {
 
 	class "scrollbar" : "widget" {
 		int "orientation";
+		double "max";
+		double "min";
+		double "step_increment";
+		double "page_increment";
 	};
 
 	class "progressbar" : "widget" {

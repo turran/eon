@@ -332,6 +332,14 @@ static void _eon_element_real_height_get(Enesim_Renderer *r, double *height)
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
+static const char * _eon_element_name(Enesim_Renderer *r)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	return thiz->name;
+}
+
 /* Given that we dont support the x_origin property, we must inform correctly to the enesim system that we can be at a specific position*/
 /* TODO Remove the function call */
 static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
@@ -341,6 +349,12 @@ static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 
 	thiz = _eon_element_get(r);
 	eon_element_actual_size_get(r, &size);
+	{
+		char *name;
+
+		enesim_renderer_name_get(r, &name);
+		printf("%s actual %g %g\n", name, size.width, size.height);
+	}
 	/* There's no layout, or the layout didnt set an active width/height */
 	if (size.width < 0 || size.height < 0)
 	{
@@ -405,6 +419,7 @@ static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 
 static Enesim_Renderer_Descriptor _descriptor = {
 	.boundings = _eon_element_boundings,
+	.name = _eon_element_name,
 	.flags = _eon_element_flags,
 	.free = _eon_element_free,
 	.sw_setup = _eon_element_sw_setup,
@@ -471,9 +486,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->width = -1;
 	thiz->height = -1;
 
-	r = enesim_renderer_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
-
 	/* Set the function pointers */
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
@@ -496,6 +508,9 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->sw_setup = descriptor->sw_setup;
 	thiz->sw_cleanup = descriptor->sw_cleanup;
 	thiz->name = descriptor->name;
+
+	r = enesim_renderer_new(&_descriptor, thiz);
+	if (!r) goto renderer_err;
 
 	printf("element of name %s created %p\n", descriptor->name, r);
 	return r;

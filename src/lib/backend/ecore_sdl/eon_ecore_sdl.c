@@ -198,6 +198,7 @@ static Eina_Bool _resize(void *data, int type, void *event)
 
 	thiz->width = ev->w;
 	thiz->height = ev->h;
+	printf("resize to %d %d\n", thiz->width, thiz->height);
 	eon_element_width_set(thiz->layout, thiz->width);
 	eon_element_height_set(thiz->layout, thiz->height);
 
@@ -213,9 +214,10 @@ static Eina_Bool _feed_events(void *data)
 static Eina_Bool _idler_cb(void *data)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
+	Enesim_Renderer *r;
+	Enesim_Error *error = NULL;
 	Eina_List *redraws = NULL;
 	//Eina_List *l;
-	Enesim_Renderer *r;
 	Eina_Rectangle area;
 
 	if (!eon_element_has_changed(thiz->layout))
@@ -230,8 +232,20 @@ static Eina_Bool _idler_cb(void *data)
 	r = ender_element_renderer_get(thiz->layout);
 	/* get the damage rectangles */
 	eon_layout_redraw_get(r, &redraws);
+	{
+		Eina_Rectangle final;
+		int w, h;
+
+		enesim_renderer_destination_boundings(r, &final, 0, 0);
+		enesim_surface_size_get(thiz->surface, &w, &h);
+		printf("rendering to %d %d from %d %d %d %d\n", w, h, final.x, final.y, final.w, final.h);
+	}
 	/* render only those rectangles */
-	enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, NULL);
+	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))
+	{
+		enesim_error_dump(error);
+		return EINA_TRUE;
+	}
 	/* call the flush on the backend of such rectangles */
 	/* FIXME for now the layout always returns nothing, force a render anyway */
 	//ee->flush(ee->data, redraws);
@@ -266,7 +280,7 @@ static Eina_Bool _sdl_window_new(void *data, Ender_Element *layout, unsigned int
 	thiz->height = height;
 	thiz->input = eon_input_new();
 	thiz->backend = backend;
-thiz->input_state = eon_layout_input_state_new(layout, thiz->input);
+	thiz->input_state = eon_layout_input_state_new(layout, thiz->input);
 	_sdl_setup_buffers(thiz);
 
 	thiz->idler = ecore_idle_enterer_add(_idler_cb, thiz);

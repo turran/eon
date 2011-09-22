@@ -21,7 +21,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Button
+typedef struct _Basic_Button
 {
 	/* properties */
 	Enesim_Color start_shadow;
@@ -43,13 +43,13 @@ typedef struct _Button
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
 	Enesim_Renderer_Sw_Fill fill;
-} Button;
+} Basic_Button;
 
 static const double _border_weight = 2.0;
 
-static inline Button * _button_get(Enesim_Renderer *r)
+static inline Basic_Button * _button_get(Enesim_Renderer *r)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = eon_theme_button_data_get(r);
 	return thiz;
@@ -57,7 +57,7 @@ static inline Button * _button_get(Enesim_Renderer *r)
 
 static void _button_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->fill(thiz->compound, x, y, len, dst);
@@ -65,7 +65,7 @@ static void _button_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uin
 
 static void _button_update_rectangle(Enesim_Renderer *r)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 	Enesim_Matrix m;
 	Enesim_Renderer_Gradient_Stop stop;
 	double width, height;
@@ -108,11 +108,11 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	enesim_renderer_rectangle_height_set(r, height - (thiz->vertical_padding * 2));
 }
 /*----------------------------------------------------------------------------*
- *                         The Button theme interface                         *
+ *                         The Basic_Button theme interface                         *
  *----------------------------------------------------------------------------*/
 static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 	Enesim_Renderer *content;
 
 	thiz = _button_get(r);
@@ -137,7 +137,7 @@ static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
 		Eon_Position *position)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	position->x = thiz->horizontal_padding + _border_weight + thiz->radius;
@@ -147,7 +147,7 @@ static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
 static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 	Enesim_Renderer *content;
 	double ox, oy;
 
@@ -187,7 +187,7 @@ static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Surface *s,
 
 static void _button_cleanup(Enesim_Renderer *r)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	/* cleanup common properties */
@@ -196,7 +196,7 @@ static void _button_cleanup(Enesim_Renderer *r)
 
 static void _button_free(Enesim_Renderer *r)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	enesim_renderer_unref(thiz->compound);
@@ -224,9 +224,9 @@ static Eon_Theme_Button_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_button_new(void)
 {
 	Enesim_Renderer *r;
-	Button *thiz;
+	Basic_Button *thiz;
 
-	thiz = calloc(1, sizeof(Button));
+	thiz = calloc(1, sizeof(Basic_Button));
 	if (!thiz) return NULL;
 	thiz->start_shadow = 0x77000000;
 	thiz->end_shadow = 0x22000000;
@@ -301,7 +301,7 @@ background_fill_err:
  */
 EAPI void eon_basic_button_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->fill_color = color;
@@ -313,7 +313,7 @@ EAPI void eon_basic_button_fill_color_set(Enesim_Renderer *r, Enesim_Color color
  */
 EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 	Enesim_Renderer *rr;
 
 	thiz = _button_get(r);
@@ -329,7 +329,7 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
  */
 EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double padding)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->horizontal_padding = padding;
@@ -341,7 +341,7 @@ EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double pad
  */
 EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double padding)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->vertical_padding = padding;
@@ -353,7 +353,7 @@ EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double paddi
  */
 EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->radius = radius;
@@ -365,7 +365,7 @@ EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
  */
 EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 	Enesim_Renderer *rr;
 
 	thiz = _button_get(r);
@@ -381,7 +381,7 @@ EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color col
  */
 EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 	Enesim_Renderer *rr;
 
 	thiz = _button_get(r);
@@ -397,7 +397,7 @@ EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color
  */
 EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->start_bevel = color;
@@ -409,7 +409,7 @@ EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color colo
  */
 EAPI void eon_basic_button_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Button *thiz;
+	Basic_Button *thiz;
 
 	thiz = _button_get(r);
 	thiz->end_bevel = color;

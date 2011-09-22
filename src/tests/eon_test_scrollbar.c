@@ -1,5 +1,11 @@
 #include "Eon.h"
 
+/* this functions should be called whenever the value of the scrollbar has changed */
+static void _scroll_updated(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+
+}
+
 int main(int argc, char **argv)
 {
 	Eon_Window *win;
@@ -22,6 +28,11 @@ int main(int argc, char **argv)
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
 
 	scrollbar = eon_scrollbar_new();
+	eon_scrollbar_min_set(scrollbar, 0);
+	eon_scrollbar_max_set(scrollbar, 255);
+	eon_scrollbar_step_increment_set(scrollbar, 1);
+	eon_scrollbar_page_increment_set(scrollbar, 2);
+	//ender_event_listener_add(scrollbar, "ScrollAdjustment", _scroll_updated, NULL);
 
 	eon_layout_child_add(layout, scrollbar);
 
