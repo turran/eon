@@ -382,7 +382,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
-	pdescriptor.setup = descriptor->setup; //_eon_container_setup;
+	pdescriptor.setup = descriptor->setup;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = _eon_container_min_width_get;
 	pdescriptor.max_width_get = _eon_container_max_width_get;

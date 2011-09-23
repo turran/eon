@@ -349,12 +349,6 @@ static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
 
 	thiz = _eon_element_get(r);
 	eon_element_actual_size_get(r, &size);
-	{
-		char *name;
-
-		enesim_renderer_name_get(r, &name);
-		printf("%s actual %g %g\n", name, size.width, size.height);
-	}
 	/* There's no layout, or the layout didnt set an active width/height */
 	if (size.width < 0 || size.height < 0)
 	{
@@ -449,19 +443,11 @@ Eina_Bool eon_element_setup(Ender_Element *e)
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
-	Eon_Size size;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz->changed)
 		goto end;
-
-	eon_element_actual_size_get(r, &size);
-	if (size.width < 0)
-		_eon_element_real_width_get(r, &size.width);
-	if (size.height < 0)
-		_eon_element_real_height_get(r, &size.height);
-	eon_element_actual_size_set(r, size.width, size.height);
 
 	if (thiz->setup)
 		ret = thiz->setup(e);

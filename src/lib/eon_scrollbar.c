@@ -23,6 +23,7 @@
 typedef struct _Eon_Scrollbar
 {
 	/* properties */
+	Eon_Orientation orientation;
 	double max;
 	double min;
 	double page_increment;
@@ -69,6 +70,32 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	thiz = _eon_scrollbar_get(r);
 
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_scrollbar_mouse_click, NULL);
+}
+
+static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
+{
+	Eon_Scrollbar *thiz;
+	Enesim_Renderer *r;
+	Eon_Size min, max;
+	Eon_Size size;
+	double length;
+	double blength;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollbar_get(r);
+
+	eon_element_actual_size_get(r, &size);
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+		length = size.width;
+	else
+		length = size.height;
+	blength = length / (thiz->max - thiz->min);
+	printf("bar length = %d\n", blength);
+	/* calculate the real size of the thumb */
+	/* do the size of the thumb */
+	//eon_theme_scrollbar_thumb_min_size_get(theme_r, &min);
+	//eon_theme_scrollbar_thumb_max_size_get(theme_r, &max);
+	/* set the new size on the thumb and its position */
 }
 
 static void _eon_scrollbar_free(Enesim_Renderer *r)
@@ -196,6 +223,11 @@ static Enesim_Renderer * _eon_scrollbar_new(void)
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Scrollbar));
+	/* default values */
+	thiz->page_increment = 10;
+	thiz->step_increment = 1;
+	thiz->max = 100;
+	thiz->min = 0;
 	if (!thiz) return NULL;
 
 	r = eon_widget_new(&_eon_scrollbar_widget_descriptor, thiz);
@@ -214,7 +246,7 @@ static void _eon_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation o
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-
+	thiz->orientation = orientation;
 	eon_widget_property_set(r, "orientation", orientation, NULL);
 }
 
@@ -224,7 +256,7 @@ static void _eon_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-	eon_widget_property_get(r, "orientation", orientation, NULL);
+	*orientation = thiz->orientation;
 }
 
 static void _eon_scrollbar_max_set(Enesim_Renderer *r, double max)
@@ -233,8 +265,7 @@ static void _eon_scrollbar_max_set(Enesim_Renderer *r, double max)
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-
-	eon_widget_property_set(r, "max", max, NULL);
+	thiz->max = max;
 }
 
 static void _eon_scrollbar_max_get(Enesim_Renderer *r, double *max)
@@ -243,7 +274,7 @@ static void _eon_scrollbar_max_get(Enesim_Renderer *r, double *max)
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-	eon_widget_property_get(r, "max", max, NULL);
+	*max = thiz->max;
 }
 
 static void _eon_scrollbar_min_set(Enesim_Renderer *r, double min)
@@ -252,8 +283,7 @@ static void _eon_scrollbar_min_set(Enesim_Renderer *r, double min)
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-
-	eon_widget_property_set(r, "min", min, NULL);
+	thiz->min = min;
 }
 
 static void _eon_scrollbar_min_get(Enesim_Renderer *r, double *min)
@@ -262,7 +292,7 @@ static void _eon_scrollbar_min_get(Enesim_Renderer *r, double *min)
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-	eon_widget_property_get(r, "min", min, NULL);
+	*min = thiz->min;
 }
 
 static void _eon_scrollbar_page_increment_set(Enesim_Renderer *r, double page_increment)
@@ -271,8 +301,7 @@ static void _eon_scrollbar_page_increment_set(Enesim_Renderer *r, double page_in
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-
-	eon_widget_property_set(r, "page_increment", page_increment, NULL);
+	thiz->page_increment = page_increment;
 }
 
 static void _eon_scrollbar_page_increment_get(Enesim_Renderer *r, double *page_increment)
@@ -281,7 +310,7 @@ static void _eon_scrollbar_page_increment_get(Enesim_Renderer *r, double *page_i
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-	eon_widget_property_get(r, "page_increment", page_increment, NULL);
+	*page_increment = thiz->page_increment;
 }
 
 static void _eon_scrollbar_step_increment_set(Enesim_Renderer *r, double step_increment)
@@ -290,8 +319,7 @@ static void _eon_scrollbar_step_increment_set(Enesim_Renderer *r, double step_in
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-
-	eon_widget_property_set(r, "step_increment", step_increment, NULL);
+	thiz->step_increment = step_increment;
 }
 
 static void _eon_scrollbar_step_increment_get(Enesim_Renderer *r, double *step_increment)
@@ -300,7 +328,7 @@ static void _eon_scrollbar_step_increment_get(Enesim_Renderer *r, double *step_i
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-	eon_widget_property_get(r, "step_increment", step_increment, NULL);
+	*step_increment = thiz->step_increment;
 }
 
 #include "eon_generated_scrollbar.c"

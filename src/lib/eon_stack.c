@@ -158,7 +158,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 			const char *name;
 
 			enesim_renderer_name_get(r, &name);
-			printf("H setting child on %s %g %g %g %g\n", name, last_x, y, w, h);
+			//printf("H setting child on %s %g %g %g %g\n", name, last_x, y, w, h);
 		}
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, last_x, y);
@@ -208,7 +208,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 			const char *name;
 
 			enesim_renderer_name_get(r, &name);
-			printf("V setting child on %s %g %g %g %g\n", name, x, last_y, w, h);
+			//printf("V setting child on %s %g %g %g %g\n", name, x, last_y, w, h);
 		}
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, x, last_y);

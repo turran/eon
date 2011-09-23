@@ -36,6 +36,7 @@ typedef struct _Eon_Layout
 	Eon_Layout_Child_Clear child_clear;
 	Eon_Layout_Child_At child_at;
 	Eon_Element_Initialize initialize;
+	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
 	Eina_Tiler *tiler;
 	Eina_Array *obscure;
@@ -195,6 +196,25 @@ static void _eon_layout_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
+static Eina_Bool _eon_layout_setup(Ender_Element *e)
+{
+	Eon_Layout *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_layout_get(r);
+	if (eon_layout_is_topmost(r))
+	{
+		Eon_Size size;
+
+		eon_element_real_size_get(e, &size);
+		eon_element_actual_size_set(r, size.width, size.height);
+	}
+	if (thiz->setup)
+		return thiz->setup(e);
+	return EINA_TRUE;
+}
+
 static void _eon_layout_free(Enesim_Renderer *r)
 {
 	Eon_Layout *thiz;
@@ -281,13 +301,14 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	thiz->child_remove = descriptor->child_remove;
 	thiz->child_clear = descriptor->child_clear;
 	thiz->child_at = descriptor->child_at;
+	thiz->setup = descriptor->setup;
 
 	pdescriptor.initialize = _eon_layout_initialize;
 	pdescriptor.free = _eon_layout_free;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.min_height_get = descriptor->min_height_get;
-	pdescriptor.setup = descriptor->setup;
+	pdescriptor.setup = _eon_layout_setup;
 
 	r = eon_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
