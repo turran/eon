@@ -148,20 +148,13 @@ static void _eon_container_mouse_move(Ender_Element *e, const char *event_name, 
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Input_State *eis;
 	Enesim_Renderer *r;
-	double px, py;
-	double cx, cy;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	px = ev->x;
-	py = ev->y;
-	eon_element_actual_position_get(r, &cx, &cy);
-	px -= cx;
-	py -= cy;
 	/* transform the position relative to the layout position */
-	eon_input_state_feed_mouse_move(eis, px, py);
+	eon_input_state_feed_mouse_move(eis, ev->rel_x, ev->rel_y);
 }
 
 static void _eon_container_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)

@@ -255,3 +255,21 @@ EAPI void eon_theme_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientatio
 	*orientation = thiz->orientation;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, Eon_Size *size)
+{
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, Eon_Size *size)
+{
+
+}
+

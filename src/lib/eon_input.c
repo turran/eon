@@ -21,6 +21,9 @@ struct _Eon_Input_State
 		/* the coordinates where the pointer is right now */
 		double x;
 		double y;
+		/* same as above but relative to the grabbed object */
+		double rel_x;
+		double rel_y;
 		/* ?? */
 		double px;
 		double py;
@@ -37,9 +40,12 @@ struct _Eon_Input_State
 	} keyboard;
 };
 
-Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y)
+Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
+	double *rel_y)
 {
 	Enesim_Renderer *r;
+	Enesim_Renderer *e_r;
+	Ender_Element *e;
 	double px, py;
 
 	r = ender_element_renderer_get(eis->element);
@@ -48,7 +54,14 @@ Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y)
 	eon_element_actual_position_get(r, &px, &py);
 	printf("changing %p %d %d - %g %g\n", eis->element, x, y, px, py);
 #endif
-	return eis->element_get(eis->element, x, y);
+	e = eis->element_get(eis->element, x, y);
+	if (!e) return NULL;
+	e_r = ender_element_renderer_get(e);
+	eon_element_actual_position_get(e_r, &px, &py);
+	if (rel_x) *rel_x = x - px;
+	if (rel_y) *rel_y = y - py;
+
+	return e;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -85,6 +98,7 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 {
 	Ender_Element *child;
 	double px, py;
+	double rel_x, rel_y;
 
 	/* SDL eon_ecore does not send an in/out event */
 	if (!eis->pointer.inside)
@@ -114,11 +128,13 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		ev.input = eis->input;
 		ev.x = x;
 		ev.y = y;
+		ev.rel_x = eis->pointer.rel_x + (px - eis->pointer.x);
+		ev.rel_y = eis->pointer.rel_y + (py - eis->pointer.y);
 		ender_event_dispatch(eis->pointer.grabbed, "MouseMove", &ev);
 
 		return;
 	}
-	child = _eon_input_element_get(eis, x, y);
+	child = _eon_input_element_get(eis, x, y, &rel_x, &rel_y);
 	if (child == eis->pointer.last)
 	{
 		/* send move */
@@ -128,6 +144,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 			ev.input = eis->input;
 			ev.x = x;
 			ev.y = y;
+			ev.rel_x = rel_x;
+			ev.rel_y = rel_y;
 			ender_event_dispatch(child, "MouseMove", &ev);
 		}
 	}
@@ -161,11 +179,12 @@ void eon_input_state_feed_mouse_in(Eon_Input_State *eis)
 {
 	Eon_Event_Mouse_In ev;
 	Ender_Element *child;
+	double rel_x, rel_y;
 
 	if (eis->pointer.inside)
 		return;
 	eis->pointer.inside = EINA_TRUE;
-	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y);
+	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	ev.input = eis->input;
@@ -178,11 +197,12 @@ void eon_input_state_feed_mouse_out(Eon_Input_State *eis)
 {
 	Eon_Event_Mouse_Out ev;
 	Ender_Element *child;
+	double rel_x, rel_y;
 
 	if (!eis->pointer.inside)
 		return;
 	eis->pointer.inside = EINA_FALSE;
-	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y);
+	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	ev.input = eis->input;
@@ -193,10 +213,11 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 {
 	Eon_Event_Mouse_Down ev;
 	Ender_Element *child;
+	double rel_x, rel_y;
 
 	if (!eis->pointer.inside)
 		return;
-	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y);
+	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	/* store the coordinates where the mouse buton down was done to
@@ -205,6 +226,8 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 	eis->pointer.grabbed = child;
 	eis->pointer.downx = eis->pointer.x;
 	eis->pointer.downy = eis->pointer.y;
+	eis->pointer.rel_x = rel_x;
+	eis->pointer.rel_y = rel_y;
 	ev.input = eis->input;
 	ender_event_dispatch(child, "MouseDown", &ev);
 }
@@ -230,6 +253,10 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		Eon_Event_Mouse_Click ev_click;
 
 		ev_click.input = eis->input;
+		ev_click.x = eis->pointer.x;
+		ev_click.y = eis->pointer.y;
+		ev_click.rel_x = eis->pointer.rel_x;
+		ev_click.rel_y = eis->pointer.rel_y;
 		ender_event_dispatch(child, "MouseClick", &ev_click);
 	}
 	/* we first send the drag start */
@@ -270,4 +297,3 @@ const char * eon_input_event_names[EON_INPUT_EVENTS] = {
 	"MouseDragStart",
 	"MouseDragEnd",
 };
-

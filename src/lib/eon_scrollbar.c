@@ -56,7 +56,7 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	/* FIXME double check that the thumb geometry is actually inside
 	 * the object geometry
 	 */
-	printf("scrollbar clicked\n");
+	printf("scrollbar clicked at %g %g\n", ev->rel_x, ev->rel_y);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -76,8 +76,8 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
 {
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
-	Eon_Size min, max;
 	Eon_Size size;
+	double min, max;
 	double length;
 	double blength;
 
@@ -90,7 +90,7 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
 	else
 		length = size.height;
 	blength = length / (thiz->max - thiz->min);
-	printf("bar length = %d\n", blength);
+	printf("bar length = %g (%g %g %g)\n", blength, length, thiz->max, thiz->min);
 	/* calculate the real size of the thumb */
 	/* do the size of the thumb */
 	//eon_theme_scrollbar_thumb_min_size_get(theme_r, &min);
@@ -207,6 +207,7 @@ static Eon_Widget_Descriptor _eon_scrollbar_widget_descriptor = {
 	.name = "scrollbar",
 	.initialize = _eon_scrollbar_initialize,
 	.free = _eon_scrollbar_free,
+	.setup = _eon_scrollbar_setup,
 	.min_width_get = _eon_scrollbar_min_width_get,
 	.max_width_get = _eon_scrollbar_max_width_get,
 	.min_height_get = _eon_scrollbar_min_height_get,
