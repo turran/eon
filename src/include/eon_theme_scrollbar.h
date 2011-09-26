@@ -28,6 +28,10 @@ typedef double (*Eon_Theme_Scrollbar_Min_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Scrollbar_Min_Width_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Scrollbar_Preferred_Height_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Scrollbar_Preferred_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Scrollbar_Thumb_Max_Size_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Scrollbar_Thumb_Min_Size_Get)(Enesim_Renderer *r);
+typedef void (*Eon_Theme_Scrollbar_Thumb_Percent_Set)(Enesim_Renderer *r, double percent);
+typedef void (*Eon_Theme_Scrollbar_Thumb_Size_Set)(Enesim_Renderer *r, double size);
 
 typedef struct _Eon_Theme_Scrollbar_Descriptor
 {
@@ -37,6 +41,10 @@ typedef struct _Eon_Theme_Scrollbar_Descriptor
 	Eon_Theme_Scrollbar_Min_Height_Get min_height_get;
 	Eon_Theme_Scrollbar_Preferred_Width_Get preferred_width_get;
 	Eon_Theme_Scrollbar_Preferred_Height_Get preferred_height_get;
+	Eon_Theme_Scrollbar_Thumb_Max_Size_Get thumb_max_size_get;
+	Eon_Theme_Scrollbar_Thumb_Min_Size_Get thumb_min_size_get;
+	Eon_Theme_Scrollbar_Thumb_Size_Set thumb_size_set;
+	Eon_Theme_Scrollbar_Thumb_Percent_Set thumb_percent_set;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -57,6 +65,14 @@ EAPI void eon_theme_scrollbar_preferred_height_get(Enesim_Renderer *r, double *h
 
 EAPI void eon_theme_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation);
 EAPI void eon_theme_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation);
+
+EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, double *size);
+EAPI void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, double *size);
+
+EAPI void eon_theme_scrollbar_thumb_size_set(Enesim_Renderer *r, double size);
+EAPI void eon_theme_scrollbar_thumb_size_get(Enesim_Renderer *r, double *size);
+EAPI void eon_theme_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent);
+EAPI void eon_theme_scrollbar_thumb_percent_get(Enesim_Renderer *r, double *percent);
 
 /**
  * @}

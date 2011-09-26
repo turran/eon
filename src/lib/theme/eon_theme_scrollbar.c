@@ -38,6 +38,9 @@
 typedef struct _Eon_Theme_Scrollbar
 {
 	EINA_MAGIC;
+	/* properties */
+	double percent;
+	double size;
 	/* private */
 	Eon_Orientation orientation;
 	Eon_Theme_Scrollbar_Max_Width_Get max_width_get;
@@ -46,6 +49,10 @@ typedef struct _Eon_Theme_Scrollbar
 	Eon_Theme_Scrollbar_Min_Height_Get min_height_get;
 	Eon_Theme_Scrollbar_Preferred_Width_Get preferred_width_get;
 	Eon_Theme_Scrollbar_Preferred_Height_Get preferred_height_get;
+	Eon_Theme_Scrollbar_Thumb_Max_Size_Get thumb_max_size_get;
+	Eon_Theme_Scrollbar_Thumb_Min_Size_Get thumb_min_size_get;
+	Eon_Theme_Scrollbar_Thumb_Percent_Set thumb_percent_set;
+	Eon_Theme_Scrollbar_Thumb_Size_Set thumb_size_set;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Scrollbar;
@@ -96,6 +103,10 @@ EAPI Enesim_Renderer * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *d
 	thiz->min_height_get = descriptor->min_height_get;
 	thiz->preferred_width_get = descriptor->preferred_width_get;
 	thiz->preferred_height_get = descriptor->preferred_height_get;
+	thiz->thumb_max_size_get = descriptor->thumb_max_size_get;
+	thiz->thumb_min_size_get = descriptor->thumb_min_size_get;
+	thiz->thumb_percent_set = descriptor->thumb_percent_set;
+	thiz->thumb_size_set = descriptor->thumb_size_set;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_scrollbar_free;
@@ -259,8 +270,32 @@ EAPI void eon_theme_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientatio
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, Eon_Size *size)
+EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, double *size)
 {
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->thumb_min_size_get)
+		*size = thiz->thumb_min_size_get(r);
+	else
+		*size = 1;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, double *size)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->thumb_max_size_get)
+		*size = thiz->thumb_max_size_get(r);
+	else
+		*size = DBL_MAX;
 
 }
 
@@ -268,8 +303,54 @@ EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, Eon_Size *s
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, Eon_Size *size)
+EAPI void eon_theme_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
 {
+	Eon_Theme_Scrollbar *thiz;
 
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	thiz->size = size;
+	if (thiz->thumb_size_set)
+		thiz->thumb_size_set(r, size);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollbar_thumb_size_get(Enesim_Renderer *r, double *size)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	*size = thiz->size;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	thiz->percent = percent;
+	if (thiz->thumb_percent_set)
+		thiz->thumb_percent_set(r, percent);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollbar_thumb_percent_get(Enesim_Renderer *r, double *percent)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	*percent = thiz->percent;
+}

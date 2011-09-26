@@ -93,6 +93,20 @@ static double _basic_scrollbar_max_height_get(Enesim_Renderer *r)
 		return 16;
 }
 
+static void _basic_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent)
+{
+	Basic_Scrollbar *thiz;
+
+	thiz = _scrollbar_get(r);
+	/* FIXME */
+	enesim_renderer_origin_set(thiz->bar, (_border_weight / 2) + percent, _border_weight / 2);
+}
+
+static void _basic_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
+{
+
+}
+
 static Eina_Bool _basic_scrollbar_slider_is_inside(Enesim_Renderer *r, double x, double y)
 {
 	Basic_Scrollbar *thiz;
@@ -194,7 +208,7 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_rectangle_width_set(thiz->bar_background, bw - 6);
 	enesim_renderer_rectangle_height_set(thiz->bar_background, bh - 6);
 	/* the bar */
-	enesim_renderer_origin_set(thiz->bar, _border_weight / 2, _border_weight / 2);
+	//enesim_renderer_origin_set(thiz->bar, _border_weight / 2, _border_weight / 2);
 	/* the composition */
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
@@ -252,6 +266,8 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 	.max_height_get = _basic_scrollbar_max_height_get,
 	.min_width_get = _basic_scrollbar_min_width_get,
 	.min_height_get = _basic_scrollbar_min_height_get,
+	.thumb_percent_set = _basic_scrollbar_thumb_percent_set,
+	.thumb_size_set = _basic_scrollbar_thumb_size_set,
 	.sw_setup = _basic_scrollbar_setup,
 	.sw_cleanup = _basic_scrollbar_cleanup,
 	.free = _basic_scrollbar_free,

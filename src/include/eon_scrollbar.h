@@ -39,6 +39,10 @@ EAPI void eon_scrollbar_page_increment_set(Ender_Element *e, double page_increme
 EAPI void eon_scrollbar_page_increment_get(Ender_Element *e, double *page_increment);
 EAPI void eon_scrollbar_step_increment_set(Ender_Element *e, double step_increment);
 EAPI void eon_scrollbar_step_increment_get(Ender_Element *e, double *step_increment);
+EAPI void eon_scrollbar_value_set(Ender_Element *e, double value);
+EAPI void eon_scrollbar_value_get(Ender_Element *e, double *value);
+EAPI void eon_scrollbar_page_size_set(Ender_Element *e, double page_size);
+EAPI void eon_scrollbar_page_size_get(Ender_Element *e, double *page_size);
 
 /**
  * @}

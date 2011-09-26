@@ -59,6 +59,9 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	 * the object geometry
 	 */
 	printf("scrollbar clicked at %g %g\n", ev->rel_x, ev->rel_y);
+	/* calculate the real value */
+	/* FIXME */
+	eon_scrollbar_value_set(e, 10);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -78,13 +81,15 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
 {
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
 	Eon_Size size;
-	double min, max;
 	double length;
 	double blength;
+	double bsize;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
+	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_element_actual_size_get(r, &size);
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
@@ -92,12 +97,17 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
 	else
 		length = size.height;
 	blength = length / (thiz->max - thiz->min);
-	printf("bar length = %g (%g %g %g)\n", blength, length, thiz->max, thiz->min);
-	/* calculate the real size of the thumb */
 	/* do the size of the thumb */
+	eon_scrollbar_page_size_get(e, &bsize);
+	eon_theme_scrollbar_thumb_size_set(theme_r, bsize);
+	/* FIXME */
+	eon_theme_scrollbar_thumb_percent_set(theme_r, 10);
+	printf("bar length = %g (%g %g %g) %g\n", blength, length, thiz->max, thiz->min, bsize);
+	/* calculate the real size of the thumb */
 	//eon_theme_scrollbar_thumb_min_size_get(theme_r, &min);
 	//eon_theme_scrollbar_thumb_max_size_get(theme_r, &max);
 	/* set the new size on the thumb and its position */
+	return EINA_TRUE;
 }
 
 static void _eon_scrollbar_free(Enesim_Renderer *r)
@@ -330,10 +340,19 @@ static void _eon_scrollbar_page_size_set(Enesim_Renderer *r, double page_size)
 static void _eon_scrollbar_page_size_get(Enesim_Renderer *r, double *page_size)
 {
 	Eon_Scrollbar *thiz;
+	Enesim_Renderer *theme_r;
+	double max, min, final;
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
-	*page_size = thiz->page_size;
+	final = thiz->page_size;
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	eon_theme_scrollbar_thumb_max_size_get(theme_r, &max);
+	if (final > max) final = max;
+	eon_theme_scrollbar_thumb_min_size_get(theme_r, &min);
+	if (final < min) final = min;
+	*page_size = final;
 }
 
 static void _eon_scrollbar_step_increment_set(Enesim_Renderer *r, double step_increment)
