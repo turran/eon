@@ -27,7 +27,9 @@ typedef struct _Eon_Scrollbar
 	double max;
 	double min;
 	double page_increment;
+	double page_size;
 	double step_increment;
+	double value;
 	/* private */
 } Eon_Scrollbar;
 
@@ -225,10 +227,12 @@ static Enesim_Renderer * _eon_scrollbar_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Scrollbar));
 	/* default values */
-	thiz->page_increment = 10;
-	thiz->step_increment = 1;
+	thiz->value = 0;
 	thiz->max = 100;
 	thiz->min = 0;
+	thiz->step_increment = 1;
+	thiz->page_increment = 10;
+	thiz->page_size = 10;
 	if (!thiz) return NULL;
 
 	r = eon_widget_new(&_eon_scrollbar_widget_descriptor, thiz);
@@ -314,6 +318,24 @@ static void _eon_scrollbar_page_increment_get(Enesim_Renderer *r, double *page_i
 	*page_increment = thiz->page_increment;
 }
 
+static void _eon_scrollbar_page_size_set(Enesim_Renderer *r, double page_size)
+{
+	Eon_Scrollbar *thiz;
+
+	thiz = _eon_scrollbar_get(r);
+	if (!thiz) return;
+	thiz->page_size = page_size;
+}
+
+static void _eon_scrollbar_page_size_get(Enesim_Renderer *r, double *page_size)
+{
+	Eon_Scrollbar *thiz;
+
+	thiz = _eon_scrollbar_get(r);
+	if (!thiz) return;
+	*page_size = thiz->page_size;
+}
+
 static void _eon_scrollbar_step_increment_set(Enesim_Renderer *r, double step_increment)
 {
 	Eon_Scrollbar *thiz;
@@ -330,6 +352,24 @@ static void _eon_scrollbar_step_increment_get(Enesim_Renderer *r, double *step_i
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
 	*step_increment = thiz->step_increment;
+}
+
+static void _eon_scrollbar_value_set(Enesim_Renderer *r, double value)
+{
+	Eon_Scrollbar *thiz;
+
+	thiz = _eon_scrollbar_get(r);
+	if (!thiz) return;
+	thiz->value = value;
+}
+
+static void _eon_scrollbar_value_get(Enesim_Renderer *r, double *value)
+{
+	Eon_Scrollbar *thiz;
+
+	thiz = _eon_scrollbar_get(r);
+	if (!thiz) return;
+	*value = thiz->value;
 }
 
 #include "eon_generated_scrollbar.c"
@@ -450,6 +490,24 @@ EAPI void eon_scrollbar_page_increment_get(Ender_Element *e, double *page_increm
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void eon_scrollbar_page_size_set(Ender_Element *e, double page_size)
+{
+	ender_element_value_set(e, "page_size", page_size, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollbar_page_size_get(Ender_Element *e, double *page_size)
+{
+	ender_element_value_get(e, "page_size", page_size, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_scrollbar_step_increment_set(Ender_Element *e, double step_increment)
 {
 	ender_element_value_set(e, "step_increment", step_increment, NULL);
@@ -463,3 +521,22 @@ EAPI void eon_scrollbar_step_increment_get(Ender_Element *e, double *step_increm
 {
 	ender_element_value_get(e, "step_increment", step_increment, NULL);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollbar_value_set(Ender_Element *e, double value)
+{
+	ender_element_value_set(e, "value", value, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollbar_value_get(Ender_Element *e, double *value)
+{
+	ender_element_value_get(e, "value", value, NULL);
+}
+

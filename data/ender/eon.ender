@@ -67,6 +67,8 @@ namespace "eon" {
 		double "min";
 		double "step_increment";
 		double "page_increment";
+		double "page_size";
+		double "value";
 	};
 
 	class "progressbar" : "widget" {
