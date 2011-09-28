@@ -32,6 +32,9 @@ typedef double (*Eon_Theme_Scrollbar_Thumb_Max_Size_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Scrollbar_Thumb_Min_Size_Get)(Enesim_Renderer *r);
 typedef void (*Eon_Theme_Scrollbar_Thumb_Percent_Set)(Enesim_Renderer *r, double percent);
 typedef void (*Eon_Theme_Scrollbar_Thumb_Size_Set)(Enesim_Renderer *r, double size);
+typedef void (*Eon_Theme_Scrollbar_Decrement_Arrow_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geometry);
+typedef void (*Eon_Theme_Scrollbar_Increment_Arrow_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geometry);
+typedef void (*Eon_Theme_Scrollbar_Thumb_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geometry);
 
 typedef struct _Eon_Theme_Scrollbar_Descriptor
 {
@@ -45,6 +48,9 @@ typedef struct _Eon_Theme_Scrollbar_Descriptor
 	Eon_Theme_Scrollbar_Thumb_Min_Size_Get thumb_min_size_get;
 	Eon_Theme_Scrollbar_Thumb_Size_Set thumb_size_set;
 	Eon_Theme_Scrollbar_Thumb_Percent_Set thumb_percent_set;
+	Eon_Theme_Scrollbar_Thumb_Geometry_Get thumb_geometry_get;
+	Eon_Theme_Scrollbar_Decrement_Arrow_Geometry_Get decrement_arrow_geometry_get;;
+	Eon_Theme_Scrollbar_Increment_Arrow_Geometry_Get increment_arrow_geometry_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;

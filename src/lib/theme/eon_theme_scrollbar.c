@@ -53,6 +53,9 @@ typedef struct _Eon_Theme_Scrollbar
 	Eon_Theme_Scrollbar_Thumb_Min_Size_Get thumb_min_size_get;
 	Eon_Theme_Scrollbar_Thumb_Percent_Set thumb_percent_set;
 	Eon_Theme_Scrollbar_Thumb_Size_Set thumb_size_set;
+	Eon_Theme_Scrollbar_Thumb_Geometry_Get thumb_geometry_get;
+	Eon_Theme_Scrollbar_Decrement_Arrow_Geometry_Get decrement_arrow_geometry_get;;
+	Eon_Theme_Scrollbar_Increment_Arrow_Geometry_Get increment_arrow_geometry_get;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Scrollbar;
@@ -78,6 +81,212 @@ static void _eon_theme_scrollbar_free(Enesim_Renderer *r)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_theme_scrollbar_min_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->min_width_get)
+		*width = thiz->min_width_get(r);
+	else
+		*width = 1;
+}
+
+void eon_theme_scrollbar_min_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	if (!height) return;
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->min_height_get)
+		*height = thiz->min_height_get(r);
+	else
+		*height = 1;
+}
+
+void eon_theme_scrollbar_max_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->max_width_get)
+		*width = thiz->max_width_get(r);
+	else
+		*width = DBL_MAX;
+}
+
+void eon_theme_scrollbar_max_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	if (!height) return;
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->max_height_get)
+		*height = thiz->max_height_get(r);
+	else
+		*height = DBL_MAX;
+}
+
+void eon_theme_scrollbar_preferred_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->preferred_width_get)
+		*width = thiz->preferred_width_get(r);
+	else
+		*width = -1;
+}
+
+void eon_theme_scrollbar_preferred_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	if (!height) return;
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->preferred_height_get)
+		*height = thiz->preferred_height_get(r);
+	else
+		*height = -1;
+}
+
+void eon_theme_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	thiz->orientation = orientation;
+}
+
+void eon_theme_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	*orientation = thiz->orientation;
+}
+
+void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, double *size)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->thumb_min_size_get)
+		*size = thiz->thumb_min_size_get(r);
+	else
+		*size = 1;
+}
+
+void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, double *size)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->thumb_max_size_get)
+		*size = thiz->thumb_max_size_get(r);
+	else
+		*size = DBL_MAX;
+
+}
+
+void eon_theme_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	thiz->size = size;
+	if (thiz->thumb_size_set)
+		thiz->thumb_size_set(r, size);
+}
+
+void eon_theme_scrollbar_thumb_size_get(Enesim_Renderer *r, double *size)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	*size = thiz->size;
+}
+
+void eon_theme_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	thiz->percent = percent;
+	if (thiz->thumb_percent_set)
+		thiz->thumb_percent_set(r, percent);
+}
+
+void eon_theme_scrollbar_thumb_percent_get(Enesim_Renderer *r, double *percent)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	*percent = thiz->percent;
+}
+
+void eon_theme_scrollbar_decrement_arrow_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->decrement_arrow_geometry_get)
+		thiz->decrement_arrow_geometry_get(r, geometry);
+	else
+	{
+		geometry->x = 0;
+		geometry->y = 0;
+		geometry->w = 0;
+		geometry->h = 0;
+	}
+}
+
+void eon_theme_scrollbar_increment_arrow_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->increment_arrow_geometry_get)
+		thiz->increment_arrow_geometry_get(r, geometry);
+	else
+	{
+		geometry->x = 0;
+		geometry->y = 0;
+		geometry->w = 0;
+		geometry->h = 0;
+	}
+}
+
+void eon_theme_scrollbar_thumb_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(r);
+	if (!thiz) return;
+	if (thiz->thumb_geometry_get)
+		thiz->thumb_geometry_get(r, geometry);
+	else
+	{
+		geometry->x = 0;
+		geometry->y = 0;
+		geometry->w = 0;
+		geometry->h = 0;
+	}
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -107,6 +316,9 @@ EAPI Enesim_Renderer * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *d
 	thiz->thumb_min_size_get = descriptor->thumb_min_size_get;
 	thiz->thumb_percent_set = descriptor->thumb_percent_set;
 	thiz->thumb_size_set = descriptor->thumb_size_set;
+	thiz->thumb_geometry_get = descriptor->thumb_geometry_get;
+	thiz->decrement_arrow_geometry_get = descriptor->decrement_arrow_geometry_get;
+	thiz->increment_arrow_geometry_get = descriptor->increment_arrow_geometry_get;
 	pdescriptor.sw_setup = descriptor->sw_setup;
 	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
 	pdescriptor.free = _eon_theme_scrollbar_free;
@@ -143,214 +355,4 @@ EAPI void * eon_theme_scrollbar_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_min_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Scrollbar *thiz;
 
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->min_width_get)
-		*width = thiz->min_width_get(r);
-	else
-		*width = 1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_min_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	if (!height) return;
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->min_height_get)
-		*height = thiz->min_height_get(r);
-	else
-		*height = 1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_max_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->max_width_get)
-		*width = thiz->max_width_get(r);
-	else
-		*width = DBL_MAX;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_max_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	if (!height) return;
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->max_height_get)
-		*height = thiz->max_height_get(r);
-	else
-		*height = DBL_MAX;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_preferred_width_get(Enesim_Renderer *r, double *width)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->preferred_width_get)
-		*width = thiz->preferred_width_get(r);
-	else
-		*width = -1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_preferred_height_get(Enesim_Renderer *r, double *height)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	if (!height) return;
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->preferred_height_get)
-		*height = thiz->preferred_height_get(r);
-	else
-		*height = -1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	thiz->orientation = orientation;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	*orientation = thiz->orientation;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, double *size)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->thumb_min_size_get)
-		*size = thiz->thumb_min_size_get(r);
-	else
-		*size = 1;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, double *size)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	if (thiz->thumb_max_size_get)
-		*size = thiz->thumb_max_size_get(r);
-	else
-		*size = DBL_MAX;
-
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	thiz->size = size;
-	if (thiz->thumb_size_set)
-		thiz->thumb_size_set(r, size);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_thumb_size_get(Enesim_Renderer *r, double *size)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	*size = thiz->size;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	thiz->percent = percent;
-	if (thiz->thumb_percent_set)
-		thiz->thumb_percent_set(r, percent);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_scrollbar_thumb_percent_get(Enesim_Renderer *r, double *percent)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(r);
-	if (!thiz) return;
-	*percent = thiz->percent;
-}

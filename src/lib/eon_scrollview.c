@@ -193,6 +193,9 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 
 		eon_element_actual_size_set(content_r, size.width, size.height);
 		eon_element_actual_position_set(content_r, 0, 0);
+		/* do the setup on the hbar/vbar */
+		eon_element_setup(thiz->hbar);
+		eon_element_setup(thiz->vbar);
 		/* add the real offset of the scrolling */
 		printf("setting scrollview position!\n");
 		if (!eon_element_setup(content))

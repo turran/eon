@@ -50,7 +50,7 @@ static inline Basic_Scrollbar * _scrollbar_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
 {
 	Basic_Scrollbar *thiz;
 
@@ -96,24 +96,78 @@ static double _basic_scrollbar_max_height_get(Enesim_Renderer *r)
 static void _basic_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent)
 {
 	Basic_Scrollbar *thiz;
+	Eon_Orientation orientation;
+	double ofx = 0;
+	double ofy = 0;
+	double ox, oy;
 
 	thiz = _scrollbar_get(r);
-	/* FIXME */
-	enesim_renderer_origin_set(thiz->bar, (_border_weight / 2) + percent, _border_weight / 2);
+	eon_theme_scrollbar_orientation_get(r, &orientation);
+	ox = oy = _border_weight / 2;
+	/* given that we dont have arrow, just move it relative to the set widht/height */
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		double w;
+
+		eon_theme_widget_width_get(r, &w);
+		ofx = w * percent;
+	}
+	else
+	{
+		double h;
+
+		eon_theme_widget_height_get(r, &h);
+		ofy = h * percent;
+	}
+	printf("percent set %g %g\n", ox + ofx, oy + ofy);
+	enesim_renderer_origin_set(thiz->bar, ox + ofx, oy + ofy);
 }
 
-static void _basic_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
-{
-
-}
-
-static Eina_Bool _basic_scrollbar_slider_is_inside(Enesim_Renderer *r, double x, double y)
+static void _basic_scrollbar_thumb_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
 {
 	Basic_Scrollbar *thiz;
 
 	thiz = _scrollbar_get(r);
+	enesim_renderer_translated_boundings(thiz->bar, geometry);
+	/* FIXME the coodinates are not on renderer coordinate space */
+	geometry->x = -geometry->x;
+	geometry->y = -geometry->y;
+	printf("thumb geometry %g %g %g %g\n", geometry->x, geometry->y, geometry->w, geometry->h);
+}
 
-	return EINA_FALSE;
+static void _basic_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
+{
+	Basic_Scrollbar *thiz;
+	Eon_Orientation orientation;
+	double bw, bh;
+
+	thiz = _scrollbar_get(r);
+	eon_theme_scrollbar_orientation_get(r, &orientation);
+	if (orientation == EON_ORIENTATION_VERTICAL)
+	{
+		bw = 14;
+		bh = size;
+	}
+	else
+	{
+		bw = size;
+		bh = 14;
+	}
+	printf("setting size %g\n", size);
+	enesim_renderer_rectangle_size_set(thiz->bar_shape, bw, bh);
+	enesim_renderer_rectangle_size_set(thiz->bar_background, bw - 6, bh - 6);
+	enesim_renderer_stripes_even_thickness_set(thiz->bar_background_fill, (size - 3) / 2);
+	enesim_renderer_stripes_odd_thickness_set(thiz->bar_background_fill, (size - 3) / 2);
+}
+
+static double _basic_scrollbar_thumb_max_size_get(Enesim_Renderer *r)
+{
+	return DBL_MAX;
+}
+
+static double _basic_scrollbar_thumb_min_size_get(Enesim_Renderer *r)
+{
+	return 20;
 }
 
 static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
@@ -128,7 +182,6 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	double x0, y0, x1, y1;
 	double width, height;
 	double lx, ly, lw, lh;
-	double bw, bh;
 
 	thiz = _scrollbar_get(r);
 	/* the origin */
@@ -153,9 +206,6 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 
 		enesim_matrix_scale(&matrix, 0.6, 1.0);
 
-		bw = 14;
-		bh = 28;
-
 		enesim_matrix_identity(&bf_matrix);
 	}
 	else
@@ -171,9 +221,6 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		lh = 1;
 
 		enesim_matrix_scale(&matrix, 1.0, 0.6);
-
-		bw = 28;
-		bh = 14;
 
 		bf_matrix.xx = 0; bf_matrix.xy = -1; bf_matrix.xz = 0;
 		bf_matrix.yx = 1; bf_matrix.yy = 0; bf_matrix.yz = 0;
@@ -200,15 +247,10 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_rectangle_height_set(thiz->line, lh);
 	enesim_renderer_transformation_set(thiz->line, &matrix);
 	/* the bar shape */
-	enesim_renderer_rectangle_width_set(thiz->bar_shape, bw);
-	enesim_renderer_rectangle_height_set(thiz->bar_shape, bh);
 	/* the bar background fill */
 	enesim_renderer_transformation_set(thiz->bar_background_fill, &bf_matrix);
 	/* the bar background */
-	enesim_renderer_rectangle_width_set(thiz->bar_background, bw - 6);
-	enesim_renderer_rectangle_height_set(thiz->bar_background, bh - 6);
 	/* the bar */
-	//enesim_renderer_origin_set(thiz->bar, _border_weight / 2, _border_weight / 2);
 	/* the composition */
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
@@ -268,6 +310,9 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 	.min_height_get = _basic_scrollbar_min_height_get,
 	.thumb_percent_set = _basic_scrollbar_thumb_percent_set,
 	.thumb_size_set = _basic_scrollbar_thumb_size_set,
+	.thumb_max_size_get = _basic_scrollbar_thumb_max_size_get,
+	.thumb_min_size_get = _basic_scrollbar_thumb_min_size_get,
+	.thumb_geometry_get = _basic_scrollbar_thumb_geometry_get,
 	.sw_setup = _basic_scrollbar_setup,
 	.sw_cleanup = _basic_scrollbar_cleanup,
 	.free = _basic_scrollbar_free,
@@ -316,8 +361,6 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	thiz->bar_background_fill = r;
 	enesim_renderer_stripes_odd_color_set(r, 0x22000000);
 	enesim_renderer_stripes_even_color_set(r, 0x33000000);
-	enesim_renderer_stripes_even_thickness_set(r, 11);
-	enesim_renderer_stripes_odd_thickness_set(r, 11);
 	enesim_renderer_origin_set(r, -1.0, -1.0);
 
 	r = enesim_renderer_rectangle_new();
