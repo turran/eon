@@ -876,6 +876,7 @@ EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 	ender_element_value_get(e, "max_height", height, NULL);
 }
 
+/** FIXME remove this! */
 /**
  * To be documented
  * FIXME: To be fixed

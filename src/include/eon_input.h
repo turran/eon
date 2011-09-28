@@ -44,8 +44,8 @@ extern const char * eon_input_event_names[EON_INPUT_EVENTS];
 typedef struct _Eon_Event_Mouse_Click
 {
 	Eon_Input *input;
-	double x; /** in eon_element coordinate space */
-	double y; /** in eon_element coordinate space */
+	double x;
+	double y;
 	double rel_x;
 	double rel_y;
 } Eon_Event_Mouse_Click;
@@ -63,8 +63,8 @@ typedef struct _Eon_Event_Mouse_Down
 typedef struct _Eon_Event_Mouse_Move
 {
 	Eon_Input *input;
-	double x; /** in eon_element coordinate space */
-	double y; /** in eon_element coordinate space */
+	double x;
+	double y;
 	double rel_x;
 	double rel_y;
 } Eon_Event_Mouse_Move;
@@ -87,6 +87,10 @@ typedef struct _Eon_Event_Mouse_Wheel
 typedef struct _Eon_Event_Mouse_Drag_Start
 {
 	Eon_Input *input;
+	double x;
+	double y;
+	double rel_x;
+	double rel_y;
 } Eon_Event_Mouse_Drag_Start;
 
 typedef struct _Eon_Event_Mouse_Drag_Stop

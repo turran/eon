@@ -114,13 +114,21 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 	if (eis->pointer.grabbed)
 	{
 		Eon_Event_Mouse_Move ev;
+		double rel_x, rel_y;
 
+
+		rel_x = eis->pointer.rel_x + (px - eis->pointer.x);
+		rel_y = eis->pointer.rel_y + (py - eis->pointer.y);
 		/* we first send the drag start */
 		if (!eis->pointer.dragging)
 		{
 			Eon_Event_Mouse_Drag_Start ev_ds;
 
 			ev_ds.input = eis->input;
+			ev_ds.x = x;
+			ev_ds.y = y;
+			ev_ds.rel_x = rel_x;
+			ev_ds.rel_y = rel_y;
 			ender_event_dispatch(eis->pointer.grabbed, "MouseDragStart", &ev_ds);
 			eis->pointer.dragging = EINA_TRUE;
 		}
@@ -128,8 +136,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		ev.input = eis->input;
 		ev.x = x;
 		ev.y = y;
-		ev.rel_x = eis->pointer.rel_x + (px - eis->pointer.x);
-		ev.rel_y = eis->pointer.rel_y + (py - eis->pointer.y);
+		ev.rel_x = rel_x;
+		ev.rel_y = rel_y;
 		ender_event_dispatch(eis->pointer.grabbed, "MouseMove", &ev);
 
 		return;
@@ -259,7 +267,7 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		ev_click.rel_y = eis->pointer.rel_y;
 		ender_event_dispatch(child, "MouseClick", &ev_click);
 	}
-	/* we first send the drag start */
+	/* send the drag stop */
 	if (eis->pointer.dragging)
 	{
 		Eon_Event_Mouse_Drag_Stop ev_ds;
@@ -295,5 +303,5 @@ const char * eon_input_event_names[EON_INPUT_EVENTS] = {
 	"MouseWheel",
 	"MouseClick",
 	"MouseDragStart",
-	"MouseDragEnd",
+	"MouseDragStop",
 };
