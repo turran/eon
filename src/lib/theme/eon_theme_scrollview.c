@@ -41,6 +41,7 @@ typedef struct _Eon_Theme_Scrollview
 	/* properties */
 	Enesim_Renderer *hbar;
 	Enesim_Renderer *vbar;
+	Eon_Position offset;
 	/* private */
 	void *data;
 	Enesim_Renderer_Delete free;
@@ -170,3 +171,26 @@ EAPI void eon_theme_scrollview_vbar_get(Enesim_Renderer *r, Enesim_Renderer **vb
 	*vbar = thiz->vbar;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollview_offset_get(Enesim_Renderer *r, Eon_Position *offset)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	*offset = thiz->offset;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_scrollview_offset_set(Enesim_Renderer *r, Eon_Position *offset)
+{
+	Eon_Theme_Scrollview *thiz;
+
+	thiz = _eon_theme_scrollview_get(r);
+	thiz->offset = *offset;
+}

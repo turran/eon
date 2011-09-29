@@ -147,8 +147,7 @@ static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, voi
 	thiz = _eon_layout_get(r);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	/* transform the position relative to the layout position */
-	eon_input_state_feed_mouse_move(eis, ev->rel_x, ev->rel_y);
+	eon_input_state_feed_mouse_move(eis, ev->x, ev->y);
 }
 
 static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)

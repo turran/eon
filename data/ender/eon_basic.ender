@@ -34,6 +34,7 @@ namespace "eon" {
 	};
 
 	class "basic_layout" : "theme_layout" {
+		color "background_color";
 	};
 
 	class "basic_scrollview" : "theme_scrollview" {

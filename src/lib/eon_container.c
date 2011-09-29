@@ -51,6 +51,7 @@ static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
 Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 {
 	Eon_Container *thiz;
+	Ender_Element *at = NULL;
 	Enesim_Renderer *r;
 	double ax, ay;
 	Eon_Size size;
@@ -62,10 +63,12 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 	eon_element_actual_size_get(r, &size);
 	eon_element_actual_position_get(r, &ax, &ay);
 
+	if (thiz->element_at)
+		at = thiz->element_at(e, x, y);
+	if (at)
+		return at;
 	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 		return thiz->content;
-	if (thiz->element_at)
-		return thiz->element_at(e, x, y);
 
 	return NULL;
 }
@@ -153,8 +156,7 @@ static void _eon_container_mouse_move(Ender_Element *e, const char *event_name, 
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	/* transform the position relative to the layout position */
-	eon_input_state_feed_mouse_move(eis, ev->rel_x, ev->rel_y);
+	eon_input_state_feed_mouse_move(eis, ev->x, ev->y);
 }
 
 static void _eon_container_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)

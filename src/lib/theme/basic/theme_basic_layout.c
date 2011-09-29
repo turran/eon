@@ -153,7 +153,7 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 #if 0
 	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
 #else
-	enesim_renderer_background_color_set(r, 0xffffffff);
+	enesim_renderer_background_color_set(r, 0xffd7d7d7);
 #endif
 	thiz->background = r;
 
@@ -169,4 +169,12 @@ background_err:
 compound_err:
 	free(thiz);
 	return NULL;
+}
+
+EAPI void eon_basic_layout_background_color_set(Enesim_Renderer *r, Enesim_Color color)
+{
+	Theme_Basic_Layout *thiz;
+
+	thiz = _layout_get(r);
+	enesim_renderer_background_color_set(thiz->background, color);
 }

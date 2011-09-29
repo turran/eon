@@ -73,9 +73,7 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 	}
 	if (c > length) c = length;
 	v = c / length;
-	printf("setting value percent %g (%g %g)\n", v, c, length);
 	v = (thiz->max - thiz->min) * v;
-	printf("setting value %g (%g %g)\n", v, thiz->max, thiz->min);
 	eon_scrollbar_value_set(e, v);
 }
 
@@ -480,6 +478,8 @@ static void _eon_scrollbar_value_set(Enesim_Renderer *r, double value)
 
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
+	if (value > thiz->max - thiz->page_size) value = thiz->max - thiz->page_size;
+	if (value < thiz->min) value = thiz->min;
 	thiz->value = value;
 }
 

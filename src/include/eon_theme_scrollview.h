@@ -23,8 +23,11 @@
  * @{
  */
 
+typedef void (*Eon_Theme_Scrollview_Offset_Set)(Enesim_Renderer *r, Eon_Position *position);
+
 typedef struct _Eon_Theme_Scrollview_Descriptor
 {
+	Eon_Theme_Scrollview_Offset_Set offset_set;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -39,6 +42,7 @@ EAPI void eon_theme_scrollview_hbar_set(Enesim_Renderer *r, Enesim_Renderer *hba
 EAPI void eon_theme_scrollview_hbar_get(Enesim_Renderer *r, Enesim_Renderer **hbar);
 EAPI void eon_theme_scrollview_vbar_set(Enesim_Renderer *r, Enesim_Renderer *vbar);
 EAPI void eon_theme_scrollview_vbar_get(Enesim_Renderer *r, Enesim_Renderer **vbar);
+EAPI void eon_theme_scrollview_offset_set(Enesim_Renderer *r, Eon_Position *position);
 
 /**
  * @}

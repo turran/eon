@@ -322,8 +322,8 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	thiz->border_color = 0xff555555;
 
 	r = enesim_renderer_stripes_new();
-	enesim_renderer_stripes_odd_color_set(r, 0x88000000);
-	enesim_renderer_stripes_even_color_set(r, 0x55555555);
+	enesim_renderer_stripes_odd_color_set(r, 0x11000000);
+	enesim_renderer_stripes_even_color_set(r, 0x33000000);
 	if (!r) goto background_fill_err;
 	thiz->background_fill = r;
 

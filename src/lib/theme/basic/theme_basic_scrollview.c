@@ -60,6 +60,7 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Theme_Basic_Scrollview *thiz;
+	Eon_Position offset;
 	Enesim_Renderer *content;
 	double ox, oy;
 	double width, height;
@@ -70,28 +71,34 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	eon_theme_scrollview_hbar_get(r, &thiz->hbar);
-	eon_theme_scrollview_vbar_get(r, &thiz->vbar);
-	/* the clipped width/height */
-	//eon_theme_widget_width_get(r, &width);
-	//eon_theme_widget_height_get(r, &height);
-	//enesim_renderer_compound_width_set(thiz->compound, width);
-	//enesim_renderer_compound_height_set(thiz->compound, height);
-
+	/* TODO the clipped width/height */
+	eon_theme_scrollview_offset_get(r, &offset);
 	eon_theme_container_content_get(r, &content);
 	if (!content)
 	{
 		printf("scrollview no content\n");
 		return EINA_FALSE;
 	}
-	if (thiz->content != content)
+	printf("offset = %g %g\n", offset.x, offset.y);
+	enesim_renderer_origin_set(content, offset.x, offset.y);
+
+	enesim_renderer_compound_layer_clear(thiz->compound);
+	enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
+
+
+	enesim_renderer_compound_layer_add(thiz->compound, content);
+	/* the bars */
+	eon_theme_scrollview_hbar_get(r, &thiz->hbar);
+	if (thiz->hbar)
 	{
-		enesim_renderer_compound_layer_clear(thiz->compound);
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
-		enesim_renderer_compound_layer_add(thiz->compound, content);
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->hbar);
+		enesim_renderer_rop_set(thiz->hbar, ENESIM_FILL);
+	}
+	eon_theme_scrollview_vbar_get(r, &thiz->vbar);
+	if (thiz->vbar)
+	{
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->vbar);
-		thiz->content = content;
+		enesim_renderer_rop_set(thiz->vbar, ENESIM_FILL);
 	}
 	/* set the needed properties */
 	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
@@ -158,7 +165,7 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
 	thiz->background = r;
-	enesim_renderer_background_color_set(r, 0xfffffff);
+	enesim_renderer_background_color_set(r, 0xffd7d7d7);
 
 	r = eon_theme_scrollview_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;

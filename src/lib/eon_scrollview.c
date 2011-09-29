@@ -28,8 +28,7 @@
 typedef struct _Eon_Scrollview
 {
 	/* properties */
-	double x_position;
-	double y_position;
+	Eon_Position offset;
 	/* private */
 	Ender_Element *hbar;
 	Ender_Element *vbar;
@@ -61,6 +60,43 @@ static void _scrollview_mouse_wheel(Ender_Element *e, const char *event_name, vo
 	 * two scrolls, one on the child object and another on the current object
 	 */
 }
+
+static void _bar_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Scrollview *thiz;
+	Ender_Element *element = data;
+	Ender_Event_Mutation *ev = event_data;
+
+	
+	if (!strcmp(ev->name, "value"))
+	{
+		Eon_Position offset;
+		Enesim_Renderer *r;
+		double x, y;
+
+		r = ender_element_renderer_get(element);
+		thiz = _eon_scrollview_get(r);
+
+		/* check if the property changed is the value, if so, move the content */
+		if (thiz->hbar == e)
+		{
+			double v;
+
+			v = ender_value_double_get(ev->value);
+			printf("hbar %g\n", v);
+			eon_scrollview_x_position_set(element, -10);
+		}
+		else
+		{
+			double v;
+
+			v = ender_value_double_get(ev->value);
+			printf("vbar %g\n", v);
+			eon_scrollview_y_position_set(element, -10);
+		}
+	}
+	eon_element_changed_set(element, EINA_TRUE);
+}
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
@@ -73,6 +109,7 @@ static double _eon_scrollview_min_width_get(Ender_Element *e, double cmv)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 
+	/* FIXME scrollbar inside/outside? */
 	eon_element_min_width_get(thiz->vbar, &bmv);
 
 	return cmv + bmv;
@@ -86,12 +123,14 @@ static double _eon_scrollview_max_width_get(Ender_Element *e, double cmv)
 static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
 {
 	Eon_Scrollview *thiz;
+	Ender_Element *content;
 	Enesim_Renderer *r;
 	double bmv;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 
+	/* FIXME scrollbar inside/outside? */
 	eon_element_min_height_get(thiz->vbar, &bmv);
 
 	return cmv + bmv;
@@ -108,7 +147,6 @@ static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, do
 	Enesim_Renderer *r;
 	Enesim_Renderer *bar_r;
 	Eon_Size size;
-	double aw, ah;
 	double ax, ay;
 
 	r = ender_element_renderer_get(e);
@@ -139,6 +177,9 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 	ender_event_listener_add(e, "MouseDragStart", _scrollview_mouse_drag_start, NULL);
 	ender_event_listener_add(e, "MouseDragStop", _scrollview_mouse_drag_stop, NULL);
 	ender_event_listener_add(e, "MouseWheel", _scrollview_mouse_wheel, NULL);
+	/* FIXME on finalize remove this callbacks */
+	ender_event_listener_add(thiz->hbar, "Mutation", _bar_changed, e);
+	ender_event_listener_add(thiz->vbar, "Mutation", _bar_changed, e);
 }
 
 static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
@@ -158,8 +199,6 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		Eon_Size content_size;
 		Enesim_Renderer *theme_r;
 		Enesim_Renderer *content_r;
-		Enesim_Renderer *bar_r;
-		Enesim_Renderer *bar_rr;
 		double aw, ah;
 		double ax, ay;
 
@@ -170,34 +209,60 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		eon_element_actual_height_get(e, &ah);
 		eon_element_actual_position_get(r, &ax, &ay);
 
-		content_size.width = aw;
-		content_size.height = ah;
+		eon_element_real_size_get(content, &content_size);
 
-		bar_r = ender_element_renderer_get(thiz->hbar);
-		bar_rr = eon_element_renderer_get(thiz->hbar);
-		eon_theme_scrollview_hbar_set(theme_r, bar_rr);
-		eon_element_real_size_get(thiz->vbar, &size);
-		eon_element_actual_size_set(bar_r, content_size.width, size.height);
-		eon_element_actual_position_set(bar_r, 0, content_size.height - size.width);
-		content_size.height -= size.height;
+		/* hbar */
+		if (content_size.width > aw)
+		{
+			Enesim_Renderer *bar_r;
+			Enesim_Renderer *bar_rr;
+			double scale;
 
-		bar_r = ender_element_renderer_get(thiz->vbar);
-		bar_rr = eon_element_renderer_get(thiz->vbar);
-		eon_theme_scrollview_vbar_set(theme_r, bar_rr);
-		eon_element_real_size_get(thiz->vbar, &size);
-		eon_element_actual_size_set(bar_r, size.width, content_size.height);
-		eon_element_actual_position_set(bar_r, content_size.width - size.height, 0);
-		content_size.width -= size.width;
+			bar_r = ender_element_renderer_get(thiz->hbar);
+			bar_rr = eon_element_renderer_get(thiz->hbar);
+			eon_theme_scrollview_hbar_set(theme_r, bar_rr);
+			eon_element_real_size_get(thiz->vbar, &size);
+			eon_element_actual_size_set(bar_r, aw, size.height);
+			eon_element_actual_position_set(bar_r, 0, ah - size.height);
+
+			scale = aw / content_size.width;
+			eon_scrollbar_page_size_set(thiz->hbar, scale * 100);
+			eon_element_setup(thiz->hbar);
+		}
+		else
+		{
+			eon_theme_scrollview_hbar_set(theme_r, NULL);
+		}
+		/* vbar */
+		if (content_size.height > ah)
+		{
+			Enesim_Renderer *bar_r;
+			Enesim_Renderer *bar_rr;
+			double scale;
+
+			bar_r = ender_element_renderer_get(thiz->vbar);
+			bar_rr = eon_element_renderer_get(thiz->vbar);
+			eon_theme_scrollview_vbar_set(theme_r, bar_rr);
+			eon_element_real_size_get(thiz->vbar, &size);
+			eon_element_actual_size_set(bar_r, size.width, ah);
+			eon_element_actual_position_set(bar_r, aw - size.width, 0);
+
+			scale = ah / content_size.height;
+			eon_scrollbar_page_size_set(thiz->vbar, scale * 100);
+			eon_element_setup(thiz->vbar);
+		}
+		else
+		{
+			eon_theme_scrollview_vbar_set(theme_r, NULL);
+		}
 
 		eon_element_real_relative_size_get(content, &content_size, &size);
 
+		/* set the logic size and position, so all the events continue working
+		 * the gfx position is handled on the theme with theme_scrollview_offset_set
+		 */
 		eon_element_actual_size_set(content_r, size.width, size.height);
-		eon_element_actual_position_set(content_r, 0, 0);
-		/* do the setup on the hbar/vbar */
-		eon_element_setup(thiz->hbar);
-		eon_element_setup(thiz->vbar);
-		/* add the real offset of the scrolling */
-		printf("setting scrollview position!\n");
+		eon_element_actual_position_set(content_r, thiz->offset.x, thiz->offset.y);
 		if (!eon_element_setup(content))
 		{
 			printf("impossible to setup the content\n");
@@ -234,10 +299,14 @@ static Enesim_Renderer * _eon_scrollview_new(void)
 	e = eon_scrollbar_new();
 	thiz->hbar = e;
 	eon_scrollbar_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
+	eon_scrollbar_min_set(e, 0);
+	eon_scrollbar_max_set(e, 100);
 
 	e = eon_scrollbar_new();
 	thiz->vbar = e;
 	eon_scrollbar_orientation_set(e, EON_ORIENTATION_VERTICAL);
+	eon_scrollbar_min_set(e, 0);
+	eon_scrollbar_max_set(e, 100);
 
 	/* create the two scrollbars */
 	r = eon_container_new(&_descriptor, thiz);
@@ -253,9 +322,13 @@ renderer_err:
 static void _eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
 {
 	Eon_Scrollview *thiz;
+	Enesim_Renderer *theme_r;
 
 	thiz = _eon_scrollview_get(r);
-	thiz->x_position = x;
+	thiz->offset.x = x;
+	theme_r = eon_widget_theme_renderer_get(r);
+	printf("setting x offset %g\n", x);
+	eon_theme_scrollview_offset_set(theme_r, &thiz->offset);
 }
 
 static void _eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
@@ -263,15 +336,19 @@ static void _eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
 	Eon_Scrollview *thiz;
 
 	thiz = _eon_scrollview_get(r);
-	*x = thiz->x_position;
+	*x = thiz->offset.x;
 }
 
 static void _eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
 {
 	Eon_Scrollview *thiz;
+	Enesim_Renderer *theme_r;
 
 	thiz = _eon_scrollview_get(r);
-	thiz->y_position = y;
+	thiz->offset.y = y;
+	theme_r = eon_widget_theme_renderer_get(r);
+	printf("setting y offset %g\n", y);
+	eon_theme_scrollview_offset_set(theme_r, &thiz->offset);
 }
 
 static void _eon_scrollview_y_position_get(Enesim_Renderer *r, double *y)
@@ -279,7 +356,7 @@ static void _eon_scrollview_y_position_get(Enesim_Renderer *r, double *y)
 	Eon_Scrollview *thiz;
 
 	thiz = _eon_scrollview_get(r);
-	*y = thiz->y_position;
+	*y = thiz->offset.y;
 }
 /*============================================================================*
  *                                 Global                                     *

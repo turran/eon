@@ -24,13 +24,10 @@ struct _Eon_Input_State
 		/* same as above but relative to the grabbed object */
 		double rel_x;
 		double rel_y;
-		/* ?? */
-		double px;
-		double py;
 		unsigned int button;
-		Eina_Bool inside;
-		Eina_Bool dragging;
-		Ender_Element *grabbed;
+		Eina_Bool inside; /* is the pointer inside the area? */
+		Eina_Bool dragging; /* is the pointer dragging */
+		Ender_Element *grabbed; /* the object where the mouse down happened */
 		Ender_Element *last;
 	} pointer;
 	/* TODO keep the last modifiers */
@@ -46,9 +43,12 @@ Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y,
 	Enesim_Renderer *r;
 	Enesim_Renderer *e_r;
 	Ender_Element *e;
-	double px, py;
+	double ex, ey;
 
 	r = ender_element_renderer_get(eis->element);
+	eon_element_actual_position_get(r, &ex, &ey);
+	x -= ex;
+	y -= ey;
 #if 0
 	/* should we check for transformation here? */
 	eon_element_actual_position_get(r, &px, &py);
@@ -57,9 +57,9 @@ Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y,
 	e = eis->element_get(eis->element, x, y);
 	if (!e) return NULL;
 	e_r = ender_element_renderer_get(e);
-	eon_element_actual_position_get(e_r, &px, &py);
-	if (rel_x) *rel_x = x - px;
-	if (rel_y) *rel_y = y - py;
+	eon_element_actual_position_get(e_r, &ex, &ey);
+	if (rel_x) *rel_x = x - ex;
+	if (rel_y) *rel_y = y - ey;
 
 	return e;
 }
