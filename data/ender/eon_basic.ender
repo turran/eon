@@ -51,4 +51,7 @@ namespace "eon" {
 	class "basic_scrollbar" : "theme_scrollbar" {
 
 	};
+	class "basic_splitter" : "theme_splitter" {
+
+	};
 };

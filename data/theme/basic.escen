@@ -149,4 +149,8 @@ escen {
 	basic_scrollbar "scrollbar" {
 
 	};
+
+	basic_splitter "splitter" {
+
+	};
 };

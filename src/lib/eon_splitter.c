@@ -61,8 +61,10 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 {
 	Eon_Splitter *thiz;
 	Eon_Size size;
+	Ender_Element *content;
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
+	Enesim_Renderer *content_r;
 	double percent;
 	double max, min;
 	double thumb_size;
@@ -70,7 +72,17 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_splitter_get(r);
+
+	eon_container_content_get(e, &content);
+	if (!content) return EINA_FALSE;
+#if 0
+	if (!eon_element_setup(content))
+	{
+		printf("impossible to setup the content\n");
+		return EINA_FALSE;
+	}
 	theme_r = eon_widget_theme_renderer_get(r);
+#endif
 
 	eon_element_actual_size_get(r, &size);
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
