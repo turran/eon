@@ -78,7 +78,7 @@ static Eina_Bool _eon_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 
 	if (!enesim_renderer_sw_setup(thiz->theme_renderer, s, error))
 	{
-		printf("the theme can not setup yet\n");
+		ENESIM_RENDERER_ERROR(r, error, "The theme renderer failed");
 		return EINA_FALSE;
 	}
 

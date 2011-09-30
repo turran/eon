@@ -23,7 +23,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Basic_Scrollbar
+typedef struct _Splitter
 {
 	/* properties */
 	double radius;
@@ -38,139 +38,65 @@ typedef struct _Basic_Scrollbar
 	Enesim_Renderer *bar_background_fill;
 	Enesim_Renderer *bar_shape;
 	Enesim_Renderer_Sw_Fill fill;
-} Basic_Scrollbar;
+} Basic_Splitter;
 
 static const double _border_weight = 2.0;
 
-static inline Basic_Scrollbar * _scrollbar_get(Enesim_Renderer *r)
+static inline Basic_Splitter * _splitter_get(Enesim_Renderer *r)
 {
-	Basic_Scrollbar *thiz;
+	Basic_Splitter *thiz;
 
-	thiz = eon_theme_scrollbar_data_get(r);
+	thiz = eon_theme_splitter_data_get(r);
 	return thiz;
 }
 
 static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
 {
-	Basic_Scrollbar *thiz;
+	Basic_Splitter *thiz;
 
-	thiz = _scrollbar_get(r);
+	thiz = _splitter_get(r);
 	thiz->fill(thiz->compound, x, y, len, dst);
 }
 
 /*----------------------------------------------------------------------------*
- *                   The Eon's theme scrollbar interface                    *
+ *                   The Eon's theme splitter interface                    *
  *----------------------------------------------------------------------------*/
-static double _basic_scrollbar_min_width_get(Enesim_Renderer *r)
+static double _basic_splitter_min_width_get(Enesim_Renderer *r)
 {
 	return 16;
 }
 
-static double _basic_scrollbar_max_width_get(Enesim_Renderer *r)
+static double _basic_splitter_max_width_get(Enesim_Renderer *r)
 {
 	Eon_Orientation orientation;
 
-	eon_theme_scrollbar_orientation_get(r, &orientation);
+	eon_theme_splitter_orientation_get(r, &orientation);
 	if (orientation == EON_ORIENTATION_HORIZONTAL)
 		return DBL_MAX;
 	else
 		return 16;
 }
 
-static double _basic_scrollbar_min_height_get(Enesim_Renderer *r)
+static double _basic_splitter_min_height_get(Enesim_Renderer *r)
 {
 	return 16;
 }
 
-static double _basic_scrollbar_max_height_get(Enesim_Renderer *r)
+static double _basic_splitter_max_height_get(Enesim_Renderer *r)
 {
 	Eon_Orientation orientation;
 
-	eon_theme_scrollbar_orientation_get(r, &orientation);
+	eon_theme_splitter_orientation_get(r, &orientation);
 	if (orientation == EON_ORIENTATION_VERTICAL)
 		return DBL_MAX;
 	else
 		return 16;
 }
 
-static void _basic_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent)
-{
-	Basic_Scrollbar *thiz;
-	Eon_Orientation orientation;
-	double ofx = 0;
-	double ofy = 0;
-	double ox, oy;
-
-	thiz = _scrollbar_get(r);
-	eon_theme_scrollbar_orientation_get(r, &orientation);
-	ox = oy = _border_weight / 2;
-	/* given that we dont have arrow, just move it relative to the set widht/height */
-	if (orientation == EON_ORIENTATION_HORIZONTAL)
-	{
-		double w;
-
-		eon_theme_widget_width_get(r, &w);
-		ofx = w * percent;
-	}
-	else
-	{
-		double h;
-
-		eon_theme_widget_height_get(r, &h);
-		ofy = h * percent;
-	}
-	enesim_renderer_origin_set(thiz->bar, ox + ofx, oy + ofy);
-}
-
-static void _basic_scrollbar_thumb_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
-{
-	Basic_Scrollbar *thiz;
-
-	thiz = _scrollbar_get(r);
-	enesim_renderer_translated_boundings(thiz->bar, geometry);
-	/* FIXME the coodinates are not on renderer coordinate space */
-	geometry->x = -geometry->x;
-	geometry->y = -geometry->y;
-}
-
-static void _basic_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
-{
-	Basic_Scrollbar *thiz;
-	Eon_Orientation orientation;
-	double bw, bh;
-
-	thiz = _scrollbar_get(r);
-	eon_theme_scrollbar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_VERTICAL)
-	{
-		bw = 14;
-		bh = size;
-	}
-	else
-	{
-		bw = size;
-		bh = 14;
-	}
-	enesim_renderer_rectangle_size_set(thiz->bar_shape, bw, bh);
-	enesim_renderer_rectangle_size_set(thiz->bar_background, bw - 6, bh - 6);
-	enesim_renderer_stripes_even_thickness_set(thiz->bar_background_fill, (size - 6) / 2);
-	enesim_renderer_stripes_odd_thickness_set(thiz->bar_background_fill, (size - 6) / 2);
-}
-
-static double _basic_scrollbar_thumb_max_size_get(Enesim_Renderer *r)
-{
-	return DBL_MAX;
-}
-
-static double _basic_scrollbar_thumb_min_size_get(Enesim_Renderer *r)
-{
-	return 20;
-}
-
-static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
+static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
-	Basic_Scrollbar *thiz;
+	Basic_Splitter *thiz;
 	Eon_Orientation orientation;
 	Enesim_Matrix matrix;
 	Enesim_Matrix bf_matrix;
@@ -179,7 +105,7 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	double width, height;
 	double lx, ly, lw, lh;
 
-	thiz = _scrollbar_get(r);
+	thiz = _splitter_get(r);
 	/* the origin */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	/* the size */
@@ -187,7 +113,7 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	eon_theme_widget_height_get(r, &height);
 
 	/* the background fill */
-	eon_theme_scrollbar_orientation_get(r, &orientation);
+	eon_theme_splitter_orientation_get(r, &orientation);
 	if (orientation == EON_ORIENTATION_VERTICAL)
 	{
 		lx = width / 2;
@@ -250,19 +176,19 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	return EINA_TRUE;
 }
 
-static void _basic_scrollbar_cleanup(Enesim_Renderer *r)
+static void _basic_splitter_cleanup(Enesim_Renderer *r)
 {
-	Basic_Scrollbar *thiz;
+	Basic_Splitter *thiz;
 
-	thiz = _scrollbar_get(r);
+	thiz = _splitter_get(r);
 	enesim_renderer_sw_cleanup(thiz->compound);
 }
 
-static void _basic_scrollbar_free(Enesim_Renderer *r)
+static void _basic_splitter_free(Enesim_Renderer *r)
 {
-	Basic_Scrollbar *thiz;
+	Basic_Splitter *thiz;
 
-	thiz = _scrollbar_get(r);
+	thiz = _splitter_get(r);
 
 	thiz = enesim_renderer_data_get(r);
 
@@ -285,19 +211,14 @@ static void _basic_scrollbar_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eon_Theme_Scrollbar_Descriptor _descriptor = {
-	.max_width_get = _basic_scrollbar_max_width_get,
-	.max_height_get = _basic_scrollbar_max_height_get,
-	.min_width_get = _basic_scrollbar_min_width_get,
-	.min_height_get = _basic_scrollbar_min_height_get,
-	.thumb_percent_set = _basic_scrollbar_thumb_percent_set,
-	.thumb_size_set = _basic_scrollbar_thumb_size_set,
-	.thumb_max_size_get = _basic_scrollbar_thumb_max_size_get,
-	.thumb_min_size_get = _basic_scrollbar_thumb_min_size_get,
-	.thumb_geometry_get = _basic_scrollbar_thumb_geometry_get,
-	.sw_setup = _basic_scrollbar_setup,
-	.sw_cleanup = _basic_scrollbar_cleanup,
-	.free = _basic_scrollbar_free,
+static Eon_Theme_Splitter_Descriptor _descriptor = {
+	.max_width_get = _basic_splitter_max_width_get,
+	.max_height_get = _basic_splitter_max_height_get,
+	.min_width_get = _basic_splitter_min_width_get,
+	.min_height_get = _basic_splitter_min_height_get,
+	.sw_setup = _basic_splitter_setup,
+	.sw_cleanup = _basic_splitter_cleanup,
+	.free = _basic_splitter_free,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -308,12 +229,12 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 /**
  *
  */
-Enesim_Renderer * eon_basic_scrollbar_new(void)
+Enesim_Renderer * eon_basic_splitter_new(void)
 {
-	Basic_Scrollbar *thiz;
+	Basic_Splitter *thiz;
 	Enesim_Renderer *r;
 
-	thiz = calloc(1, sizeof(Basic_Scrollbar));
+	thiz = calloc(1, sizeof(Basic_Splitter));
 	if (!thiz) return NULL;
 	thiz->radius = 4;
 	thiz->border_color = 0xff555555;
@@ -382,7 +303,7 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	enesim_renderer_compound_layer_add(r, thiz->line);
 	enesim_renderer_compound_layer_add(r, thiz->bar);
 
-	r = eon_theme_scrollbar_new(&_descriptor, thiz);
+	r = eon_theme_splitter_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -407,3 +328,4 @@ background_fill_err:
 	free(thiz);
 	return NULL;
 }
+

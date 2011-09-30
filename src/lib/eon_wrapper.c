@@ -45,7 +45,7 @@ static inline Eon_Wrapper * _eon_wrapper_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _wrapper_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+static void _wrapper_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
 {
 	Eon_Wrapper *thiz;
 
@@ -79,7 +79,7 @@ static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	//enesim_renderer_origin_set(thiz->compound, rect.x, rect.y);
 	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
-		printf("the theme can not setup yet\n");
+		ENESIM_RENDERER_ERROR(r, error, "Impossible to setup the compound renderer");
 		return EINA_FALSE;
 	}
 

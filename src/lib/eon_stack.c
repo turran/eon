@@ -305,6 +305,13 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return NULL;
+
+	{
+		char *name;
+		enesim_renderer_name_get(r, &name);
+		printf("stack %s child at %g %g \n", name, x, y);
+	}
+
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *rchild;
@@ -338,7 +345,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 			}
 		}
 	}
-	//printf("returning %p\n", child);
+	printf("returning %p\n", child);
 
 	return child;
 }

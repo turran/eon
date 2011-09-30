@@ -32,6 +32,7 @@ typedef struct _Eon_Scrollbar
 	double value;
 	/* private */
 	Eina_Bool thumb_dragging;
+	double offset_dragging;
 } Eon_Scrollbar;
 
 static inline Eon_Scrollbar * _eon_scrollbar_get(Enesim_Renderer *r)
@@ -42,39 +43,45 @@ static inline Eon_Scrollbar * _eon_scrollbar_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static inline double _eon_scrollbar_value_check(Eon_Scrollbar *thiz, double v)
+{
+	if (v > thiz->max - thiz->page_size) v = thiz->max - thiz->page_size;
+	if (v < thiz->min) v = thiz->min;
+
+	return v;
+}
+
 static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Scrollbar *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Size size;
 	Enesim_Renderer *r;
-	//Enesim_Renderer *theme_r;
-	Enesim_Rectangle tg;
 	double c;
 	double v;
 	double length;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
-	printf(">>> mouse move <<<\n");
+	printf("mouse moving!!!\n");
 	if (!thiz->thumb_dragging) return;
 
 	eon_element_actual_size_get(r, &size);
 	/* get the absolute position of the event */
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
-		c = ev->x; 
+		c = ev->x - thiz->offset_dragging; 
 		length = size.width;
 	}
 	else
 	{
-		c = ev->y;
+		c = ev->y - thiz->offset_dragging;
 		length = size.height;
 	}
 	if (c > length) c = length;
 	v = c / length;
 	v = (thiz->max - thiz->min) * v;
-	eon_scrollbar_value_set(e, v);
+	eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, v));
 }
 
 static void _eon_scrollbar_mouse_drag_stop(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -84,7 +91,6 @@ static void _eon_scrollbar_mouse_drag_stop(Ender_Element *e, const char *event_n
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
-	printf(">>> dragging stop <<<\n");
 	thiz->thumb_dragging = EINA_FALSE;
 }
 
@@ -100,10 +106,12 @@ static void _eon_scrollbar_mouse_drag_start(Ender_Element *e, const char *event_
 	thiz = _eon_scrollbar_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
-	printf("drag start %g %g (%g %g %g %g)\n", ev->rel_x, ev->rel_y, tg.x, tg.y, tg.w, tg.h);
 	if (!enesim_rectangle_is_inside(&tg, ev->rel_x, ev->rel_y))
 		return;
-	printf("ok inside!\n");
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+		thiz->offset_dragging = ev->x - tg.x;
+	else
+		thiz->offset_dragging = ev->y - tg.y;
 	thiz->thumb_dragging = EINA_TRUE;
 }
 
@@ -119,19 +127,16 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	thiz = _eon_scrollbar_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	printf("scrollbar clicked at %g %g\n", ev->rel_x, ev->rel_y);
 	eon_theme_scrollbar_decrement_arrow_geometry_get(theme_r, &ig);
 	eon_theme_scrollbar_increment_arrow_geometry_get(theme_r, &dg);
 	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
 	if (enesim_rectangle_is_inside(&dg, ev->rel_x, ev->rel_y))
 	{
-		printf("unit decrement\n");
-		eon_scrollbar_value_set(e, thiz->value - thiz->step_increment);
+		eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value - thiz->step_increment));
 	}
 	else if (enesim_rectangle_is_inside(&ig, ev->rel_x, ev->rel_y))
 	{
-		printf("unit increment\n");
-		eon_scrollbar_value_set(e, thiz->value + thiz->step_increment);
+		eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value + thiz->step_increment));
 	}
 	/* the thumb case */
 	else
@@ -154,13 +159,11 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 		/* decrement side */
 		if (dt - c > DBL_EPSILON)
 		{
-			printf("page decrement\n");
-			eon_scrollbar_value_set(e, thiz->value - thiz->page_increment);
+			eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value - thiz->page_increment));
 		}
 		else if (c - it > DBL_EPSILON)
 		{
-			printf("page increment\n");
-			eon_scrollbar_value_set(e, thiz->value + thiz->page_increment);
+			eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value + thiz->page_increment));
 		}
 	}
 }

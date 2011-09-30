@@ -67,31 +67,32 @@ static void _bar_changed(Ender_Element *e, const char *event_name, void *event_d
 	Ender_Element *element = data;
 	Ender_Event_Mutation *ev = event_data;
 
-	
 	if (!strcmp(ev->name, "value"))
 	{
+		Ender_Element *content;
 		Eon_Position offset;
+		Eon_Size size;
 		Enesim_Renderer *r;
 		double x, y;
 
 		r = ender_element_renderer_get(element);
 		thiz = _eon_scrollview_get(r);
-
+		eon_container_content_get(element, &content);
+		r = ender_element_renderer_get(content);
+		eon_element_actual_size_get(r, &size);
 		/* check if the property changed is the value, if so, move the content */
 		if (thiz->hbar == e)
 		{
 			double v;
 
-			v = ender_value_double_get(ev->value);
-			printf("hbar %g\n", v);
-			eon_scrollview_x_position_set(element, -10);
+			v = (ender_value_double_get(ev->value) / 100) * size.width;
+			eon_scrollview_x_position_set(element, -v);
 		}
 		else
 		{
 			double v;
 
-			v = ender_value_double_get(ev->value);
-			printf("vbar %g\n", v);
+			v = ender_value_double_get(ev->value) / 100 * size.height;
 			eon_scrollview_y_position_set(element, -10);
 		}
 	}
@@ -327,7 +328,6 @@ static void _eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
 	thiz = _eon_scrollview_get(r);
 	thiz->offset.x = x;
 	theme_r = eon_widget_theme_renderer_get(r);
-	printf("setting x offset %g\n", x);
 	eon_theme_scrollview_offset_set(theme_r, &thiz->offset);
 }
 
@@ -347,7 +347,6 @@ static void _eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
 	thiz = _eon_scrollview_get(r);
 	thiz->offset.y = y;
 	theme_r = eon_widget_theme_renderer_get(r);
-	printf("setting y offset %g\n", y);
 	eon_theme_scrollview_offset_set(theme_r, &thiz->offset);
 }
 

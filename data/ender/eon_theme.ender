@@ -49,6 +49,12 @@ namespace "eon" {
 		double "preferred_width";
 		double "preferred_height";
 	};
+
+	abstract "theme_splitter" : "theme_container" {
+		int "orientation";
+		renderer "second content";
+	};
+
 	abstract "theme_scrollview" : "theme_container" {
 
 	};

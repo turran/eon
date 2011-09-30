@@ -354,5 +354,3 @@ EAPI void * eon_theme_scrollbar_data_get(Enesim_Renderer *r)
 	thiz = _eon_theme_scrollbar_get(r);
 	return thiz->data;
 }
-
-

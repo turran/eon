@@ -53,24 +53,25 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 	Eon_Container *thiz;
 	Ender_Element *at = NULL;
 	Enesim_Renderer *r;
+	Enesim_Renderer *content_r;
 	double ax, ay;
 	Eon_Size size;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
 
-	r = ender_element_renderer_get(thiz->content);
-	eon_element_actual_size_get(r, &size);
-	eon_element_actual_position_get(r, &ax, &ay);
+	content_r = ender_element_renderer_get(thiz->content);
+	eon_element_actual_size_get(content_r, &size);
+	eon_element_actual_position_get(content_r, &ax, &ay);
 
 	if (thiz->element_at)
 		at = thiz->element_at(e, x, y);
-	if (at)
-		return at;
-	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
-		return thiz->content;
-
-	return NULL;
+	if (!at)
+	{
+		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
+			at = thiz->content;
+	}
+	return at;
 }
 
 static Eon_Input_State * _eon_container_input_state_get(Eon_Container *thiz, Ender_Element *e, Eon_Input *input)
@@ -99,7 +100,6 @@ static void _eon_container_mouse_down(Ender_Element *e, const char *event_name, 
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	printf("passing mouse down\n");
 	eon_input_state_feed_mouse_down(eis);
 }
 

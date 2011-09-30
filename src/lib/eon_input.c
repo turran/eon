@@ -43,17 +43,25 @@ Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y,
 	Enesim_Renderer *r;
 	Enesim_Renderer *e_r;
 	Ender_Element *e;
+	Ender_Element *parent;
 	double ex, ey;
 
 	r = ender_element_renderer_get(eis->element);
+	parent = ender_element_parent_get(eis->element);
+	if (parent)
+	{
+		Enesim_Renderer *parent_r;
+		double px, py;
+
+		parent_r = ender_element_renderer_get(parent);
+		eon_element_actual_position_get(parent_r, &px, &py);
+		x -= px;
+		y -= py;
+	}
 	eon_element_actual_position_get(r, &ex, &ey);
 	x -= ex;
 	y -= ey;
-#if 0
-	/* should we check for transformation here? */
-	eon_element_actual_position_get(r, &px, &py);
-	printf("changing %p %d %d - %g %g\n", eis->element, x, y, px, py);
-#endif
+
 	e = eis->element_get(eis->element, x, y);
 	if (!e) return NULL;
 	e_r = ender_element_renderer_get(e);
@@ -238,6 +246,7 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 	eis->pointer.rel_y = rel_y;
 	ev.input = eis->input;
 	ender_event_dispatch(child, "MouseDown", &ev);
+	printf("mouse down at %g %g\n", eis->pointer.x, eis->pointer.y);
 }
 
 void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
@@ -255,6 +264,7 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */
+	printf("mouse up\n");
 	if ((fabs(eis->pointer.downx - eis->pointer.x) < DBL_EPSILON) &&
 			(fabs(eis->pointer.downy - eis->pointer.y) < DBL_EPSILON))
 	{
@@ -266,6 +276,14 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		ev_click.rel_x = eis->pointer.rel_x;
 		ev_click.rel_y = eis->pointer.rel_y;
 		ender_event_dispatch(child, "MouseClick", &ev_click);
+		{
+			Enesim_Renderer *r;
+			char *name;
+
+			r = ender_element_renderer_get(child);
+			enesim_renderer_name_get(r, &name);
+			printf("mouse click at %s %g %g - %g %g\n", name, ev_click.x, ev_click.y, ev_click.rel_x, ev_click.rel_y);
+		}
 	}
 	/* send the drag stop */
 	if (eis->pointer.dragging)

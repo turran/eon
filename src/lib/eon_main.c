@@ -70,11 +70,12 @@ static void _register_enders(void)
 	eon_stack_init();
 	/* container inheritance */
 	eon_button_base_init();
+	eon_splitter_init();
+	eon_scrollview_init();
 	/* basic button inheritance */
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
-	eon_scrollview_init();
 	eon_frame_init();
 }
 /*============================================================================*

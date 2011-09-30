@@ -71,6 +71,11 @@ namespace "eon" {
 		double "value";
 	};
 
+	class "splitter" : "container" {
+		int "orientation";
+		ender "second_content";
+	};
+
 	class "progressbar" : "widget" {
 		double "progression";
 	};

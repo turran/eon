@@ -51,7 +51,7 @@ static void _scrollview_draw(Enesim_Renderer *r, int x, int y, unsigned int len,
 	Theme_Basic_Scrollview *thiz;
 
 	thiz = _scrollview_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
+	thiz->fill(thiz->clipper, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollview interface                     *
@@ -69,9 +69,8 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
 
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
-
-	/* TODO the clipped width/height */
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
 	eon_theme_scrollview_offset_get(r, &offset);
 	eon_theme_container_content_get(r, &content);
 	if (!content)
@@ -79,12 +78,17 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		printf("scrollview no content\n");
 		return EINA_FALSE;
 	}
-	printf("offset = %g %g\n", offset.x, offset.y);
+	//printf("offset = %g %g\n", offset.x, offset.y);
 	enesim_renderer_origin_set(content, offset.x, offset.y);
 
 	enesim_renderer_compound_layer_clear(thiz->compound);
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
 
+	/* the clipper */
+	enesim_renderer_origin_set(thiz->clipper, ox, oy);
+	enesim_renderer_clipper_width_set(thiz->clipper, width);
+	enesim_renderer_clipper_height_set(thiz->clipper, height);
+	//printf("boundings %g %g\n", width, height);
 
 	enesim_renderer_compound_layer_add(thiz->compound, content);
 	/* the bars */
@@ -101,12 +105,12 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		enesim_renderer_rop_set(thiz->vbar, ENESIM_FILL);
 	}
 	/* set the needed properties */
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
+	if (!enesim_renderer_sw_setup(thiz->clipper, s, error))
 	{
 		printf("the scrollview cannot setup yet\n");
 		return EINA_FALSE;
 	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
+	thiz->fill = enesim_renderer_sw_fill_get(thiz->clipper);
 	if (!thiz->fill)
 	{
 		return EINA_FALSE;
@@ -162,6 +166,11 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	if (!r) goto compound_err;
 	thiz->compound = r;
 
+	r = enesim_renderer_clipper_new();
+	if (!r) goto clipper_err;
+	thiz->clipper = r;
+	enesim_renderer_clipper_content_set(thiz->clipper, thiz->compound);
+
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
 	thiz->background = r;
@@ -175,6 +184,8 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 renderer_err:
 	enesim_renderer_unref(thiz->background);
 background_err:
+	enesim_renderer_unref(thiz->clipper);
+clipper_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
 	free(thiz);

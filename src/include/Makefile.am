@@ -22,6 +22,7 @@ eon_progressbar.h \
 eon_radio.h \
 eon_scrollbar.h \
 eon_scrollview.h \
+eon_splitter.h \
 eon_stack.h \
 eon_theme.h \
 eon_theme_button_base.h \
@@ -37,6 +38,7 @@ eon_theme_label.h \
 eon_theme_progressbar.h \
 eon_theme_scrollbar.h \
 eon_theme_scrollview.h \
+eon_theme_splitter.h \
 eon_widget.h \
 eon_window.h \
 eon_wrapper.h \

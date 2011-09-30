@@ -35,8 +35,8 @@ int main(int argc, char **argv)
 	ender_element_value_set(rectangle, "stroke_color", 0xffff0000, NULL);
 	ender_element_value_set(rectangle, "stroke_weight", 2.0, NULL);
 	ender_element_value_set(rectangle, "draw_mode", 2, NULL);
-	ender_element_value_set(rectangle, "width", 100, NULL);
-	ender_element_value_set(rectangle, "height", 100, NULL);
+	ender_element_value_set(rectangle, "width", 100.0, NULL);
+	ender_element_value_set(rectangle, "height", 100.0, NULL);
 
 	wrapper = eon_wrapper_new();
 	ender_event_listener_add(wrapper, "MouseClick", _wrapper_clicked, rectangle);

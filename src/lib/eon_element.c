@@ -383,7 +383,7 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	if (!e) return EINA_FALSE;
 	if (!eon_element_setup(e))
 	{
-		printf("cannot setup the eon element\n");
+		ENESIM_RENDERER_ERROR(r, error, "The element_setup() failed");
 		return EINA_FALSE;
 	}
 	if (!thiz->sw_setup)

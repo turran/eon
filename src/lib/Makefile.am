@@ -29,6 +29,7 @@ eon_progressbar.c \
 eon_radio.c \
 eon_stack.c \
 eon_scrollbar.c \
+eon_splitter.c \
 eon_scrollview.c \
 eon_theme.c \
 eon_toggle.c \
