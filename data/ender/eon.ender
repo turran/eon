@@ -74,6 +74,7 @@ namespace "eon" {
 	class "splitter" : "container" {
 		int "orientation";
 		ender "second_content";
+		double "position";
 	};
 
 	class "progressbar" : "widget" {
