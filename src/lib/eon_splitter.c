@@ -337,6 +337,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	double scw, sch, scx, scy;
 	double position;
 	double thickness;
+	double min, max;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_splitter_get(r);
@@ -365,25 +366,60 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	eon_element_actual_height_get(e, &ah);
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
+		double len;
+		double cmin, cmax;
+		double scmin, scmax;
+
+		eon_element_min_width_get(content, &cmin);
+		eon_element_min_width_get(thiz->second_content, &scmin);
+		eon_element_max_width_get(content, &cmax);
+		eon_element_max_width_get(thiz->second_content, &scmax);
+
+		len = aw - thickness - cmin - scmin;
+		len = cmin + (len * thiz->position);
+
+		if (len > cmax)
+			len -= cmax;
+		if (aw - len > scmax)
+			len = len + (len - scmax);
+
 		cx = 0;
 		cy = 0;
-		cw = aw * thiz->position;
+		cw = len;
 		ch = ah;
-		scx = cw + thickness;
+		scx = len + thickness;
 		scy = 0;
-		scw = aw - cw;
+		scw = aw - len - thickness;
 		sch = ah;
+
 	}
 	else
 	{
+		double len;
+		double cmin, cmax;
+		double scmin, scmax;
+
+		eon_element_min_height_get(content, &cmin);
+		eon_element_min_height_get(thiz->second_content, &scmin);
+		eon_element_max_height_get(content, &cmax);
+		eon_element_max_height_get(thiz->second_content, &scmax);
+
+		len = ah - thickness - cmin - scmin;
+		len = cmin + (len * thiz->position);
+
+		if (len > cmax)
+			len -= cmax;
+		if (aw - len > scmax)
+			len = len + (len - scmax);
+
 		cx = 0;
 		cy = 0;
 		cw = aw;
-		ch = ah * thiz->position;
+		ch = len;
 		scx = 0;
-		scy = ch + thickness;
+		scy = len + thickness;
 		scw = aw;
-		sch = ah - ch;
+		sch = ah - len - thickness;
 	}
 	eon_element_actual_width_set(content_r, cw);
 	eon_element_actual_height_set(content_r, ch);
@@ -394,7 +430,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	eon_element_actual_height_set(content_r, sch); 
 	eon_element_actual_position_set(content_r, scx, scy);
 
-	printf("%g %g %g %g - %g %g %g %g\n", cx, cy, cw, ch, scx, scy, scw, sch);
+	printf("(%g %g) %g %g %g %g - %g %g %g %g\n", aw, ah, cx, cy, cw, ch, scx, scy, scw, sch);
 
 	if (!eon_element_setup(content))
 	{
@@ -427,8 +463,8 @@ static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
 	.max_width_get = _eon_splitter_max_width_get,
 	.min_height_get = _eon_splitter_min_height_get,
 	.max_height_get = _eon_splitter_max_height_get,
-	//.preferred_width_get = _eon_splitter_preferred_width_get,
-	//.preferred_height_get = _eon_splitter_preferred_height_get,
+	.preferred_width_get = _eon_splitter_preferred_width_get,
+	.preferred_height_get = _eon_splitter_preferred_height_get,
 	.element_at = _eon_splitter_element_at,
 	.pass_events = EINA_TRUE,
 };

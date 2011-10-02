@@ -622,7 +622,7 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 	rw = set > max ? max : set;
 	rw = rw < min ? min : rw;
 	size->width = rw;
-	//printf("relative width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
+	printf("relative width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
 
 	set = thiz->height;
 	/* if the user has not set a value we better use the preferred one */

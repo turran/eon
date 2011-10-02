@@ -24,12 +24,17 @@ int main(int argc, char **argv)
 
 	splitter = eon_splitter_new();
 	eon_splitter_orientation_set(splitter, EON_ORIENTATION_HORIZONTAL);
+	eon_element_width_set(splitter, 90);
 
 	label = eon_label_new_with_text("left");
 	eon_container_content_set(splitter, label);
+	eon_element_min_width_set(label, 50);
+	eon_element_max_width_set(label, 120);
 
 	label = eon_label_new_with_text("right");
 	eon_splitter_second_content_set(splitter, label);
+	eon_element_min_width_set(label, 30);
+	eon_element_max_width_set(label, 30);
 
 	eon_layout_child_add(layout, splitter);
 
