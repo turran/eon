@@ -63,7 +63,6 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
-	printf("mouse moving!!!\n");
 	if (!thiz->thumb_dragging) return;
 
 	eon_element_actual_size_get(r, &size);

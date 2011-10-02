@@ -22,21 +22,13 @@
 /**
  * @{
  */
-typedef double (*Eon_Theme_Splitter_Max_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Splitter_Max_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Splitter_Min_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Splitter_Min_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Splitter_Preferred_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Splitter_Preferred_Width_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Splitter_Min_Length_Get)(Enesim_Renderer *r);
+typedef double (*Eon_Theme_Splitter_Thickness_Get)(Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Splitter_Descriptor
 {
-	Eon_Theme_Splitter_Max_Width_Get max_width_get;
-	Eon_Theme_Splitter_Min_Width_Get min_width_get;
-	Eon_Theme_Splitter_Max_Height_Get max_height_get;
-	Eon_Theme_Splitter_Min_Height_Get min_height_get;
-	Eon_Theme_Splitter_Preferred_Width_Get preferred_width_get;
-	Eon_Theme_Splitter_Preferred_Height_Get preferred_height_get;
+	Eon_Theme_Splitter_Min_Length_Get min_length_get;
+	Eon_Theme_Splitter_Thickness_Get thickness_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
@@ -47,16 +39,12 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 		void *data);
 EAPI Eina_Bool eon_is_theme_splitter(Enesim_Renderer *r);
 EAPI void * eon_theme_splitter_data_get(Enesim_Renderer *r);
-
-EAPI void eon_theme_splitter_min_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_splitter_min_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_splitter_max_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_splitter_max_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_splitter_preferred_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_splitter_preferred_height_get(Enesim_Renderer *r, double *height);
-
-EAPI void eon_theme_splitter_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation);
+EAPI void eon_theme_splitter_position_get(Enesim_Renderer *r, double *position);
 EAPI void eon_theme_splitter_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation);
+
+void eon_theme_splitter_thickness_get(Enesim_Renderer *r, double *thickness);
+void eon_theme_splitter_min_length_get(Enesim_Renderer *r, double *length);
+void eon_theme_splitter_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation);
 
 /**
  * @}

@@ -46,7 +46,6 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-
 #ifdef BUILD_BACKEND_REMOTE
 #include <Eix.h>
 #endif
