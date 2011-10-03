@@ -32,6 +32,11 @@ EAPI Ender_Element * eon_vsplitter_new(void);
 EAPI void eon_splitter_orientation_set(Ender_Element *e, Eon_Orientation orientation);
 EAPI void eon_splitter_orientation_get(Ender_Element *e, Eon_Orientation *orientation);
 
+EAPI void eon_splitter_second_content_set(Ender_Element *e, Ender_Element *content);
+EAPI void eon_splitter_second_content_get(Ender_Element *e, Ender_Element **content);
+EAPI void eon_splitter_position_set(Ender_Element *e, double position);
+EAPI void eon_splitter_position_get(Ender_Element *e, double *position);
+
 /**
  * @}
  */

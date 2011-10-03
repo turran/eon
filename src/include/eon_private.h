@@ -34,6 +34,10 @@ extern int eon_log;
 		}					\
 	} while(0)
 
+
+/* helper functions */
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b)) 
 /* element inheritance */
 #define EON_ELEMENT_MAGIC 0xe0400001
 #define EON_LAYOUT_MAGIC 0xe0400002

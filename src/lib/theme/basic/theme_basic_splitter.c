@@ -95,12 +95,12 @@ static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	if (orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		enesim_renderer_rectangle_size_set(thiz->splitter, 10, height);
-		enesim_renderer_origin_set(thiz->splitter, position * width, 0);
+		enesim_renderer_origin_set(thiz->splitter, position, 0);
 	}
 	else
 	{
 		enesim_renderer_rectangle_size_set(thiz->splitter, width, 10);
-		enesim_renderer_origin_set(thiz->splitter, 0, position * height);
+		enesim_renderer_origin_set(thiz->splitter, 0, position);
 	}
 	/* the background */
 	/* the composition */

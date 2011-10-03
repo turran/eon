@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 	Eon_Backend *backend;
 	Ender_Element *layout;
 	Ender_Element *splitter;
-	Ender_Element *label;
+	Ender_Element *button;
 	int i;
 
 	eon_init();
@@ -24,17 +24,13 @@ int main(int argc, char **argv)
 
 	splitter = eon_splitter_new();
 	eon_splitter_orientation_set(splitter, EON_ORIENTATION_HORIZONTAL);
-	eon_element_width_set(splitter, 90);
+	eon_splitter_position_set(splitter, 1);
 
-	label = eon_label_new_with_text("left");
-	eon_container_content_set(splitter, label);
-	eon_element_min_width_set(label, 50);
-	eon_element_max_width_set(label, 120);
+	button = eon_button_new_with_label("left");
+	eon_container_content_set(splitter, button);
 
-	label = eon_label_new_with_text("right");
-	eon_splitter_second_content_set(splitter, label);
-	eon_element_min_width_set(label, 30);
-	eon_element_max_width_set(label, 30);
+	button = eon_button_new_with_label("right");
+	eon_splitter_second_content_set(splitter, button);
 
 	eon_layout_child_add(layout, splitter);
 

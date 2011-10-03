@@ -370,48 +370,6 @@ void eon_layout_actual_height_get(Ender_Element *e, double *height)
 	}
 }
 
-void eon_layout_child_real_width_get(Ender_Element *e, Ender_Element *child, double *width)
-{
-	double set;
-	Eon_Size size;
-	Enesim_Renderer *r;
-
-#if 1
-	r = ender_element_renderer_get(e);
-	eon_element_actual_size_get(r, &size);
-	eon_element_real_relative_size_get(child, &size, &size);
-	*width = size.width;
-#else
-	eon_element_width_get(child, &set);
-	/* fill the layout size */
-	if (set < 0)
-	{
-		eon_layout_actual_width_get(e, width);
-		
-	}
-	else
-	{
-		eon_element_real_width_get(child, width);
-	}
-#endif
-}
-
-void eon_layout_child_real_height_get(Ender_Element *e, Ender_Element *child, double *height)
-{
-	double set;
-
-	eon_element_height_get(child, &set);
-	/* fill the layout size */
-	if (set < 0)
-	{
-		eon_layout_actual_height_get(e, height);
-	}
-	else
-	{
-		eon_element_real_height_get(child, height);
-	}
-}
-
 #define _eon_layout_child_get NULL
 #define _eon_layout_child_set NULL
 #include "eon_generated_layout.c"

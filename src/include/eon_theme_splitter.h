@@ -42,6 +42,7 @@ EAPI void * eon_theme_splitter_data_get(Enesim_Renderer *r);
 EAPI void eon_theme_splitter_position_get(Enesim_Renderer *r, double *position);
 EAPI void eon_theme_splitter_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation);
 
+void eon_theme_splitter_position_set(Enesim_Renderer *r, double position);
 void eon_theme_splitter_thickness_get(Enesim_Renderer *r, double *thickness);
 void eon_theme_splitter_min_length_get(Enesim_Renderer *r, double *length);
 void eon_theme_splitter_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation);
