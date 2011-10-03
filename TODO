@@ -12,7 +12,8 @@ progressbar (DONE)
 scrollbar (DONE) (maybe rename it to slider???)
 scrollview (DONE)
 spinner
-slider
+slider (DONE)
 notebook
 treeview
 table
+combobox
