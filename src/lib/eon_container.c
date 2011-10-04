@@ -373,6 +373,8 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->min_height_get = descriptor->min_height_get;
 	thiz->max_height_get = descriptor->max_height_get;
 	thiz->pass_events = descriptor->pass_events;
+	thiz->preferred_width_get = descriptor->preferred_width_get;
+	thiz->preferred_height_get = descriptor->preferred_height_get;
 	thiz->element_at = descriptor->element_at;
 
 	pdescriptor.initialize = _eon_container_initialize;
@@ -411,7 +413,7 @@ EAPI void eon_container_content_set(Ender_Element *e, Ender_Element *content)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_container_content_get(Ender_Element *e, const Ender_Element **content)
+EAPI void eon_container_content_get(Ender_Element *e, Ender_Element **content)
 {
 	ender_element_value_get(e, "content", content, NULL);
 }

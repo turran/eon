@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	button = eon_button_new();
 	eon_container_content_set(button, label);
 	eon_element_width_set(button, 640.0);
-	eon_element_width_set(button, 480.0);
+	//eon_element_height_set(button, 480.0);
 
 	eon_container_content_set(scrollview, button);
 	eon_layout_child_add(layout, scrollview);

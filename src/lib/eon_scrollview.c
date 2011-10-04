@@ -70,10 +70,8 @@ static void _bar_changed(Ender_Element *e, const char *event_name, void *event_d
 	if (!strcmp(ev->name, "value"))
 	{
 		Ender_Element *content;
-		Eon_Position offset;
 		Eon_Size size;
 		Enesim_Renderer *r;
-		double x, y;
 
 		r = ender_element_renderer_get(element);
 		thiz = _eon_scrollview_get(r);
@@ -93,7 +91,7 @@ static void _bar_changed(Ender_Element *e, const char *event_name, void *event_d
 			double v;
 
 			v = ender_value_double_get(ev->value) / 100 * size.height;
-			eon_scrollview_y_position_set(element, -10);
+			eon_scrollview_y_position_set(element, -v);
 		}
 	}
 	eon_element_changed_set(element, EINA_TRUE);
@@ -126,7 +124,6 @@ static double _eon_scrollview_max_width_get(Ender_Element *e, double cmv)
 static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
 {
 	Eon_Scrollview *thiz;
-	Ender_Element *content;
 	Enesim_Renderer *r;
 	double vbmv;
 	double hbmv;
@@ -144,6 +141,16 @@ static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
 static double _eon_scrollview_max_height_get(Ender_Element *e, double cmv)
 {
 	return DBL_MAX;
+}
+
+static double _eon_scrollview_preferred_width_get(Ender_Element *e, double cmv)
+{
+	return cmv;
+}
+
+static double _eon_scrollview_preferred_height_get(Ender_Element *e, double cmv)
+{
+	return cmv;
 }
 
 static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, double y)
@@ -260,7 +267,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		{
 			eon_theme_scrollview_vbar_set(theme_r, NULL);
 		}
-
+		printf("content %g %g actual %g %g\n", content_size.width, content_size.height, aw, ah);
 		eon_element_real_relative_size_get(content, &content_size, &size);
 
 		/* set the logic size and position, so all the events continue working
@@ -285,6 +292,8 @@ static Eon_Container_Descriptor _descriptor = {
 	.min_height_get = _eon_scrollview_min_height_get,
 	.max_width_get = _eon_scrollview_max_width_get,
 	.max_height_get = _eon_scrollview_max_height_get,
+	.preferred_width_get = _eon_scrollview_preferred_width_get,
+	.preferred_height_get = _eon_scrollview_preferred_height_get,
 	.element_at = _eon_scrollview_element_at,
 	.pass_events = EINA_TRUE,
 	.name = "scrollview",
