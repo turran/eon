@@ -67,6 +67,8 @@ typedef struct _Eon_Event_Mouse_Move
 	double y;
 	double rel_x;
 	double rel_y;
+	double offset_x;
+	double offset_y;
 } Eon_Event_Mouse_Move;
 
 typedef struct _Eon_Event_Mouse_In

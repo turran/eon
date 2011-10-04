@@ -64,6 +64,7 @@ static void _wrapped_changed(Ender_Element *e, const char *event_name, void *eve
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
+/* FIXME do we actually need this function?? */
 static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
@@ -72,11 +73,6 @@ static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 
 	thiz = _eon_wrapper_get(r);
 
-	/* in case the renderer has no transformation matrix, just set the origin
-	 * with the actual_x,y values
-	 */
-	//enesim_renderer_boundings(r, &rect);
-	//enesim_renderer_origin_set(thiz->compound, rect.x, rect.y);
 	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
 	{
 		ENESIM_RENDERER_ERROR(r, error, "Impossible to setup the compound renderer");
@@ -189,6 +185,7 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 	if (!thiz->wrapped) return EINA_FALSE;
 
 	eon_element_actual_position_get(r, &ox, &oy);
+	printf("setting wrapper position @ %g %g\n", ox, oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
 	return EINA_TRUE;

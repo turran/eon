@@ -21,6 +21,8 @@
  * @todo
  * The scrollview should not behave exactly as a container, the min width/height
  * should not be the contents plus this, but only this
+ * Add the inset/outset theme property
+ * Add the hbar, vbar position property (left, right, top, bottom)
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -207,10 +209,14 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 	eon_container_content_get(e, &content);
 	if (content)
 	{
-		Eon_Size size;
 		Eon_Size content_size;
+		Eon_Size size;
+		Eon_Size hbar_size;
+		Eon_Size vbar_size;
 		Enesim_Renderer *theme_r;
 		Enesim_Renderer *content_r;
+		Eina_Bool has_vbar = EINA_FALSE;
+		Eina_Bool has_hbar = EINA_FALSE;
 		double aw, ah;
 		double ax, ay;
 
@@ -221,23 +227,41 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		eon_element_actual_height_get(e, &ah);
 		eon_element_actual_position_get(r, &ax, &ay);
 
-		eon_element_real_size_get(content, &content_size);
+		size.width = aw;
+		size.height = ah;
+		eon_element_real_relative_size_get(content, &size, &content_size);
 
 		/* hbar */
+		eon_element_real_size_get(thiz->hbar, &hbar_size);
+		eon_element_real_size_get(thiz->vbar, &vbar_size);
 		if (content_size.width > aw)
+		{
+			has_hbar = EINA_TRUE;
+			if (content_size.height > ah - hbar_size.height)
+				has_vbar = EINA_TRUE;
+		}
+		if (content_size.height > ah)
+		{
+			has_vbar = EINA_TRUE;
+			if (content_size.width > aw - vbar_size.width)
+				has_hbar = EINA_TRUE;
+		}
+
+		if (has_hbar)
 		{
 			Enesim_Renderer *bar_r;
 			Enesim_Renderer *bar_rr;
 			double scale;
+			double length;
 
 			bar_r = ender_element_renderer_get(thiz->hbar);
 			bar_rr = eon_element_renderer_get(thiz->hbar);
 			eon_theme_scrollview_hbar_set(theme_r, bar_rr);
-			eon_element_real_size_get(thiz->vbar, &size);
-			eon_element_actual_size_set(bar_r, aw, size.height);
-			eon_element_actual_position_set(bar_r, 0, ah - size.height);
+			length = aw - (has_vbar ? vbar_size.width : 0);
+			eon_element_actual_size_set(bar_r, length, hbar_size.height);
+			eon_element_actual_position_set(bar_r, 0, ah - hbar_size.height);
 
-			scale = aw / content_size.width;
+			scale = length / content_size.width;
 			eon_scrollbar_page_size_set(thiz->hbar, scale * 100);
 			eon_element_setup(thiz->hbar);
 		}
@@ -246,20 +270,21 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 			eon_theme_scrollview_hbar_set(theme_r, NULL);
 		}
 		/* vbar */
-		if (content_size.height > ah)
+		if (has_vbar)
 		{
 			Enesim_Renderer *bar_r;
 			Enesim_Renderer *bar_rr;
 			double scale;
+			double length;
 
 			bar_r = ender_element_renderer_get(thiz->vbar);
 			bar_rr = eon_element_renderer_get(thiz->vbar);
 			eon_theme_scrollview_vbar_set(theme_r, bar_rr);
-			eon_element_real_size_get(thiz->vbar, &size);
-			eon_element_actual_size_set(bar_r, size.width, ah);
-			eon_element_actual_position_set(bar_r, aw - size.width, 0);
+			length = ah - (has_hbar ? hbar_size.height : 0);
+			eon_element_actual_size_set(bar_r, vbar_size.width, length);
+			eon_element_actual_position_set(bar_r, aw - vbar_size.width, 0);
 
-			scale = ah / content_size.height;
+			scale = length / content_size.height;
 			eon_scrollbar_page_size_set(thiz->vbar, scale * 100);
 			eon_element_setup(thiz->vbar);
 		}
@@ -267,13 +292,10 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		{
 			eon_theme_scrollview_vbar_set(theme_r, NULL);
 		}
-		printf("content %g %g actual %g %g\n", content_size.width, content_size.height, aw, ah);
-		eon_element_real_relative_size_get(content, &content_size, &size);
-
 		/* set the logic size and position, so all the events continue working
 		 * the gfx position is handled on the theme with theme_scrollview_offset_set
 		 */
-		eon_element_actual_size_set(content_r, size.width, size.height);
+		eon_element_actual_size_set(content_r, content_size.width, content_size.height);
 		eon_element_actual_position_set(content_r, thiz->offset.x, thiz->offset.y);
 		if (!eon_element_setup(content))
 		{

@@ -98,7 +98,7 @@ static Eina_Bool _mouse_in(void *data, int type, void *event)
 	Ecore_Event_Mouse_IO *ev = event;
 
 	eon_input_state_feed_mouse_in(thiz->input_state);
-	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y);
+	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y, 0, 0);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -107,7 +107,7 @@ static Eina_Bool _mouse_out(void *data, int type, void *event)
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Mouse_IO *ev = event;
 
-	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y);
+	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y, 0, 0);
 	eon_input_state_feed_mouse_out(thiz->input_state);
 	return ECORE_CALLBACK_RENEW;
 }
@@ -126,7 +126,7 @@ static Eina_Bool _mouse_move(void *data, int type, void *event)
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Mouse_Move *ev = event;
 
-	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y);
+	eon_input_state_feed_mouse_move(thiz->input_state, ev->x, ev->y, 0, 0);
 	return ECORE_CALLBACK_RENEW;
 }
 

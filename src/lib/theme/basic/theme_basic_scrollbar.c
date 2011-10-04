@@ -63,7 +63,13 @@ static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
  *----------------------------------------------------------------------------*/
 static double _basic_scrollbar_min_width_get(Enesim_Renderer *r)
 {
-	return 16;
+	Eon_Orientation orientation;
+
+	eon_theme_scrollbar_orientation_get(r, &orientation);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+		return 24;
+	else
+		return 16;
 }
 
 static double _basic_scrollbar_max_width_get(Enesim_Renderer *r)
@@ -79,7 +85,13 @@ static double _basic_scrollbar_max_width_get(Enesim_Renderer *r)
 
 static double _basic_scrollbar_min_height_get(Enesim_Renderer *r)
 {
-	return 16;
+	Eon_Orientation orientation;
+
+	eon_theme_scrollbar_orientation_get(r, &orientation);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+		return 16;
+	else
+		return 24;
 }
 
 static double _basic_scrollbar_max_height_get(Enesim_Renderer *r)

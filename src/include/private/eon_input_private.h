@@ -26,7 +26,7 @@ Eon_Input * eon_input_new(void);
 
 Eon_Input_State * eon_input_state_new(Eon_Input *i, Ender_Element *e, Eon_Input_Element_Get element_get);
 void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
-		double x, double y);
+		double x, double y, double offset_x, double offset_y);
 void eon_input_state_feed_mouse_in(Eon_Input_State *eis);
 void eon_input_state_feed_mouse_out(Eon_Input_State *eis);
 void eon_input_state_feed_mouse_down(Eon_Input_State *eis);

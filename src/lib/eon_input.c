@@ -15,6 +15,8 @@ struct _Eon_Input_State
 	Ender_Element *element;
 	struct
 	{
+		double offset_x;
+		double offset_y;
 		/* the coordinates where the mouse down happened */
 		double downx;
 		double downy;
@@ -42,27 +44,13 @@ struct _Eon_Input_State
 Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
 	double *rel_y)
 {
-	Enesim_Renderer *r;
 	Enesim_Renderer *e_r;
 	Ender_Element *e;
 	Ender_Element *parent;
 	double ex, ey;
 
-	r = ender_element_renderer_get(eis->element);
-	parent = ender_element_parent_get(eis->element);
-	if (parent)
-	{
-		Enesim_Renderer *parent_r;
-		double px, py;
-
-		parent_r = ender_element_renderer_get(parent);
-		eon_element_actual_position_get(parent_r, &px, &py);
-		x -= px;
-		y -= py;
-	}
-	eon_element_actual_position_get(r, &ex, &ey);
-	x -= ex;
-	y -= ey;
+	x -= eis->pointer.offset_x;
+	y -= eis->pointer.offset_y;
 
 	e = eis->element_get(eis->element, x, y);
 	if (!e) return NULL;
@@ -104,7 +92,7 @@ Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
  *
  */
 void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
-		double x, double y)
+		double x, double y, double offset_x, double offset_y)
 {
 	Ender_Element *child;
 	double px, py;
@@ -120,6 +108,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 	py = eis->pointer.y;
 	eis->pointer.x = x;
 	eis->pointer.y = y;
+	eis->pointer.offset_x = offset_x;
+	eis->pointer.offset_y = offset_y;
 
 	if (eis->pointer.grabbed)
 	{
@@ -148,6 +138,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		ev.y = y;
 		ev.rel_x = rel_x;
 		ev.rel_y = rel_y;
+		ev.offset_x = offset_x;
+		ev.offset_y = offset_y;
 		ender_event_dispatch(eis->pointer.grabbed, "MouseMove", &ev);
 
 		return;
@@ -164,6 +156,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 			ev.y = y;
 			ev.rel_x = rel_x;
 			ev.rel_y = rel_y;
+			ev.offset_x = offset_x;
+			ev.offset_y = offset_y;
 			ender_event_dispatch(child, "MouseMove", &ev);
 		}
 	}

@@ -72,8 +72,6 @@ static void _eon_splitter_mouse_move(Ender_Element *e, const char *event_name, v
 	c -= thiz->minl;
 	if (length)
 		v = c / length;
-	printf("%g %g || %g %g\n", c, length, thiz->maxl, thiz->minl);
-	printf(">>> setting position %g <<<<\n", v);
 	eon_splitter_position_set(e, v);
 }
 
