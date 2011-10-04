@@ -37,6 +37,8 @@ struct _Eon_Input_State
 	} keyboard;
 };
 
+
+/* FIXME we need to fix this, we only have two levels of recursion ....*/
 Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
 	double *rel_y)
 {

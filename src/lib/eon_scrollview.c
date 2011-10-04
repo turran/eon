@@ -105,15 +105,17 @@ static double _eon_scrollview_min_width_get(Ender_Element *e, double cmv)
 {
 	Eon_Scrollview *thiz;
 	Enesim_Renderer *r;
-	double bmv;
+	double vbmv;
+	double hbmv;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 
 	/* FIXME scrollbar inside/outside? */
-	eon_element_min_width_get(thiz->vbar, &bmv);
+	eon_element_min_width_get(thiz->vbar, &vbmv);
+	eon_element_min_width_get(thiz->hbar, &hbmv);
 
-	return cmv + bmv;
+	return vbmv + hbmv;
 }
 
 static double _eon_scrollview_max_width_get(Ender_Element *e, double cmv)
@@ -126,15 +128,17 @@ static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
 	Eon_Scrollview *thiz;
 	Ender_Element *content;
 	Enesim_Renderer *r;
-	double bmv;
+	double vbmv;
+	double hbmv;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 
 	/* FIXME scrollbar inside/outside? */
-	eon_element_min_height_get(thiz->vbar, &bmv);
+	eon_element_min_height_get(thiz->vbar, &vbmv);
+	eon_element_min_height_get(thiz->hbar, &hbmv);
 
-	return cmv + bmv;
+	return vbmv + hbmv;
 }
 
 static double _eon_scrollview_max_height_get(Ender_Element *e, double cmv)
