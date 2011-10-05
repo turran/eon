@@ -47,6 +47,9 @@ typedef enum _Eon_Stack_Direction
 
 
 EAPI Ender_Element * eon_stack_new(void);
+EAPI Ender_Element * eon_hstack_new(void);
+EAPI Ender_Element * eon_vstack_new(void);
+
 EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Stack_Direction direction);
 EAPI void eon_stack_direction_get(Ender_Element *e, Eon_Stack_Direction *direction);
 EAPI void eon_stack_child_horizontal_alignment_set(Ender_Element *e, Ender_Element *child,

@@ -542,6 +542,32 @@ EAPI Ender_Element * eon_stack_new(void)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI Ender_Element * eon_hstack_new(void)
+{
+	Ender_Element *e;
+
+	e = ender_element_new_with_namespace("stack", "eon");
+	eon_stack_direction_set(e, EON_STACK_DIRECTION_HORIZONTAL);
+	return e;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_vstack_new(void)
+{
+	Ender_Element *e;
+
+	e = ender_element_new_with_namespace("stack", "eon");
+	eon_stack_direction_set(e, EON_STACK_DIRECTION_VERTICAL);
+	return e;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Stack_Direction direction)
 {
 	ender_element_value_set(e, "direction", direction, NULL);
