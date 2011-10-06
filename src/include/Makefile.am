@@ -29,6 +29,7 @@ eon_theme.h \
 eon_theme_button_base.h \
 eon_theme_button.h \
 eon_theme_container.h \
+eon_theme_entry.h \
 eon_theme_frame.h \
 eon_theme_image.h \
 eon_theme_layout.h \
