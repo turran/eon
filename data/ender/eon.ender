@@ -97,5 +97,11 @@ namespace "eon" {
 	class "wrapper" : "element" {
 		ender "wrapped";
 	};
+
+	class "entry" : "widget" {
+		int "alignment";
+		int "max_length";
+		string "text";
+	};
 };
 

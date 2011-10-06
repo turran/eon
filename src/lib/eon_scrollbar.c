@@ -345,6 +345,7 @@ static Enesim_Renderer * _eon_scrollbar_new(void)
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Scrollbar));
+	if (!thiz) return NULL;
 	/* default values */
 	thiz->value = 0;
 	thiz->max = 100;
@@ -352,7 +353,6 @@ static Enesim_Renderer * _eon_scrollbar_new(void)
 	thiz->step_increment = 1;
 	thiz->page_increment = 10;
 	thiz->page_size = 10;
-	if (!thiz) return NULL;
 
 	r = eon_widget_new(&_eon_scrollbar_widget_descriptor, thiz);
 	if (!r) goto renderer_err;

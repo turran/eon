@@ -80,7 +80,7 @@ static double _stack_vertical_min_height(Eon_Stack *thiz)
 	{
 		double h;
 
-		eon_element_real_height_get(ech->ender, &h);
+		eon_element_min_height_get(ech->ender, &h);
 		min_height += h;
 	}
 	return min_height;
@@ -113,7 +113,7 @@ static double _stack_horizontal_min_width(Eon_Stack *thiz)
 	{
 		double w;
 
-		eon_element_real_width_get(ech->ender, &w);
+		eon_element_min_width_get(ech->ender, &w);
 		min_width += w;
 	}
 	return min_width;
@@ -143,8 +143,10 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 		if (!thiz->last_expand || ech != last_ech)
 		{
 			eon_element_real_width_get(ech->ender, &child_size.width);
+			if (child_size.width > size.width)
+				child_size.width = size.width;
 		}
-		if (child_size.height != ah)
+		if (child_size.height != size.height)
 		{
 			switch (ech->valign)
 			{
@@ -153,19 +155,21 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 				break;
 
 				case EON_VERTICAL_ALIGNMENT_BOTTOM:
-				y = ah - child_size.height;
+				y = size.height - child_size.height;
 				break;
 
 				case EON_VERTICAL_ALIGNMENT_CENTER:
-				y = (ah / 2) - (child_size.height / 2);
+				y = (size.height / 2) - (child_size.height / 2);
 				break;
 			}
 		}
 		{
 			const char *name;
+			const char *child_name;
 
 			enesim_renderer_name_get(r, &name);
-			//printf("H setting child on %s %g %g %g %g\n", name, last_x, y, child_size.width, child_size.height);
+			enesim_renderer_name_get(child_r, &child_name);
+			//printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, last_x, y);
@@ -173,6 +177,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 		ech->curr_x = last_x;
 		ech->curr_y = y;
 		last_x += child_size.width;
+		size.width -= child_size.width;
 	}
 }
 
@@ -200,8 +205,10 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		if (!thiz->last_expand || ech != last_ech)
 		{
 			eon_element_real_height_get(ech->ender, &child_size.height);
+			if (child_size.height > size.height)
+				child_size.height = size.height;
 		}
-		if (child_size.width != aw)
+		if (child_size.width != size.width)
 		{
 			switch (ech->halign)
 			{
@@ -210,19 +217,21 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 				break;
 
 				case EON_HORIZONTAL_ALIGNMENT_RIGHT:
-				x = aw - child_size.width;
+				x = size.width - child_size.width;
 				break;
 
 				case EON_HORIZONTAL_ALIGNMENT_CENTER:
-				x = (aw / 2) - (child_size.width / 2);
+				x = (size.width / 2) - (child_size.width / 2);
 				break;
 			}
 		}
 		{
 			const char *name;
+			const char *child_name;
 
 			enesim_renderer_name_get(r, &name);
-			//printf("V setting child on %s %g %g %g %g (aw,ah %g %g)\n", name, x, last_y, child_size.width, child_size.height, aw, ah);
+			enesim_renderer_name_get(child_r, &child_name);
+			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, x, last_y);
@@ -231,16 +240,20 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		ech->curr_x = x;
 		ech->curr_y = last_y;
 		last_y += child_size.height;
+		size.height -= child_size.height;
 	}
 }
 
 static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
 {
 	Eon_Size size;
+	Enesim_Renderer *r;
+
 	/* the idea on a layout setup is the set the actual width and height
 	 * of every child before calling the setup of each child
 	 */
-	eon_layout_actual_size_get(e, &size);
+	r = ender_element_renderer_get(e);
+	eon_element_actual_size_get(r, &size);
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
 		_stack_horizontal_arrange(e, thiz, size.width, size.height);
 	else
@@ -304,6 +317,90 @@ static double _eon_stack_min_height_get(Ender_Element *e)
 		min_height = _stack_vertical_min_height(thiz);
 
 	return min_height;
+}
+
+static double _eon_stack_preferred_width_get(Ender_Element *e)
+{
+	Eon_Stack *thiz;
+	Enesim_Renderer *r;
+	double preferred_width = -1;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_stack_get(r);
+	if (!thiz) return preferred_width;
+
+	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
+	{
+		Eon_Stack_Child *ech;
+		Eina_List *l;
+
+		preferred_width = 0;
+		EINA_LIST_FOREACH (thiz->children, l, ech)
+		{
+			double pw;
+
+			eon_element_preferred_width_get(ech->ender, &pw);
+			if (pw < 0) continue;
+			preferred_width += pw;
+		}
+	}
+	else
+	{
+		Eon_Stack_Child *ech;
+		Eina_List *l;
+
+		EINA_LIST_FOREACH (thiz->children, l, ech)
+		{
+			double pw;
+
+			eon_element_preferred_width_get(ech->ender, &pw);
+			preferred_width = MAX(pw, preferred_width);
+		}
+
+	}
+	return preferred_width;
+}
+
+static double _eon_stack_preferred_height_get(Ender_Element *e)
+{
+	Eon_Stack *thiz;
+	Enesim_Renderer *r;
+	double preferred_height = -1;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_stack_get(r);
+	if (!thiz) return preferred_height;
+
+	if (thiz->curr.direction == EON_STACK_DIRECTION_VERTICAL)
+	{
+		Eon_Stack_Child *ech;
+		Eina_List *l;
+
+		preferred_height = 0;
+		EINA_LIST_FOREACH (thiz->children, l, ech)
+		{
+			double ph;
+
+			eon_element_preferred_height_get(ech->ender, &ph);
+			if (ph < 0) continue;
+			preferred_height += ph;
+		}
+	}
+	else
+	{
+		Eon_Stack_Child *ech;
+		Eina_List *l;
+
+		EINA_LIST_FOREACH (thiz->children, l, ech)
+		{
+			double ph;
+
+			eon_element_preferred_height_get(ech->ender, &ph);
+			preferred_height = MAX(ph, preferred_height);
+		}
+
+	}
+	return preferred_height;
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
@@ -413,6 +510,8 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_at = _eon_stack_child_at,
 	.min_width_get = _eon_stack_min_width_get,
 	.min_height_get = _eon_stack_min_height_get,
+	.preferred_width_get = _eon_stack_preferred_width_get,
+	.preferred_height_get = _eon_stack_preferred_height_get,
 	.setup = _eon_stack_setup,
 	.free = _eon_stack_free,
 	.name = "stack",

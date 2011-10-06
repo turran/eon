@@ -45,6 +45,7 @@
 #include "eon_container.h"
 #include "eon_layout.h"
 #include "eon_canvas.h"
+#include "eon_entry.h"
 #include "eon_stack.h"
 #include "eon_input.h"
 #include "eon_progressbar.h"

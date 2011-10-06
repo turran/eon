@@ -24,19 +24,6 @@
  * @ingroup Eon_Layout
  * @{
  */
-typedef enum _Eon_Horizontal_Alignment
-{
-	EON_HORIZONTAL_ALIGNMENT_LEFT,
-	EON_HORIZONTAL_ALIGNMENT_RIGHT,
-	EON_HORIZONTAL_ALIGNMENT_CENTER,
-} Eon_Horizontal_Alignment;
-
-typedef enum _Eon_Vertical_Alignment
-{
-	EON_VERTICAL_ALIGNMENT_TOP,
-	EON_VERTICAL_ALIGNMENT_BOTTOM,
-	EON_VERTICAL_ALIGNMENT_CENTER,
-} Eon_Vertical_Alignment;
 
 typedef enum _Eon_Stack_Direction
 {

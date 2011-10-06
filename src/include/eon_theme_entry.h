@@ -16,33 +16,27 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_THEME_ENTRY_H_
+#define _EON_THEME_ENTRY_H_
 
 /**
- * @defgroup Eon_Theme Theme
  * @{
  */
+typedef struct _Eon_Theme_Entry_Descriptor
+{
+	/* renderer needed functions */
+	Enesim_Renderer_Delete free;
+} Eon_Theme_Entry_Descriptor;
 
-
-#include "eon_theme_widget.h"
-#include "eon_theme_container.h"
-#include "eon_theme_button_base.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_entry.h"
-#include "eon_theme_frame.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollbar.h"
-#include "eon_theme_scrollview.h"
-#include "eon_theme_splitter.h"
+EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_entry(Enesim_Renderer *r);
+EAPI void * eon_theme_entry_data_get(Enesim_Renderer *r);
 
 /**
  * @}
  */
-
 #endif
+
+
+

@@ -166,41 +166,37 @@ static Eina_Bool _key_up(void *data, int type, void *event)
 	return ECORE_CALLBACK_RENEW;
 }
 
+static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int height)
+{
+	Enesim_Renderer *r;
+	Eon_Size window_size;
+	Eon_Size size;
+
+	window_size.width = width;
+	window_size.height = height;
+	eon_element_real_relative_size_get(thiz->layout, &window_size, &size);
+	r = ender_element_renderer_get(thiz->layout);
+	eon_element_actual_width_set(r, size.width);
+	eon_element_actual_height_set(r, size.height);
+	//printf("actual size %g %g\n", size.width, size.height);
+}
+
 static Eina_Bool _resize(void *data, int type, void *event)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Sdl_Event_Video_Resize *ev = event;
-	double min_w, min_h;
-	double max_w, max_h;
 
-	eon_element_min_width_get(thiz->layout, &min_w);
-	eon_element_min_height_get(thiz->layout, &min_h);
-	eon_element_max_width_get(thiz->layout, &max_w);
-	eon_element_max_height_get(thiz->layout, &max_h);
 
-	//printf("%d %d\n", ev->w, ev->h);
-	if (ev->w > max_w)
-		ev->w = max_w;
-	if (ev->w < min_w)
-		ev->w = min_w;
-
-	if (ev->h > max_h)
-		ev->h = max_h;
-	if (ev->h < min_h)
-		ev->h = min_h;
-
+	_calculate_layout_size(thiz, ev->w, ev->h);
 	if (ev->w != thiz->width || ev->h != thiz->height)
 		thiz->needs_resize = EINA_TRUE;
+	thiz->width = ev->w;
+	thiz->height = ev->h;
+	//printf("resize to %d %d\n", thiz->width, thiz->height);
 	/* FIXME we should limit the size of the window, looks like we cannot
 	 * do it with SDL itself, but using some X11 hints
 	 */
 	//printf("%d %d: %g %g - %g %g\n", ev->w, ev->h, min_w, min_h, max_w, max_h);
-
-	thiz->width = ev->w;
-	thiz->height = ev->h;
-	printf("resize to %d %d\n", thiz->width, thiz->height);
-	eon_element_width_set(thiz->layout, thiz->width);
-	eon_element_height_set(thiz->layout, thiz->height);
 
 	return ECORE_CALLBACK_RENEW;
 }
@@ -282,6 +278,8 @@ static Eina_Bool _sdl_window_new(void *data, Ender_Element *layout, unsigned int
 	thiz->backend = backend;
 	thiz->input_state = eon_layout_input_state_new(layout, thiz->input);
 	_sdl_setup_buffers(thiz);
+
+	_calculate_layout_size(thiz, width, height);
 
 	thiz->idler = ecore_idle_enterer_add(_idler_cb, thiz);
 	/* FIXME for now use ecore_sdl, we shouldnt */

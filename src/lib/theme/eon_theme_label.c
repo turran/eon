@@ -357,7 +357,7 @@ EAPI void eon_theme_label_min_width_get(Enesim_Renderer *r, double *width)
 	if (thiz->min_width_get)
 		*width = thiz->min_width_get(r);
 	else
-		*width = thiz->width_get(r);
+		*width = _eon_theme_label_min_width_get(r);
 }
 
 /**
@@ -423,7 +423,7 @@ EAPI void eon_theme_label_preferred_width_get(Enesim_Renderer *r, double *width)
 	if (thiz->preferred_width_get)
 		*width = thiz->preferred_width_get(r);
 	else
-		*width = _eon_theme_label_min_width_get(r);
+		*width = thiz->width_get(r);
 }
 
 /**
@@ -440,6 +440,6 @@ EAPI void eon_theme_label_preferred_height_get(Enesim_Renderer *r, double *heigh
 	if (thiz->preferred_height_get)
 		*height = thiz->preferred_height_get(r);
 	else
-		*height = -1;
+		*height = thiz->height_get(r);
 }
 

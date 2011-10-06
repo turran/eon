@@ -1,0 +1,7 @@
+#ifndef _EON_THEME_ENTRY_BASE_PRIVATE_H_
+#define _EON_THEME_ENTRY_BASE_PRIVATE_H_
+
+
+#endif
+
+

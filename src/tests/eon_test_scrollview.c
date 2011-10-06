@@ -14,8 +14,6 @@ int main(int argc, char **argv)
 	ecore_init();
 
 	layout = eon_stack_new();
-	eon_element_width_set(layout, 320.0);
-	eon_element_height_set(layout, 240.0);
 
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
 	backend = eon_ecore_sdl_new();

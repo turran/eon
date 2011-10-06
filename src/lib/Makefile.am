@@ -17,6 +17,7 @@ eon_button.c \
 eon_canvas.c \
 eon_container.c \
 eon_element.c \
+eon_entry.c \
 eon_frame.c \
 eon_image.c \
 eon_input.c \

@@ -10,12 +10,14 @@ typedef struct _Eon_Layout_Descriptor
 {
 	Eon_Element_Min_Width_Get min_width_get;
 	Eon_Element_Min_Height_Get min_height_get;
+	Eon_Element_Preferred_Width_Get preferred_width_get;
+	Eon_Element_Preferred_Height_Get preferred_height_get;
+	Eon_Element_Initialize initialize;
+	Eon_Element_Setup setup;
 	Eon_Layout_Child_Add child_add;
 	Eon_Layout_Child_Remove child_remove;
 	Eon_Layout_Child_Clear child_clear;
 	Eon_Layout_Child_At child_at;
-	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Layout_Descriptor;

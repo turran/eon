@@ -190,6 +190,7 @@ static void _eon_layout_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
+/* FIXME We must delete this one */
 static Eina_Bool _eon_layout_setup(Ender_Element *e)
 {
 	Eon_Layout *thiz;
@@ -197,13 +198,6 @@ static Eina_Bool _eon_layout_setup(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
-	if (eon_layout_is_topmost(r))
-	{
-		Eon_Size size;
-
-		eon_element_real_size_get(e, &size);
-		eon_element_actual_size_set(r, size.width, size.height);
-	}
 	if (thiz->setup)
 		return thiz->setup(e);
 	return EINA_TRUE;
@@ -302,6 +296,8 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.min_height_get = descriptor->min_height_get;
+	pdescriptor.preferred_width_get = descriptor->preferred_width_get;
+	pdescriptor.preferred_height_get = descriptor->preferred_height_get;
 	pdescriptor.setup = _eon_layout_setup;
 
 	r = eon_widget_new(&pdescriptor, thiz);
@@ -320,56 +316,6 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_layout_get(r);
 	return thiz->data;
-}
-
-void eon_layout_actual_size_get(Ender_Element *e, Eon_Size *size)
-{
-	Enesim_Renderer *r;
-
-	r = ender_element_renderer_get(e);
-	/* whenever we are the topmost, the user must have set the
-	 * the width and height of the object
-	 */
-	if (eon_layout_is_topmost(r))
-	{
-		eon_element_width_get(e, &size->width);
-		eon_element_height_get(e, &size->height);
-	}
-	else
-	{
-		eon_element_actual_width_get(e, &size->width);
-		eon_element_actual_height_get(e, &size->height);
-	}
-}
-
-void eon_layout_actual_width_get(Ender_Element *e, double *width)
-{
-	Enesim_Renderer *r;
-
-	r = ender_element_renderer_get(e);
-	if (eon_layout_is_topmost(r))
-	{
-		eon_element_width_get(e, width);
-	}
-	else
-	{
-		eon_element_actual_width_get(e, width);
-	}
-}
-
-void eon_layout_actual_height_get(Ender_Element *e, double *height)
-{
-	Enesim_Renderer *r;
-
-	r = ender_element_renderer_get(e);
-	if (eon_layout_is_topmost(r))
-	{
-		eon_element_height_get(e, height);
-	}
-	else
-	{
-		eon_element_actual_height_get(e, height);
-	}
 }
 
 #define _eon_layout_child_get NULL

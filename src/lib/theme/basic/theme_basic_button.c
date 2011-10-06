@@ -108,7 +108,7 @@ static void _button_update_rectangle(Enesim_Renderer *r)
 	enesim_renderer_rectangle_height_set(r, height - (thiz->vertical_padding * 2));
 }
 /*----------------------------------------------------------------------------*
- *                         The Basic_Button theme interface                         *
+ *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
 static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {

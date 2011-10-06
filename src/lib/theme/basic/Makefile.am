@@ -12,6 +12,7 @@ libtheme_basic_la_SOURCES = \
 theme_basic.c \
 theme_basic_radio.c \
 theme_basic_button.c \
+theme_basic_entry.c \
 theme_basic_checkbox.c \
 theme_basic_image.c \
 theme_basic_frame.c \
