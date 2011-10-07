@@ -82,4 +82,9 @@ namespace "eon" {
 		double "preferred_width";
 		double "preferred_height";
 	};
+
+	abstract "theme_entry" : "theme_widget" {
+		string "font";
+		int "size";
+	};
 };

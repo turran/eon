@@ -153,4 +153,12 @@ escen {
 	basic_splitter "splitter" {
 
 	};
+
+	basic_entry "entry" {
+		default {
+			set { size = 13; };
+			set { color = 0xff888888; };
+			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
+		};
+	};
 };

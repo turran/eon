@@ -17,13 +17,26 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/*
+ * Instead of using the boundings box of the text renderer use
+ * add maxdescent/maxascent properties to etex_base, this way we
+ * can calculate this without having a string set
+ */ 
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 typedef struct _Eon_Theme_Entry
 {
-	void *data;
+	/* interface */
+	Eon_Theme_Entry_Margin_Get margin_get;
+	Eon_Theme_Entry_Setup setup;
+	Eon_Theme_Entry_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
+	/* private */
+	Enesim_Renderer *final_r;
+	Enesim_Renderer_Sw_Fill fill;
+	Enesim_Renderer *text;
+	void *data;
 } Eon_Theme_Entry;
 
 static inline Eon_Theme_Entry * _eon_theme_entry_get(Enesim_Renderer *r)
@@ -40,12 +53,111 @@ static void _eon_theme_entry_free(Enesim_Renderer *r)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
+	enesim_renderer_unref(thiz->text);
 	if (thiz->free) thiz->free(r);
 	free(thiz);
+}
+
+static void _eon_theme_entry_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	thiz->fill(thiz->final_r, x, y, len, dst);
+}
+
+static Eina_Bool _eon_theme_entry_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
+		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+{
+	Eon_Theme_Entry *thiz;
+	Enesim_Renderer *final_r;
+
+	thiz = _eon_theme_entry_get(r);
+	final_r = thiz->text;
+	if (thiz->setup)
+	{
+		final_r = thiz->setup(r, thiz->text, error);
+	}
+	if (!enesim_renderer_sw_setup(final_r, s, error))
+	{
+		printf("not available to setup yet\n");
+		return EINA_FALSE;
+	}
+	thiz->fill = enesim_renderer_sw_fill_get(final_r);
+	thiz->final_r = final_r;
+	if (!thiz->fill) return EINA_FALSE;
+
+	*fill = _eon_theme_entry_draw;
+
+	return EINA_TRUE;
+}
+
+static void _eon_theme_entry_sw_cleanup(Enesim_Renderer *r)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	if (thiz->cleanup)
+		thiz->cleanup(r);
+	if (thiz->final_r)
+		enesim_renderer_sw_cleanup(thiz->final_r);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_theme_entry_min_width_get(Enesim_Renderer *r, double *width)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	if (!thiz) return;
+
+	if (thiz->margin_get)
+	{
+		Eon_Margin margin;
+
+		thiz->margin_get(r, &margin);
+		*width = margin.left + margin.right;
+	}
+	else
+	{
+		*width = 1;
+	}
+}
+
+void eon_theme_entry_min_height_get(Enesim_Renderer *r, double *height)
+{
+	Eon_Theme_Entry *thiz;
+	int max, min, h;
+
+	thiz = _eon_theme_entry_get(r);
+	if (!thiz) return;
+
+	etex_base_max_ascent_get(thiz->text, &max);
+	etex_base_max_descent_get(thiz->text, &min);
+	h = max + min;
+
+	printf("min h = %d\n", h);
+	if (thiz->margin_get)
+	{
+		Eon_Margin margin;
+
+		thiz->margin_get(r, &margin);
+		*height = h + margin.top + margin.bottom;
+	}
+	else
+	{
+		*height = h;
+	}
+}
+
+void eon_theme_entry_preferred_width_get(Enesim_Renderer *r, double *width)
+{
+	/* if the max_length is set, use that as the number of chars we want
+	 * to use
+	 */
+}
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -61,8 +173,21 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Entry));
+	if (!thiz) return NULL;
+
+	r = etex_span_new();
+	if (!r) goto text_err;
+	thiz->text = r;
+
 	thiz->data = data;
 	thiz->free = descriptor->free;
+	thiz->margin_get = descriptor->margin_get;
+	thiz->setup = descriptor->setup;
+	thiz->cleanup = descriptor->cleanup;
+
+	pdescriptor.sw_setup = _eon_theme_entry_sw_setup;
+	pdescriptor.sw_cleanup = _eon_theme_entry_sw_cleanup;
+	pdescriptor.free = _eon_theme_entry_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
@@ -70,6 +195,8 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	return r;
 
 renderer_err:
+	enesim_renderer_unref(thiz->text);
+text_err:
 	free(thiz);
 	return NULL;
 }
@@ -94,4 +221,52 @@ EAPI void * eon_theme_entry_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_theme_entry_get(r);
 	return thiz->data;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_entry_font_get(Enesim_Renderer *r, const char **str)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	etex_base_font_get(thiz->text, str);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_entry_font_set(Enesim_Renderer *r, const char *str)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	etex_base_font_name_set(thiz->text, str);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_entry_size_get(Enesim_Renderer *r, int *size)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	etex_base_size_get(thiz->text, size);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_entry_size_set(Enesim_Renderer *r, int size)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	etex_base_size_set(thiz->text, size);
 }

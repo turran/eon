@@ -65,6 +65,7 @@ static void _register_enders(void)
 	eon_label_init();
 	eon_scrollbar_init();
 	eon_progressbar_init();
+	eon_entry_init();
 	/* layout inheritance */
 	eon_canvas_init();
 	eon_stack_init();

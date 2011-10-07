@@ -50,7 +50,7 @@ static void _label_font_set(Enesim_Renderer *r, const char *name)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	etex_base_font_set(thiz->text, name);
+	etex_base_font_name_set(thiz->text, name);
 }
 
 static const char * _label_font_get(Enesim_Renderer *r)

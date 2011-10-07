@@ -37,6 +37,15 @@ static inline Eon_Entry * _eon_entry_get(Enesim_Renderer *r)
 	thiz = eon_widget_data_get(r);
 	return thiz;
 }
+
+static void _eon_entry_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Entry *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_entry_get(r);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
  *----------------------------------------------------------------------------*/
@@ -47,7 +56,7 @@ static void _eon_entry_initialize(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_entry_get(r);
-
+	ender_event_listener_add(e, "MouseClick", _eon_entry_click, NULL);
 }
 
 static Eina_Bool _eon_entry_setup(Ender_Element *e)
@@ -85,23 +94,7 @@ static double _eon_entry_min_width_get(Ender_Element *e)
 	thiz = _eon_entry_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_entry_min_width_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_entry_max_width_get(Ender_Element *e)
-{
-	Eon_Entry *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_entry_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_entry_max_width_get(theme_r, &v);
+	eon_theme_entry_min_width_get(theme_r, &v);
 
 	return v;
 }
@@ -117,58 +110,14 @@ static double _eon_entry_min_height_get(Ender_Element *e)
 	thiz = _eon_entry_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_entry_min_height_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_entry_max_height_get(Ender_Element *e)
-{
-	Eon_Entry *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_entry_get(r);
-
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_entry_max_height_get(theme_r, &v);
+	eon_theme_entry_min_height_get(theme_r, &v);
 
 	return v;
 }
 
 static double _eon_entry_preferred_width_get(Ender_Element *e)
 {
-	Eon_Entry *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_entry_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_entry_preferred_width_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_entry_preferred_height_get(Ender_Element *e)
-{
-	Eon_Entry *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_entry_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_entry_preferred_height_get(theme_r, &v);
-
-	return v;
+	return DBL_MAX;
 }
 
 static Eon_Widget_Descriptor _eon_entry_widget_descriptor = {
@@ -177,11 +126,10 @@ static Eon_Widget_Descriptor _eon_entry_widget_descriptor = {
 	.free = _eon_entry_free,
 	.setup = _eon_entry_setup,
 	.min_width_get = _eon_entry_min_width_get,
-	.max_width_get = _eon_entry_max_width_get,
 	.min_height_get = _eon_entry_min_height_get,
-	.max_height_get = _eon_entry_max_height_get,
+	.max_height_get = _eon_entry_min_height_get,
 	.preferred_width_get = _eon_entry_preferred_width_get,
-	.preferred_height_get = _eon_entry_preferred_height_get,
+	.preferred_height_get = _eon_entry_min_height_get,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *

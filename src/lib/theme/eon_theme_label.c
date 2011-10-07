@@ -91,7 +91,7 @@ static double _eon_theme_label_min_width_get(Enesim_Renderer *r)
 		eon_theme_label_font_get(r, &font);
 		eon_theme_label_size_get(r, &size);
 		eon_theme_label_text_get(r, &text);
-		etex_base_font_set(thiz->text, font);
+		etex_base_font_name_set(thiz->text, font);
 		etex_base_size_set(thiz->text, size);
 		etex_span_text_set(thiz->text, text);
 		enesim_renderer_boundings(thiz->text, &boundings);
