@@ -221,7 +221,6 @@ static void _eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
 
 	thiz = _eon_layout_get(r);
 	thiz->child_remove(r, child);
-	eon_widget_property_remove(r, "child", child, NULL);
 }
 
 static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
@@ -230,21 +229,20 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	Ender_Element *curr_parent;
 	Ender_Element *theme;
 	Enesim_Renderer *child_r;
-	Enesim_Renderer *child_rr;
 
 	thiz = _eon_layout_get(r);
 	child_r = ender_element_renderer_get(child);
 	if (!eon_is_element(child_r))
 		return;
 
-	child_rr = eon_element_renderer_get(child);
 	curr_parent = ender_element_parent_get(child);
+	if (curr_parent == r)
+		return;
 	if (curr_parent)
 	{
 		/* FIXME this is wrong, we should remove from the theme the child_rr */
-		ender_element_value_remove(curr_parent, "child", child_rr, NULL);
+		printf("warning, first remove from its old parent\n");
 	}
-	eon_widget_property_add(r, "child", child_rr, NULL);
 	thiz->child_add(r, child);
 }
 
@@ -254,7 +252,6 @@ static void _eon_layout_child_clear(Enesim_Renderer *r)
 
 	thiz = _eon_layout_get(r);
 
-	eon_widget_property_clear(r, "child");
 	thiz->child_clear(r);
 }
 

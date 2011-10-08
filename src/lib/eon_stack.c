@@ -135,10 +135,15 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *child_r;
+		Enesim_Renderer *child_rr;
 		Eon_Size child_size;
 		double y = 0;
 
+		if (size.width <= 0)
+			break;
 		child_r = ender_element_renderer_get(ech->ender);
+		child_rr = eon_element_renderer_get(ech->ender);
+
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
 		if (!thiz->last_expand || ech != last_ech)
 		{
@@ -169,10 +174,12 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 
 			enesim_renderer_name_get(r, &name);
 			enesim_renderer_name_get(child_r, &child_name);
-			//printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
+			printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, last_x, y);
+		/* now add the renderer associated with the widget into the theme */
+		eon_widget_property_add(r, "child", child_rr, NULL);
 		eon_element_setup(ech->ender);
 		ech->curr_x = last_x;
 		ech->curr_y = y;
@@ -197,10 +204,16 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *child_r;
+		Enesim_Renderer *child_rr;
 		Eon_Size child_size;
 		double x = 0;
 
+		if (size.height <= 0)
+			break;
+
 		child_r = ender_element_renderer_get(ech->ender);
+		child_rr = eon_element_renderer_get(ech->ender);
+
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
 		if (!thiz->last_expand || ech != last_ech)
 		{
@@ -231,12 +244,13 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 
 			enesim_renderer_name_get(r, &name);
 			enesim_renderer_name_get(child_r, &child_name);
-			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
+			printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, x, last_y);
-		eon_element_setup(ech->ender);
 		/* now add the renderer associated with the widget into the theme */
+		eon_widget_property_add(r, "child", child_rr, NULL);
+		eon_element_setup(ech->ender);
 		ech->curr_x = x;
 		ech->curr_y = last_y;
 		last_y += child_size.height;
@@ -253,6 +267,7 @@ static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
 	 * of every child before calling the setup of each child
 	 */
 	r = ender_element_renderer_get(e);
+	eon_widget_property_clear(r, "child");
 	eon_element_actual_size_get(r, &size);
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
 		_stack_horizontal_arrange(e, thiz, size.width, size.height);
@@ -501,6 +516,7 @@ static void _eon_stack_child_clear(Enesim_Renderer *r)
 	{
 		thiz->children = eina_list_remove_list(thiz->children, l);
 	}
+	eon_widget_property_clear(r, "child");
 }
 
 static Eon_Layout_Descriptor _descriptor = {

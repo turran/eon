@@ -77,16 +77,20 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e)
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *child_r;
+		Enesim_Renderer *child_rr;
 		double h;
 		double w;
 
 		child_r = ender_element_renderer_get(ech->ender);
+		child_rr = eon_element_renderer_get(ech->ender);
 
 		eon_element_real_height_get(ech->ender, &h);
 		eon_element_real_width_get(ech->ender, &w);
 
 		eon_element_actual_size_set(child_r, w, h);
 		eon_element_actual_position_set(child_r, ech->x, ech->y);
+		/* now add the renderer associated with the widget into the theme */
+		eon_widget_property_add(r, "child", child_rr, NULL);
 		eon_element_setup(ech->ender);
 	}
 

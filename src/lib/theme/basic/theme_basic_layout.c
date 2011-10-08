@@ -68,6 +68,7 @@ static void _layout_child_clear(Enesim_Renderer *r)
 
 	thiz = _layout_get(r);
 	enesim_renderer_compound_layer_clear(thiz->compound);
+	enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
 }
 
 
