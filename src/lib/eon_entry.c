@@ -17,6 +17,10 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/* the etex span always strdup the string, we should add a way to share
+ * a strbuffer between the internal state of the span and the API this way
+ * we avoid useless copies
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -27,6 +31,7 @@ typedef struct _Eon_Entry
 	Eon_Horizontal_Alignment alignment;
 	/* private */
 	Ender_Element *label;
+	Etex_Buffer *buffer;
 	int num_entries;
 } Eon_Entry;
 
@@ -45,6 +50,23 @@ static void _eon_entry_click(Ender_Element *e, const char *event_name, void *eve
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_entry_get(r);
+
+	/* FIXME just an example for now, given that the key evenst are now managed yet */
+	{
+		static int offset = 0;
+		etex_buffer_string_insert(thiz->buffer, "l>", -1, offset);
+		offset += 2;
+		eon_element_changed_set(e, EINA_TRUE);
+	}
+}
+
+static void _eon_entry_key_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Entry *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_entry_get(r);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -53,10 +75,21 @@ static void _eon_entry_initialize(Ender_Element *e)
 {
 	Eon_Entry *thiz;
 	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_entry_get(r);
-	ender_event_listener_add(e, "MouseClick", _eon_entry_click, NULL);
+
+	/* the events */
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
+			_eon_entry_click, NULL);
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_KEY_DOWN],
+			_eon_entry_key_down, NULL);
+	/* get the buffer from the theme renderer */
+	theme_r = eon_widget_theme_renderer_get(r);
+	thiz->buffer = eon_theme_entry_buffer_get(theme_r);
 }
 
 static Eina_Bool _eon_entry_setup(Ender_Element *e)

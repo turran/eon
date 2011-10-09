@@ -17,6 +17,8 @@ typedef enum _Eon_Input_Event
 	EON_INPUT_EVENT_MOUSE_CLICK,
 	EON_INPUT_EVENT_MOUSE_DRAG_START,
 	EON_INPUT_EVENT_MOUSE_DRAG_STOP,
+	EON_INPUT_EVENT_KEY_DOWN,
+	EON_INPUT_EVENT_KEY_UP,
 	EON_INPUT_EVENTS,
 } Eon_Input_Event;
 
@@ -32,6 +34,8 @@ typedef enum _Eon_Input_Event_Mask
 	EON_INPUT_EVENT_MASK_MOUSE_CLICK 	= (1 << EON_INPUT_EVENT_MOUSE_CLICK),
 	EON_INPUT_EVENT_MASK_MOUSE_DRAG_START	= (1 << EON_INPUT_EVENT_MOUSE_DRAG_START),
 	EON_INPUT_EVENT_MASK_MOUSE_DRAG_STOP	= (1 << EON_INPUT_EVENT_MOUSE_DRAG_STOP),
+	EON_INPUT_EVENT_MASK_KEY_DOWN 		= (1 << EON_INPUT_EVENT_KEY_DOWN),
+	EON_INPUT_EVENT_MASK_KEY_UP 		= (1 << EON_INPUT_EVENT_KEY_UP),
 } Eon_Input_Event_Mask;
 
 extern const char * eon_input_event_names[EON_INPUT_EVENTS];
@@ -99,6 +103,16 @@ typedef struct _Eon_Event_Mouse_Drag_Stop
 {
 	Eon_Input *input;
 } Eon_Event_Mouse_Drag_Stop;
+
+typedef struct _Eon_Event_Key_Down
+{
+	Eon_Input *input;
+} Eon_Event_Key_Down;
+
+typedef struct _Eon_Event_Key_Up
+{
+	Eon_Input *input;
+} Eon_Event_Key_Up;
 
 /**
  * @}

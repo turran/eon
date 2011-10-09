@@ -24,9 +24,13 @@
 typedef struct _Basic_Entry
 {
 	/* properties */
+	double radius;
+	Enesim_Color border_color;
 	/* private */
+	Enesim_Renderer *text;
 	Enesim_Renderer *shape;
 	Enesim_Renderer *shape_fill;
+	Enesim_Renderer *background;
 	Enesim_Renderer_Sw_Fill fill;
 } Basic_Entry;
 
@@ -37,6 +41,8 @@ static inline Basic_Entry * _entry_get(Enesim_Renderer *r)
 	thiz = eon_theme_entry_data_get(r);
 	return thiz;
 }
+
+static const double _border_weight = 2.0;
 /*----------------------------------------------------------------------------*
  *                          The Entry theme interface                         *
  *----------------------------------------------------------------------------*/
@@ -49,7 +55,6 @@ static Enesim_Renderer * _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 		Enesim_Error **error)
 {
 	Basic_Entry *thiz;
-	const char *text_str;
 	double ox, oy;
 	double width, height;
 
@@ -61,21 +66,16 @@ static Enesim_Renderer * _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 
-	printf("width = %g height = %g\n", width, height);
+	//printf("width = %g height = %g\n", width, height);
 	enesim_renderer_rectangle_size_set(thiz->shape, width, height);
-	etex_span_text_get(text, &text_str);
-	if (text_str)
+	if (!thiz->text)
 	{
-		printf("text\n");
-		enesim_renderer_shape_fill_renderer_set(thiz->shape, text);
+		thiz->text = text;
+		enesim_renderer_compound_layer_add(thiz->shape_fill, text);
+		enesim_renderer_rop_set(text, ENESIM_BLEND);
+		enesim_renderer_origin_set(text, 2.0, 2.0);
+		enesim_renderer_color_set(text, 0xff000000);
 	}
-	else
-	{
-		printf("no text\n");
-		enesim_renderer_shape_fill_renderer_set(thiz->shape, NULL);
-	}
-
-	/* setup the layers */
 
 	return thiz->shape;
 }
@@ -107,24 +107,41 @@ EAPI Enesim_Renderer * eon_basic_entry_new(void)
 
 	thiz = calloc(1, sizeof(Basic_Entry));
 	if (!thiz) return NULL;
+	thiz->radius = 4;
+	thiz->border_color = 0xff555555;
 
-	r = enesim_renderer_rectangle_new();
-	if (!r) goto shape_err;
-	thiz->shape = r;
+	r = enesim_renderer_background_new();
+	if (!r) goto background_err;
+	thiz->background = r;
+	enesim_renderer_background_color_set(r, 0xffffffff);
+	enesim_renderer_rop_set(r, ENESIM_FILL);
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto shape_fill_err;
 	thiz->shape_fill = r;
+	enesim_renderer_compound_layer_add(r, thiz->background);
+
+	r = enesim_renderer_rectangle_new();
+	if (!r) goto shape_err;
+	thiz->shape = r;
+	enesim_renderer_rectangle_corner_radius_set(r, thiz->radius);
+	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
+	enesim_renderer_shape_stroke_weight_set(r, _border_weight);
+	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
+	enesim_renderer_shape_fill_renderer_set(r, thiz->shape_fill);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	r = eon_theme_entry_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 	return r;
 
 renderer_err:
-	enesim_renderer_unref(thiz->shape_fill);
-shape_fill_err:
 	enesim_renderer_unref(thiz->shape);
 shape_err:
+	enesim_renderer_unref(thiz->shape_fill);
+shape_fill_err:
+	enesim_renderer_unref(thiz->background);
+background_err:
 	free(thiz);
 	return NULL;
 }

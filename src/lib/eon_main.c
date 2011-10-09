@@ -21,6 +21,8 @@
  * @todo
  * Add our own image loader for escen based files, which should use a common
  * implementation found on eon_image_loader.c?
+ * For some reason the eon_init is being called twice, this might be related
+ * to escen loading eon and initializing it twice :-/
  */
 /*============================================================================*
  *                                  Local                                     *

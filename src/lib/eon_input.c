@@ -40,7 +40,6 @@ struct _Eon_Input_State
 };
 
 
-/* FIXME we need to fix this, we only have two levels of recursion ....*/
 Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
 	double *rel_y)
 {
@@ -305,6 +304,16 @@ void eon_input_state_feed_mouse_wheel(Eon_Input_State *eis, int direction)
 	ev.input = eis->input;
 	ender_event_dispatch(eis->pointer.last, "MouseWheel", &ev);
 }
+
+void eon_input_state_feed_key_down(Eon_Input_State *eis)
+{
+
+}
+
+void eon_input_state_feed_key_up(Eon_Input_State *eis)
+{
+
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -318,4 +327,6 @@ const char * eon_input_event_names[EON_INPUT_EVENTS] = {
 	"MouseClick",
 	"MouseDragStart",
 	"MouseDragStop",
+	"KeyDown",
+	"KeyUp",
 };

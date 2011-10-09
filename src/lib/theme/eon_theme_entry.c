@@ -158,6 +158,17 @@ void eon_theme_entry_preferred_width_get(Enesim_Renderer *r, double *width)
 	 */
 }
 
+Etex_Buffer * eon_theme_entry_buffer_get(Enesim_Renderer *r)
+{
+	Eon_Theme_Entry *thiz;
+	Etex_Buffer *b;
+
+	thiz = _eon_theme_entry_get(r);
+	if (!thiz) return NULL;
+
+	etex_span_buffer_get(thiz->text, &b);
+	return b;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
