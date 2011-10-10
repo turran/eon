@@ -49,12 +49,12 @@ typedef struct _Eon_Element
 	double actual_x;
 	double actual_y;
 	/* private */
+	Enesim_Renderer_Sw_Fill fill;
 	/* function pointers */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Renderer_Get renderer_get;
 	Enesim_Renderer_Delete free;
-	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
@@ -84,6 +84,18 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 	EON_ELEMENT_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
+}
+
+static void _eon_element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
+{
+	Eon_Element *thiz;
+	Ender_Element *e;
+	Enesim_Renderer *real_r;
+
+	thiz = _eon_element_get(r);
+	e = ender_element_renderer_from(r);
+	real_r = eon_element_renderer_get(e);
+	thiz->fill(real_r, x, y, len, dst);
 }
 
 static double _element_min_width_get(Ender_Element *e)
@@ -444,8 +456,9 @@ static void _eon_element_free(Enesim_Renderer *r)
 static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
-	Ender_Element *e;
 	Eon_Element *thiz;
+	Ender_Element *e;
+	Enesim_Renderer *real_r;
 
 	thiz = _eon_element_get(r);
 	e = ender_element_renderer_from(r);
@@ -455,12 +468,18 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		ENESIM_RENDERER_ERROR(r, error, "The element_setup() failed");
 		return EINA_FALSE;
 	}
-	if (!thiz->sw_setup)
+
+	real_r = eon_element_renderer_get(e);
+	if (!enesim_renderer_sw_setup(real_r, s, error))
 	{
-		printf("cannot sw setup the eon element\n");
+		ENESIM_RENDERER_ERROR(r, error, "The renderer setup failed");
 		return EINA_FALSE;
 	}
-	return thiz->sw_setup(r, s, fill, error);
+	thiz->fill = enesim_renderer_sw_fill_get(real_r);
+	if (!thiz->fill) return EINA_FALSE;
+
+	*fill = _eon_element_draw;
+	return EINA_TRUE;
 }
 
 static void _eon_element_sw_cleanup(Enesim_Renderer *r)
@@ -560,7 +579,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	/* preferred */
 	thiz->preferred_width_get = descriptor->preferred_width_get;
 	thiz->preferred_height_get = descriptor->preferred_height_get;
-	thiz->sw_setup = descriptor->sw_setup;
 	thiz->sw_cleanup = descriptor->sw_cleanup;
 	thiz->name = descriptor->name;
 

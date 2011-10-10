@@ -33,7 +33,6 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Actual_Y_Set actual_y_set;
 	Eon_Element_Actual_Width_Set actual_width_set;
 	Eon_Element_Actual_Height_Set actual_height_set;
-	Enesim_Renderer_Sw_Setup sw_setup;
 	Enesim_Renderer_Sw_Cleanup sw_cleanup;
 	Enesim_Renderer_Delete free;
 	const char *name;

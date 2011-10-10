@@ -40,7 +40,6 @@ typedef struct _Eon_Widget
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
-	Enesim_Renderer_Sw_Fill fill;
 	void *data;
 } Eon_Widget;
 
@@ -55,14 +54,6 @@ static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(r);
-	thiz->fill(thiz->theme_renderer, x, y, len, dst);
-}
-
 static void _theme_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Ender_Element *element = data;
@@ -72,28 +63,6 @@ static void _theme_changed(Ender_Element *e, const char *event_name, void *event
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _eon_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(r);
-
-	if (!enesim_renderer_sw_setup(thiz->theme_renderer, s, error))
-	{
-		ENESIM_RENDERER_ERROR(r, error, "The theme renderer failed");
-		return EINA_FALSE;
-	}
-
-	/* get the ender from the escen ender and get the fill function */
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->theme_renderer);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _widget_draw;
-
-	return EINA_TRUE;
-}
-
 static void _eon_widget_sw_cleanup(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
@@ -243,7 +212,6 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	pdescriptor.actual_y_set = _eon_widget_actual_y_set;
 	pdescriptor.actual_width_set = _eon_widget_actual_width_set;
 	pdescriptor.actual_height_set = _eon_widget_actual_height_set;
-	pdescriptor.sw_setup = _eon_widget_sw_setup;
 	pdescriptor.sw_cleanup = _eon_widget_sw_cleanup;
 
 	pdescriptor.free = _eon_widget_free;

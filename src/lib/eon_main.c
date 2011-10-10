@@ -104,8 +104,11 @@ Ender_Namespace * eon_namespace_get(void)
  */
 EAPI int eon_init(void)
 {
-	if (!_init++)
+	//printf("init %d %p\n", _init, &_init);
+	_init++;
+	if (_init == 1)
 	{
+		//printf("inside %d\n", _init);
 		eina_init();
 		eon_log = eina_log_domain_register("eon", NULL);
 		enesim_init();
@@ -125,8 +128,9 @@ EAPI int eon_init(void)
 			enesim_shutdown();
 			eina_log_domain_unregister(eon_log);
 			eina_shutdown();
+
+			return --_init;
 		}
-		return --_init;
 	}
 	return _init;
 }
@@ -136,6 +140,7 @@ EAPI int eon_init(void)
  */
 EAPI void eon_shutdown(void)
 {
+	printf("shutdown\n");
 	if (_init == 1)
 	{
 		eon_basic_shutdown();

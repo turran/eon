@@ -11,6 +11,7 @@ typedef struct _Eon_Button_Base_Descriptor
 
 Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *data);
 void * eon_button_base_data_get(Enesim_Renderer *r);
+void eon_button_base_init(void);
 
 #endif
 

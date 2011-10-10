@@ -64,30 +64,6 @@ static void _wrapped_changed(Ender_Element *e, const char *event_name, void *eve
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
-/* FIXME do we actually need this function?? */
-static Eina_Bool _eon_wrapper_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
-{
-	Eon_Wrapper *thiz;
-	Enesim_Rectangle rect;
-
-	thiz = _eon_wrapper_get(r);
-
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
-	{
-		ENESIM_RENDERER_ERROR(r, error, "Impossible to setup the compound renderer");
-		return EINA_FALSE;
-	}
-
-	/* get the ender from the escen ender and get the fill function */
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _wrapper_draw;
-
-	return EINA_TRUE;
-}
-
 static void _eon_wrapper_sw_cleanup(Enesim_Renderer *r)
 {
 	Eon_Wrapper *thiz;
@@ -215,7 +191,6 @@ static Eon_Element_Descriptor _descriptor = {
 	.max_height_get = _eon_wrapper_max_height_get,
 	.preferred_width_get = _eon_wrapper_preferred_width_get,
 	.preferred_height_get = _eon_wrapper_preferred_height_get,
-	.sw_setup = _eon_wrapper_sw_setup,
 	.sw_cleanup = _eon_wrapper_sw_cleanup,
 	.setup = _eon_wrapper_setup,
 	.renderer_get = _eon_wrapper_renderer_get,
