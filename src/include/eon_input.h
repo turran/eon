@@ -22,6 +22,19 @@ typedef enum _Eon_Input_Event
 	EON_INPUT_EVENTS,
 } Eon_Input_Event;
 
+typedef enum _Eon_Input_Modifiers
+{
+	EON_INPUT_MOD_NONE 	= 0,
+	EON_INPUT_MOD_LSHIFT	= (1 << 0),
+	EON_INPUT_MOD_RSHIFT	= (1 << 1),
+	EON_INPUT_MOD_LCTRL	= (1 << 2),
+	EON_INPUT_MOD_RCTRL	= (1 << 3),
+	EON_INPUT_MOD_LALT	= (1 << 4),
+	EON_INPUT_MOD_RALT	= (1 << 5),
+	EON_INPUT_MOD_LMETA	= (1 << 6),
+	EON_INPUT_MOD_RMETA	= (1 << 7),
+} Eon_Input_Modifiers;
+
 /* some helpers */
 typedef enum _Eon_Input_Event_Mask
 {

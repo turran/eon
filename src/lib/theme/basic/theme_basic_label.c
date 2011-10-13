@@ -59,7 +59,7 @@ static const char * _label_font_get(Enesim_Renderer *r)
 	const char *name;
 
 	thiz = _label_get(r);
-	etex_base_font_get(thiz->text, &name);
+	etex_base_font_name_get(thiz->text, &name);
 	return name;
 }
 

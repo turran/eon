@@ -148,21 +148,19 @@ static Eina_Bool _mouse_button_up(void *data, int type, void *event)
 
 static Eina_Bool _key_down(void *data, int type, void *event)
 {
-/*
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
-*/
 
+	printf("DOWN %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
 	return ECORE_CALLBACK_RENEW;
 }
 
 static Eina_Bool _key_up(void *data, int type, void *event)
 {
-/*
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
-*/
 
+	printf("UP %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
 	return ECORE_CALLBACK_RENEW;
 }
 

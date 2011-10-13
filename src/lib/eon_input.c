@@ -32,13 +32,11 @@ struct _Eon_Input_State
 		Ender_Element *grabbed; /* the object where the mouse down happened */
 		Ender_Element *last;
 	} pointer;
-	/* TODO keep the last modifiers */
 	struct
 	{
-
+		Eon_Input_Modifiers mods;
 	} keyboard;
 };
-
 
 Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
 	double *rel_y)
@@ -240,7 +238,9 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 	eis->pointer.rel_x = rel_x;
 	eis->pointer.rel_y = rel_y;
 	ev.input = eis->input;
-	ender_event_dispatch(child, "MouseDown", &ev);
+	ender_event_dispatch(child,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN],
+			&ev);	
 	printf("mouse down at %g %g\n", eis->pointer.x, eis->pointer.y);
 }
 
@@ -255,7 +255,9 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		return;
 
 	ev.input = eis->input;
-	ender_event_dispatch(child, "MouseUp", &ev);
+	ender_event_dispatch(child,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP],
+			&ev);	
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */
@@ -270,7 +272,9 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		ev_click.y = eis->pointer.y;
 		ev_click.rel_x = eis->pointer.rel_x;
 		ev_click.rel_y = eis->pointer.rel_y;
-		ender_event_dispatch(child, "MouseClick", &ev_click);
+		ender_event_dispatch(child,
+				eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
+				&ev_click);
 		{
 			Enesim_Renderer *r;
 			char *name;
@@ -286,7 +290,8 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		Eon_Event_Mouse_Drag_Stop ev_ds;
 
 		ev_ds.input = eis->input;
-		ender_event_dispatch(eis->pointer.grabbed, "MouseDragStop", &ev_ds);
+		ender_event_dispatch(eis->pointer.grabbed,
+				eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_STOP], &ev_ds);
 		eis->pointer.dragging = EINA_FALSE;
 	}
 	eis->pointer.grabbed = NULL;
@@ -302,7 +307,8 @@ void eon_input_state_feed_mouse_wheel(Eon_Input_State *eis, int direction)
 	if (!child)
 		return;
 	ev.input = eis->input;
-	ender_event_dispatch(eis->pointer.last, "MouseWheel", &ev);
+	ender_event_dispatch(eis->pointer.last,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], &ev);
 }
 
 void eon_input_state_feed_key_down(Eon_Input_State *eis)

@@ -243,7 +243,7 @@ EAPI void eon_theme_entry_font_get(Enesim_Renderer *r, const char **str)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
-	etex_base_font_get(thiz->text, str);
+	etex_base_font_name_get(thiz->text, str);
 }
 
 /**
