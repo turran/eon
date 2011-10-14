@@ -51,7 +51,7 @@ static void _constructor_callback(Ender_Element *e, void *data)
 	eon_element_initialize(e);
 }
 
-static void _register_enders(void)
+static void _register_enders(void *data)
 {
 	/* register the dependency */
 	ender_loader_load("enesim");
@@ -108,15 +108,14 @@ EAPI int eon_init(void)
 	_init++;
 	if (_init == 1)
 	{
-		//printf("inside %d\n", _init);
+		printf("inside %d %p\n", _init, &_init);
 		eina_init();
 		eon_log = eina_log_domain_register("eon", NULL);
 		enesim_init();
+		ender_loader_registry_callback_add(_register_enders, NULL);
 		ender_init(NULL, NULL);
 		ender_element_new_listener_add(_constructor_callback, NULL);
 		escen_init();
-		_register_enders();
-		ender_loader_load_all();
 		eon_basic_init();
 		/* initialize the theme */
 		if (!eon_theme_init())

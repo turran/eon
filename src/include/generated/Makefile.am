@@ -21,5 +21,5 @@ eon_generated_splitter.c \
 eon_generated_image.c \
 eon_generated_wrapper.c
 
-%.c:	$(top_srcdir)/data/ender/eon.ender
-	ender_generator $(top_srcdir)/data/ender/eon.ender $(basename $(subst eon_generated_,,$@)) $@
+%.c:	$(top_srcdir)/data/ender/eon_private.ender
+	ender_generator $(top_srcdir)/data/ender/eon_private.ender $(basename $(subst eon_generated_,,$@)) $@
