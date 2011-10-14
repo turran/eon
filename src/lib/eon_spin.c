@@ -27,6 +27,9 @@
 typedef struct _Eon_Spin
 {
 	/* properties */
+	double min;
+	double max;
+	double step_increment;
 	/* private */
 } Eon_Spin;
 /*----------------------------------------------------------------------------*
@@ -49,4 +52,61 @@ typedef struct _Eon_Spin
 EAPI Ender_Element * eon_spin_new(void)
 {
 	return ender_element_new_with_namespace("spin", "eon");
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_sping_max_range_set(Ender_Element *e, double max_range)
+{
+	ender_element_value_set(e, "max_range", max_range, NULL);
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_sping_max_range_get(Ender_Element *e, double *max_range)
+{
+	ender_element_value_get(e, "max_range", max_range, NULL);
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_sping_min_range_set(Ender_Element *e, double min_range)
+{
+	ender_element_value_set(e, "min_range", min_range, NULL);
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_sping_min_range_get(Ender_Element *e, double *min_range)
+{
+	ender_element_value_get(e, "min_range", min_range, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollbar_step_increment_set(Ender_Element *e, double step_increment)
+{
+	ender_element_value_set(e, "step_increment", step_increment, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_scrollbar_step_increment_get(Ender_Element *e, double *step_increment)
+{
+	ender_element_value_get(e, "step_increment", step_increment, NULL);
 }

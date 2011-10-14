@@ -273,6 +273,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		else
 		{
 			eon_theme_scrollview_hbar_set(theme_r, NULL);
+			eon_scrollbar_value_set(thiz->hbar, 0);
 		}
 		/* vbar */
 		if (has_vbar)
@@ -296,6 +297,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		else
 		{
 			eon_theme_scrollview_vbar_set(theme_r, NULL);
+			eon_scrollbar_value_set(thiz->vbar, 0);
 		}
 		/* set the logic size and position, so all the events continue working
 		 * the gfx position is handled on the theme with theme_scrollview_offset_set

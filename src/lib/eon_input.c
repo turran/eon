@@ -5,6 +5,8 @@
  *============================================================================*/
 struct _Eon_Input
 {
+	char *name;
+	char *description;
 	/* FIXME here we should put some device information, like name or type */
 };
 
@@ -38,7 +40,7 @@ struct _Eon_Input_State
 	} keyboard;
 };
 
-Ender_Element * _eon_input_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
+Ender_Element * _eon_input_state_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
 	double *rel_y)
 {
 	Enesim_Renderer *e_r;
@@ -141,7 +143,7 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 
 		return;
 	}
-	child = _eon_input_element_get(eis, x, y, &rel_x, &rel_y);
+	child = _eon_input_state_element_get(eis, x, y, &rel_x, &rel_y);
 	if (child == eis->pointer.last)
 	{
 		/* send move */
@@ -193,7 +195,7 @@ void eon_input_state_feed_mouse_in(Eon_Input_State *eis)
 	if (eis->pointer.inside)
 		return;
 	eis->pointer.inside = EINA_TRUE;
-	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
+	child = _eon_input_state_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	ev.input = eis->input;
@@ -211,7 +213,7 @@ void eon_input_state_feed_mouse_out(Eon_Input_State *eis)
 	if (!eis->pointer.inside)
 		return;
 	eis->pointer.inside = EINA_FALSE;
-	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
+	child = _eon_input_state_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	ev.input = eis->input;
@@ -226,7 +228,7 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 
 	if (!eis->pointer.inside)
 		return;
-	child = _eon_input_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
+	child = _eon_input_state_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	/* store the coordinates where the mouse buton down was done to
@@ -336,3 +338,25 @@ const char * eon_input_event_names[EON_INPUT_EVENTS] = {
 	"KeyDown",
 	"KeyUp",
 };
+
+/* FIXME
+ * add something like this:
+EAPI void eon_input_flags_get(Eon_Input *i)
+{
+
+}
+*/
+
+EAPI const char * eon_input_name_get(Eon_Input *i)
+{
+	if (!i) return NULL;
+
+	return i->name;
+}
+
+EAPI const char * eon_input_description_get(Eon_Input *i)
+{
+	if (!i) return NULL;
+
+	return i->description;
+}

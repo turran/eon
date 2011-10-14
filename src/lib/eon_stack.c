@@ -420,6 +420,12 @@ static double _eon_stack_preferred_height_get(Ender_Element *e)
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
+/* FIXME we need to decide how are we going to get find an element on the scene
+ * so far we were intersecting the input coordinates with the object layout
+ * geometry, for things like comboboxes we might need to intersect against
+ * the displayed geometry, given that a combobox display somehting outside
+ * the layout tree but the user should interact with it normally
+ */
 static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 {
 	Eon_Stack *thiz;
