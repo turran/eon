@@ -84,8 +84,8 @@ EAPI Enesim_Renderer * eon_theme_toggle_new(Eon_Theme_Toggle_Descriptor *descrip
 
 	pdescriptor.position_get = descriptor->position_get;
 	pdescriptor.margin_get = descriptor->margin_get;
-	//pdescriptor.sw_setup = descriptor->setup;
-	//pdescriptor.sw_cleanup = descriptor->cleanup;
+	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_button_free;
 
 	r = eon_theme_button_base_new(&pdescriptor, thiz);

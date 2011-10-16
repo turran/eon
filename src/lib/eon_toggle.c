@@ -131,6 +131,27 @@ EAPI Ender_Element * eon_toggle_new(void)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI Ender_Element * eon_toggle_new_with_label(const char *text)
+{
+	Ender_Element *e;
+	Ender_Element *label;
+
+	e = eon_toggle_new();
+	if (!e) return NULL;
+
+	label = eon_label_new_with_text(text);
+	if (!label)
+	{
+		return NULL;
+	}
+	eon_container_content_set(e, label);
+	return e;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_toggle_active_set(Ender_Element *e, Eina_Bool active)
 {
 	ender_element_value_set(e, "active", active, NULL);

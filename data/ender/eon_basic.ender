@@ -22,6 +22,18 @@ namespace "eon" {
 		double "radius";
 	};
 
+	class "basic_toggle" : "theme_toggle" {
+		color "fill_color";
+		color "border_color";
+		color "start_shadow";
+		color "end_shadow";
+		argb "start_bevel";
+		argb "end_bevel";
+		double "horizontal_padding";
+		double "vertical_padding";
+		double "radius";
+	};
+
 	class "basic_checkbox" : "theme_checkbox" {
 		int "size";
 		int "selected";

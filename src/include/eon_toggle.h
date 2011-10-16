@@ -26,6 +26,7 @@
  */
 
 EAPI Ender_Element * eon_toggle_new(void);
+EAPI Ender_Element * eon_toggle_new_with_label(const char *text);
 EAPI void eon_toggle_active_set(Ender_Element *e, Eina_Bool active);
 EAPI void eon_toggle_active_get(Ender_Element *e, Eina_Bool *active);
 
