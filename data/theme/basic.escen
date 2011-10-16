@@ -10,7 +10,7 @@ escen {
 	};
 
 	basic_toggle "toggle" {
-		default : "active"{
+		default : "inactive"{
 			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
@@ -18,7 +18,7 @@ escen {
 			set { end_bevel = 0xff000000; };
 		};
 
-		state "inactive" {
+		state "active" {
 			set { fill_color = 0xffa8a8a8; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
