@@ -16,21 +16,29 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_WIDGET_H_
-#define _EON_THEME_WIDGET_H_
+#ifndef _EON_THEME_TOGGLE_H_
+#define _EON_THEME_TOGGLE_H_
 
 /**
  * @{
  */
+typedef struct _Eon_Theme_Toggle_Descriptor
+{
+	/* container needed functions */
+	Eon_Theme_Button_Base_Position_Get position_get;
+	Eon_Theme_Button_Base_Margin_Get margin_get;
+	Eon_Theme_Widget_Setup setup;
+	Eon_Theme_Widget_Cleanup cleanup;
+	Enesim_Renderer_Delete free;
+} Eon_Theme_Toggle_Descriptor;
 
-typedef Enesim_Renderer * (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, Enesim_Error **error);
-typedef void (*Eon_Theme_Widget_Cleanup)(Enesim_Renderer *r);
-
-EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_widget_height_get(Enesim_Renderer *r, double *width);
+EAPI Enesim_Renderer * eon_theme_toggle_new(Eon_Theme_Toggle_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_toggle(Enesim_Renderer *r);
+EAPI void * eon_theme_toggle_data_get(Enesim_Renderer *r);
 
 /**
  * @}
  */
-
 #endif
+

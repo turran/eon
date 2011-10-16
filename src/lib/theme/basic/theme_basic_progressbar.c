@@ -45,7 +45,6 @@ typedef struct _Progressbar
 		Enesim_Renderer *pattern;
 		Enesim_Renderer *shade;
 	} bar_content;
-	Enesim_Renderer_Sw_Fill fill;
 } Progressbar;
 
 static inline Progressbar * _progressbar_get(Enesim_Renderer *r)
@@ -54,14 +53,6 @@ static inline Progressbar * _progressbar_get(Enesim_Renderer *r)
 
 	thiz = eon_theme_progressbar_data_get(r);
 	return thiz;
-}
-
-static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Progressbar *thiz;
-
-	thiz = _progressbar_get(r);
-	thiz->fill(thiz->widget.rectangle, x, y, len, dst);
 }
 
 static void _progressbar_update_size(Enesim_Renderer *r)
@@ -118,8 +109,7 @@ static double _progressbar_max_height_get(Enesim_Renderer *r)
 	return DBL_MAX;
 }
 
-static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Progressbar *thiz;
 	Enesim_Matrix matrix;
@@ -142,25 +132,7 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Surface *s,
 	}
 	_progressbar_update_size(r);
 
-	if (!enesim_renderer_sw_setup(thiz->widget.rectangle, s, error))
-	{
-		printf("failed 1\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->widget.rectangle);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _draw;
-
-	return EINA_TRUE;
-}
-
-static void _cleanup(Enesim_Renderer *r)
-{
-	Progressbar *thiz;
-
-	thiz = _progressbar_get(r);
-	enesim_renderer_sw_cleanup(thiz->widget.rectangle);
+	return thiz->widget.rectangle;
 }
 
 static void _free(Enesim_Renderer *r)
@@ -192,8 +164,7 @@ static Eon_Theme_Progressbar_Descriptor _descriptor = {
 	.max_height_get = _progressbar_max_height_get,
 	.min_width_get = _progressbar_min_width_get,
 	.min_height_get = _progressbar_min_height_get,
-	.sw_setup = _setup,
-	.sw_cleanup = _cleanup,
+	.setup = _setup,
 	.free = _free,
 };
 /*============================================================================*

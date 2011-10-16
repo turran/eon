@@ -35,7 +35,6 @@ typedef struct _Theme_Basic_Scrollview
 	Enesim_Renderer *vbar;
 	Enesim_Renderer *content;
 	Enesim_Renderer *clipper;
-	Enesim_Renderer_Sw_Fill fill;
 } Theme_Basic_Scrollview;
 
 static inline Theme_Basic_Scrollview * _scrollview_get(Enesim_Renderer *r)
@@ -46,18 +45,10 @@ static inline Theme_Basic_Scrollview * _scrollview_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _scrollview_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Theme_Basic_Scrollview *thiz;
-
-	thiz = _scrollview_get(r);
-	thiz->fill(thiz->clipper, x, y, len, dst);
-}
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollview interface                     *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _scrollview_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Theme_Basic_Scrollview *thiz;
 	Eon_Position offset;
@@ -104,30 +95,8 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Surface *s,
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->vbar);
 		enesim_renderer_rop_set(thiz->vbar, ENESIM_FILL);
 	}
-	/* set the needed properties */
-	if (!enesim_renderer_sw_setup(thiz->clipper, s, error))
-	{
-		printf("the scrollview cannot setup yet\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->clipper);
-	if (!thiz->fill)
-	{
-		return EINA_FALSE;
-	}
 
-	*fill = _scrollview_draw;
-
-	return EINA_TRUE;
-}
-
-static void _scrollview_cleanup(Enesim_Renderer *r)
-{
-	Theme_Basic_Scrollview *thiz;
-
-	thiz = _scrollview_get(r);
-	/* cleanup common properties */
-	enesim_renderer_sw_cleanup(thiz->compound);
+	return thiz->clipper;
 }
 
 static void _scrollview_free(Enesim_Renderer *r)
@@ -141,8 +110,7 @@ static void _scrollview_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Scrollview_Descriptor _descriptor = {
-	.sw_setup = _scrollview_setup,
-	.sw_cleanup = _scrollview_cleanup,
+	.setup = _scrollview_setup,
 	.free = _scrollview_free,
 };
 /*============================================================================*

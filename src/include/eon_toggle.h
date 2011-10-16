@@ -16,21 +16,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_WIDGET_H_
-#define _EON_THEME_WIDGET_H_
+#ifndef _EON_TOGGLE_H_
+#define _EON_TOGGLE_H_
 
 /**
+ * @defgroup Eon_Checkbox Checkbox
+ * @ingroup Eon_Container
  * @{
  */
 
-typedef Enesim_Renderer * (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, Enesim_Error **error);
-typedef void (*Eon_Theme_Widget_Cleanup)(Enesim_Renderer *r);
-
-EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_widget_height_get(Enesim_Renderer *r, double *width);
+EAPI Ender_Element * eon_toggle_new(void);
+EAPI void eon_toggle_active_set(Ender_Element *e, Eina_Bool active);
+EAPI void eon_toggle_active_get(Ender_Element *e, Eina_Bool *active);
 
 /**
  * @}
  */
 
 #endif
+

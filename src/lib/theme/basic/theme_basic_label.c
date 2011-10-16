@@ -24,7 +24,6 @@
 typedef struct _Label
 {
 	Enesim_Renderer *text;
-	Enesim_Renderer_Sw_Fill fill;
 } Label;
 
 static inline Label * _label_get(Enesim_Renderer *r)
@@ -33,14 +32,6 @@ static inline Label * _label_get(Enesim_Renderer *r)
 
 	thiz = eon_theme_label_data_get(r);
 	return thiz;
-}
-
-static void _label_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Label *thiz;
-
-	thiz = _label_get(r);
-	thiz->fill(thiz->text, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme label interface                       *
@@ -119,8 +110,7 @@ static unsigned int _label_width_get(Enesim_Renderer *r)
 	return boundings.w;
 }
 
-static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _label_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Label *thiz;
 	Enesim_Color color;
@@ -131,27 +121,8 @@ static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_origin_set(thiz->text, ox, oy);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
-	if (!enesim_renderer_sw_setup(thiz->text, s, error))
-	{
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->text);
-	if (!thiz->fill)
-	{
-		return EINA_FALSE;
-	}
 
-	*fill = _label_draw;
-
-	return EINA_TRUE;
-}
-
-static void _label_cleanup(Enesim_Renderer *r)
-{
-	Label *thiz;
-
-	thiz = _label_get(r);
-	enesim_renderer_sw_cleanup(thiz->text);
+	return thiz->text;
 }
 
 static void _label_free(Enesim_Renderer *r)
@@ -173,8 +144,7 @@ static Eon_Theme_Label_Descriptor _descriptor = {
 	.font_get = _label_font_get,
 	.height_get = _label_height_get,
 	.width_get = _label_width_get,
-	.sw_setup = _label_setup,
-	.sw_cleanup = _label_cleanup,
+	.setup = _label_setup,
 	.free = _label_free,
 };
 /*============================================================================*

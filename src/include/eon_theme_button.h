@@ -28,8 +28,8 @@ typedef struct _Eon_Theme_Button_Descriptor
 	Eon_Theme_Button_Base_Position_Get position_get;
 	Eon_Theme_Button_Base_Margin_Get margin_get;
 	/* renderer needed functions */
-	Enesim_Renderer_Sw_Setup sw_setup;
-	Enesim_Renderer_Sw_Cleanup sw_cleanup;
+	Eon_Theme_Widget_Setup setup;
+	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Button_Descriptor;
 

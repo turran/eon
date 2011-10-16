@@ -27,7 +27,6 @@ typedef struct _Image
 	/* private */
 	Enesim_Surface *src;
 	Enesim_Renderer *image;
-	Enesim_Renderer_Sw_Fill fill;
 } Image;
 
 static inline Image * _image_get(Enesim_Renderer *r)
@@ -37,24 +36,10 @@ static inline Image * _image_get(Enesim_Renderer *r)
 	thiz = eon_theme_image_data_get(r);
 	return thiz;
 }
-
-static void _image_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Image *thiz;
-
-	thiz = _image_get(r);
-	thiz->fill(thiz->image, x, y, len, dst);
-}
-
-static void _empty_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	/* doing nothing */
-}
 /*----------------------------------------------------------------------------*
  *                         The Image theme interface                         *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _image_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Image *thiz;
 	double ox, oy;
@@ -69,8 +54,8 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_color_set(thiz->image, color);
 	if (!thiz->src)
 	{
-		*fill = _empty_draw;
-		return EINA_TRUE;
+		printf("empty image\n");
+		return NULL;
 	}
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
@@ -80,26 +65,7 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_image_h_set(thiz->image, (int)height);
 	enesim_renderer_image_src_set(thiz->image, thiz->src);
 
-	if (!enesim_renderer_sw_setup(thiz->image, s, error))
-	{
-		printf("not available to setup yet\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->image);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _image_draw;
-
-	return EINA_TRUE;
-}
-
-static void _image_cleanup(Enesim_Renderer *r)
-{
-	Image *thiz;
-
-	thiz = _image_get(r);
-	/* cleanup common properties */
-	enesim_renderer_sw_cleanup(thiz->image);
+	return thiz->image;
 }
 
 static void _image_free(Enesim_Renderer *r)
@@ -124,8 +90,7 @@ static void _image_source_set(Enesim_Renderer *r, Enesim_Surface *src)
 }
 
 static Eon_Theme_Image_Descriptor _descriptor = {
-	.sw_setup = _image_setup,
-	.sw_cleanup = _image_cleanup,
+	.setup = _image_setup,
 	.free = _image_free,
 	.source_set = _image_source_set,
 };

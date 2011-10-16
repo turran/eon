@@ -19,7 +19,8 @@ eon_generated_scrollbar.c \
 eon_generated_scrollview.c \
 eon_generated_splitter.c \
 eon_generated_image.c \
-eon_generated_wrapper.c
+eon_generated_wrapper.c \
+eon_generated_toggle.c
 
 %.c:	$(top_srcdir)/data/ender/eon_private.ender
 	ender_generator $(top_srcdir)/data/ender/eon_private.ender $(basename $(subst eon_generated_,,$@)) $@

@@ -34,7 +34,6 @@ typedef struct _Checkbox
 	Enesim_Renderer *box;
 	Enesim_Renderer *check;
 	Enesim_Renderer *compound;
-	Enesim_Renderer_Sw_Fill fill;
 } Checkbox;
 
 const static int checkbox_to_content_padding = 10;
@@ -45,14 +44,6 @@ static inline Checkbox * _checkbox_get(Enesim_Renderer *r)
 
 	thiz = eon_theme_checkbox_data_get(r);
 	return thiz;
-}
-
-static void _checkbox_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Checkbox *thiz;
-
-	thiz = _checkbox_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                       The Checkbox theme interface                         *
@@ -68,8 +59,7 @@ static void _checkbox_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = thiz->size / 2;
 }
 
-static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer *  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Checkbox *thiz;
 	Enesim_Renderer *content;
@@ -86,7 +76,7 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	if (!content)
 	{
 		printf("checkbox no content\n");
-		return EINA_FALSE;
+		return NULL;
 	}
 	if (thiz->content != content)
 	{
@@ -118,21 +108,7 @@ static Eina_Bool _checkbox_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error)) return EINA_FALSE;
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _checkbox_draw;
-
-	return EINA_TRUE;
-}
-
-static void _checkbox_cleanup(Enesim_Renderer *r)
-{
-	Checkbox *thiz;
-
-	thiz = _checkbox_get(r);
-	enesim_renderer_sw_cleanup(thiz->compound);
+	return thiz->compound;
 }
 
 static void _checkbox_free(Enesim_Renderer *r)
@@ -147,8 +123,7 @@ static void _checkbox_free(Enesim_Renderer *r)
 
 static Eon_Theme_Checkbox_Descriptor _descriptor = {
 	.margin_get = _checkbox_margin_get,
-	.sw_setup = _checkbox_setup,
-	.sw_cleanup = _checkbox_cleanup,
+	.setup = _checkbox_setup,
 	.free = _checkbox_free,
 };
 /*============================================================================*

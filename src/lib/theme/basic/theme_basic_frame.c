@@ -30,7 +30,6 @@ typedef struct _Frame
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
 	Enesim_Renderer *description;
-	Enesim_Renderer_Sw_Fill fill;
 } Frame;
 
 static const int rectangle_radius = 8;
@@ -42,14 +41,6 @@ static inline Frame * _frame_get(Enesim_Renderer *r)
 
 	thiz = eon_theme_frame_data_get(r);
 	return thiz;
-}
-
-static void _frame_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Frame *thiz;
-
-	thiz = _frame_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
 }
 
 /*----------------------------------------------------------------------------*
@@ -71,8 +62,7 @@ static void _frame_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = 0;
 }
 
-static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Frame *thiz;
 	Enesim_Renderer *content;
@@ -92,7 +82,7 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	if (!content)
 	{
 		printf("frame no content\n");
-		return EINA_FALSE;
+		return NULL;
 	}
 	eon_theme_frame_description_get(r, &description);
 	etex_span_text_set(thiz->description, description);
@@ -118,26 +108,7 @@ static Eina_Bool _frame_setup(Enesim_Renderer *r, Enesim_Surface *s,
 
 	enesim_renderer_origin_set(thiz->description, 10, 1);
 
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
-	{
-		printf("not available to setup yet\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _frame_draw;
-
-	return EINA_TRUE;
-}
-
-static void _frame_cleanup(Enesim_Renderer *r)
-{
-	Frame *thiz;
-
-	thiz = _frame_get(r);
-	/* cleanup common properties */
-	enesim_renderer_sw_cleanup(thiz->compound);
+	return thiz->compound;
 }
 
 static void _frame_free(Enesim_Renderer *r)
@@ -152,8 +123,7 @@ static void _frame_free(Enesim_Renderer *r)
 
 static Eon_Theme_Frame_Descriptor _descriptor = {
 	.margin_get = _frame_margin_get,
-	.sw_setup = _frame_setup,
-	.sw_cleanup = _frame_cleanup,
+	.setup = _frame_setup,
 	.free = _frame_free,
 };
 /*============================================================================*

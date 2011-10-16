@@ -37,7 +37,6 @@ typedef struct _Basic_Scrollbar
 	Enesim_Renderer *bar_background;
 	Enesim_Renderer *bar_background_fill;
 	Enesim_Renderer *bar_shape;
-	Enesim_Renderer_Sw_Fill fill;
 } Basic_Scrollbar;
 
 static const double _border_weight = 2.0;
@@ -49,15 +48,6 @@ static inline Basic_Scrollbar * _scrollbar_get(Enesim_Renderer *r)
 	thiz = eon_theme_scrollbar_data_get(r);
 	return thiz;
 }
-
-static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
-{
-	Basic_Scrollbar *thiz;
-
-	thiz = _scrollbar_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
-}
-
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollbar interface                    *
  *----------------------------------------------------------------------------*/
@@ -179,8 +169,7 @@ static double _basic_scrollbar_thumb_min_size_get(Enesim_Renderer *r)
 	return 20;
 }
 
-static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Scrollbar *thiz;
 	Eon_Orientation orientation;
@@ -231,7 +220,7 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_stripes_even_thickness_set(thiz->background_fill, 8);
 	enesim_renderer_stripes_odd_thickness_set(thiz->background_fill, 8);
 	enesim_renderer_transformation_set(thiz->background_fill, &bf_matrix);
-	
+
 	/* the background */
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
@@ -248,26 +237,7 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	/* the composition */
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
-	{
-		enesim_error_dump(*error);
-		printf("failed 1\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _draw;
-
-	return EINA_TRUE;
-}
-
-static void _basic_scrollbar_cleanup(Enesim_Renderer *r)
-{
-	Basic_Scrollbar *thiz;
-
-	thiz = _scrollbar_get(r);
-	enesim_renderer_sw_cleanup(thiz->compound);
+	return thiz->compound;
 }
 
 static void _basic_scrollbar_free(Enesim_Renderer *r)
@@ -307,8 +277,7 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 	.thumb_max_size_get = _basic_scrollbar_thumb_max_size_get,
 	.thumb_min_size_get = _basic_scrollbar_thumb_min_size_get,
 	.thumb_geometry_get = _basic_scrollbar_thumb_geometry_get,
-	.sw_setup = _basic_scrollbar_setup,
-	.sw_cleanup = _basic_scrollbar_cleanup,
+	.setup = _basic_scrollbar_setup,
 	.free = _basic_scrollbar_free,
 };
 /*============================================================================*

@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 
 libtheme_basic_la_SOURCES = \
 theme_basic.c \
+theme_basic_control_button.c \
 theme_basic_radio.c \
 theme_basic_button.c \
 theme_basic_entry.c \
@@ -21,4 +22,5 @@ theme_basic_layout.c \
 theme_basic_progressbar.c \
 theme_basic_scrollbar.c \
 theme_basic_scrollview.c \
-theme_basic_splitter.c
+theme_basic_splitter.c \
+theme_basic_toggle.c

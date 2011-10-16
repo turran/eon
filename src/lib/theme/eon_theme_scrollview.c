@@ -87,8 +87,8 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 	thiz->data = data;
 	thiz->free = descriptor->free;
 
-	pdescriptor.sw_setup = descriptor->sw_setup;
-	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_scrollview_free;
 
 	r = eon_theme_container_new(&pdescriptor, thiz);

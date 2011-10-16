@@ -38,8 +38,8 @@ typedef struct _Eon_Theme_Progressbar_Descriptor
 	Eon_Theme_Progressbar_Preferred_Width_Get preferred_width_get;
 	Eon_Theme_Progressbar_Preferred_Height_Get preferred_height_get;
 	/* renderer needed functions */
-	Enesim_Renderer_Sw_Setup sw_setup;
-	Enesim_Renderer_Sw_Cleanup sw_cleanup;
+	Eon_Theme_Widget_Setup setup;
+	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Progressbar_Descriptor;
 

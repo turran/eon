@@ -40,6 +40,7 @@
 #include "eon_theme_scrollbar.h"
 #include "eon_theme_scrollview.h"
 #include "eon_theme_splitter.h"
+#include "eon_theme_toggle.h"
 
 /**
  * @}

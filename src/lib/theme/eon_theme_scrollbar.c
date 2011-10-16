@@ -319,8 +319,8 @@ EAPI Enesim_Renderer * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *d
 	thiz->thumb_geometry_get = descriptor->thumb_geometry_get;
 	thiz->decrement_arrow_geometry_get = descriptor->decrement_arrow_geometry_get;
 	thiz->increment_arrow_geometry_get = descriptor->increment_arrow_geometry_get;
-	pdescriptor.sw_setup = descriptor->sw_setup;
-	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_scrollbar_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

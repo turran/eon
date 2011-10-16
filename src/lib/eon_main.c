@@ -27,7 +27,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static int _init = 0;
+static int _init_count = 0;
 
 #if 0
 /* for later */
@@ -79,6 +79,7 @@ static void _register_enders(void *data)
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
+	eon_toggle_init();
 	eon_frame_init();
 }
 /*============================================================================*
@@ -104,11 +105,9 @@ Ender_Namespace * eon_namespace_get(void)
  */
 EAPI int eon_init(void)
 {
-	//printf("init %d %p\n", _init, &_init);
-	_init++;
-	if (_init == 1)
+	_init_count++;
+	if (_init_count == 1)
 	{
-		printf("inside %d %p\n", _init, &_init);
 		eina_init();
 		eon_log = eina_log_domain_register("eon", NULL);
 		enesim_init();
@@ -116,11 +115,9 @@ EAPI int eon_init(void)
 		ender_init(NULL, NULL);
 		ender_element_new_listener_add(_constructor_callback, NULL);
 		escen_init();
-		eon_basic_init();
 		/* initialize the theme */
 		if (!eon_theme_init())
 		{
-			eon_basic_shutdown();
 			escen_shutdown();
 			ender_element_new_listener_remove(_constructor_callback, NULL);
 			ender_shutdown();
@@ -128,10 +125,10 @@ EAPI int eon_init(void)
 			eina_log_domain_unregister(eon_log);
 			eina_shutdown();
 
-			return --_init;
+			return --_init_count;
 		}
 	}
-	return _init;
+	return _init_count;
 }
 
 /**
@@ -139,10 +136,8 @@ EAPI int eon_init(void)
  */
 EAPI void eon_shutdown(void)
 {
-	printf("shutdown\n");
-	if (_init == 1)
+	if (_init_count == 1)
 	{
-		eon_basic_shutdown();
 		escen_shutdown();
 		ender_element_new_listener_remove(_constructor_callback, NULL);
 		ender_shutdown();
@@ -150,7 +145,7 @@ EAPI void eon_shutdown(void)
 		eina_log_domain_unregister(eon_log);
 		eina_shutdown();
 	}
-	_init--;
+	_init_count--;
 }
 
 /**

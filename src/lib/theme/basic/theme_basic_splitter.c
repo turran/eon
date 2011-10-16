@@ -31,7 +31,6 @@ typedef struct _Splitter
 	Enesim_Renderer *compound;
 	Enesim_Renderer *splitter;
 	Enesim_Renderer *background;
-	Enesim_Renderer_Sw_Fill fill;
 } Basic_Splitter;
 
 static const double _border_weight = 2.0;
@@ -43,15 +42,6 @@ static inline Basic_Splitter * _splitter_get(Enesim_Renderer *r)
 	thiz = eon_theme_splitter_data_get(r);
 	return thiz;
 }
-
-static void _draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
-{
-	Basic_Splitter *thiz;
-
-	thiz = _splitter_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
-}
-
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme splitter interface                    *
  *----------------------------------------------------------------------------*/
@@ -65,8 +55,7 @@ static double _basic_splitter_thickness_get(Enesim_Renderer *r)
 	return 10;
 }
 
-static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Splitter *thiz;
 	Eon_Orientation orientation;
@@ -111,18 +100,7 @@ static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->splitter);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
-	{
-		enesim_error_dump(*error);
-		printf("failed 1\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _draw;
-
-	return EINA_TRUE;
+	return thiz->compound;
 }
 
 static void _basic_splitter_cleanup(Enesim_Renderer *r)
@@ -151,8 +129,7 @@ static void _basic_splitter_free(Enesim_Renderer *r)
 static Eon_Theme_Splitter_Descriptor _descriptor = {
 	.thickness_get = _basic_splitter_thickness_get,
 	.min_length_get = _basic_min_length_get,
-	.sw_setup = _basic_splitter_setup,
-	.sw_cleanup = _basic_splitter_cleanup,
+	.setup = _basic_splitter_setup,
 	.free = _basic_splitter_free,
 };
 /*============================================================================*

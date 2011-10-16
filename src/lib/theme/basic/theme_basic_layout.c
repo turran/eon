@@ -25,7 +25,6 @@ typedef struct _Theme_Basic_Layout
 {
 	Enesim_Renderer *background;
 	Enesim_Renderer *compound;
-	Enesim_Renderer_Sw_Fill fill;
 } Theme_Basic_Layout;
 
 static inline Theme_Basic_Layout * _layout_get(Enesim_Renderer *r)
@@ -34,14 +33,6 @@ static inline Theme_Basic_Layout * _layout_get(Enesim_Renderer *r)
 
 	thiz = eon_theme_layout_data_get(r);
 	return thiz;
-}
-
-static void _layout_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Theme_Basic_Layout *thiz;
-
-	thiz = _layout_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Eon's layout theme interface                      *
@@ -72,8 +63,7 @@ static void _layout_child_clear(Enesim_Renderer *r)
 }
 
 
-static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _layout_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Theme_Basic_Layout *thiz;
 	double ox;
@@ -84,26 +74,8 @@ static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
-	{
-		printf("compound cannot setup yet\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
 
-	*fill = _layout_draw;
-
-	return EINA_TRUE;
-}
-
-static void _layout_cleanup(Enesim_Renderer *r)
-{
-	Theme_Basic_Layout *thiz;
-
-	thiz = _layout_get(r);
-	/* cleanup common properties */
-	enesim_renderer_sw_cleanup(thiz->compound);
+	return thiz->compound;
 }
 
 static void _layout_free(Enesim_Renderer *r)
@@ -120,8 +92,7 @@ static Eon_Theme_Layout_Descriptor _descriptor = {
 	.child_add = _layout_child_add,
 	.child_remove = _layout_child_remove,
 	.child_clear = _layout_child_clear,
-	.sw_setup = _layout_setup,
-	.sw_cleanup = _layout_cleanup,
+	.setup = _layout_setup,
 	.free = _layout_free,
 };
 /*============================================================================*

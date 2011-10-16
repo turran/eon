@@ -70,8 +70,8 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 	thiz->child_remove = descriptor->child_remove;
 	thiz->child_clear = descriptor->child_clear;
 
-	pdescriptor.sw_setup = descriptor->sw_setup;
-	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_layout_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

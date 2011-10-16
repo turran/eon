@@ -22,6 +22,7 @@
 /**
  * @{
  */
+
 typedef void (*Eon_Theme_Button_Base_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
 typedef void (*Eon_Theme_Button_Base_Position_Get)(Enesim_Renderer *r, Eon_Size *size, Eon_Position *position);
 

@@ -28,6 +28,9 @@ namespace "eon" {
 	abstract "theme_checkbox" : "theme_button_base" {
 	};
 
+	abstract "theme_toggle" : "theme_button_base" {
+	};
+
 	abstract "theme_progressbar" : "theme_widget" {
 		double "min_width";
 		double "max_width";

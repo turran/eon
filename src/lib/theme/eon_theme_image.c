@@ -111,8 +111,8 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 	thiz->preferred_size_get = descriptor->preferred_size_get;
 	thiz->source_set = descriptor->source_set;
 
-	pdescriptor.sw_setup = descriptor->sw_setup;
-	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_image_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

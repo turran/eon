@@ -21,7 +21,7 @@
  * Instead of using the boundings box of the text renderer use
  * add maxdescent/maxascent properties to etex_base, this way we
  * can calculate this without having a string set
- */ 
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -33,8 +33,6 @@ typedef struct _Eon_Theme_Entry
 	Eon_Theme_Entry_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
 	/* private */
-	Enesim_Renderer *final_r;
-	Enesim_Renderer_Sw_Fill fill;
 	Enesim_Renderer *text;
 	void *data;
 } Eon_Theme_Entry;
@@ -58,16 +56,7 @@ static void _eon_theme_entry_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _eon_theme_entry_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Eon_Theme_Entry *thiz;
-
-	thiz = _eon_theme_entry_get(r);
-	thiz->fill(thiz->final_r, x, y, len, dst);
-}
-
-static Eina_Bool _eon_theme_entry_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Eon_Theme_Entry *thiz;
 	Enesim_Renderer *final_r;
@@ -78,29 +67,16 @@ static Eina_Bool _eon_theme_entry_sw_setup(Enesim_Renderer *r, Enesim_Surface *s
 	{
 		final_r = thiz->setup(r, thiz->text, error);
 	}
-	if (!enesim_renderer_sw_setup(final_r, s, error))
-	{
-		printf("not available to setup yet\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(final_r);
-	thiz->final_r = final_r;
-	if (!thiz->fill) return EINA_FALSE;
-
-	*fill = _eon_theme_entry_draw;
-
-	return EINA_TRUE;
+	return final_r;
 }
 
-static void _eon_theme_entry_sw_cleanup(Enesim_Renderer *r)
+static void _eon_theme_entry_cleanup(Enesim_Renderer *r)
 {
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
 	if (thiz->cleanup)
 		thiz->cleanup(r);
-	if (thiz->final_r)
-		enesim_renderer_sw_cleanup(thiz->final_r);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -196,8 +172,8 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
 
-	pdescriptor.sw_setup = _eon_theme_entry_sw_setup;
-	pdescriptor.sw_cleanup = _eon_theme_entry_sw_cleanup;
+	pdescriptor.setup = _eon_theme_entry_setup;
+	pdescriptor.cleanup = _eon_theme_entry_cleanup;
 	pdescriptor.free = _eon_theme_entry_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

@@ -33,7 +33,6 @@ typedef struct _Radio
 	Enesim_Renderer *outter_circle;
 	Enesim_Renderer *inner_circle;
 	Enesim_Renderer *compound;
-	Enesim_Renderer_Sw_Fill fill;
 } Radio;
 
 const static int radio_to_content_padding = 10;
@@ -46,14 +45,6 @@ static inline Radio * _radio_get(Enesim_Renderer *r)
 	thiz = eon_theme_radio_data_get(r);
 	return thiz;
 }
-
-static void _radio_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Radio *thiz;
-
-	thiz = _radio_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
-}
 /*----------------------------------------------------------------------------*
  *                          The Radio theme interface                         *
  *----------------------------------------------------------------------------*/
@@ -65,8 +56,7 @@ static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = circle_radius;
 }
 
-static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
+static Enesim_Renderer * _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Radio *thiz;
 	Enesim_Renderer *content;
@@ -81,7 +71,7 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	eon_theme_container_content_get(r, &content);
 	if (!content)
 	{
-		return EINA_FALSE;
+		return NULL;
 	}
 	if (thiz->content != content)
 	{
@@ -99,30 +89,8 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
-	/* get the fill function */
-	if (!enesim_renderer_sw_setup(thiz->compound, s, error))
-	{
-		printf("cannot setup the compound\n");
-		return EINA_FALSE;
-	}
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill)
-	{
-		printf("no fill function\n");
-		return EINA_FALSE;
-	}
 
-	*fill = _radio_draw;
-
-	return EINA_TRUE;
-}
-
-static void _radio_cleanup(Enesim_Renderer *r)
-{
-	Radio *thiz;
-
-	thiz = _radio_get(r);
-	enesim_renderer_sw_cleanup(thiz->compound);
+	return thiz->compound;
 }
 
 static void _radio_free(Enesim_Renderer *r)
@@ -141,8 +109,7 @@ static void _radio_free(Enesim_Renderer *r)
 
 static Eon_Theme_Radio_Descriptor _descriptor = {
 	.margin_get = _radio_margin_get,
-	.sw_setup = _radio_setup,
-	.sw_cleanup = _radio_cleanup,
+	.setup = _radio_setup,
 	.free = _radio_free,
 };
 /*============================================================================*

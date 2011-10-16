@@ -56,6 +56,10 @@ namespace "eon" {
 		bool "selected";
 	};
 
+	class "toggle" : "button_base" {
+		bool "active";
+	};
+
 	class "scrollview" : "container" {
 		double "x_position";
 		double "y_position";

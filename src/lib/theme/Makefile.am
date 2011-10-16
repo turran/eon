@@ -32,5 +32,6 @@ eon_theme_radio.c \
 eon_theme_scrollbar.c \
 eon_theme_splitter.c \
 eon_theme_scrollview.c \
+eon_theme_toggle.c \
 eon_theme_widget.c
 

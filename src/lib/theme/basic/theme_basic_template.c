@@ -23,7 +23,6 @@
 typedef struct _Template
 {
 	Enesim_Renderer *compound;
-	Enesim_Renderer_Sw_Fill fill;
 } Template;
 
 static inline Template * _template_get(Enesim_Renderer *r)
@@ -33,30 +32,16 @@ static inline Template * _template_get(Enesim_Renderer *r)
 	thiz = enesim_renderer_data_get(r);
 	return thiz;
 }
-
-static void _template_draw(Enesim_Renderer *r, int x, int y, unsigned int len, uint32_t *dst)
-{
-	Template *thiz;
-
-	thiz = _template_get(r);
-	thiz->fill(thiz->compound, x, y, len, dst);
-}
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _template_setup(Enesim_Renderer *r, Enesim_Renderer_Sw_Fill *fill)
+static Enesim_Renderer * _template_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Template *thiz;
 
 	thiz = _template_get(r);
-	if (!enesim_renderer_sw_setup(thiz->compound))
-		return EINA_FALSE;
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->compound);
-	if (!thiz->fill) return EINA_FALSE;
 
-	*fill = _template_draw;
-
-	return EINA_TRUE;
+	return thiz->compound;
 }
 
 static void _template_cleanup(Enesim_Renderer *r)

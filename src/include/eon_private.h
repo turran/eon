@@ -53,7 +53,6 @@ Escen * eon_theme_get(void);
 Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
 
-#include "eon_basic_private.h"
 #include "private/eon_input_private.h"
 #include "private/eon_generated_private.h"
 #include "private/eon_backend_private.h"

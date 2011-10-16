@@ -127,10 +127,16 @@ typedef struct _Eon_Event_Key_Up
 	Eon_Input *input;
 } Eon_Event_Key_Up;
 
+/* FIXME merge these two */
 typedef struct _Eon_Event_Selected
 {
 	Eina_Bool selected;
 } Eon_Event_Selected;
+
+typedef struct _Eon_Event_Toggled
+{
+	Eina_Bool active;
+} Eon_Event_Toggled;
 
 
 /**

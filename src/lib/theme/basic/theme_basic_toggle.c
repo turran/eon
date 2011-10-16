@@ -21,16 +21,16 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Basic_Button
+typedef struct _Basic_Toggle
 {
 	Eon_Basic_Control_Button *cb;
-} Basic_Button;
+} Basic_Toggle;
 
-static inline Basic_Button * _button_get(Enesim_Renderer *r)
+static inline Basic_Toggle * _toggle_get(Enesim_Renderer *r)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = eon_theme_button_data_get(r);
+	thiz = eon_theme_toggle_data_get(r);
 	return thiz;
 }
 
@@ -39,10 +39,10 @@ static inline Basic_Button * _button_get(Enesim_Renderer *r)
  *----------------------------------------------------------------------------*/
 static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 	Enesim_Renderer *content;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_theme_container_content_get(r, &content);
 	eon_basic_control_button_margin_get(thiz->cb, content, margin);
 }
@@ -50,21 +50,21 @@ static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
 		Eon_Position *position)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_position_get(thiz->cb, size, position);
 }
 
 static Enesim_Renderer * _button_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 	Enesim_Renderer *content;
 	Enesim_Renderer *final_r;
 	double ox, oy;
 	double width, height;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
@@ -79,14 +79,14 @@ static Enesim_Renderer * _button_setup(Enesim_Renderer *r, Enesim_Error **error)
 
 static void _button_free(Enesim_Renderer *r)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_free(thiz->cb);
 	free(thiz);
 }
 
-static Eon_Theme_Button_Descriptor _descriptor = {
+static Eon_Theme_Toggle_Descriptor _descriptor = {
 	.margin_get = _button_margin_get,
 	.position_get = _button_position_get,
 	.setup = _button_setup,
@@ -99,19 +99,19 @@ static Eon_Theme_Button_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_button_new(void)
+EAPI Enesim_Renderer * eon_basic_toggle_new(void)
 {
 	Enesim_Renderer *r;
 	Eon_Basic_Control_Button *cb;
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = calloc(1, sizeof(Basic_Button));
+	thiz = calloc(1, sizeof(Basic_Toggle));
 	if (!thiz) return NULL;
 
 	cb = eon_basic_control_button_new();
 	thiz->cb = cb;
 
-	r = eon_theme_button_new(&_descriptor, thiz);
+	r = eon_theme_toggle_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 	return r;
 
@@ -124,11 +124,11 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_toggle_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_fill_color_set(thiz->cb, color);
 }
 
@@ -136,11 +136,11 @@ EAPI void eon_basic_button_fill_color_set(Enesim_Renderer *r, Enesim_Color color
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_toggle_border_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_border_color_set(thiz->cb, color);
 }
 
@@ -148,11 +148,11 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double padding)
+EAPI void eon_basic_toggle_horizontal_padding_set(Enesim_Renderer *r, double padding)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_horizontal_padding_set(thiz->cb, padding);
 }
 
@@ -160,11 +160,11 @@ EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double pad
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double padding)
+EAPI void eon_basic_toggle_vertical_padding_set(Enesim_Renderer *r, double padding)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_vertical_padding_set(thiz->cb, padding);
 }
 
@@ -172,11 +172,11 @@ EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double paddi
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
+EAPI void eon_basic_toggle_radius_set(Enesim_Renderer *r, double radius)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_radius_set(thiz->cb, radius);
 }
 
@@ -184,11 +184,11 @@ EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_toggle_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_start_shadow_set(thiz->cb, color);
 }
 
@@ -196,11 +196,11 @@ EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color col
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_toggle_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_end_shadow_set(thiz->cb, color);
 }
 
@@ -208,11 +208,11 @@ EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_toggle_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_start_bevel_set(thiz->cb, color);
 }
 
@@ -220,10 +220,11 @@ EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color colo
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_toggle_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Basic_Toggle *thiz;
 
-	thiz = _button_get(r);
+	thiz = _toggle_get(r);
 	eon_basic_control_button_end_bevel_set(thiz->cb, color);
 }
+

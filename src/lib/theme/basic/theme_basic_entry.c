@@ -31,7 +31,6 @@ typedef struct _Basic_Entry
 	Enesim_Renderer *shape;
 	Enesim_Renderer *shape_fill;
 	Enesim_Renderer *background;
-	Enesim_Renderer_Sw_Fill fill;
 } Basic_Entry;
 
 static inline Basic_Entry * _entry_get(Enesim_Renderer *r)

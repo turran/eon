@@ -94,8 +94,8 @@ EAPI Enesim_Renderer * eon_theme_progressbar_new(Eon_Theme_Progressbar_Descripto
 	thiz->min_height_get = descriptor->min_height_get;
 	thiz->preferred_width_get = descriptor->preferred_width_get;
 	thiz->preferred_height_get = descriptor->preferred_height_get;
-	pdescriptor.sw_setup = descriptor->sw_setup;
-	pdescriptor.sw_cleanup = descriptor->sw_cleanup;
+	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_progressbar_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);
