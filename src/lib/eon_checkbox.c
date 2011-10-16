@@ -38,7 +38,6 @@ static void _checkbox_mouse_click(Ender_Element *e, const char *event_name, void
 {
 	Eina_Bool selected;
 
-	printf("called\n");
 	eon_checkbox_selected_get(e, &selected);
 	eon_checkbox_selected_set(e, !selected);
 }
@@ -87,9 +86,11 @@ static void _eon_checkbox_selected_get(Enesim_Renderer *r, Eina_Bool *selected)
 static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 {
 	Eon_Checkbox *thiz;
+	Eon_Event_Selected selected_event;
 	Escen_Ender *theme;
 	Escen_State *new_state;
-	
+	Ender_Element *e;
+
 	thiz = _eon_checkbox_get(r);
 	/* first set the property internally */
 	thiz->selected = selected;
@@ -105,6 +106,10 @@ static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 		eei = eon_widget_theme_instance_get(r);
 		escen_instance_state_set(eei, new_state);
 	}
+	/* trigger the selected event */
+	e = ender_element_renderer_from(r);
+	selected_event.selected = selected;
+	ender_event_dispatch(e, "Selected", &selected_event);
 }
 /*============================================================================*
  *                                 Global                                     *

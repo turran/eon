@@ -10,7 +10,7 @@ typedef enum _Eon_Input_Event
 {
 	EON_INPUT_EVENT_MOUSE_MOVE,
 	EON_INPUT_EVENT_MOUSE_IN,
-	EON_INPUT_EVENT_MOUSE_OUT, 
+	EON_INPUT_EVENT_MOUSE_OUT,
 	EON_INPUT_EVENT_MOUSE_DOWN,
 	EON_INPUT_EVENT_MOUSE_UP,
 	EON_INPUT_EVENT_MOUSE_WHEEL,
@@ -126,6 +126,12 @@ typedef struct _Eon_Event_Key_Up
 {
 	Eon_Input *input;
 } Eon_Event_Key_Up;
+
+typedef struct _Eon_Event_Selected
+{
+	Eina_Bool selected;
+} Eon_Event_Selected;
+
 
 /**
  * @}
