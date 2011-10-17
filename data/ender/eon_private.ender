@@ -47,6 +47,10 @@ namespace "eon" {
 	class "button" : "button_base" {
 	};
 
+	class "color" : "button_base" {
+		color "value";
+	};
+
 	class "radio" : "button_base" {
 		string "group_name";
 		bool "selected";

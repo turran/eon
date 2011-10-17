@@ -15,6 +15,7 @@ eon_backend.c \
 eon_button_base.c \
 eon_button.c \
 eon_canvas.c \
+eon_color.c \
 eon_container.c \
 eon_element.c \
 eon_entry.c \

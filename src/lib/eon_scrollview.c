@@ -115,7 +115,6 @@ static double _eon_scrollview_min_width_get(Ender_Element *e, double cmv)
 	eon_element_min_width_get(thiz->vbar, &vbmv);
 	eon_element_min_width_get(thiz->hbar, &hbmv);
 
-	printf("scroll MW %g\n", vbmv + hbmv);
 	return vbmv + hbmv;
 }
 
@@ -138,7 +137,6 @@ static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
 	eon_element_min_height_get(thiz->vbar, &vbmv);
 	eon_element_min_height_get(thiz->hbar, &hbmv);
 
-	printf("scroll MH %g\n", vbmv + hbmv);
 	return vbmv + hbmv;
 }
 
@@ -149,13 +147,11 @@ static double _eon_scrollview_max_height_get(Ender_Element *e, double cmv)
 
 static double _eon_scrollview_preferred_width_get(Ender_Element *e, double cmv)
 {
-	printf("scroll PW %g\n", cmv);
 	return cmv;
 }
 
 static double _eon_scrollview_preferred_height_get(Ender_Element *e, double cmv)
 {
-	printf("scroll PH %g\n", cmv);
 	return cmv;
 }
 

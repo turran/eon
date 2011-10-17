@@ -55,6 +55,7 @@
 #include "eon_radio.h"
 #include "eon_checkbox.h"
 #include "eon_button.h"
+#include "eon_color.h"
 #include "eon_frame.h"
 #include "eon_label.h"
 #include "eon_theme.h"

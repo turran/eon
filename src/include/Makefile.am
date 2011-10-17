@@ -11,6 +11,7 @@ eon_main.h \
 eon_button.h \
 eon_canvas.h \
 eon_checkbox.h \
+eon_color.h \
 eon_container.h \
 eon_element.h \
 eon_entry.h \
@@ -28,6 +29,7 @@ eon_stack.h \
 eon_theme.h \
 eon_theme_button_base.h \
 eon_theme_button.h \
+eon_theme_color.h \
 eon_theme_container.h \
 eon_theme_entry.h \
 eon_theme_frame.h \

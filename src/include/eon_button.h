@@ -21,7 +21,7 @@
 
 /**
  * @defgroup Eon_Button Button
- * @ingroup Eon_Container
+ * @ingroup Eon_Button_Base
  * @{
  */
 

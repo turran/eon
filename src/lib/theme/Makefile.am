@@ -22,6 +22,7 @@ eon_theme_checkbox.c \
 eon_theme_container.c \
 eon_theme_button.c \
 eon_theme_button_base.c \
+eon_theme_color.c \
 eon_theme_entry.c \
 eon_theme_frame.c \
 eon_theme_image.c \

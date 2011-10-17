@@ -80,6 +80,7 @@ static void _register_enders(void *data)
 	eon_radio_init();
 	eon_checkbox_init();
 	eon_toggle_init();
+	eon_color_init();
 	eon_frame_init();
 }
 /*============================================================================*

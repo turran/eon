@@ -16,35 +16,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_COLOR_H_
+#define _EON_COLOR_H_
 
 /**
- * @defgroup Eon_Theme Theme
+ * @defgroup Eon_Color Color
+ * @ingroup Eon_Button_Base
  * @{
  */
 
-
-#include "eon_theme_widget.h"
-#include "eon_theme_container.h"
-#include "eon_theme_button_base.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_color.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_entry.h"
-#include "eon_theme_frame.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollbar.h"
-#include "eon_theme_scrollview.h"
-#include "eon_theme_splitter.h"
-#include "eon_theme_toggle.h"
+EAPI Ender_Element * eon_color_new(void);
+EAPI void eon_color_value_set(Ender_Element *e, Enesim_Argb value);
+EAPI void eon_color_value_get(Ender_Element *e, Enesim_Argb *value);
 
 /**
  * @}
  */
 
 #endif
+
+

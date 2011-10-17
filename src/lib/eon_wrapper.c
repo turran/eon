@@ -17,20 +17,13 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-/**
- * @todo
- * Given that we always need to return a renderer whenever the eon_element
- * interface requires, we need to create another object, maybe a clipper+background
- * or better a compound+clipper+background and whenever the wrapped property
- * is set, we just swap the element inside the compound and everything will
- * continue working :)
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 typedef struct _Eon_Wrapper
 {
 	Ender_Element *wrapped;
+	Enesim_Renderer *clipper;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *fallback;
 	Enesim_Renderer *wrapped_renderer;
@@ -43,14 +36,6 @@ static inline Eon_Wrapper * _eon_wrapper_get(Enesim_Renderer *r)
 
 	thiz = eon_element_data_get(r);
 	return thiz;
-}
-
-static void _wrapper_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
-{
-	Eon_Wrapper *thiz;
-
-	thiz = _eon_wrapper_get(r);
-	thiz->fill(thiz->wrapped_renderer, x, y, len, dst);
 }
 
 static void _wrapped_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -128,6 +113,7 @@ static double _eon_wrapper_max_width_get(Ender_Element *e)
 	if (!thiz->wrapped) return DBL_MAX;
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
+	printf("wrapper max width %d\n", rect.w);
 	return rect.w;
 }
 
@@ -147,6 +133,7 @@ static double _eon_wrapper_max_height_get(Ender_Element *e)
 	if (!thiz->wrapped) return DBL_MAX;
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
+	printf("wrapper max height %d\n", rect.h);
 	return rect.h;
 }
 
@@ -155,14 +142,20 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
 	double ox, oy;
+	double aw, ah;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return EINA_FALSE;
 
 	eon_element_actual_position_get(r, &ox, &oy);
-	printf("setting wrapper position @ %g %g\n", ox, oy);
+	eon_element_actual_width_get(e, &aw);
+	eon_element_actual_height_get(e, &ah);
+	printf("setting wrapper @ %g %g - %g %g\n", ox, oy, aw, ah);
+
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	enesim_renderer_clipper_width_set(thiz->clipper, aw);
+	enesim_renderer_clipper_height_set(thiz->clipper, ah);
 
 	return EINA_TRUE;
 }
@@ -212,9 +205,13 @@ static Enesim_Renderer * _eon_wrapper_new(void)
 	thiz->fallback = r;
 	enesim_renderer_background_color_set(r, 0xff00ffff);
 
+	r = enesim_renderer_clipper_new();
+	thiz->clipper = r;
+	enesim_renderer_clipper_content_set(r, thiz->fallback);
+
 	r = enesim_renderer_compound_new();
 	thiz->compound = r;
-	enesim_renderer_compound_layer_add(r, thiz->fallback);
+	enesim_renderer_compound_layer_add(r, thiz->clipper);
 
 	r = eon_element_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -241,8 +238,7 @@ static void _eon_wrapper_wrapped_set(Enesim_Renderer *r, Ender_Element *wrapped)
 	thiz->wrapped_renderer = ender_element_renderer_get(wrapped);
 	ender_event_listener_add(thiz->wrapped, "Mutation", _wrapped_changed, r);
 
-	enesim_renderer_compound_layer_clear(thiz->compound);
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->wrapped_renderer);
+	enesim_renderer_clipper_content_set(thiz->clipper, thiz->wrapped_renderer);
 	/* FIXME this should be part of the renderer itself */
 	enesim_renderer_rop_set(thiz->wrapped_renderer, ENESIM_BLEND);
 }

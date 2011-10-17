@@ -22,7 +22,9 @@
  *============================================================================*/
 typedef struct _Eon_Color
 {
-	Ender_Element *button;
+	/* properties */
+	Enesim_Argb argb;
+	/* private */
 	Ender_Element *wrapper;
 } Eon_Color;
 
@@ -30,102 +32,17 @@ static inline Eon_Color * _eon_color_get(Enesim_Renderer *r)
 {
 	Eon_Color *thiz;
 
-	thiz = eon_color_base_data_get(r);
+	thiz = eon_button_base_data_get(r);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
-static double _eon_color_min_width_get(Ender_Element *e)
-{
-	Eon_Color *thiz;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_color_get(r);
-
-	eon_element_min_width_get(thiz->button, &v);
-
-	return v;
-}
-
-static double _eon_color_max_width_get(Ender_Element *e)
-{
-	Eon_Color *thiz;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_color_get(r);
-
-	eon_theme_color_max_width_get(thiz->button, &v);
-
-	return v;
-}
-
-static double _eon_color_min_height_get(Ender_Element *e)
-{
-	Eon_Color *thiz;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_color_get(r);
-
-	eon_element_min_height_get(thiz->button, &v);
-
-	return v;
-}
-
-static double _eon_color_max_height_get(Ender_Element *e)
-{
-	Eon_Color *thiz;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_color_get(r);
-
-	eon_element_max_height_get(thiz->button, &v);
-
-	return v;
-}
-
-static double _eon_color_preferred_width_get(Ender_Element *e)
-{
-	Eon_Color *thiz;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_color_get(r);
-
-	eon_element_preferred_width_get(thiz->button, &v);
-
-	return v;
-}
-
-static double _eon_color_preferred_height_get(Ender_Element *e)
-{
-	Eon_Color *thiz;
-	Enesim_Renderer *r;
-	double v;
-
-	r = ender_element_renderer_get(e);
-	thiz = _eon_color_get(r);
-
-	eon_element_preferred_height_get(thiz->button, &v);
-
-	return v;
-}
-
 static void _eon_color_free(Enesim_Renderer *r)
 {
 	Eon_Color *thiz;
 
 	thiz = _eon_color_get(r);
-	//ender_element_delete(thiz->button);
 	//ender_element_delete(thiz->wrapper);
 
 	free(thiz);
@@ -136,24 +53,21 @@ static void _eon_color_initialize(Ender_Element *e)
 	Eon_Color *thiz;
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
+	Ender_Element *content_e;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_color_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	//eon_theme_color_renderer_get(theme_r, 
+	eon_container_content_set(e, thiz->wrapper);
+	content_e = eon_theme_color_content_element_get(theme_r);
+	eon_wrapper_wrapped_set(thiz->wrapper, content_e);
 }
 
-static Eon_Widget_Descriptor _descriptor = {
+static Eon_Button_Base_Descriptor _descriptor = {
 	.initialize = _eon_color_initialize,
-	.name = "color",
-	.min_width_get = _eon_color_min_width_get,
-	.max_width_get = _eon_color_max_width_get,
-	.min_height_get = _eon_color_min_height_get,
-	.max_height_get = _eon_color_max_height_get,
-	.preferred_width_get = _eon_color_preferred_width_get,
-	.preferred_height_get = _eon_color_preferred_height_get,
 	.free = _eon_color_free,
+	.name = "color",
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -166,18 +80,36 @@ static Enesim_Renderer * _eon_color_new(void)
 	thiz = calloc(1, sizeof(Eon_Color));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new(&_descriptor, thiz);
+	r = eon_button_base_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
-	thiz->button = eon_button_new();
 	thiz->wrapper = eon_wrapper_new();
-	eon_container_content_set(thiz->button, thiz->wrapper);
 
 	return r;
 
 renderer_err:
 	free(thiz);
 	return NULL;
+}
+
+static void _eon_color_value_set(Enesim_Renderer *r, Enesim_Argb argb)
+{
+	Eon_Color *thiz;
+	Enesim_Renderer *theme_r;
+
+	thiz = _eon_color_get(r);
+
+	thiz->argb = argb;
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_color_content_color_set(theme_r, argb);
+}
+
+static void _eon_color_value_get(Enesim_Renderer *r, Enesim_Argb *argb)
+{
+	Eon_Color *thiz;
+
+	thiz = _eon_color_get(r);
+	*argb = thiz->argb;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -199,7 +131,7 @@ EAPI Ender_Element * eon_color_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_color_value_set(Ender_Element *e, Enesim_Color value)
+EAPI void eon_color_value_set(Ender_Element *e, Enesim_Argb value)
 {
 	ender_element_value_set(e, "value", value, NULL);
 }
@@ -208,8 +140,7 @@ EAPI void eon_color_value_set(Ender_Element *e, Enesim_Color value)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_color_value_get(Ender_Element *e, Enesim_Color *value)
+EAPI void eon_color_value_get(Ender_Element *e, Enesim_Argb *value)
 {
 	ender_element_value_get(e, "value", value, NULL);
 }
-
