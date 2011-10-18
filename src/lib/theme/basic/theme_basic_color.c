@@ -153,7 +153,7 @@ EAPI Enesim_Renderer * eon_basic_color_new(void)
 
 	e = ender_element_new("rectangle");
 	r = ender_element_renderer_get(e);
-	enesim_renderer_rectangle_size_set(r, 128.0, 10.0);
+	enesim_renderer_rectangle_size_set(r, 16.0, 16.0);
 	enesim_renderer_rectangle_corner_radius_set(r, 8);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->content_fill);

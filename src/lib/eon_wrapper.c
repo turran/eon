@@ -114,7 +114,8 @@ static double _eon_wrapper_max_width_get(Ender_Element *e)
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
 	printf("wrapper max width %d\n", rect.w);
-	return rect.w;
+	return DBL_MAX;
+	//return rect.w;
 }
 
 static double _eon_wrapper_min_height_get(Ender_Element *e)
@@ -134,7 +135,8 @@ static double _eon_wrapper_max_height_get(Ender_Element *e)
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
 	printf("wrapper max height %d\n", rect.h);
-	return rect.h;
+	return DBL_MAX;
+	//return rect.h;
 }
 
 static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
@@ -156,6 +158,26 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	enesim_renderer_clipper_width_set(thiz->clipper, aw);
 	enesim_renderer_clipper_height_set(thiz->clipper, ah);
+
+	/* set the scale factor, this should be more complex, as we should check if we are using
+	 * some transformation matrix or not
+	 * we should also add a scale property, to know whenever the use wants the scale the content
+	 * or not
+	 */
+	if (thiz->wrapped)
+	{
+		Eina_Rectangle rect;
+		double sx;
+		double sy;
+
+		enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
+		sx = aw / rect.w;
+		sy = ah / rect.h;
+		printf("scaling %g %g\n", sx, sy);
+		enesim_renderer_scale_set(thiz->wrapped_renderer, sx, sy);
+
+	}
+
 
 	return EINA_TRUE;
 }
