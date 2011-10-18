@@ -29,6 +29,7 @@ eon_misc.c \
 eon_checkbox.c \
 eon_progressbar.c \
 eon_radio.c \
+eon_spin.c \
 eon_stack.c \
 eon_scrollbar.c \
 eon_splitter.c \

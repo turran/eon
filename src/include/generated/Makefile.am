@@ -21,7 +21,8 @@ eon_generated_splitter.c \
 eon_generated_image.c \
 eon_generated_wrapper.c \
 eon_generated_toggle.c \
-eon_generated_color.c
+eon_generated_color.c \
+eon_generated_spin.c
 
 %.c:	$(top_srcdir)/data/ender/eon_private.ender
 	ender_generator $(top_srcdir)/data/ender/eon_private.ender $(basename $(subst eon_generated_,,$@)) $@

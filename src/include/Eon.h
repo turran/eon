@@ -58,6 +58,7 @@
 #include "eon_color.h"
 #include "eon_frame.h"
 #include "eon_label.h"
+#include "eon_spin.h"
 #include "eon_theme.h"
 #include "eon_toggle.h"
 #include "eon_widget.h"

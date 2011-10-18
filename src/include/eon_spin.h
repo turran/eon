@@ -16,26 +16,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_BUTTON_BASE_H_
-#define _EON_THEME_BUTTON_BASE_H_
+#ifndef _EON_SPIN_H_
+#define _EON_SPIN_H_
 
 /**
+ * @defgroup Eon_Spin Spin
+ * @ingroup Eon_Spin_Base
  * @{
  */
 
-/* FIXME
- * typedef void (*Eon_Theme_Button_Base_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
- * typedef void (*Eon_Theme_Button_Base_Min_Size_Get)(Enesim_Renderer *r, Eon_Size *size);
- *
- */
-
-typedef void (*Eon_Theme_Button_Base_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
-typedef void (*Eon_Theme_Button_Base_Position_Get)(Enesim_Renderer *r, Eon_Size *size, Eon_Position *position);
+EAPI Ender_Element * eon_spin_new(void);
+EAPI void eon_spin_max_range_set(Ender_Element *e, double max_range);
+EAPI void eon_spin_max_range_get(Ender_Element *e, double *max_range);
+EAPI void eon_spin_min_range_set(Ender_Element *e, double min_range);
+EAPI void eon_spin_min_range_get(Ender_Element *e, double *min_range);
+EAPI void eon_spin_step_increment_set(Ender_Element *e, double step_increment);
+EAPI void eon_spin_step_increment_get(Ender_Element *e, double *step_increment);
 
 /**
  * @}
  */
 
 #endif
-
-

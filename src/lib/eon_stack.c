@@ -413,8 +413,9 @@ static double _eon_stack_preferred_height_get(Ender_Element *e)
 			eon_element_preferred_height_get(ech->ender, &ph);
 			preferred_height = MAX(ph, preferred_height);
 		}
-
+		printf("preferred height %g\n", preferred_height);
 	}
+
 	return preferred_height;
 }
 /*----------------------------------------------------------------------------*
@@ -710,7 +711,7 @@ EAPI void eon_stack_direction_get(Ender_Element *e, Eon_Stack_Direction *directi
 EAPI void eon_stack_child_horizontal_alignment_set(Ender_Element *e, Ender_Element *child,
 		Eon_Horizontal_Alignment alignment)
 {
-	ender_element_value_set(child, "horizontal_alignment", alignment, NULL);
+	ender_element_value_set(child, "child_horizontal_alignment", alignment, NULL);
 }
 
 /**
@@ -720,7 +721,7 @@ EAPI void eon_stack_child_horizontal_alignment_set(Ender_Element *e, Ender_Eleme
 EAPI void eon_stack_child_vertical_alignment_set(Ender_Element *e, Ender_Element *child,
 		Eon_Vertical_Alignment alignment)
 {
-	ender_element_value_set(child, "vertical_alignment", alignment, NULL);
+	ender_element_value_set(child, "child_vertical_alignment", alignment, NULL);
 }
 
 /**

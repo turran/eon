@@ -118,7 +118,7 @@ static void _eon_button_base_initialize(Ender_Element *e)
  * the case with this flag
  */
 
-static double _eon_button_base_min_width_get(Ender_Element *e, double cmv)
+static double _eon_button_base_min_preferred_width_get(Ender_Element *e, double cmv)
 {
 	Eon_Button_Base *thiz;
 	Eon_Margin margin;
@@ -134,7 +134,7 @@ static double _eon_button_base_min_width_get(Ender_Element *e, double cmv)
 	return cmv + margin.top + margin.bottom;
 }
 
-static double _eon_button_base_min_height_get(Ender_Element *e, double cmv)
+static double _eon_button_base_min_preferred_height_get(Ender_Element *e, double cmv)
 {
 	Eon_Button_Base *thiz;
 	Eon_Margin margin;
@@ -193,7 +193,6 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e)
 		eon_element_real_relative_size_get(content, &size, &size);
 		eon_element_actual_size_set(content_r, size.width, size.height);
 		eon_theme_button_base_position_get(theme_r, &size, &position);
-		//eon_element_actual_position_set(content_r, ax + margin.left, ay + margin.top);
 		eon_element_actual_position_set(content_r, position.x, position.y);
 		if (!eon_element_setup(content))
 		{
@@ -276,10 +275,12 @@ Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, vo
 	pdescriptor.free = _eon_button_base_free;
 	pdescriptor.setup = _eon_button_base_setup;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.min_width_get = _eon_button_base_min_width_get;
+	pdescriptor.min_width_get = _eon_button_base_min_preferred_width_get;
 	pdescriptor.max_width_get = _eon_button_base_max_width_get;
-	pdescriptor.min_height_get = _eon_button_base_min_height_get;
+	pdescriptor.min_height_get = _eon_button_base_min_preferred_height_get;
 	pdescriptor.max_height_get = _eon_button_base_max_height_get;
+	pdescriptor.preferred_width_get = _eon_button_base_min_preferred_width_get;
+	pdescriptor.preferred_height_get = _eon_button_base_min_preferred_height_get;
 
 	r = eon_container_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

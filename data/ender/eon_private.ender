@@ -111,5 +111,11 @@ namespace "eon" {
 		int "max_length";
 		string "text";
 	};
+
+	class "spin" : "widget" {
+		double "min_range";
+		double "max_range";
+		double "step_increment";
+	};
 };
 

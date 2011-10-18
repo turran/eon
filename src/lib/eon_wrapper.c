@@ -76,6 +76,7 @@ static double _eon_wrapper_preferred_height_get(Ender_Element *e)
 	if (!thiz->wrapped_renderer) return 0;
 
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
+	printf("wrapper preferred height %d\n", rect.h);
 	return rect.h;
 }
 
@@ -90,6 +91,7 @@ static double _eon_wrapper_preferred_width_get(Ender_Element *e)
 	if (!thiz->wrapped_renderer) return 0;
 
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
+	printf("wrapper preferred width %d\n", rect.w);
 	return rect.w;
 }
 
@@ -99,7 +101,7 @@ static double _eon_wrapper_preferred_width_get(Ender_Element *e)
 
 static double _eon_wrapper_min_width_get(Ender_Element *e)
 {
-	return 0;
+	return 1;
 }
 
 static double _eon_wrapper_max_width_get(Ender_Element *e)
@@ -120,7 +122,7 @@ static double _eon_wrapper_max_width_get(Ender_Element *e)
 
 static double _eon_wrapper_min_height_get(Ender_Element *e)
 {
-	return 0;
+	return 1;
 }
 
 static double _eon_wrapper_max_height_get(Ender_Element *e)
@@ -177,7 +179,6 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 		enesim_renderer_scale_set(thiz->wrapped_renderer, sx, sy);
 
 	}
-
 
 	return EINA_TRUE;
 }
