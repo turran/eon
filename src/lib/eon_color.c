@@ -17,6 +17,12 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/* This widget is kind of tricky, not by its complexity but by its nature.
+ * Should this be an *instance* of a button or it should *inherit* from a button
+ * i.e the "has a", "is a" issue
+ * so far we have implemented as an inheritance, but maybe we should do the
+ * other way around even if that needs some code duplication
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
