@@ -16,6 +16,10 @@ namespace "eon" {
 		renderer "content";
 	};
 
+	abstract "theme_spin" : "theme_widget" {
+
+	};
+
 	abstract "theme_button_base" : "theme_container" {
 	};
 

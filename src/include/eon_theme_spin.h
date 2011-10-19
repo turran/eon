@@ -16,36 +16,33 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_THEME_SPIN_H_
+#define _EON_THEME_SPIN_H_
 
 /**
- * @defgroup Eon_Theme Theme
  * @{
  */
+typedef void (*Eon_Theme_Spin_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
 
+typedef struct _Eon_Theme_Spin_Descriptor
+{
+	Eon_Theme_Spin_Margin_Get margin_get;
+	/* renderer needed functions */
+	Eon_Theme_Widget_Setup setup;
+	Eon_Theme_Widget_Cleanup cleanup;
+	Enesim_Renderer_Delete free;
+} Eon_Theme_Spin_Descriptor;
 
-#include "eon_theme_widget.h"
-#include "eon_theme_container.h"
-#include "eon_theme_button_base.h"
-#include "eon_theme_radio.h"
-#include "eon_theme_checkbox.h"
-#include "eon_theme_color.h"
-#include "eon_theme_label.h"
-#include "eon_theme_button.h"
-#include "eon_theme_entry.h"
-#include "eon_theme_frame.h"
-#include "eon_theme_progressbar.h"
-#include "eon_theme_layout.h"
-#include "eon_theme_image.h"
-#include "eon_theme_scrollbar.h"
-#include "eon_theme_scrollview.h"
-#include "eon_theme_spin.h"
-#include "eon_theme_splitter.h"
-#include "eon_theme_toggle.h"
+EAPI Enesim_Renderer * eon_theme_spin_new(Eon_Theme_Spin_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_spin(Enesim_Renderer *r);
+EAPI void * eon_theme_spin_data_get(Enesim_Renderer *r);
 
 /**
  * @}
  */
 
+
 #endif
+
+

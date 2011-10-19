@@ -83,4 +83,9 @@ namespace "eon" {
 	class "basic_entry" : "theme_entry" {
 
 	};
+
+	class "basic_spin" : "theme_spin" {
+
+	};
+
 };

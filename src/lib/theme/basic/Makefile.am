@@ -23,5 +23,6 @@ theme_basic_layout.c \
 theme_basic_progressbar.c \
 theme_basic_scrollbar.c \
 theme_basic_scrollview.c \
+theme_basic_spin.c \
 theme_basic_splitter.c \
 theme_basic_toggle.c

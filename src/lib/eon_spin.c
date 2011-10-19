@@ -23,10 +23,11 @@
 typedef struct _Eon_Spin
 {
 	/* properties */
-	double min;
-	double max;
+	double min_range;
+	double max_range;
 	double step_increment;
 	/* private */
+	Ender_Element *entry;
 } Eon_Spin;
 
 static inline Eon_Spin * _eon_spin_get(Enesim_Renderer *r)
@@ -42,6 +43,7 @@ static inline Eon_Spin * _eon_spin_get(Enesim_Renderer *r)
 static double _eon_spin_min_width_get(Ender_Element *e)
 {
 	Eon_Spin *thiz;
+	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
@@ -50,14 +52,17 @@ static double _eon_spin_min_width_get(Ender_Element *e)
 	thiz = _eon_spin_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_spin_min_width_get(theme_r, &v);
 
-	return v;
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_min_width_get(thiz->entry, &v);
+
+	return v + margin.left + margin.right;
 }
 
 static double _eon_spin_max_width_get(Ender_Element *e)
 {
 	Eon_Spin *thiz;
+	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
@@ -66,14 +71,17 @@ static double _eon_spin_max_width_get(Ender_Element *e)
 	thiz = _eon_spin_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_spin_max_width_get(theme_r, &v);
 
-	return v;
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_max_width_get(thiz->entry, &v);
+
+	return v + margin.left + margin.right;
 }
 
 static double _eon_spin_min_height_get(Ender_Element *e)
 {
 	Eon_Spin *thiz;
+	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
@@ -82,14 +90,17 @@ static double _eon_spin_min_height_get(Ender_Element *e)
 	thiz = _eon_spin_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_spin_min_height_get(theme_r, &v);
 
-	return v;
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_min_height_get(thiz->entry, &v);
+
+	return v + margin.top + margin.bottom;
 }
 
 static double _eon_spin_max_height_get(Ender_Element *e)
 {
 	Eon_Spin *thiz;
+	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
@@ -98,14 +109,17 @@ static double _eon_spin_max_height_get(Ender_Element *e)
 	thiz = _eon_spin_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_spin_max_height_get(theme_r, &v);
 
-	return v;
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_max_height_get(thiz->entry, &v);
+
+	return v + margin.top + margin.bottom;
 }
 
 static double _eon_spin_preferred_width_get(Ender_Element *e)
 {
 	Eon_Spin *thiz;
+	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
@@ -114,14 +128,17 @@ static double _eon_spin_preferred_width_get(Ender_Element *e)
 	thiz = _eon_spin_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_spin_preferred_width_get(theme_r, &v);
 
-	return v;
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_preferred_width_get(thiz->entry, &v);
+
+	return v + margin.left + margin.right;
 }
 
 static double _eon_spin_preferred_height_get(Ender_Element *e)
 {
 	Eon_Spin *thiz;
+	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
@@ -130,9 +147,11 @@ static double _eon_spin_preferred_height_get(Ender_Element *e)
 	thiz = _eon_spin_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-	//eon_theme_spin_preferred_height_get(theme_r, &v);
 
-	return v;
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_preferred_height_get(thiz->entry, &v);
+
+	return v + margin.top + margin.bottom;
 }
 
 static void _eon_spin_initialize(Ender_Element *ender)
@@ -140,8 +159,42 @@ static void _eon_spin_initialize(Ender_Element *ender)
 	/* register every needed callback */
 }
 
+static Eina_Bool _eon_spin_setup(Ender_Element *e)
+{
+	Eon_Spin *thiz;
+	Eon_Size size;
+	Eon_Size area;
+	Eon_Margin margin;
+	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
+	Enesim_Renderer *entry_r;
+	Enesim_Renderer *entry_rr;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_spin_get(r);
+
+	theme_r = eon_widget_theme_renderer_get(r);
+
+	eon_theme_spin_margin_get(theme_r, &margin);
+	eon_element_actual_size_get(r, &size);
+	area.width = size.width - margin.left - margin.right;
+	area.height = size.height - margin.top - margin.bottom;
+
+	entry_rr = eon_element_renderer_get(thiz->entry);
+	entry_r = ender_element_renderer_get(thiz->entry);
+	eon_element_actual_size_set(entry_r, area.width, area.height);
+	eon_element_actual_position_set(entry_r, size.width - area.width, size.height - area.height);
+	eon_element_setup(thiz->entry);
+
+	/* pass it to the theme */
+	eon_theme_spin_entry_set(theme_r, entry_rr);
+
+	return EINA_TRUE;
+}
+
 static Eon_Widget_Descriptor _eon_spin_widget_descriptor = {
 	.initialize = _eon_spin_initialize,
+	.setup = _eon_spin_setup,
 	.name = "spin",
 	.min_width_get = _eon_spin_min_width_get,
 	.max_width_get = _eon_spin_max_width_get,
@@ -156,10 +209,15 @@ static Eon_Widget_Descriptor _eon_spin_widget_descriptor = {
 static Enesim_Renderer * _eon_spin_new(void)
 {
 	Eon_Spin *thiz;
+	Ender_Element *e;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Spin));
 	if (!thiz) return NULL;
+
+	e = eon_entry_new();
+	if (!e) goto entry_err;
+	thiz->entry = e;
 
 	r = eon_widget_new(&_eon_spin_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -167,40 +225,71 @@ static Enesim_Renderer * _eon_spin_new(void)
 	return r;
 
 renderer_err:
+	//ender_element_unref(e);
+entry_err:
 	free(thiz);
 	return NULL;
 }
 
 static void _eon_spin_max_range_set(Enesim_Renderer *r, double max_range)
 {
+	Eon_Spin *thiz;
 
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	thiz->max_range = max_range;
 }
 
 static void _eon_spin_max_range_get(Enesim_Renderer *r, double *max_range)
 {
+	Eon_Spin *thiz;
 
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	*max_range = thiz->max_range;
 }
 
 static void _eon_spin_min_range_set(Enesim_Renderer *r, double min_range)
 {
+	Eon_Spin *thiz;
 
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	thiz->min_range = min_range;
 }
 
 static void _eon_spin_min_range_get(Enesim_Renderer *r, double *min_range)
 {
+	Eon_Spin *thiz;
 
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	*min_range = thiz->min_range;
 }
 
 static void _eon_spin_step_increment_set(Enesim_Renderer *r, double step_increment)
 {
+	Eon_Spin *thiz;
 
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	thiz->step_increment = step_increment;
 }
 
 static void _eon_spin_step_increment_get(Enesim_Renderer *r, double *step_increment)
 {
+	Eon_Spin *thiz;
 
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	*step_increment = thiz->step_increment;
 }
-
 
 #include "eon_generated_spin.c"
 /*============================================================================*

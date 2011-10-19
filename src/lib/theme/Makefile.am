@@ -31,6 +31,7 @@ eon_theme_layout.c \
 eon_theme_progressbar.c \
 eon_theme_radio.c \
 eon_theme_scrollbar.c \
+eon_theme_spin.c \
 eon_theme_splitter.c \
 eon_theme_scrollview.c \
 eon_theme_toggle.c \

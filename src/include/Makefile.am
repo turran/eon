@@ -43,6 +43,7 @@ eon_theme_label.h \
 eon_theme_progressbar.h \
 eon_theme_scrollbar.h \
 eon_theme_scrollview.h \
+eon_theme_spin.h \
 eon_theme_splitter.h \
 eon_theme_toggle.h \
 eon_toggle.h \
