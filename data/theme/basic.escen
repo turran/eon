@@ -217,4 +217,8 @@ escen {
 			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
 		};
 	};
+
+	basic_spin "spin" {
+
+	};
 };

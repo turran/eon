@@ -68,6 +68,7 @@ static void _register_enders(void *data)
 	eon_scrollbar_init();
 	eon_progressbar_init();
 	eon_entry_init();
+	eon_spin_init();
 	/* layout inheritance */
 	eon_canvas_init();
 	eon_stack_init();

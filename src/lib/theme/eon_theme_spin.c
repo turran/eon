@@ -43,6 +43,7 @@ typedef struct _Eon_Theme_Spin
 	/* private */
 	void *data;
 	Eon_Theme_Spin_Margin_Get margin_get;
+	Eon_Theme_Spin_Entry_Set entry_set;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Spin;
 
@@ -79,6 +80,8 @@ Enesim_Renderer * eon_theme_spin_new(Eon_Theme_Spin_Descriptor *descriptor,
 	EINA_MAGIC_SET(thiz, EON_THEME_SPIN_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
+	thiz->margin_get = descriptor->margin_get;
+	thiz->entry_set = descriptor->entry_set;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_spin_free;
@@ -132,6 +135,11 @@ void eon_theme_spin_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 
 void eon_theme_spin_entry_set(Enesim_Renderer *r, Enesim_Renderer *entry)
 {
+	Eon_Theme_Spin *thiz;
+
+	thiz = _eon_theme_spin_get(r);
+	if (thiz->entry_set)
+		thiz->entry_set(r, entry);
 
 }
 /*============================================================================*

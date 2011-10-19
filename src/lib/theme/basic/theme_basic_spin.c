@@ -60,6 +60,8 @@ static void _spin_entry_set(Enesim_Renderer *r, Enesim_Renderer *entry)
 	Basic_Spin *thiz;
 
 	thiz = _spin_get(r);
+	/* FIXME this logic of checking if the entry is the same or not
+	 * should be handled on the widget */
 	if (thiz->entry == entry) return;
 
 	if (thiz->entry)
@@ -83,6 +85,7 @@ static void _spin_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Spin_Descriptor _descriptor = {
+	.entry_set = _spin_entry_set,
 	.setup = _spin_setup,
 	.free = _spin_free,
 };
