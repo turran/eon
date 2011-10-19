@@ -47,7 +47,9 @@ static inline Eon_Container * _eon_container_get(Enesim_Renderer *r)
 	thiz = eon_widget_data_get(r);
 	return thiz;
 }
-
+/*----------------------------------------------------------------------------*
+ *                              The input wrapper                             *
+ *----------------------------------------------------------------------------*/
 Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 {
 	Eon_Container *thiz;

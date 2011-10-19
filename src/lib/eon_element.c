@@ -349,21 +349,6 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 		*height = thiz->preferred_height_get(e);
 }
 
-static void _eon_element_force_redraw_set(Enesim_Renderer *r, Eina_Bool force)
-{
-	Eon_Element *thiz;
-	Ender_Element *e;
-
-	thiz = _eon_element_get(r);
-	if (!thiz) return;
-	e = ender_element_renderer_from(r);
-	if (!e)
-	{
-		thiz->changed = force;
-		return;
-	}
-	eon_element_changed_set(e, force);
-}
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
  *----------------------------------------------------------------------------*/
@@ -798,7 +783,6 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 	return r;
 }
 
-#define _eon_element_force_redraw_get NULL
 #define _eon_element_actual_width_set NULL
 #define _eon_element_actual_height_set NULL
 #define _eon_element_actual_x_set NULL
@@ -968,14 +952,3 @@ EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 {
 	ender_element_value_get(e, "max_height", height, NULL);
 }
-
-/** FIXME remove this! */
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_element_force_redraw_set(Ender_Element *e, Eina_Bool force)
-{
-	ender_element_value_get(e, "force_redraw", force, NULL);
-}
-

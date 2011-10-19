@@ -23,7 +23,7 @@
  * @{
  */
 typedef void (*Eon_Theme_Spin_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
-typedef void (*Eon_Theme_Spin_Entry_Set)(Enesim_Renderer *r, Enesim_Renderer *entry);
+typedef void (*Eon_Theme_Spin_Entry_Set)(Enesim_Renderer *r, Enesim_Renderer *entry, Enesim_Renderer *old_entry);
 
 typedef struct _Eon_Theme_Spin_Descriptor
 {
