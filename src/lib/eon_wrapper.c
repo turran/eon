@@ -76,7 +76,7 @@ static double _eon_wrapper_preferred_height_get(Ender_Element *e)
 	if (!thiz->wrapped_renderer) return 0;
 
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
-	printf("wrapper preferred height %d\n", rect.h);
+	//printf("wrapper preferred height %d\n", rect.h);
 	return rect.h;
 }
 
@@ -91,7 +91,7 @@ static double _eon_wrapper_preferred_width_get(Ender_Element *e)
 	if (!thiz->wrapped_renderer) return 0;
 
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
-	printf("wrapper preferred width %d\n", rect.w);
+	//printf("wrapper preferred width %d\n", rect.w);
 	return rect.w;
 }
 
@@ -115,7 +115,7 @@ static double _eon_wrapper_max_width_get(Ender_Element *e)
 	if (!thiz->wrapped) return DBL_MAX;
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
-	printf("wrapper max width %d\n", rect.w);
+	//printf("wrapper max width %d\n", rect.w);
 	return DBL_MAX;
 	//return rect.w;
 }
@@ -136,7 +136,7 @@ static double _eon_wrapper_max_height_get(Ender_Element *e)
 	if (!thiz->wrapped) return DBL_MAX;
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
-	printf("wrapper max height %d\n", rect.h);
+	//printf("wrapper max height %d\n", rect.h);
 	return DBL_MAX;
 	//return rect.h;
 }
@@ -155,7 +155,7 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 	eon_element_actual_position_get(r, &ox, &oy);
 	eon_element_actual_width_get(e, &aw);
 	eon_element_actual_height_get(e, &ah);
-	printf("setting wrapper @ %g %g - %g %g\n", ox, oy, aw, ah);
+	//printf("setting wrapper @ %g %g - %g %g\n", ox, oy, aw, ah);
 
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	enesim_renderer_clipper_width_set(thiz->clipper, aw);
@@ -175,7 +175,7 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 		enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 		sx = aw / rect.w;
 		sy = ah / rect.h;
-		printf("scaling %g %g\n", sx, sy);
+		//printf("scaling %g %g\n", sx, sy);
 		enesim_renderer_scale_set(thiz->wrapped_renderer, sx, sy);
 
 	}

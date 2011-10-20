@@ -27,6 +27,8 @@
  *============================================================================*/
 typedef struct _Eon_Theme_Entry
 {
+	/* properties */
+	Eon_Horizontal_Alignment alignment;
 	/* interface */
 	Eon_Theme_Entry_Margin_Get margin_get;
 	Eon_Theme_Entry_Setup setup;
@@ -65,7 +67,7 @@ static Enesim_Renderer * _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error
 	final_r = thiz->text;
 	if (thiz->setup)
 	{
-		final_r = thiz->setup(r, thiz->text, error);
+		final_r = thiz->setup(r, thiz->text, thiz->alignment, error);
 	}
 	return final_r;
 }
@@ -113,7 +115,6 @@ void eon_theme_entry_min_height_get(Enesim_Renderer *r, double *height)
 	etex_base_max_descent_get(thiz->text, &min);
 	h = max + min;
 
-	printf("min h = %d\n", h);
 	if (thiz->margin_get)
 	{
 		Eon_Margin margin;
@@ -256,4 +257,28 @@ EAPI void eon_theme_entry_size_set(Enesim_Renderer *r, int size)
 
 	thiz = _eon_theme_entry_get(r);
 	etex_base_size_set(thiz->text, size);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_entry_alignment_set(Enesim_Renderer *r, Eon_Horizontal_Alignment alignment)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	thiz->alignment = alignment;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_entry_alignment_get(Enesim_Renderer *r, Eon_Horizontal_Alignment *alignment)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	*alignment = thiz->alignment;
 }

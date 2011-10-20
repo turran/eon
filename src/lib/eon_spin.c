@@ -26,6 +26,7 @@ typedef struct _Eon_Spin
 	double min_range;
 	double max_range;
 	double step_increment;
+	double value;
 	/* private */
 	Ender_Element *entry;
 	Enesim_Renderer *entry_rr;
@@ -377,6 +378,7 @@ static Enesim_Renderer * _eon_spin_new(void)
 
 	e = eon_entry_new();
 	if (!e) goto entry_err;
+	eon_entry_alignment_set(e, EON_HORIZONTAL_ALIGNMENT_RIGHT);
 	thiz->entry = e;
 
 	r = eon_widget_new(&_eon_spin_widget_descriptor, thiz);
@@ -451,6 +453,30 @@ static void _eon_spin_step_increment_get(Enesim_Renderer *r, double *step_increm
 	*step_increment = thiz->step_increment;
 }
 
+static void _eon_spin_value_set(Enesim_Renderer *r, double value)
+{
+	Eon_Spin *thiz;
+	char text[PATH_MAX];
+
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	/* FIXME check that the number is valid */
+	thiz->value = value;
+	snprintf(text, PATH_MAX, "%g", value);
+	eon_entry_text_set(thiz->entry, text);
+}
+
+static void _eon_spin_value_get(Enesim_Renderer *r, double *value)
+{
+	Eon_Spin *thiz;
+
+	thiz = _eon_spin_get(r);
+	if (!thiz) return;
+
+	*value = thiz->value;
+}
+
 #include "eon_generated_spin.c"
 /*============================================================================*
  *                                 Global                                     *
@@ -504,6 +530,24 @@ EAPI void eon_spin_min_range_set(Ender_Element *e, double min_range)
 EAPI void eon_spin_min_range_get(Ender_Element *e, double *min_range)
 {
 	ender_element_value_get(e, "min_range", min_range, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_spin_value_set(Ender_Element *e, double value)
+{
+	ender_element_value_set(e, "value", value, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_spin_value_get(Ender_Element *e, double *value)
+{
+	ender_element_value_get(e, "value", value, NULL);
 }
 
 /**

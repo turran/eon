@@ -30,9 +30,13 @@ typedef struct _Basic_Spin
 	/* private */
 	Enesim_Renderer *compound;
 	Enesim_Renderer *arrows;
+	Eon_Basic_Control_Arrow *increment_arrow;
+	Eon_Basic_Control_Arrow *decrement_arrow;
 	Enesim_Renderer *arrows_background;
 	Enesim_Renderer *arrows_background_shadow;
 } Basic_Spin;
+
+static const double _arrow_width = 13;
 
 static inline Basic_Spin * _spin_get(Enesim_Renderer *r)
 {
@@ -46,9 +50,11 @@ static inline Basic_Spin * _spin_get(Enesim_Renderer *r)
  *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
-	Enesim_Renderer *rr;
 	Basic_Spin *thiz;
+	Eon_Size size;
+	Eon_Position position;
 	Enesim_Matrix m;
+	Enesim_Renderer *rr;
 	double ox, oy;
 	double width, height;
 
@@ -63,16 +69,26 @@ static Enesim_Renderer * _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 
 	rr = thiz->arrows_background_shadow;
 	m.xx = 0; m.xy = 0; m.xz = 0;
-	m.yx = 0; m.yy = 1.0/height; m.yz = 0;
+	m.yx = 0; m.yy = 1.0/(height - 2); m.yz = 0;
 	m.zx = 0; m.zy = 0; m.zz = 1;
 	enesim_renderer_transformation_set(rr, &m);
 
+	rr = thiz->arrows;
+	enesim_renderer_origin_set(rr, width - _arrow_width - 3, 1);
+
 	rr = thiz->arrows_background;
-	enesim_renderer_rectangle_width_set(rr, 12);
+	enesim_renderer_rectangle_width_set(rr, _arrow_width + 2);
 	enesim_renderer_rectangle_height_set(rr, height - 2);
 
-	rr = thiz->arrows;
-	enesim_renderer_origin_set(rr, width - 13, 1);
+	size.width = _arrow_width;
+	size.height = (height - 4 - 1) / 2;
+
+	position.x = 1;
+	position.y = 1;
+	eon_basic_control_arrow_setup(thiz->increment_arrow, &position, &size, EON_BASIC_CONTROL_ARROW_DIRECTION_TOP);
+	position.x = 1;
+	position.y = size.height + 2;
+	eon_basic_control_arrow_setup(thiz->decrement_arrow, &position, &size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
 
 	return thiz->compound;
 }
@@ -80,7 +96,7 @@ static Enesim_Renderer * _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 static void _spin_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
 	margin->left = 2;
-	margin->right = 14;
+	margin->right = _arrow_width + 4;
 	margin->top = 2;
 	margin->bottom = 2;
 }
@@ -126,6 +142,7 @@ static Eon_Theme_Spin_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_spin_new(void)
 {
 	Enesim_Renderer *r;
+	Eon_Basic_Control_Arrow *ca;
 	Basic_Spin *thiz;
 
 	thiz = calloc(1, sizeof(Basic_Spin));
@@ -149,8 +166,16 @@ EAPI Enesim_Renderer * eon_basic_spin_new(void)
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	thiz->arrows_background = r;
 
+	ca = eon_basic_control_arrow_new();
+	thiz->increment_arrow = ca;
+
+	ca = eon_basic_control_arrow_new();
+	thiz->decrement_arrow = ca;
+
 	r = enesim_renderer_compound_new();
 	enesim_renderer_compound_layer_add(r, thiz->arrows_background);
+	enesim_renderer_compound_layer_add(r, eon_basic_control_arrow_renderer_get(thiz->increment_arrow));
+	enesim_renderer_compound_layer_add(r, eon_basic_control_arrow_renderer_get(thiz->decrement_arrow));
 	thiz->arrows = r;
 
 	r = enesim_renderer_compound_new();

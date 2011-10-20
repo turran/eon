@@ -96,5 +96,6 @@ namespace "eon" {
 	abstract "theme_entry" : "theme_widget" {
 		string "font";
 		int "size";
+		int "alignment";
 	};
 };

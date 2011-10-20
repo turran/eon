@@ -47,13 +47,15 @@ static const double _border_weight = 2.0;
  *----------------------------------------------------------------------------*/
 static void _entry_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	margin->left = margin->right = margin->top = margin->bottom = 2;
+	margin->left = margin->right = margin->top = margin->bottom = 4;
 }
 
 static Enesim_Renderer * _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
-		Enesim_Error **error)
+		Eon_Horizontal_Alignment alignment, Enesim_Error **error)
 {
 	Basic_Entry *thiz;
+	Enesim_Rectangle boundings;
+	double tx, ty;
 	double ox, oy;
 	double width, height;
 
@@ -72,9 +74,29 @@ static Enesim_Renderer * _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 		thiz->text = text;
 		enesim_renderer_compound_layer_add(thiz->shape_fill, text);
 		enesim_renderer_rop_set(text, ENESIM_BLEND);
-		enesim_renderer_origin_set(text, 2.0, 2.0);
 		enesim_renderer_color_set(text, 0xff000000);
 	}
+	/* chech the alignment */
+	enesim_renderer_boundings(text, &boundings);
+	printf("bounds %g\n", boundings.w);
+	switch (alignment)
+	{
+		case EON_HORIZONTAL_ALIGNMENT_LEFT:
+		tx = 4.0;
+		ty = 4.0;
+		break;
+
+		case EON_HORIZONTAL_ALIGNMENT_CENTER:
+		tx = (width - boundings.w) / 2.0;
+		ty = 4.0;
+		break;
+
+		case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+		tx = width - boundings.w - 4.0;
+		ty = 4.0;
+		break;
+	}
+	enesim_renderer_origin_set(text, tx, ty);
 
 	return thiz->shape;
 }

@@ -29,6 +29,7 @@ typedef struct _Eon_Entry
 	/* properties */
 	int max_length;
 	Eon_Horizontal_Alignment alignment;
+	Eina_Bool enabled;
 	/* private */
 	Ender_Element *label;
 	Etex_Buffer *buffer;
@@ -177,6 +178,7 @@ static Enesim_Renderer * _eon_entry_new(void)
 	if (!thiz) return NULL;
 	/* default values */
 	thiz->max_length = 255;
+	thiz->enabled = EINA_TRUE;
 
 	r = eon_widget_new(&_eon_entry_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -210,6 +212,7 @@ static void _eon_entry_alignment_set(Enesim_Renderer *r, Eon_Horizontal_Alignmen
 
 	thiz = _eon_entry_get(r);
 	thiz->alignment = alignment;
+	eon_widget_property_set(r, "alignment", alignment, NULL);
 }
 
 static void _eon_entry_alignment_get(Enesim_Renderer *r, Eon_Horizontal_Alignment *alignment)
@@ -225,9 +228,25 @@ static void _eon_entry_text_set(Enesim_Renderer *r, char *text)
 	Eon_Entry *thiz;
 
 	thiz = _eon_entry_get(r);
+	etex_buffer_string_set(thiz->buffer, text, -1);
 }
 
 static void _eon_entry_text_get(Enesim_Renderer *r, char **text)
+{
+	Eon_Entry *thiz;
+
+	thiz = _eon_entry_get(r);
+}
+
+static void _eon_entry_enabled_set(Enesim_Renderer *r, Eina_Bool enabled)
+{
+	Eon_Entry *thiz;
+
+	thiz = _eon_entry_get(r);
+	etex_buffer_string_set(thiz->buffer, enabled, -1);
+}
+
+static void _eon_entry_enabled_get(Enesim_Renderer *r, Eina_Bool enabled)
 {
 	Eon_Entry *thiz;
 
@@ -284,6 +303,24 @@ EAPI void eon_entry_alignment_set(Ender_Element *e, Eon_Horizontal_Alignment ali
 EAPI void eon_entry_alignment_get(Ender_Element *e, Eon_Horizontal_Alignment *alignment)
 {
 	ender_element_value_get(e, "alignment", alignment, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_entry_enabled_set(Ender_Element *e, Eina_Bool enabled)
+{
+	ender_element_value_set(e, "enabled", enabled, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_entry_enabled_get(Ender_Element *e, Eina_Bool enabled)
+{
+	ender_element_value_get(e, "enabled", enabled, NULL);
 }
 
 /**

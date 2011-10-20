@@ -109,12 +109,14 @@ namespace "eon" {
 		int "alignment";
 		int "max_length";
 		string "text";
+		bool "enabled";
 	};
 
 	class "spin" : "widget" {
 		double "min_range";
 		double "max_range";
 		double "step_increment";
+		double "value";
 	};
 };
 

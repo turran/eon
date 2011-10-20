@@ -23,7 +23,8 @@
  * @{
  */
 
-typedef Enesim_Renderer * (*Eon_Theme_Entry_Setup)(Enesim_Renderer *r, Enesim_Renderer *text, Enesim_Error **error);
+typedef Enesim_Renderer * (*Eon_Theme_Entry_Setup)(Enesim_Renderer *r, Enesim_Renderer *text,
+		Eon_Horizontal_Alignment alignment, Enesim_Error **error);
 typedef void (*Eon_Theme_Entry_Cleanup)(Enesim_Renderer *r);
 typedef void (*Eon_Theme_Entry_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
 

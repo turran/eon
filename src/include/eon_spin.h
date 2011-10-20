@@ -32,6 +32,8 @@ EAPI void eon_spin_min_range_set(Ender_Element *e, double min_range);
 EAPI void eon_spin_min_range_get(Ender_Element *e, double *min_range);
 EAPI void eon_spin_step_increment_set(Ender_Element *e, double step_increment);
 EAPI void eon_spin_step_increment_get(Ender_Element *e, double *step_increment);
+EAPI void eon_spin_value_set(Ender_Element *e, double value);
+EAPI void eon_spin_value_get(Ender_Element *e, double *value);
 
 /**
  * @}
