@@ -17,6 +17,9 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo Remove the last_expand property and add a weight property
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

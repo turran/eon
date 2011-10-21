@@ -52,6 +52,7 @@ typedef struct _Eon_Theme_Scrollbar_Descriptor
 	Eon_Theme_Scrollbar_Decrement_Arrow_Geometry_Get decrement_arrow_geometry_get;;
 	Eon_Theme_Scrollbar_Increment_Arrow_Geometry_Get increment_arrow_geometry_get;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

@@ -75,11 +75,19 @@ static void _color_content_color_set(Enesim_Renderer *r, Enesim_Color color)
 	enesim_renderer_background_color_set(thiz->content_fill_color, color);
 }
 
-static Enesim_Renderer * _color_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _color_renderer_get(Enesim_Renderer *r)
+{
+	Basic_Color *thiz;
+	
+	thiz = _color_get(r);
+	return eon_basic_control_button_renderer_get(thiz->cb);
+}
+
+static Eina_Bool _color_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Color *thiz;
 	Enesim_Renderer *content;
-	Enesim_Renderer *final_r;
+	Enesim_Renderer *real_r;
 	double ox, oy;
 	double width, height;
 
@@ -88,12 +96,13 @@ static Enesim_Renderer * _color_setup(Enesim_Renderer *r, Enesim_Error **error)
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 	eon_theme_container_content_get(r, &content);
-	final_r = eon_basic_control_button_setup(thiz->cb, content, width, height, error);
 
 	/* setup common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(final_r, ox, oy);
-	return final_r;
+	real_r = eon_basic_control_button_renderer_get(thiz->cb);
+	enesim_renderer_origin_set(real_r, ox, oy);
+
+	return eon_basic_control_button_setup(thiz->cb, content, width, height, error);
 }
 
 static void _color_free(Enesim_Renderer *r)
@@ -110,6 +119,7 @@ static Eon_Theme_Color_Descriptor _descriptor = {
 	.position_get = _color_position_get,
 	.content_element_get = _color_content_element_get,
 	.content_color_set = _color_content_color_set,
+	.renderer_get = _color_renderer_get,
 	.setup = _color_setup,
 	.free = _color_free,
 };

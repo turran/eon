@@ -30,6 +30,7 @@ typedef struct _Eon_Theme_Spin_Descriptor
 	Eon_Theme_Spin_Margin_Get margin_get;
 	Eon_Theme_Spin_Entry_Set entry_set;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

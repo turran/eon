@@ -50,7 +50,15 @@ static void _entry_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->left = margin->right = margin->top = margin->bottom = 4;
 }
 
-static Enesim_Renderer * _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
+static Enesim_Renderer * _entry_renderer_get(Enesim_Renderer *r)
+{
+	Basic_Entry *thiz;
+
+	thiz = _entry_get(r);
+	return thiz->shape;
+}
+
+static Eina_Bool _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 		Eon_Horizontal_Alignment alignment, Enesim_Error **error)
 {
 	Basic_Entry *thiz;
@@ -98,7 +106,7 @@ static Enesim_Renderer * _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 	}
 	enesim_renderer_origin_set(text, tx, ty);
 
-	return thiz->shape;
+	return EINA_TRUE;
 }
 
 static void _entry_free(Enesim_Renderer *r)
@@ -110,6 +118,7 @@ static void _entry_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Entry_Descriptor _descriptor = {
+	.renderer_get = _entry_renderer_get,
 	.setup = _entry_setup,
 	.free = _entry_free,
 	.margin_get = _entry_margin_get,

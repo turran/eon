@@ -30,6 +30,7 @@ typedef struct _Eon_Theme_Frame_Descriptor
 	/* frame needed functions */
 	Eon_Theme_Frame_Margin_Get margin_get;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

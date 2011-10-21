@@ -481,18 +481,28 @@ static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 	Eon_Element *thiz;
 
 	thiz = _eon_element_get(r);
-	/* FIXME later */
+	*flags = ENESIM_RENDERER_FLAG_ARGB8888;
+}
+
+static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	printf(">>> FIXME <<< \n");
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
-	.boundings = _eon_element_boundings,
-	.name = _eon_element_name,
-	.flags = _eon_element_flags,
-	.free = _eon_element_free,
-	.sw_setup = _eon_element_sw_setup,
-	.sw_cleanup = _eon_element_sw_cleanup,
+	/* .version =    */ ENESIM_RENDERER_API,
+	/* .name =       */ _eon_element_name,
+	/* .free =       */ _eon_element_free,
+	/* .boundings =  */ _eon_element_boundings,
+	/* .flags =      */ _eon_element_flags,
+	/* .is_inside =  */ NULL,
+	/* .damage =     */ _eon_element_damage,
+	/* .sw_setup =   */ _eon_element_sw_setup,
+	/* .sw_cleanup = */ _eon_element_sw_cleanup
 };
-
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/

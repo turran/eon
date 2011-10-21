@@ -141,6 +141,8 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
+	enesim_renderer_compound_layer_add(r, thiz->background);
+	enesim_renderer_compound_layer_add(r, thiz->inner_button);
 	thiz->compound = r;
 
 	return thiz;
@@ -242,15 +244,16 @@ void eon_basic_control_button_position_get(Eon_Basic_Control_Button *thiz, Eon_S
 	position->y = thiz->vertical_padding + _border_weight + thiz->radius;
 }
 
-Enesim_Renderer * eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz, Enesim_Renderer *content,
+Eina_Bool eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz, Enesim_Renderer *content,
 		double width, double height, Enesim_Error **error)
 {
 	/* setup the layers now */
 	if (thiz->content != content || !content)
 	{
-		enesim_renderer_compound_layer_clear(thiz->compound);
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->inner_button);
+		if (thiz->content)
+		{
+			enesim_renderer_compound_layer_remove(thiz->compound, thiz->content);
+		}
 		if (content)
 		{
 			enesim_renderer_compound_layer_add(thiz->compound, content);
@@ -260,7 +263,11 @@ Enesim_Renderer * eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz,
 		}
 	}
 	_button_update_rectangle(thiz, width, height);
+	return EINA_TRUE;
+}
 
+Enesim_Renderer * eon_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz)
+{
 	return thiz->compound;
 }
 

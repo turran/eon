@@ -55,14 +55,20 @@ static double _basic_splitter_thickness_get(Enesim_Renderer *r)
 	return 10;
 }
 
-static Enesim_Renderer * _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _basic_splitter_renderer_get(Enesim_Renderer *r)
+{
+	Basic_Splitter *thiz;
+
+	thiz = _splitter_get(r);
+	return thiz->compound;
+}
+
+static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Splitter *thiz;
 	Eon_Orientation orientation;
 	Enesim_Renderer *content;
 	Enesim_Renderer *second_content;
-	Enesim_Rectangle *geometry;
-	Enesim_Rectangle *sgeometry;
 	double ox, oy;
 	double width, height;
 	double position;
@@ -76,8 +82,6 @@ static Enesim_Renderer * _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error 
 	/* the contents */
 	eon_theme_container_content_get(r, &content);
 	eon_theme_splitter_second_content_get(r, &second_content);
-	//eon_theme_splitter_content_geometry_get(r, &geometry);
-	//eon_theme_splitter_second_content_geometry_get(r, &sgeometry);
 	/* the separator */
 	eon_theme_splitter_orientation_get(r, &orientation);
 	eon_theme_splitter_position_get(r, &position);
@@ -100,7 +104,7 @@ static Enesim_Renderer * _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error 
 	enesim_renderer_compound_layer_add(thiz->compound, thiz->splitter);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	return thiz->compound;
+	return EINA_TRUE;
 }
 
 static void _basic_splitter_cleanup(Enesim_Renderer *r)
@@ -129,6 +133,7 @@ static void _basic_splitter_free(Enesim_Renderer *r)
 static Eon_Theme_Splitter_Descriptor _descriptor = {
 	.thickness_get = _basic_splitter_thickness_get,
 	.min_length_get = _basic_min_length_get,
+	.renderer_get = _basic_splitter_renderer_get,
 	.setup = _basic_splitter_setup,
 	.free = _basic_splitter_free,
 };

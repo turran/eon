@@ -38,8 +38,9 @@ typedef struct _Eon_Theme_Widget
 	double x;
 	double y;
 	/* private */
-	Enesim_Renderer *final_r;
+	Enesim_Renderer *real_r;
 	Enesim_Renderer_Sw_Fill fill;
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
@@ -63,12 +64,22 @@ static inline Eon_Theme_Widget * _eon_theme_widget_get(Enesim_Renderer *r)
 }
 #endif
 
+static Enesim_Renderer * _eon_theme_widget_renderer_get(Enesim_Renderer *r)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (!thiz->real_r)
+		thiz->real_r = thiz->renderer_get(r);
+	return thiz->real_r;
+}
+
 static void _eon_theme_widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
 {
 	Eon_Theme_Widget *thiz;
 
 	thiz = _eon_theme_widget_get(r);
-	thiz->fill(thiz->final_r, x, y, len, dst);
+	thiz->fill(thiz->real_r, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -97,13 +108,21 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Eon_Theme_Widget *thiz;
+	Enesim_Renderer *real_r;
+	Enesim_Rop rop;
 
 	thiz = _eon_theme_widget_get(r);
-	if (!thiz->setup) return EINA_FALSE;
+	real_r = _eon_theme_widget_renderer_get(r);
+	/* common properties */
+	enesim_renderer_rop_get(r, &rop);
+	enesim_renderer_rop_set(real_r, rop);
 
-	thiz->final_r = thiz->setup(r, error);
-	enesim_renderer_sw_setup(thiz->final_r, s, error);
-	thiz->fill = enesim_renderer_sw_fill_get(thiz->final_r);
+	if (!thiz->setup)
+		return EINA_FALSE;
+	if (!thiz->setup(r, error))
+		return EINA_FALSE;
+	enesim_renderer_sw_setup(real_r, s, error);
+	thiz->fill = enesim_renderer_sw_fill_get(real_r);
 	if (!thiz->fill) return EINA_FALSE;
 
 	*fill = _eon_theme_widget_draw;
@@ -118,21 +137,49 @@ static void _eon_theme_widget_sw_cleanup(Enesim_Renderer *r)
 	thiz = _eon_theme_widget_get(r);
 	if (thiz->cleanup)
 		thiz->cleanup(r);
-	if (thiz->final_r)
-		enesim_renderer_sw_cleanup(thiz->final_r);
+	if (thiz->real_r)
+		enesim_renderer_sw_cleanup(thiz->real_r);
 }
 
 static const char * _eon_theme_widget_name(Enesim_Renderer *r)
 {
-	return "widget";
+	return "theme_widget";
+}
+
+static void _eon_theme_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
+{
+	Enesim_Renderer *real_r;
+
+	real_r = _eon_theme_widget_renderer_get(r);
+	enesim_renderer_flags(real_r, flags);
+}
+
+static void _eon_theme_widget_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+
+}
+
+static Eina_Bool _eon_theme_widget_is_inside(Enesim_Renderer *r, double x, double y)
+{
+	Enesim_Renderer *real_r;
+
+	real_r = _eon_theme_widget_renderer_get(r);
+	return enesim_renderer_is_inside(real_r, x, y);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
-	.boundings = _eon_theme_widget_boundings,
-	.name = _eon_theme_widget_name,
-	.free = _eon_theme_widget_free,
-	.sw_setup = _eon_theme_widget_sw_setup,
-	.sw_cleanup = _eon_theme_widget_sw_cleanup,
+	/* .version =    */ ENESIM_RENDERER_API,
+	/* .name =       */ _eon_theme_widget_name,
+	/* .free =       */ _eon_theme_widget_free,
+	/* .boundings =  */ _eon_theme_widget_boundings,
+	/* .flags =      */ _eon_theme_widget_flags,
+	/* .is_inside =  */ _eon_theme_widget_is_inside,
+	/* .damage =     */ _eon_theme_widget_damage,
+	/* .sw_setup =   */ _eon_theme_widget_sw_setup,
+	/* .sw_cleanup = */ _eon_theme_widget_sw_cleanup
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -145,10 +192,16 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 
 	thiz = calloc(1, sizeof(Eon_Theme_Widget));
 	EINA_MAGIC_SET(thiz, EON_THEME_WIDGET_MAGIC);
-	thiz->data = data;
-	thiz->free = descriptor->free;
+	if (!descriptor->renderer_get)
+	{
+		printf("no renderer get\n");
+		goto renderer_err;
+	}
+	thiz->renderer_get = descriptor->renderer_get;
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
+	thiz->free = descriptor->free;
+	thiz->data = data;
 
 	r = enesim_renderer_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;

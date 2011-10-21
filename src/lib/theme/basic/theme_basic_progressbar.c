@@ -109,7 +109,15 @@ static double _progressbar_max_height_get(Enesim_Renderer *r)
 	return DBL_MAX;
 }
 
-static Enesim_Renderer * _setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _basic_progressbar_renderer_get(Enesim_Renderer *r)
+{
+	Progressbar *thiz;
+
+	thiz = _progressbar_get(r);
+	return thiz->widget.rectangle;
+}
+
+static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Progressbar *thiz;
 	Enesim_Matrix matrix;
@@ -132,7 +140,7 @@ static Enesim_Renderer * _setup(Enesim_Renderer *r, Enesim_Error **error)
 	}
 	_progressbar_update_size(r);
 
-	return thiz->widget.rectangle;
+	return EINA_TRUE;
 }
 
 static void _free(Enesim_Renderer *r)
@@ -164,6 +172,7 @@ static Eon_Theme_Progressbar_Descriptor _descriptor = {
 	.max_height_get = _progressbar_max_height_get,
 	.min_width_get = _progressbar_min_width_get,
 	.min_height_get = _progressbar_min_height_get,
+	.renderer_get = _basic_progressbar_renderer_get,
 	.setup = _setup,
 	.free = _free,
 };

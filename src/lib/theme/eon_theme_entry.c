@@ -30,6 +30,7 @@ typedef struct _Eon_Theme_Entry
 	/* properties */
 	Eon_Horizontal_Alignment alignment;
 	/* interface */
+	Eon_Theme_Entry_Renderer_Get renderer_get;
 	Eon_Theme_Entry_Margin_Get margin_get;
 	Eon_Theme_Entry_Setup setup;
 	Eon_Theme_Entry_Cleanup cleanup;
@@ -58,18 +59,25 @@ static void _eon_theme_entry_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Enesim_Renderer * _eon_theme_entry_renderer_get(Enesim_Renderer *r)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	if (thiz->renderer_get)
+		return thiz->renderer_get(r, thiz->text);
+	return thiz->text;
+}
+
 static Enesim_Renderer * _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Eon_Theme_Entry *thiz;
-	Enesim_Renderer *final_r;
+	Eina_Bool ret = EINA_TRUE;
 
 	thiz = _eon_theme_entry_get(r);
-	final_r = thiz->text;
 	if (thiz->setup)
-	{
-		final_r = thiz->setup(r, thiz->text, thiz->alignment, error);
-	}
-	return final_r;
+		ret = thiz->setup(r, thiz->text, thiz->alignment, error);
+	return ret;
 }
 
 static void _eon_theme_entry_cleanup(Enesim_Renderer *r)
@@ -172,7 +180,9 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	thiz->margin_get = descriptor->margin_get;
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
+	thiz->renderer_get = descriptor->renderer_get;
 
+	pdescriptor.renderer_get = _eon_theme_entry_renderer_get;
 	pdescriptor.setup = _eon_theme_entry_setup;
 	pdescriptor.cleanup = _eon_theme_entry_cleanup;
 	pdescriptor.free = _eon_theme_entry_free;

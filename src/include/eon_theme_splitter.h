@@ -30,6 +30,7 @@ typedef struct _Eon_Theme_Splitter_Descriptor
 	Eon_Theme_Splitter_Min_Length_Get min_length_get;
 	Eon_Theme_Splitter_Thickness_Get thickness_get;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

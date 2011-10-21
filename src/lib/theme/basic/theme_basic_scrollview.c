@@ -48,7 +48,15 @@ static inline Theme_Basic_Scrollview * _scrollview_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                   The Eon's theme scrollview interface                     *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _scrollview_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _scrollview_renderer_get(Enesim_Renderer *r)
+{
+	Theme_Basic_Scrollview *thiz;
+	thiz = _scrollview_get(r);
+
+	return thiz->clipper;
+}
+
+static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Theme_Basic_Scrollview *thiz;
 	Eon_Position offset;
@@ -96,7 +104,7 @@ static Enesim_Renderer * _scrollview_setup(Enesim_Renderer *r, Enesim_Error **er
 		enesim_renderer_rop_set(thiz->vbar, ENESIM_FILL);
 	}
 
-	return thiz->clipper;
+	return EINA_TRUE;
 }
 
 static void _scrollview_free(Enesim_Renderer *r)
@@ -110,6 +118,7 @@ static void _scrollview_free(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Scrollview_Descriptor _descriptor = {
+	.renderer_get = _scrollview_renderer_get,
 	.setup = _scrollview_setup,
 	.free = _scrollview_free,
 };
@@ -130,8 +139,14 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	thiz->bar_radius = 5;
 	thiz->bar_width = 10;
 
+	r = enesim_renderer_background_new();
+	if (!r) goto background_err;
+	enesim_renderer_background_color_set(r, 0xffd7d7d7);
+	thiz->background = r;
+
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
+	enesim_renderer_compound_layer_add(r, thiz->background);
 	thiz->compound = r;
 
 	r = enesim_renderer_clipper_new();
@@ -139,10 +154,6 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	thiz->clipper = r;
 	enesim_renderer_clipper_content_set(thiz->clipper, thiz->compound);
 
-	r = enesim_renderer_background_new();
-	if (!r) goto background_err;
-	thiz->background = r;
-	enesim_renderer_background_color_set(r, 0xffd7d7d7);
 
 	r = eon_theme_scrollview_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -150,12 +161,12 @@ EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_unref(thiz->background);
-background_err:
 	enesim_renderer_unref(thiz->clipper);
 clipper_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
+	enesim_renderer_unref(thiz->background);
+background_err:
 	free(thiz);
 	return NULL;
 }

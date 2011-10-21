@@ -42,7 +42,6 @@ static inline Frame * _frame_get(Enesim_Renderer *r)
 	thiz = eon_theme_frame_data_get(r);
 	return thiz;
 }
-
 /*----------------------------------------------------------------------------*
  *                         The Frame theme interface                         *
  *----------------------------------------------------------------------------*/
@@ -60,6 +59,14 @@ static void _frame_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->right = 0;
 	margin->top = description_boundings.h + 3;
 	margin->bottom = 0;
+}
+
+static Enesim_Renderer * _frame_renderer_get(Enesim_Renderer *r)
+{
+	Frame *thiz;
+
+	thiz = _frame_get(r);
+	return thiz->compound;
 }
 
 static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Error **error)
@@ -82,7 +89,7 @@ static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Error **error)
 	if (!content)
 	{
 		printf("frame no content\n");
-		return NULL;
+		return EINA_FALSE;
 	}
 	eon_theme_frame_description_get(r, &description);
 	etex_span_text_set(thiz->description, description);
@@ -108,7 +115,7 @@ static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Error **error)
 
 	enesim_renderer_origin_set(thiz->description, 10, 1);
 
-	return thiz->compound;
+	return EINA_TRUE;
 }
 
 static void _frame_free(Enesim_Renderer *r)
@@ -123,6 +130,7 @@ static void _frame_free(Enesim_Renderer *r)
 
 static Eon_Theme_Frame_Descriptor _descriptor = {
 	.margin_get = _frame_margin_get,
+	.renderer_get = _frame_renderer_get,
 	.setup = _frame_setup,
 	.free = _frame_free,
 };

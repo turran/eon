@@ -139,6 +139,7 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 
 	thiz->min_length_get = descriptor->min_length_get;
 	thiz->thickness_get = descriptor->thickness_get;
+	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_splitter_free;

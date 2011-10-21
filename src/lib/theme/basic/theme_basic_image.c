@@ -39,6 +39,14 @@ static inline Image * _image_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Image theme interface                         *
  *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _image_renderer_get(Enesim_Renderer *r)
+{
+	Image *thiz;
+
+	thiz = _image_get(r);
+	return thiz->image;
+}
+
 static Enesim_Renderer * _image_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Image *thiz;
@@ -55,7 +63,7 @@ static Enesim_Renderer * _image_setup(Enesim_Renderer *r, Enesim_Error **error)
 	if (!thiz->src)
 	{
 		printf("empty image\n");
-		return NULL;
+		return EINA_FALSE;
 	}
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
@@ -65,7 +73,7 @@ static Enesim_Renderer * _image_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_image_h_set(thiz->image, (int)height);
 	enesim_renderer_image_src_set(thiz->image, thiz->src);
 
-	return thiz->image;
+	return EINA_TRUE;
 }
 
 static void _image_free(Enesim_Renderer *r)
@@ -90,6 +98,7 @@ static void _image_source_set(Enesim_Renderer *r, Enesim_Surface *src)
 }
 
 static Eon_Theme_Image_Descriptor _descriptor = {
+	.renderer_get = _image_renderer_get,
 	.setup = _image_setup,
 	.free = _image_free,
 	.source_set = _image_source_set,

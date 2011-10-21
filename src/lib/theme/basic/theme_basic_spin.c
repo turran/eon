@@ -48,7 +48,15 @@ static inline Basic_Spin * _spin_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Spin theme interface                         *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _spin_renderer_get(Enesim_Renderer *r)
+{
+	Basic_Spin *thiz;
+
+	thiz = _spin_get(r);
+	return thiz->compound;
+}
+
+static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Spin *thiz;
 	Eon_Size size;
@@ -90,7 +98,7 @@ static Enesim_Renderer * _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 	position.y = size.height + 2;
 	eon_basic_control_arrow_setup(thiz->decrement_arrow, &position, &size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
 
-	return thiz->compound;
+	return EINA_TRUE;
 }
 
 static void _spin_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
@@ -129,6 +137,7 @@ static void _spin_free(Enesim_Renderer *r)
 static Eon_Theme_Spin_Descriptor _descriptor = {
 	.entry_set = _spin_entry_set,
 	.margin_get = _spin_margin_get,
+	.renderer_get = _spin_renderer_get,
 	.setup = _spin_setup,
 	.free = _spin_free,
 };

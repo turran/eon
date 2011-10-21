@@ -35,6 +35,7 @@ typedef struct _Eon_Theme_Image_Descriptor
 	Eon_Theme_Image_Preferred_Size_Get preferred_size_get;
 	Eon_Theme_Image_Source_Set source_set;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

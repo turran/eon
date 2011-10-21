@@ -55,8 +55,15 @@ static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->top = circle_radius;
 	margin->bottom = circle_radius;
 }
+static Enesim_Renderer * _radio_renderer_get(Enesim_Renderer *r)
+{
+	Radio *thiz;
 
-static Enesim_Renderer * _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
+	thiz = _radio_get(r);
+	return thiz->compound;
+}
+
+static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Radio *thiz;
 	Enesim_Renderer *content;
@@ -71,7 +78,7 @@ static Enesim_Renderer * _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 	eon_theme_container_content_get(r, &content);
 	if (!content)
 	{
-		return NULL;
+		return EINA_FALSE;
 	}
 	if (thiz->content != content)
 	{
@@ -90,7 +97,7 @@ static Enesim_Renderer * _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 
-	return thiz->compound;
+	return EINA_TRUE;
 }
 
 static void _radio_free(Enesim_Renderer *r)
@@ -109,6 +116,7 @@ static void _radio_free(Enesim_Renderer *r)
 
 static Eon_Theme_Radio_Descriptor _descriptor = {
 	.margin_get = _radio_margin_get,
+	.renderer_get = _radio_renderer_get,
 	.setup = _radio_setup,
 	.free = _radio_free,
 };

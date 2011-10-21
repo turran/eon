@@ -7,6 +7,7 @@ typedef struct _Eon_Theme_Button_Base_Descriptor
 	Eon_Theme_Button_Base_Margin_Get margin_get;
 	Eon_Theme_Button_Base_Position_Get position_get;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

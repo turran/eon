@@ -110,7 +110,14 @@ static unsigned int _label_width_get(Enesim_Renderer *r)
 	return boundings.w;
 }
 
-static Enesim_Renderer * _label_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _label_renderer_get(Enesim_Renderer *r)
+{
+	Label *thiz;
+	thiz = _label_get(r);
+	return thiz->text;
+}
+
+static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Label *thiz;
 	Enesim_Color color;
@@ -122,7 +129,7 @@ static Enesim_Renderer * _label_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
 
-	return thiz->text;
+	return EINA_TRUE;
 }
 
 static void _label_free(Enesim_Renderer *r)
@@ -144,6 +151,7 @@ static Eon_Theme_Label_Descriptor _descriptor = {
 	.font_get = _label_font_get,
 	.height_get = _label_height_get,
 	.width_get = _label_width_get,
+	.renderer_get = _label_renderer_get,
 	.setup = _label_setup,
 	.free = _label_free,
 };

@@ -108,6 +108,7 @@ EAPI Enesim_Renderer * eon_theme_color_new(Eon_Theme_Color_Descriptor *descripto
 
 	pdescriptor.position_get = descriptor->position_get;
 	pdescriptor.margin_get = descriptor->margin_get;
+	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.free = _eon_theme_color_free;

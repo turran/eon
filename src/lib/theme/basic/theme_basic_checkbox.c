@@ -59,7 +59,15 @@ static void _checkbox_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 	margin->bottom = thiz->size / 2;
 }
 
-static Enesim_Renderer *  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _checkbox_renderer_get(Enesim_Renderer *r)
+{
+	Checkbox *thiz;
+	thiz = _checkbox_get(r);
+
+	return thiz->compound;
+}
+
+static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Checkbox *thiz;
 	Enesim_Renderer *content;
@@ -76,7 +84,7 @@ static Enesim_Renderer *  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **err
 	if (!content)
 	{
 		printf("checkbox no content\n");
-		return NULL;
+		return EINA_FALSE;
 	}
 	if (thiz->content != content)
 	{
@@ -108,7 +116,7 @@ static Enesim_Renderer *  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **err
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 
-	return thiz->compound;
+	return EINA_TRUE;
 }
 
 static void _checkbox_free(Enesim_Renderer *r)
@@ -123,6 +131,7 @@ static void _checkbox_free(Enesim_Renderer *r)
 
 static Eon_Theme_Checkbox_Descriptor _descriptor = {
 	.margin_get = _checkbox_margin_get,
+	.renderer_get = _checkbox_renderer_get,
 	.setup = _checkbox_setup,
 	.free = _checkbox_free,
 };

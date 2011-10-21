@@ -169,7 +169,15 @@ static double _basic_scrollbar_thumb_min_size_get(Enesim_Renderer *r)
 	return 20;
 }
 
-static Enesim_Renderer * _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _basic_scrollbar_renderer_get(Enesim_Renderer *r)
+{
+	Basic_Scrollbar *thiz;
+
+	thiz = _scrollbar_get(r);
+	return thiz->compound;
+}
+
+static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Scrollbar *thiz;
 	Eon_Orientation orientation;
@@ -237,7 +245,7 @@ static Enesim_Renderer * _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error
 	/* the composition */
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
-	return thiz->compound;
+	return EINA_TRUE;
 }
 
 static void _basic_scrollbar_free(Enesim_Renderer *r)
@@ -277,6 +285,7 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 	.thumb_max_size_get = _basic_scrollbar_thumb_max_size_get,
 	.thumb_min_size_get = _basic_scrollbar_thumb_min_size_get,
 	.thumb_geometry_get = _basic_scrollbar_thumb_geometry_get,
+	.renderer_get = _basic_scrollbar_renderer_get,
 	.setup = _basic_scrollbar_setup,
 	.free = _basic_scrollbar_free,
 };

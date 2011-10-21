@@ -23,14 +23,16 @@
  * @{
  */
 
-typedef Enesim_Renderer * (*Eon_Theme_Entry_Setup)(Enesim_Renderer *r, Enesim_Renderer *text,
+typedef Eina_Bool (*Eon_Theme_Entry_Setup)(Enesim_Renderer *r, Enesim_Renderer *text,
 		Eon_Horizontal_Alignment alignment, Enesim_Error **error);
 typedef void (*Eon_Theme_Entry_Cleanup)(Enesim_Renderer *r);
 typedef void (*Eon_Theme_Entry_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
+typedef Enesim_Renderer * (*Eon_Theme_Entry_Renderer_Get)(Enesim_Renderer *r, Enesim_Renderer *text);
 
 typedef struct _Eon_Theme_Entry_Descriptor
 {
 	Eon_Theme_Entry_Margin_Get margin_get;
+	Eon_Theme_Entry_Renderer_Get renderer_get;
 	Eon_Theme_Entry_Setup setup;
 	Eon_Theme_Entry_Cleanup cleanup;
 	Enesim_Renderer_Delete free;

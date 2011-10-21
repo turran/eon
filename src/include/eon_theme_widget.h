@@ -23,7 +23,8 @@
  * @{
  */
 
-typedef Enesim_Renderer * (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, Enesim_Error **error);
+typedef Enesim_Renderer * (*Eon_Theme_Widget_Renderer_Get)(Enesim_Renderer *r);
+typedef Eina_Bool (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, Enesim_Error **error);
 typedef void (*Eon_Theme_Widget_Cleanup)(Enesim_Renderer *r);
 
 EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width);

@@ -34,6 +34,7 @@ typedef struct _Eon_Theme_Layout_Descriptor
 	Eon_Theme_Layout_Child_Remove child_remove;
 	Eon_Theme_Layout_Child_Clear child_clear;
 	/* renderer needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
