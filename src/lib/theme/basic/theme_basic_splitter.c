@@ -107,14 +107,6 @@ static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error **error)
 	return EINA_TRUE;
 }
 
-static void _basic_splitter_cleanup(Enesim_Renderer *r)
-{
-	Basic_Splitter *thiz;
-
-	thiz = _splitter_get(r);
-	enesim_renderer_sw_cleanup(thiz->compound);
-}
-
 static void _basic_splitter_free(Enesim_Renderer *r)
 {
 	Basic_Splitter *thiz;

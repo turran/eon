@@ -104,7 +104,9 @@ static void _eon_theme_widget_boundings(Enesim_Renderer *r, Enesim_Rectangle *re
 	rectangle->h = thiz->height;
 }
 
-static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
+static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
+		const Enesim_Renderer_State *state,
+		Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Eon_Theme_Widget *thiz;
@@ -121,7 +123,7 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *
 		return EINA_FALSE;
 	if (!thiz->setup(r, error))
 		return EINA_FALSE;
-	enesim_renderer_sw_setup(real_r, s, error);
+	enesim_renderer_setup(real_r, s, error);
 	thiz->fill = enesim_renderer_sw_fill_get(real_r);
 	if (!thiz->fill) return EINA_FALSE;
 
@@ -130,15 +132,16 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r, Enesim_Surface *
 	return EINA_TRUE;
 }
 
-static void _eon_theme_widget_sw_cleanup(Enesim_Renderer *r)
+static void _eon_theme_widget_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 {
 	Eon_Theme_Widget *thiz;
 
 	thiz = _eon_theme_widget_get(r);
 	if (thiz->cleanup)
 		thiz->cleanup(r);
+	/* FIXME */
 	if (thiz->real_r)
-		enesim_renderer_sw_cleanup(thiz->real_r);
+		enesim_renderer_cleanup(thiz->real_r, s);
 }
 
 static const char * _eon_theme_widget_name(Enesim_Renderer *r)

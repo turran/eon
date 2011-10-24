@@ -63,12 +63,12 @@ static void _theme_changed(Ender_Element *e, const char *event_name, void *event
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_widget_sw_cleanup(Enesim_Renderer *r)
+static void _eon_widget_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 {
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(r);
-	enesim_renderer_sw_cleanup(thiz->theme_renderer);
+	enesim_renderer_cleanup(thiz->theme_renderer, s);
 }
 
 static void _eon_widget_free(Enesim_Renderer *r)

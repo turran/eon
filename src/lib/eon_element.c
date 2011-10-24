@@ -438,7 +438,9 @@ static void _eon_element_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
+static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r,
+		const Enesim_Renderer_State *state,
+		Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {
 	Eon_Element *thiz;
@@ -455,7 +457,7 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	}
 
 	real_r = eon_element_renderer_get(e);
-	if (!enesim_renderer_sw_setup(real_r, s, error))
+	if (!enesim_renderer_setup(real_r, s, error))
 	{
 		ENESIM_RENDERER_ERROR(r, error, "The renderer setup failed");
 		return EINA_FALSE;
@@ -467,13 +469,16 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r, Enesim_Surface *s,
 	return EINA_TRUE;
 }
 
-static void _eon_element_sw_cleanup(Enesim_Renderer *r)
+static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 {
 	Eon_Element *thiz;
 
 	thiz = _eon_element_get(r);
+	/* FIXME why do we have a sw_cleanup function and not just cleanup
+	 * similar to what the setup does
+	 */
 	if (thiz->sw_cleanup)
-		thiz->sw_cleanup(r);
+		thiz->sw_cleanup(r, s);
 }
 
 static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
