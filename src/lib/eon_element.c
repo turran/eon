@@ -498,15 +498,16 @@ static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
-	/* .version =    */ ENESIM_RENDERER_API,
-	/* .name =       */ _eon_element_name,
-	/* .free =       */ _eon_element_free,
-	/* .boundings =  */ _eon_element_boundings,
-	/* .flags =      */ _eon_element_flags,
-	/* .is_inside =  */ NULL,
-	/* .damage =     */ _eon_element_damage,
-	/* .sw_setup =   */ _eon_element_sw_setup,
-	/* .sw_cleanup = */ _eon_element_sw_cleanup
+	/* .version =     */ ENESIM_RENDERER_API,
+	/* .name =        */ _eon_element_name,
+	/* .free =        */ _eon_element_free,
+	/* .boundings =   */ _eon_element_boundings,
+	/* .flags =       */ _eon_element_flags,
+	/* .is_inside =   */ NULL,
+	/* .damage =      */ _eon_element_damage,
+	/* .has_changed = */ NULL,
+	/* .sw_setup =    */ _eon_element_sw_setup,
+	/* .sw_cleanup =  */ _eon_element_sw_cleanup
 };
 /*============================================================================*
  *                                 Global                                     *
