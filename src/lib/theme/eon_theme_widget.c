@@ -159,10 +159,10 @@ static void _eon_theme_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *fl
 
 static void _eon_theme_widget_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
 {
-	Eon_Theme_Widget *thiz;
+	Enesim_Renderer *real_r;
 
-	thiz = _eon_theme_widget_get(r);
-
+	real_r = _eon_theme_widget_renderer_get(r);
+	enesim_renderer_damages_get(real_r, cb, data);
 }
 
 static Eina_Bool _eon_theme_widget_is_inside(Enesim_Renderer *r, double x, double y)

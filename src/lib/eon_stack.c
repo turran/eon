@@ -177,7 +177,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 
 			enesim_renderer_name_get(r, &name);
 			enesim_renderer_name_get(child_r, &child_name);
-			printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
+			//printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, last_x, y);
@@ -247,7 +247,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 
 			enesim_renderer_name_get(r, &name);
 			enesim_renderer_name_get(child_r, &child_name);
-			printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
+			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, x, last_y);
@@ -416,7 +416,7 @@ static double _eon_stack_preferred_height_get(Ender_Element *e)
 			eon_element_preferred_height_get(ech->ender, &ph);
 			preferred_height = MAX(ph, preferred_height);
 		}
-		printf("preferred height %g\n", preferred_height);
+		//printf("preferred height %g\n", preferred_height);
 	}
 
 	return preferred_height;
@@ -441,12 +441,13 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return NULL;
-
+#if 0
 	{
 		char *name;
 		enesim_renderer_name_get(r, &name);
 		printf("stack %s child at %g %g \n", name, x, y);
 	}
+#endif
 
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
@@ -481,7 +482,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 			}
 		}
 	}
-	printf("returning %p\n", child);
+	//printf("returning %p\n", child);
 
 	return child;
 }

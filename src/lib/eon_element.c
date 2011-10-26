@@ -491,10 +491,12 @@ static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 
 static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
 {
-	Eon_Element *thiz;
+	Ender_Element *e;
+	Enesim_Renderer *real_r;
 
-	thiz = _eon_element_get(r);
-	printf(">>> FIXME <<< \n");
+	e = ender_element_renderer_from(r);
+	real_r = eon_element_renderer_get(e);
+	enesim_renderer_damages_get(real_r, cb, data);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {

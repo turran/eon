@@ -49,12 +49,12 @@ static void _wrapped_changed(Ender_Element *e, const char *event_name, void *eve
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_wrapper_sw_cleanup(Enesim_Renderer *r)
+static void _eon_wrapper_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 {
 	Eon_Wrapper *thiz;
 
 	thiz = _eon_wrapper_get(r);
-	enesim_renderer_sw_cleanup(thiz->compound);
+	enesim_renderer_cleanup(thiz->compound, s);
 }
 
 static void _eon_wrapper_free(Enesim_Renderer *r)
