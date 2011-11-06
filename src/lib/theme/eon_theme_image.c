@@ -62,6 +62,11 @@ static inline Eon_Theme_Image * _eon_theme_image_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_image_name(Enesim_Renderer *r)
+{
+	return "theme_image";
+}
+
 static void _eon_theme_image_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Image *thiz;
@@ -98,7 +103,7 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 		void *data)
 {
 	Eon_Theme_Image *thiz;
-	Eon_Theme_Widget_Descriptor pdescriptor;
+	Eon_Theme_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Image));
@@ -114,6 +119,7 @@ EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descripto
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_image_name;
 	pdescriptor.free = _eon_theme_image_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

@@ -57,6 +57,11 @@ static inline Eon_Theme_Scrollview * _eon_theme_scrollview_get(Enesim_Renderer *
 	return thiz;
 }
 
+static const char * _eon_theme_scrollview_name(Enesim_Renderer *r)
+{
+	return "theme_scrollview";
+}
+
 static void _eon_theme_scrollview_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Scrollview *thiz;
@@ -79,7 +84,7 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 		void *data)
 {
 	Eon_Theme_Scrollview *thiz;
-	Eon_Theme_Container_Descriptor pdescriptor;
+	Eon_Theme_Container_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Scrollview));
@@ -90,6 +95,7 @@ EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor 
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_scrollview_name;
 	pdescriptor.free = _eon_theme_scrollview_free;
 
 	r = eon_theme_container_new(&pdescriptor, thiz);

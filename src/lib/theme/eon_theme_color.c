@@ -54,6 +54,11 @@ static inline Eon_Theme_Color * _eon_theme_color_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_color_name(Enesim_Renderer *r)
+{
+	return "theme_color";
+}
+
 static void _eon_theme_color_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Color *thiz;
@@ -111,6 +116,7 @@ EAPI Enesim_Renderer * eon_theme_color_new(Eon_Theme_Color_Descriptor *descripto
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_color_name;
 	pdescriptor.free = _eon_theme_color_free;
 
 	r = eon_theme_button_base_new(&pdescriptor, thiz);

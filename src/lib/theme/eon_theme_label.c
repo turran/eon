@@ -59,6 +59,11 @@ static inline Eon_Theme_Label * _eon_theme_label_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_label_name(Enesim_Renderer *r)
+{
+	return "theme_label";
+}
+
 static void _eon_theme_label_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Label *thiz;
@@ -203,6 +208,7 @@ EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descripto
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_label_name;
 	pdescriptor.free = _eon_theme_label_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

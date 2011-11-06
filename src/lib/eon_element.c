@@ -504,10 +504,11 @@ static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb
 Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 {
 	Ender_Element *e;
-	Eon_Element *thiz;
+	Enesim_Renderer *real_r;
 
-	thiz = _eon_element_get(r);
-	return thiz->changed;
+	e = ender_element_renderer_from(r);
+	real_r = eon_element_renderer_get(e);
+	return enesim_renderer_has_changed(real_r);
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
@@ -518,7 +519,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .flags =       */ _eon_element_flags,
 	/* .is_inside =   */ NULL,
 	/* .damage =      */ _eon_element_damage,
-	/* .has_changed = */ _eon_element_has_changed,
+	/* .has_changed = */ NULL,
 	/* .sw_setup =    */ _eon_element_sw_setup,
 	/* .sw_cleanup =  */ _eon_element_sw_cleanup
 };
@@ -550,6 +551,7 @@ Eina_Bool eon_element_setup(Ender_Element *e)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
 
+#if 0
 	current.actual_size.width = thiz->actual_width;
 	current.actual_size.height = thiz->actual_height;
 	eon_element_width_get(e, &current.size.width);
@@ -560,6 +562,7 @@ Eina_Bool eon_element_setup(Ender_Element *e)
 	eon_element_min_height_get(e, &current.min_size.height);
 	eon_element_max_width_get(e, &current.max_size.width);
 	eon_element_max_height_get(e, &current.max_size.height);
+#endif
 
 	if (!thiz->changed)
 		goto end;

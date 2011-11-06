@@ -80,6 +80,11 @@ static Enesim_Renderer * _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error
 	return ret;
 }
 
+static const char * _eon_theme_entry_name(Enesim_Renderer *r)
+{
+	return "theme_entry";
+}
+
 static void _eon_theme_entry_cleanup(Enesim_Renderer *r)
 {
 	Eon_Theme_Entry *thiz;
@@ -185,6 +190,7 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	pdescriptor.renderer_get = _eon_theme_entry_renderer_get;
 	pdescriptor.setup = _eon_theme_entry_setup;
 	pdescriptor.cleanup = _eon_theme_entry_cleanup;
+	pdescriptor.name = _eon_theme_entry_name;
 	pdescriptor.free = _eon_theme_entry_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

@@ -7,6 +7,7 @@ typedef struct _Eon_Theme_Container_Descriptor
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	/* renderer needed functions */
+	Enesim_Renderer_Name name;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Container_Descriptor;
 

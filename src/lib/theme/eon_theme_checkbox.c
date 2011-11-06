@@ -52,6 +52,11 @@ static inline Eon_Theme_Checkbox * _eon_theme_checkbox_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_checkbox_name(Enesim_Renderer *r)
+{
+	return "theme_checkbox";
+}
+
 static void _eon_theme_checkbox_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Checkbox *thiz;
@@ -87,6 +92,7 @@ EAPI Enesim_Renderer * eon_theme_checkbox_new(Eon_Theme_Checkbox_Descriptor *des
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_checkbox_name;
 	pdescriptor.free = _eon_theme_checkbox_free;
 
 	r = eon_theme_button_base_new(&pdescriptor, thiz);

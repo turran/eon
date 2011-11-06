@@ -43,6 +43,7 @@ typedef struct _Eon_Theme_Widget
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
+	Enesim_Renderer_Name name;
 	Enesim_Renderer_Delete free;
 	void *data;
 } Eon_Theme_Widget;
@@ -146,7 +147,13 @@ static void _eon_theme_widget_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 
 static const char * _eon_theme_widget_name(Enesim_Renderer *r)
 {
-	return "theme_widget";
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (thiz->name)
+		return thiz->name(r);
+	else
+		return "theme_widget";
 }
 
 static void _eon_theme_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
@@ -204,6 +211,7 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
+	thiz->name = descriptor->name;
 	thiz->free = descriptor->free;
 	thiz->data = data;
 

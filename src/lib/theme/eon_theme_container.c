@@ -81,6 +81,7 @@ Enesim_Renderer * eon_theme_container_new(Eon_Theme_Container_Descriptor *descri
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = descriptor->name;
 	pdescriptor.free = _eon_theme_container_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

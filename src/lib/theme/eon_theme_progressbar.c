@@ -58,6 +58,11 @@ static inline Eon_Theme_Progressbar * _eon_theme_progressbar_get(Enesim_Renderer
 	return thiz;
 }
 
+static const char * _eon_theme_progressbar_name(Enesim_Renderer *r)
+{
+	return "theme_progressbar";
+}
+
 static void _eon_theme_progressbar_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Progressbar *thiz;
@@ -97,6 +102,7 @@ EAPI Enesim_Renderer * eon_theme_progressbar_new(Eon_Theme_Progressbar_Descripto
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_progressbar_name;
 	pdescriptor.free = _eon_theme_progressbar_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

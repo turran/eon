@@ -83,6 +83,7 @@ Enesim_Renderer * eon_theme_button_base_new(Eon_Theme_Button_Base_Descriptor *de
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = descriptor->name;
 	pdescriptor.free = _eon_theme_button_base_free;
 
 	r = eon_theme_container_new(&pdescriptor, thiz);

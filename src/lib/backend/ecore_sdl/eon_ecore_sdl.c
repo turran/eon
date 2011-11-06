@@ -61,6 +61,7 @@ static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina
 	dest->w = area->w;
 	dest->h = area->h;
 
+	*redraws = eina_list_append(*redraws, dest);
 	printf("new damage of %d %d %d %d\n", dest->x, dest->y, dest->w, dest->h);
 }
 
@@ -240,22 +241,13 @@ static Eina_Bool _idler_cb(void *data)
 	}
 	/* get the damage rectangles */
 	// eon_layout_redraw_get(r, &redraws);
-	{
-		Eina_Rectangle final;
-		int w, h;
-
-		enesim_renderer_destination_boundings(r, &final, 0, 0);
-		enesim_surface_size_get(thiz->surface, &w, &h);
-		printf("rendering to %d %d from %d %d %d %d\n", w, h, final.x, final.y, final.w, final.h);
-	}
-
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */
-	enesim_renderer_destination_damages_get(r, _sdl_damages_get, &redraws); 
+	enesim_renderer_destination_damages_get(r, _sdl_damages_get, &redraws);
 
 	/* render only those rectangles */
-	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))
+	if (!enesim_renderer_draw_list(r, thiz->surface, NULL, 0, 0, &error))
 	{
 		enesim_error_dump(error);
 		return EINA_TRUE;

@@ -52,7 +52,12 @@ static inline Eon_Theme_Toggle * _eon_theme_toggle_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _eon_theme_button_free(Enesim_Renderer *r)
+static const char * _eon_theme_toggle_name(Enesim_Renderer *r)
+{
+	return "theme_toggle";
+}
+
+static void _eon_theme_toggle_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Toggle *thiz;
 
@@ -74,7 +79,7 @@ EAPI Enesim_Renderer * eon_theme_toggle_new(Eon_Theme_Toggle_Descriptor *descrip
 		void *data)
 {
 	Eon_Theme_Toggle *thiz;
-	Eon_Theme_Button_Base_Descriptor pdescriptor;
+	Eon_Theme_Button_Base_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Toggle));
@@ -87,7 +92,8 @@ EAPI Enesim_Renderer * eon_theme_toggle_new(Eon_Theme_Toggle_Descriptor *descrip
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.free = _eon_theme_button_free;
+	pdescriptor.name = _eon_theme_toggle_name;
+	pdescriptor.free = _eon_theme_toggle_free;
 
 	r = eon_theme_button_base_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

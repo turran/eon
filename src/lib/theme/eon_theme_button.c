@@ -52,6 +52,11 @@ static inline Eon_Theme_Button * _eon_theme_button_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_button_name(Enesim_Renderer *r)
+{
+	return "theme_button";
+}
+
 static void _eon_theme_button_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Button *thiz;
@@ -87,6 +92,7 @@ EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Button_Descriptor *descrip
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_button_name;
 	pdescriptor.free = _eon_theme_button_free;
 
 	r = eon_theme_button_base_new(&pdescriptor, thiz);

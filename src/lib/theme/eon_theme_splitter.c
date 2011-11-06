@@ -59,6 +59,11 @@ static inline Eon_Theme_Splitter * _eon_theme_splitter_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_splitter_name(Enesim_Renderer *r)
+{
+	return "theme_splitter";
+}
+
 static void _eon_theme_splitter_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Splitter *thiz;
@@ -129,7 +134,7 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 		void *data)
 {
 	Eon_Theme_Splitter *thiz;
-	Eon_Theme_Container_Descriptor pdescriptor;
+	Eon_Theme_Container_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Splitter));
@@ -142,6 +147,7 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_splitter_name;
 	pdescriptor.free = _eon_theme_splitter_free;
 
 	r = eon_theme_container_new(&pdescriptor, thiz);

@@ -57,6 +57,11 @@ static inline Eon_Theme_Spin * _eon_theme_spin_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_spin_name(Enesim_Renderer *r)
+{
+	return "theme_spin";
+}
+
 static void _eon_theme_spin_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Spin *thiz;
@@ -85,6 +90,7 @@ Enesim_Renderer * eon_theme_spin_new(Eon_Theme_Spin_Descriptor *descriptor,
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_spin_name;
 	pdescriptor.free = _eon_theme_spin_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);

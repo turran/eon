@@ -70,6 +70,11 @@ static inline Eon_Theme_Scrollbar * _eon_theme_scrollbar_get(Enesim_Renderer *r)
 	return thiz;
 }
 
+static const char * _eon_theme_scrollbar_name(Enesim_Renderer *r)
+{
+	return "theme_scrollbar";
+}
+
 static void _eon_theme_scrollbar_free(Enesim_Renderer *r)
 {
 	Eon_Theme_Scrollbar *thiz;
@@ -322,6 +327,7 @@ EAPI Enesim_Renderer * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *d
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.name = _eon_theme_scrollbar_name;
 	pdescriptor.free = _eon_theme_scrollbar_free;
 
 	r = eon_theme_widget_new(&pdescriptor, thiz);
