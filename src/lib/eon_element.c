@@ -519,7 +519,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .flags =       */ _eon_element_flags,
 	/* .is_inside =   */ NULL,
 	/* .damage =      */ _eon_element_damage,
-	/* .has_changed = */ NULL,
+	/* .has_changed = */ _eon_element_has_changed,
 	/* .sw_setup =    */ _eon_element_sw_setup,
 	/* .sw_cleanup =  */ _eon_element_sw_cleanup
 };

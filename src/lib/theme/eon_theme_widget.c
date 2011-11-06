@@ -172,6 +172,14 @@ static void _eon_theme_widget_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_
 	enesim_renderer_damages_get(real_r, cb, data);
 }
 
+static Eina_Bool _eon_theme_widget_has_changed(Enesim_Renderer *r)
+{
+	Enesim_Renderer *real_r;
+
+	real_r = _eon_theme_widget_renderer_get(r);
+	return enesim_renderer_has_changed(real_r);
+}
+
 static Eina_Bool _eon_theme_widget_is_inside(Enesim_Renderer *r, double x, double y)
 {
 	Enesim_Renderer *real_r;
@@ -188,7 +196,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .flags =       */ _eon_theme_widget_flags,
 	/* .is_inside =   */ _eon_theme_widget_is_inside,
 	/* .damage =      */ _eon_theme_widget_damage,
-	/* .has_changed = */ NULL,
+	/* .has_changed = */ _eon_theme_widget_has_changed,
 	/* .sw_setup =    */ _eon_theme_widget_sw_setup,
 	/* .sw_cleanup =  */ _eon_theme_widget_sw_cleanup
 };

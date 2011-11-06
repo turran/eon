@@ -38,7 +38,6 @@ typedef struct _Eon_Theme_Image_Descriptor
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
-	Enesim_Renderer_Name name;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Image_Descriptor;
 
