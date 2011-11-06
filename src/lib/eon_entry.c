@@ -17,10 +17,6 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-/* the etex span always strdup the string, we should add a way to share
- * a strbuffer between the internal state of the span and the API this way
- * we avoid useless copies
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

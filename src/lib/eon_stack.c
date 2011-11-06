@@ -764,3 +764,15 @@ EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous)
 	ender_element_value_get(e, "homogeneous", homogeneous, NULL);
 }
 
+#if 0
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_stack_child_weight_set(Ender_Element *e, Ender_Element *child,
+		int weight)
+{
+	ender_element_value_set(child, "weight", weight, NULL);
+}
+#endif
+

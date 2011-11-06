@@ -228,7 +228,8 @@ static Eina_Bool _idler_cb(void *data)
 	//Eina_List *l;
 	Eina_Rectangle area;
 
-	if (!eon_element_has_changed(thiz->layout))
+	r = ender_element_renderer_get(thiz->layout);
+	if (!enesim_renderer_has_changed(r))
 	{
 		return EINA_TRUE;
 	}
@@ -237,7 +238,6 @@ static Eina_Bool _idler_cb(void *data)
 		_sdl_setup_buffers(thiz);
 		thiz->needs_resize = EINA_FALSE;
 	}
-	r = ender_element_renderer_get(thiz->layout);
 	/* get the damage rectangles */
 	// eon_layout_redraw_get(r, &redraws);
 	{
