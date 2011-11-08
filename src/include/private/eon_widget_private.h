@@ -11,6 +11,7 @@ typedef struct _Eon_Widget_Descriptor
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Has_Changed has_changed;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Widget_Descriptor;

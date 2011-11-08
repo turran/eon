@@ -202,6 +202,7 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
+	pdescriptor.has_changed = descriptor->has_changed;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.max_width_get = descriptor->max_width_get;
 	pdescriptor.min_height_get = descriptor->min_height_get;

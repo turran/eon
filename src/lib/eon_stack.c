@@ -291,6 +291,12 @@ static void _eon_stack_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
+{
+	printf("stack has changed?\n");
+	return EINA_TRUE;
+}
+
 static Eina_Bool _eon_stack_setup(Ender_Element *e)
 {
 	Eon_Stack *thiz;
@@ -539,6 +545,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.min_height_get = _eon_stack_min_height_get,
 	.preferred_width_get = _eon_stack_preferred_width_get,
 	.preferred_height_get = _eon_stack_preferred_height_get,
+	.has_changed = _eon_stack_has_changed,
 	.setup = _eon_stack_setup,
 	.free = _eon_stack_free,
 	.name = "stack",
