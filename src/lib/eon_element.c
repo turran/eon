@@ -846,6 +846,7 @@ void eon_element_real_height_get(Ender_Element *e, double *height)
 	_eon_element_real_height_get(r, height);
 }
 
+/* FIXME this should go away someday */
 void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
 {
 	Eon_Element *thiz;

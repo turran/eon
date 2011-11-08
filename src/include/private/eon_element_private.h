@@ -26,7 +26,19 @@ typedef void (*Eon_Element_Actual_X_Set)(Enesim_Renderer *r, double x);
 typedef void (*Eon_Element_Actual_Y_Set)(Enesim_Renderer *r, double y);
 typedef void (*Eon_Element_Actual_Width_Set)(Enesim_Renderer *r, double width);
 typedef void (*Eon_Element_Actual_Height_Set)(Enesim_Renderer *r, double height);
+/**
+ * On eon at the end is not the element itself which is drawn on the screen but the
+ * graphics representation of it. This graphics representation is the renderer associated
+ * with the element. This function is a way to retrieve such graphical representation.
+ */
 typedef Enesim_Renderer* (*Eon_Element_Renderer_Get)(Ender_Element *e);
+/**
+ * Every element needs a way to inform to inform whenever some property has changed
+ * This fucntions does exactly that, provide the caller a way to know if the element
+ * has changed. This function is important because it will trigger or not a call to the
+ * Eon_Element_Setup function. That means that a change on a property that is needed
+ * for the setup function should make this function return true.
+ */
 typedef Eina_Bool (*Eon_Element_Has_Changed)(Ender_Element *e);
 
 typedef struct _Eon_Element_Descriptor
