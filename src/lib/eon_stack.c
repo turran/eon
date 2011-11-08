@@ -295,12 +295,23 @@ static void _eon_stack_free(Enesim_Renderer *r)
 static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
 {
 	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
 	Enesim_Renderer *r;
+	Eina_List *l;
+	Eina_Bool ret;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
-	/* FIXME check on the childs */
-	return thiz->changed;
+
+	ret = thiz->changed;
+	if (ret) return EINA_TRUE;
+
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		ret = eon_element_has_changed(ech->ender);
+		if (ret) break;
+	}
+	return ret;
 }
 
 static Eina_Bool _eon_stack_setup(Ender_Element *e)
@@ -320,11 +331,16 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 static void _eon_stack_cleanup(Ender_Element *e)
 {
 	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
 	Enesim_Renderer *r;
+	Eina_List *l;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
-	/* FIXME we should call the cleanup on every inner element */
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		eon_element_cleanup(ech->ender);
+	}
 	thiz->changed = EINA_FALSE;
 }
 

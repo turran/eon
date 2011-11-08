@@ -607,6 +607,18 @@ end:
 	return ret;
 }
 
+void eon_element_cleanup(Ender_Element *e)
+{
+	Eon_Element *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+
+	if (thiz->cleanup)
+		thiz->cleanup(e);
+}
+
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data)
 {
@@ -663,6 +675,20 @@ void * eon_element_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_element_get(r);
 	return thiz->data;
+}
+
+Eina_Bool eon_element_has_changed(Ender_Element *e)
+{
+	Eon_Element *thiz;
+	Enesim_Renderer *r;
+	Eina_Bool ret = EINA_TRUE;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+
+	if (thiz->has_changed)
+		ret = thiz->has_changed(e);
+	return ret;
 }
 
 void eon_element_actual_width_set(Enesim_Renderer *r, double width)

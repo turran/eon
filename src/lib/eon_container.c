@@ -25,8 +25,11 @@ typedef struct _Eon_Container
 	/* properties */
 	Ender_Element *content;
 	/* private */
+	Eina_Bool changed : 1;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Cleanup cleanup;
+	Eon_Element_Has_Changed has_changed;
 	Enesim_Renderer_Delete free;
 	Eon_Container_Min_Width_Get min_width_get;
 	Eon_Container_Max_Width_Get max_width_get;
@@ -197,6 +200,7 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 	thiz->content = content;
 	content_t = eon_element_renderer_get(content);
 	eon_widget_property_set(r, "content", content_t, NULL);
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element **content)
@@ -334,6 +338,39 @@ static double _eon_container_preferred_height_get(Ender_Element *e)
 	return v;
 }
 
+static Eina_Bool _eon_container_has_changed(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	Eina_Bool ret;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+
+	/* check if we have changed */
+	ret = thiz->changed;
+	if (ret) return ret;
+
+	/* check if the content has changed */
+	if (thiz->content)
+		ret = eon_element_has_changed(thiz->content);
+	return ret;
+}
+
+static void _eon_container_cleanup(Ender_Element *e)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	thiz->changed = EINA_FALSE;
+	if (thiz->cleanup)
+		thiz->cleanup(e);
+	if (thiz->content)
+		eon_element_cleanup(thiz->content);
+}
+
 static void _eon_container_free(Enesim_Renderer *r)
 {
 	Eon_Container *thiz;
@@ -365,14 +402,16 @@ void * eon_container_data_get(Enesim_Renderer *r)
 Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *data)
 {
 	Eon_Container *thiz;
-	Eon_Widget_Descriptor pdescriptor;
+	Eon_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Container));
 	if (!thiz) return NULL;
 	thiz->data = data;
-	thiz->free = descriptor->free;
 	thiz->initialize = descriptor->initialize;
+	thiz->setup = descriptor->setup;
+	thiz->cleanup = descriptor->cleanup;
+	thiz->free = descriptor->free;
 	thiz->min_width_get = descriptor->min_width_get;
 	thiz->max_width_get = descriptor->max_width_get;
 	thiz->min_height_get = descriptor->min_height_get;
@@ -385,6 +424,8 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
 	pdescriptor.setup = descriptor->setup;
+	pdescriptor.cleanup = _eon_container_cleanup;
+	pdescriptor.has_changed = _eon_container_has_changed;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = _eon_container_min_width_get;
 	pdescriptor.max_width_get = _eon_container_max_width_get;

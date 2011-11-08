@@ -20,6 +20,8 @@ typedef struct _Eon_Container_Descriptor
 	Eon_Container_Element_At element_at;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Cleanup cleanup;
+	Eon_Element_Has_Changed has_changed;
 	Enesim_Renderer_Delete free;
 	const char *name;
 	Eina_Bool pass_events;
