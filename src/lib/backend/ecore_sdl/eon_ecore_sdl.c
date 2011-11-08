@@ -238,19 +238,17 @@ static Eina_Bool _idler_cb(void *data)
 	{
 		_sdl_setup_buffers(thiz);
 		thiz->needs_resize = EINA_FALSE;
-		redraws = NULL;
 		goto all;
 	}
-	/* get the damage rectangles */
-	// eon_layout_redraw_get(r, &redraws);
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */
+	/* get the damage rectangles */
 	enesim_renderer_destination_damages_get(r, _sdl_damages_get, &redraws);
 
 all:
 	/* render only those rectangles */
-	if (!enesim_renderer_draw_list(r, thiz->surface, NULL, 0, 0, &error))
+	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))
 	{
 		enesim_error_dump(error);
 		return EINA_TRUE;

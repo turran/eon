@@ -53,10 +53,10 @@ typedef struct _Eon_Element
 	/* function pointers */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Has_Changed has_changed;
 	Enesim_Renderer_Delete free;
-	Enesim_Renderer_Sw_Cleanup sw_cleanup;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
 	Eon_Element_Min_Height_Get max_height_get;
@@ -489,13 +489,19 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r,
 static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 {
 	Eon_Element *thiz;
+	Ender_Element *e;
+	Enesim_Renderer *real_r;
 
 	thiz = _eon_element_get(r);
+	e = ender_element_renderer_from(r);
 	/* FIXME why do we have a sw_cleanup function and not just cleanup
 	 * similar to what the setup does
 	 */
-	if (thiz->sw_cleanup)
-		thiz->sw_cleanup(r, s);
+	real_r = eon_element_renderer_get(e);
+	if (thiz->cleanup)
+		thiz->cleanup(e);
+	real_r = eon_element_renderer_get(e);
+	enesim_renderer_cleanup(real_r, s);
 }
 
 static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
@@ -537,11 +543,13 @@ Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 	/* check if the real renderer has changed */
 	real_r = eon_element_renderer_get(e);
 	ret = enesim_renderer_has_changed(real_r);
+#if 0
 	{
 		char *name;
-		enesim_renderer_name_get(r, &name);
+		enesim_renderer_name_get(real_r, &name);
 		printf("%s has changed = %d\n", name, ret);
 	}
+#endif
 	if (ret) return ret;
 	/* check if the properties have changed */
 
@@ -618,6 +626,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	/* Set the function pointers */
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
+	thiz->cleanup = descriptor->cleanup;
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->has_changed = descriptor->has_changed;
 	thiz->free = descriptor->free;
@@ -635,7 +644,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	/* preferred */
 	thiz->preferred_width_get = descriptor->preferred_width_get;
 	thiz->preferred_height_get = descriptor->preferred_height_get;
-	thiz->sw_cleanup = descriptor->sw_cleanup;
 	thiz->name = descriptor->name;
 
 	r = enesim_renderer_new(&_descriptor, thiz);

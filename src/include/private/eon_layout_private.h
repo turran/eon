@@ -14,6 +14,7 @@ typedef struct _Eon_Layout_Descriptor
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Cleanup cleanup;
 	Eon_Element_Has_Changed has_changed;
 	Eon_Layout_Child_Add child_add;
 	Eon_Layout_Child_Remove child_remove;

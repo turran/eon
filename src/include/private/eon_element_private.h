@@ -14,6 +14,7 @@ typedef struct _Eon_Element_State
 /* TODO rename all this max/min/preferred width/height into min/max/preferred size only */
 typedef void (*Eon_Element_Initialize)(Ender_Element *ender);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *ender);
+typedef void (*Eon_Element_Cleanup)(Ender_Element *e);
 typedef void (*Eon_Element_Free)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Min_Width_Get)(Ender_Element *e);
 typedef double (*Eon_Element_Max_Width_Get)(Ender_Element *e);
@@ -32,6 +33,7 @@ typedef struct _Eon_Element_Descriptor
 {
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Has_Changed has_changed;
 	Eon_Element_Min_Width_Get min_width_get;
@@ -44,7 +46,6 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Actual_Y_Set actual_y_set;
 	Eon_Element_Actual_Width_Set actual_width_set;
 	Eon_Element_Actual_Height_Set actual_height_set;
-	Enesim_Renderer_Sw_Cleanup sw_cleanup;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Element_Descriptor;

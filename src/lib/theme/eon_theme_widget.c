@@ -175,9 +175,11 @@ static void _eon_theme_widget_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_
 static Eina_Bool _eon_theme_widget_has_changed(Enesim_Renderer *r)
 {
 	Enesim_Renderer *real_r;
+	Eina_Bool ret;
 
 	real_r = _eon_theme_widget_renderer_get(r);
-	return enesim_renderer_has_changed(real_r);
+	ret = enesim_renderer_has_changed(real_r);
+	return ret;
 }
 
 static Eina_Bool _eon_theme_widget_is_inside(Enesim_Renderer *r, double x, double y)

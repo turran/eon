@@ -49,14 +49,6 @@ static void _wrapped_changed(Ender_Element *e, const char *event_name, void *eve
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_wrapper_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
-{
-	Eon_Wrapper *thiz;
-
-	thiz = _eon_wrapper_get(r);
-	enesim_renderer_cleanup(thiz->compound, s);
-}
-
 static void _eon_wrapper_free(Enesim_Renderer *r)
 {
 	Eon_Wrapper *thiz;
@@ -207,7 +199,6 @@ static Eon_Element_Descriptor _descriptor = {
 	.max_height_get = _eon_wrapper_max_height_get,
 	.preferred_width_get = _eon_wrapper_preferred_width_get,
 	.preferred_height_get = _eon_wrapper_preferred_height_get,
-	.sw_cleanup = _eon_wrapper_sw_cleanup,
 	.setup = _eon_wrapper_setup,
 	.renderer_get = _eon_wrapper_renderer_get,
 	.initialize = _eon_wrapper_initialize,

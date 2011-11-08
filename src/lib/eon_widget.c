@@ -63,14 +63,6 @@ static void _theme_changed(Ender_Element *e, const char *event_name, void *event
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_widget_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(r);
-	enesim_renderer_cleanup(thiz->theme_renderer, s);
-}
-
 static void _eon_widget_free(Enesim_Renderer *r)
 {
 	Eon_Widget *thiz;
@@ -201,6 +193,7 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
+	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
 	pdescriptor.has_changed = descriptor->has_changed;
 	pdescriptor.min_width_get = descriptor->min_width_get;
@@ -213,7 +206,6 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	pdescriptor.actual_y_set = _eon_widget_actual_y_set;
 	pdescriptor.actual_width_set = _eon_widget_actual_width_set;
 	pdescriptor.actual_height_set = _eon_widget_actual_height_set;
-	pdescriptor.sw_cleanup = _eon_widget_sw_cleanup;
 
 	pdescriptor.free = _eon_widget_free;
 	pdescriptor.name = descriptor->name;

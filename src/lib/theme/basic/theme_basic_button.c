@@ -59,7 +59,7 @@ static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
 static Enesim_Renderer * _button_renderer_get(Enesim_Renderer *r)
 {
 	Basic_Button *thiz;
-	
+
 	thiz = _button_get(r);
 	return eon_basic_control_button_renderer_get(thiz->cb);
 }

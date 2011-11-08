@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "eon_private.h"
 /**
- * @todo Remove the last_expand property and add a weight property
+ * @todo Remove the last_expand property and add a weight property per child
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -37,14 +37,15 @@ typedef struct _Eon_Stack_Child
 typedef struct _Eon_Stack_State
 {
 	Eon_Stack_Direction direction;
+	Eina_Bool homogeneous;
+	Eina_Bool last_expand;
 } Eon_Stack_State;
 
 typedef struct _Eon_Stack
 {
 	Eina_List *children;
-	Eina_Bool homogeneous;
+	Eina_Bool changed;
 	Eon_Stack_State old, curr;
-	Eina_Bool last_expand;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Stack;
 
@@ -148,7 +149,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 		child_rr = eon_element_renderer_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
-		if (!thiz->last_expand || ech != last_ech)
+		if (!thiz->curr.last_expand || ech != last_ech)
 		{
 			eon_element_real_width_get(ech->ender, &child_size.width);
 			if (child_size.width > size.width)
@@ -218,7 +219,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		child_rr = eon_element_renderer_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
-		if (!thiz->last_expand || ech != last_ech)
+		if (!thiz->curr.last_expand || ech != last_ech)
 		{
 			eon_element_real_height_get(ech->ender, &child_size.height);
 			if (child_size.height > size.height)
@@ -293,8 +294,13 @@ static void _eon_stack_free(Enesim_Renderer *r)
 
 static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
 {
-	printf("stack has changed?\n");
-	return EINA_TRUE;
+	Eon_Stack *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_stack_get(r);
+	/* FIXME check on the childs */
+	return thiz->changed;
 }
 
 static Eina_Bool _eon_stack_setup(Ender_Element *e)
@@ -304,7 +310,22 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
+	/* TODO we should only relayout whenever our properties have changed or a child
+	 * has changed properties, if not just leave it as is. Also we should not
+	 * check *every* property
+	 */
 	return _stack_relayout(e, thiz);
+}
+
+static void _eon_stack_cleanup(Ender_Element *e)
+{
+	Eon_Stack *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_stack_get(r);
+	/* FIXME we should call the cleanup on every inner element */
+	thiz->changed = EINA_FALSE;
 }
 
 static double _eon_stack_min_width_get(Ender_Element *e)
@@ -546,6 +567,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.preferred_width_get = _eon_stack_preferred_width_get,
 	.preferred_height_get = _eon_stack_preferred_height_get,
 	.has_changed = _eon_stack_has_changed,
+	.cleanup = _eon_stack_cleanup,
 	.setup = _eon_stack_setup,
 	.free = _eon_stack_free,
 	.name = "stack",
@@ -577,6 +599,7 @@ static void _eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction dir
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.direction = direction;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_stack_direction_get(Enesim_Renderer *r, Eon_Stack_Direction *direction)
@@ -601,6 +624,7 @@ static void _eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender_
 		if (ech->ender == child)
 		{
 			ech->halign = alignment;
+			thiz->changed = EINA_TRUE;
 		}
 	}
 }
@@ -618,6 +642,7 @@ static void _eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender_El
 		if (ech->ender == child)
 		{
 			ech->valign = alignment;
+			thiz->changed = EINA_TRUE;
 		}
 	}
 }
@@ -627,7 +652,8 @@ static void _eon_stack_last_expand_set(Enesim_Renderer *r, Eina_Bool last_expand
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(r);
-	thiz->last_expand = last_expand;
+	thiz->curr.last_expand = last_expand;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_stack_last_expand_get(Enesim_Renderer *r, Eina_Bool *last_expand)
@@ -635,7 +661,7 @@ static void _eon_stack_last_expand_get(Enesim_Renderer *r, Eina_Bool *last_expan
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(r);
-	*last_expand = thiz->last_expand;
+	*last_expand = thiz->curr.last_expand;
 }
 
 static void _eon_stack_homogeneous_set(Enesim_Renderer *r, Eina_Bool homogeneous)
@@ -643,7 +669,8 @@ static void _eon_stack_homogeneous_set(Enesim_Renderer *r, Eina_Bool homogeneous
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(r);
-	thiz->homogeneous = homogeneous;
+	thiz->curr.homogeneous = homogeneous;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_stack_homogeneous_get(Enesim_Renderer *r, Eina_Bool *homogeneous)
@@ -651,7 +678,7 @@ static void _eon_stack_homogeneous_get(Enesim_Renderer *r, Eina_Bool *homogeneou
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(r);
-	*homogeneous = thiz->homogeneous;
+	*homogeneous = thiz->curr.homogeneous;
 }
 /*============================================================================*
  *                                 Global                                     *
