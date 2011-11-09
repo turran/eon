@@ -38,7 +38,6 @@ typedef struct _Eon_Layout
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Enesim_Renderer_Delete free;
-	Eina_Tiler *tiler;
 	Eina_Array *obscure;
 	Eina_Array *damage;
 	unsigned int width;
@@ -347,34 +346,11 @@ EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-void eon_layout_redraw_get(Enesim_Renderer *r, Eina_List **redraws)
-{
-	/* get every damage from the tiler */
-	/* remove the obscures */
-	/* return that list */
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
 void eon_layout_obscure_add(Enesim_Renderer *r, Eina_Rectangle *obscure)
 {
 	Eon_Layout *thiz;
 
 	thiz = _eon_layout_get(r);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-void eon_layout_damage_add(Enesim_Renderer *r, Eina_Rectangle *damage)
-{
-	Eon_Layout *thiz;
-
-	thiz = _eon_layout_get(r);
-	/* add the rectangle to the tiler */
 }
 
 /**

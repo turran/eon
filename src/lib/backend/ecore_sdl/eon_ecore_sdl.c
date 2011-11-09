@@ -46,6 +46,7 @@ typedef struct _Eon_Ecore_SDL_Window
 	unsigned int height;
 	Ecore_Idle_Enterer *idler;
 	Eina_Bool needs_resize;
+	Eina_Tiler *tiler; /* TODO for later */
 } Eon_Ecore_SDL_Window;
 
 static Eina_Bool _initialized = EINA_FALSE;
