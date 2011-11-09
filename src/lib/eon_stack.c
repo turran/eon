@@ -325,6 +325,9 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 	 * has changed properties, if not just leave it as is. Also we should not
 	 * check *every* property
 	 */
+	/* if the actual size has changed, then relayout
+	 * if some child preferred/min/max size has changed then call the relayout
+	 */
 	return _stack_relayout(e, thiz);
 }
 

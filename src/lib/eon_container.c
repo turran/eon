@@ -334,7 +334,6 @@ static double _eon_container_preferred_height_get(Ender_Element *e)
 	if (thiz->preferred_height_get)
 		v = thiz->preferred_height_get(e, v);
 
-	printf("container preferred height %g\n", v);
 	return v;
 }
 

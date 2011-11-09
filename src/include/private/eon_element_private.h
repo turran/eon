@@ -3,10 +3,6 @@
 
 typedef struct _Eon_Element_State
 {
-	Eon_Size preferred_size;
-	Eon_Size max_size;
-	Eon_Size min_size;
-	Eon_Size size;
 	Eon_Position actual_position;
 	Eon_Size actual_size;
 } Eon_Element_State;

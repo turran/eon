@@ -55,6 +55,7 @@ static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina
 {
 	Eina_List **redraws = data;
 	Eina_Rectangle *dest;
+	char *name;
 
 	dest = malloc(sizeof(Eina_Rectangle));
 	dest->x = area->x;
@@ -63,7 +64,8 @@ static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina
 	dest->h = area->h;
 
 	*redraws = eina_list_append(*redraws, dest);
-	printf("new damage of %d %d %d %d\n", dest->x, dest->y, dest->w, dest->h);
+	enesim_renderer_name_get(r, &name);
+	printf("new damage for %s of %d %d %d %d\n", name, dest->x, dest->y, dest->w, dest->h);
 }
 
 static void _sdl_setup_buffers(Eon_Ecore_SDL_Window *thiz)
@@ -235,10 +237,10 @@ static Eina_Bool _idler_cb(void *data)
 	{
 		return EINA_TRUE;
 	}
+	printf("the layout has changed\n");
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);
-		thiz->needs_resize = EINA_FALSE;
 		goto all;
 	}
 	/* FIXME for now */
@@ -252,17 +254,21 @@ all:
 	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))
 	{
 		enesim_error_dump(error);
-		return EINA_TRUE;
+		goto done;
 	}
 	/* call the flush on the backend of such rectangles */
 	/* FIXME for now the layout always returns nothing, force a render anyway */
 	//ee->flush(ee->data, redraws);
 	//EINA_LIST_FOREACH
 	{
-		eina_rectangle_coords_from(&area, 0, 0, thiz->width, thiz->height);
-
-		_sdl_flush(thiz, &area);
+		if (redraws || thiz->needs_resize)
+		{
+			eina_rectangle_coords_from(&area, 0, 0, thiz->width, thiz->height);
+			_sdl_flush(thiz, &area);
+		}
 	}
+done:
+	thiz->needs_resize = EINA_FALSE;
 	return EINA_TRUE;
 }
 

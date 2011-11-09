@@ -27,6 +27,7 @@ typedef struct _Eon_Splitter
 	Ender_Element *second_content;
 	double position;
 	/* private */
+	Eina_Bool changed : 1;
 	double minl, maxl;
 	Eina_Bool dragging;
 	double offset_dragging;
@@ -334,7 +335,6 @@ static Ender_Element * _eon_splitter_element_at(Ender_Element *e, double x, doub
 		eon_element_actual_position_get(content_r, &ax, &ay);
 		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 		{
-			printf("inside second content\n");
 			return thiz->second_content;
 		}
 	}
@@ -479,11 +479,43 @@ static void _eon_splitter_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static void _eon_splitter_cleanup(Ender_Element *e)
+{
+	Eon_Splitter *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_splitter_get(r);
+	thiz->changed = EINA_FALSE;
+}
+
+static void _eon_splitter_has_changed(Ender_Element *e)
+{
+	Eon_Splitter *thiz;
+	Enesim_Renderer *r;
+	Eina_Bool ret;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_splitter_get(r);
+
+	/* check if we have changed */
+	ret = thiz->changed;
+	if (ret) return ret;
+
+	/* check if the second content has changed */
+	if (thiz->second_content)
+		ret = eon_element_has_changed(thiz->second_content);
+
+	return ret;
+}
+
 static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
 	.name = "splitter",
 	.initialize = _eon_splitter_initialize,
 	.free = _eon_splitter_free,
 	.setup = _eon_splitter_setup,
+	.cleanup = _eon_splitter_cleanup,
+	.has_changed = _eon_splitter_has_changed,
 	.min_width_get = _eon_splitter_min_width_get,
 	.max_width_get = _eon_splitter_max_width_get,
 	.min_height_get = _eon_splitter_min_height_get,
@@ -541,11 +573,9 @@ static void _eon_splitter_second_content_set(Enesim_Renderer *r, Ender_Element *
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *second_content_rr;
 
-	printf("setting second content\n");
 	thiz = _eon_splitter_get(r);
 	if (!thiz) return;
 	thiz->second_content = second_content;
-	printf("== %p\n", second_content);
 	theme_r = eon_widget_theme_renderer_get(r);
 	second_content_rr = eon_element_renderer_get(thiz->second_content);
 	eon_theme_splitter_second_content_set(theme_r, second_content_rr);
