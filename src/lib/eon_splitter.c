@@ -20,12 +20,17 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Splitter
-{
-	/* properties */
+typedef struct _Eon_Splitter_State {
 	Eon_Orientation orientation;
 	Ender_Element *second_content;
 	double position;
+} Eon_Splitter_State;
+
+typedef struct _Eon_Splitter
+{
+	/* properties */
+	Eon_Splitter_State current;
+	Eon_Splitter_State past;
 	/* private */
 	Eina_Bool changed : 1;
 	double minl, maxl;
@@ -57,7 +62,7 @@ static void _eon_splitter_mouse_move(Ender_Element *e, const char *event_name, v
 
 	eon_element_actual_size_get(r, &size);
 	/* get the absolute position of the event */
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		c = ev->x - thiz->offset_dragging;
 	}
@@ -98,7 +103,7 @@ static void _eon_splitter_mouse_drag_start(Ender_Element *e, const char *event_n
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		eon_theme_splitter_position_get(theme_r, &g.x);
 		g.y = 0;
@@ -134,10 +139,10 @@ static double _eon_splitter_min_width_get(Ender_Element *e, double cmv)
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->second_content)
-		eon_element_min_width_get(thiz->second_content, &scmv);
+	if (thiz->current.second_content)
+		eon_element_min_width_get(thiz->current.second_content, &scmv);
 
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
 		bmv = scmv + cmv;
@@ -168,10 +173,10 @@ static double _eon_splitter_max_width_get(Ender_Element *e, double cmv)
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->second_content)
-		eon_element_max_width_get(thiz->second_content, &scmv);
+	if (thiz->current.second_content)
+		eon_element_max_width_get(thiz->current.second_content, &scmv);
 
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
 		bmv = scmv + cmv;
@@ -202,9 +207,9 @@ static double _eon_splitter_min_height_get(Ender_Element *e, double cmv)
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->second_content)
-		eon_element_min_height_get(thiz->second_content, &scmv);
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.second_content)
+		eon_element_min_height_get(thiz->current.second_content, &scmv);
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double length;
 
@@ -235,10 +240,10 @@ static double _eon_splitter_max_height_get(Ender_Element *e, double cmv)
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->second_content)
-		eon_element_max_width_get(thiz->second_content, &scmv);
+	if (thiz->current.second_content)
+		eon_element_max_width_get(thiz->current.second_content, &scmv);
 
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double length;
 
@@ -269,9 +274,9 @@ static double _eon_splitter_preferred_width_get(Ender_Element *e, double cmv)
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->second_content)
-		eon_element_preferred_width_get(thiz->second_content, &scmv);
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.second_content)
+		eon_element_preferred_width_get(thiz->current.second_content, &scmv);
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
 
@@ -298,9 +303,9 @@ static double _eon_splitter_preferred_height_get(Ender_Element *e, double cmv)
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	if (thiz->second_content)
-		eon_element_preferred_height_get(thiz->second_content, &scmv);
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.second_content)
+		eon_element_preferred_height_get(thiz->current.second_content, &scmv);
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		/* FIXME */
 	}
@@ -326,16 +331,16 @@ static Ender_Element * _eon_splitter_element_at(Ender_Element *e, double x, doub
 	r = ender_element_renderer_get(e);
 	thiz = _eon_splitter_get(r);
 
-	if (thiz->second_content)
+	if (thiz->current.second_content)
 	{
 		Enesim_Renderer *content_r;
 
-		content_r = ender_element_renderer_get(thiz->second_content);
+		content_r = ender_element_renderer_get(thiz->current.second_content);
 		eon_element_actual_size_get(content_r, &size);
 		eon_element_actual_position_get(content_r, &ax, &ay);
 		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 		{
-			return thiz->second_content;
+			return thiz->current.second_content;
 		}
 	}
 
@@ -354,7 +359,7 @@ static void _eon_splitter_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_splitter_mouse_move, NULL);
 }
 
-static Eina_Bool _eon_splitter_setup(Ender_Element *e)
+static Eina_Bool _eon_splitter_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Splitter *thiz;
 	Ender_Element *content;
@@ -373,7 +378,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	theme_r = eon_widget_theme_renderer_get(r);
 
 	/* calculate the real position */
-	position = thiz->position;
+	position = thiz->current.position;
 	eon_container_content_get(e, &content);
 	if (!content)
 	{
@@ -382,7 +387,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	}
 	content_r = ender_element_renderer_get(content);
 
-	if (!thiz->second_content)
+	if (!thiz->current.second_content)
 	{
 		printf("no second content\n");
 		return EINA_FALSE;
@@ -391,22 +396,22 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	eon_theme_splitter_thickness_get(theme_r, &thickness);
 	eon_element_actual_width_get(e, &aw);
 	eon_element_actual_height_get(e, &ah);
-	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double len;
 		double cmin, cmax;
 		double scmin, scmax;
 
 		eon_element_min_width_get(content, &cmin);
-		eon_element_min_width_get(thiz->second_content, &scmin);
+		eon_element_min_width_get(thiz->current.second_content, &scmin);
 		eon_element_max_width_get(content, &cmax);
-		eon_element_max_width_get(thiz->second_content, &scmax);
+		eon_element_max_width_get(thiz->current.second_content, &scmax);
 
 		thiz->minl = MAX(cmin, aw - thickness - scmax);
 		thiz->maxl = MIN(cmax, aw - thickness - scmin);
 
 		len = thiz->maxl - thiz->minl;
-		len = thiz->minl + (len * thiz->position);
+		len = thiz->minl + (len * thiz->current.position);
 
 		cx = 0;
 		cy = 0;
@@ -426,15 +431,15 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 		double scmin, scmax;
 
 		eon_element_min_height_get(content, &cmin);
-		eon_element_min_height_get(thiz->second_content, &scmin);
+		eon_element_min_height_get(thiz->current.second_content, &scmin);
 		eon_element_max_height_get(content, &cmax);
-		eon_element_max_height_get(thiz->second_content, &scmax);
+		eon_element_max_height_get(thiz->current.second_content, &scmax);
 
 		thiz->minl = MAX(cmin, ah - thickness - scmax);
 		thiz->maxl = MIN(cmax, ah - thickness - scmin);
 
 		len = thiz->maxl - thiz->minl;
-		len = thiz->minl + (len * thiz->position);
+		len = thiz->minl + (len * thiz->current.position);
 
 		cx = 0;
 		cy = 0;
@@ -452,17 +457,17 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e)
 	eon_element_actual_height_set(content_r, ch);
 	eon_element_actual_position_set(content_r, cx, cy);
 
-	content_r = ender_element_renderer_get(thiz->second_content);
+	content_r = ender_element_renderer_get(thiz->current.second_content);
 	eon_element_actual_width_set(content_r, scw);
 	eon_element_actual_height_set(content_r, sch);
 	eon_element_actual_position_set(content_r, scx, scy);
 
-	if (!eon_element_setup(content))
+	if (!eon_element_setup(content, s, err))
 	{
 		printf("impossible to setup the content\n");
 		return EINA_FALSE;
 	}
-	if (!eon_element_setup(thiz->second_content))
+	if (!eon_element_setup(thiz->current.second_content, s, err))
 	{
 		printf("impossible to setup the content\n");
 		return EINA_FALSE;
@@ -479,17 +484,56 @@ static void _eon_splitter_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _eon_splitter_cleanup(Ender_Element *e)
+static void _eon_splitter_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
 {
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_splitter_get(r);
+
+	printf("entering the damages\n");
+	if (thiz->changed)
+	{
+		Enesim_Rectangle area;
+
+		eon_element_actual_position_get(r, &area.x, &area.y);
+		eon_element_actual_width_get(e, &area.w);
+		eon_element_actual_height_get(e, &area.h);
+
+		cb(r, &area, EINA_FALSE, data);
+		return;
+	}
+	else
+	{
+		Ender_Element *content;
+
+		eon_container_content_get(e, &content);
+		eon_element_damages_get(content, cb, data);
+
+		if (thiz->current.second_content)
+		{
+			eon_element_damages_get(thiz->current.second_content, cb, data);
+		}
+	}
+}
+
+static void _eon_splitter_cleanup(Ender_Element *e, Enesim_Surface *s)
+{
+	Eon_Splitter *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_splitter_get(r);
+
+	if (thiz->current.second_content)
+		eon_element_cleanup(thiz->current.second_content, s);
+
+	thiz->past = thiz->current;
 	thiz->changed = EINA_FALSE;
 }
 
-static void _eon_splitter_has_changed(Ender_Element *e)
+static Eina_Bool _eon_splitter_has_changed(Ender_Element *e)
 {
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
@@ -500,11 +544,14 @@ static void _eon_splitter_has_changed(Ender_Element *e)
 
 	/* check if we have changed */
 	ret = thiz->changed;
-	if (ret) return ret;
+	if (ret)
+	{
+		return ret;
+	}
 
 	/* check if the second content has changed */
-	if (thiz->second_content)
-		ret = eon_element_has_changed(thiz->second_content);
+	if (thiz->current.second_content)
+		ret = eon_element_has_changed(thiz->current.second_content);
 
 	return ret;
 }
@@ -515,6 +562,7 @@ static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
 	.free = _eon_splitter_free,
 	.setup = _eon_splitter_setup,
 	.cleanup = _eon_splitter_cleanup,
+	.damage = _eon_splitter_damage,
 	.has_changed = _eon_splitter_has_changed,
 	.min_width_get = _eon_splitter_min_width_get,
 	.max_width_get = _eon_splitter_max_width_get,
@@ -535,7 +583,7 @@ static Enesim_Renderer * _eon_splitter_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Splitter));
 	/* default values */
-	thiz->position = 0.5;
+	thiz->current.position = 0.5;
 	if (!thiz) return NULL;
 
 	r = eon_container_new(&_eon_splitter_container_descriptor, thiz);
@@ -554,7 +602,9 @@ static void _eon_splitter_orientation_set(Enesim_Renderer *r, Eon_Orientation or
 
 	thiz = _eon_splitter_get(r);
 	if (!thiz) return;
-	thiz->orientation = orientation;
+	thiz->current.orientation = orientation;
+	thiz->changed = EINA_TRUE;
+
 	eon_widget_property_set(r, "orientation", orientation, NULL);
 }
 
@@ -564,7 +614,7 @@ static void _eon_splitter_orientation_get(Enesim_Renderer *r, Eon_Orientation *o
 
 	thiz = _eon_splitter_get(r);
 	if (!thiz) return;
-	*orientation = thiz->orientation;
+	*orientation = thiz->current.orientation;
 }
 
 static void _eon_splitter_second_content_set(Enesim_Renderer *r, Ender_Element *second_content)
@@ -575,9 +625,11 @@ static void _eon_splitter_second_content_set(Enesim_Renderer *r, Ender_Element *
 
 	thiz = _eon_splitter_get(r);
 	if (!thiz) return;
-	thiz->second_content = second_content;
+	thiz->current.second_content = second_content;
+	thiz->changed = EINA_TRUE;
+
 	theme_r = eon_widget_theme_renderer_get(r);
-	second_content_rr = eon_element_renderer_get(thiz->second_content);
+	second_content_rr = eon_element_renderer_get(thiz->current.second_content);
 	eon_theme_splitter_second_content_set(theme_r, second_content_rr);
 }
 
@@ -587,7 +639,7 @@ static void _eon_splitter_second_content_get(Enesim_Renderer *r, Ender_Element *
 
 	thiz = _eon_splitter_get(r);
 	if (!thiz) return;
-	*second_content = thiz->second_content;
+	*second_content = thiz->current.second_content;
 }
 
 static void _eon_splitter_position_set(Enesim_Renderer *r, double position)
@@ -599,7 +651,8 @@ static void _eon_splitter_position_set(Enesim_Renderer *r, double position)
 	if (position > 1.0) position = 1.0;
 	if (position < 0) position = 0.0;
 
-	thiz->position = position;
+	thiz->current.position = position;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_splitter_position_get(Enesim_Renderer *r, double *position)
@@ -608,7 +661,7 @@ static void _eon_splitter_position_get(Enesim_Renderer *r, double *position)
 
 	thiz = _eon_splitter_get(r);
 	if (!thiz) return;
-	*position = thiz->position;
+	*position = thiz->current.position;
 }
 
 #include "eon_generated_splitter.c"

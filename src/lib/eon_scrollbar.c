@@ -20,6 +20,15 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Eon_Scrollbar_State
+{
+	Eon_Orientation orientation;
+	double max;
+	double min;
+	double page_size;
+	double value;
+} Eon_Scrollbar_State;
+
 typedef struct _Eon_Scrollbar
 {
 	/* properties */
@@ -31,6 +40,7 @@ typedef struct _Eon_Scrollbar
 	double step_increment;
 	double value;
 	/* private */
+	Eina_Bool changed : 1;
 	Eina_Bool thumb_dragging;
 	double offset_dragging;
 } Eon_Scrollbar;
@@ -183,7 +193,7 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_scrollbar_mouse_move, NULL);
 }
 
-static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
+static Eina_Bool _eon_scrollbar_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollbar *thiz;
 	Eon_Size size;
@@ -217,6 +227,26 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e)
 	eon_theme_scrollbar_thumb_percent_set(theme_r, percent);
 
 	return EINA_TRUE;
+}
+
+static void _eon_scrollbar_cleanup(Ender_Element *e, Enesim_Surface *s)
+{
+	Eon_Scrollbar *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollbar_get(r);
+	thiz->changed = EINA_FALSE;
+}
+
+static Eina_Bool _eon_scrollbar_has_changed(Ender_Element *e)
+{
+	Eon_Scrollbar *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollbar_get(r);
+	return thiz->changed;	
 }
 
 static void _eon_scrollbar_free(Enesim_Renderer *r)
@@ -329,6 +359,8 @@ static Eon_Widget_Descriptor _eon_scrollbar_widget_descriptor = {
 	.initialize = _eon_scrollbar_initialize,
 	.free = _eon_scrollbar_free,
 	.setup = _eon_scrollbar_setup,
+	.cleanup = _eon_scrollbar_cleanup,
+	.has_changed = _eon_scrollbar_has_changed,
 	.min_width_get = _eon_scrollbar_min_width_get,
 	.max_width_get = _eon_scrollbar_max_width_get,
 	.min_height_get = _eon_scrollbar_min_height_get,
@@ -371,6 +403,8 @@ static void _eon_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation o
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
 	thiz->orientation = orientation;
+	thiz->changed = EINA_TRUE;
+
 	eon_widget_property_set(r, "orientation", orientation, NULL);
 }
 
@@ -390,6 +424,7 @@ static void _eon_scrollbar_max_set(Enesim_Renderer *r, double max)
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
 	thiz->max = max;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_scrollbar_max_get(Enesim_Renderer *r, double *max)
@@ -408,6 +443,7 @@ static void _eon_scrollbar_min_set(Enesim_Renderer *r, double min)
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz) return;
 	thiz->min = min;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_scrollbar_min_get(Enesim_Renderer *r, double *min)
@@ -445,6 +481,7 @@ static void _eon_scrollbar_page_size_set(Enesim_Renderer *r, double page_size)
 	if (!thiz) return;
 
 	thiz->page_size = page_size;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_scrollbar_page_size_get(Enesim_Renderer *r, double *page_size)
@@ -483,6 +520,7 @@ static void _eon_scrollbar_value_set(Enesim_Renderer *r, double value)
 	if (value > thiz->max - thiz->page_size) value = thiz->max - thiz->page_size;
 	if (value < thiz->min) value = thiz->min;
 	thiz->value = value;
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_scrollbar_value_get(Enesim_Renderer *r, double *value)

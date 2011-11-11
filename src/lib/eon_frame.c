@@ -46,7 +46,7 @@ static void _eon_frame_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_frame_setup(Ender_Element *e)
+static Eina_Bool _eon_frame_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Frame *thiz;
 	Ender_Element *content;
@@ -78,7 +78,7 @@ static Eina_Bool _eon_frame_setup(Ender_Element *e)
 		eon_element_actual_size_set(content_r, aw - margin.left - margin.right,
 				ah - margin.bottom - margin.top);
 		eon_element_actual_position_set(content_r, margin.left, margin.top);
-		if (!eon_element_setup(content))
+		if (!eon_element_setup(content, s, err))
 		{
 			printf("impossible to setup the content\n");
 			return EINA_FALSE;

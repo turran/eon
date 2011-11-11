@@ -96,6 +96,7 @@ EAPI Enesim_Renderer * eon_theme_radio_new(Eon_Theme_Radio_Descriptor *descripto
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.has_changed = descriptor->has_changed;
 	pdescriptor.name = _eon_theme_radio_name;
 	pdescriptor.free = _eon_theme_radio_free;
 

@@ -102,6 +102,7 @@ EAPI Enesim_Renderer * eon_theme_progressbar_new(Eon_Theme_Progressbar_Descripto
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.has_changed = descriptor->has_changed;
 	pdescriptor.name = _eon_theme_progressbar_name;
 	pdescriptor.free = _eon_theme_progressbar_free;
 

@@ -90,7 +90,7 @@ static void _eon_entry_initialize(Ender_Element *e)
 	thiz->buffer = eon_theme_entry_buffer_get(theme_r);
 }
 
-static Eina_Bool _eon_entry_setup(Ender_Element *e)
+static Eina_Bool _eon_entry_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Entry *thiz;
 	Eon_Size size;

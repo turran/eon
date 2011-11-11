@@ -190,6 +190,8 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	pdescriptor.renderer_get = _eon_theme_entry_renderer_get;
 	pdescriptor.setup = _eon_theme_entry_setup;
 	pdescriptor.cleanup = _eon_theme_entry_cleanup;
+	pdescriptor.has_changed = descriptor->has_changed;
+
 	pdescriptor.name = _eon_theme_entry_name;
 	pdescriptor.free = _eon_theme_entry_free;
 

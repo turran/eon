@@ -350,13 +350,17 @@ static Eina_Bool _eon_container_has_changed(Ender_Element *e)
 	ret = thiz->changed;
 	if (ret) return ret;
 
+	if (thiz->has_changed)
+		ret = thiz->has_changed(e);
+	if (ret) return ret;
+
 	/* check if the content has changed */
 	if (thiz->content)
 		ret = eon_element_has_changed(thiz->content);
 	return ret;
 }
 
-static void _eon_container_cleanup(Ender_Element *e)
+static void _eon_container_cleanup(Ender_Element *e, Enesim_Surface *s)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
@@ -365,9 +369,9 @@ static void _eon_container_cleanup(Ender_Element *e)
 	thiz = _eon_container_get(r);
 	thiz->changed = EINA_FALSE;
 	if (thiz->cleanup)
-		thiz->cleanup(e);
+		thiz->cleanup(e, s);
 	if (thiz->content)
-		eon_element_cleanup(thiz->content);
+		eon_element_cleanup(thiz->content, s);
 }
 
 static void _eon_container_free(Enesim_Renderer *r)
@@ -409,6 +413,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->data = data;
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
+	thiz->has_changed = descriptor->has_changed;
 	thiz->cleanup = descriptor->cleanup;
 	thiz->free = descriptor->free;
 	thiz->min_width_get = descriptor->min_width_get;
@@ -424,6 +429,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	pdescriptor.free = _eon_container_free;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = _eon_container_cleanup;
+	pdescriptor.damage = descriptor->damage;
 	pdescriptor.has_changed = _eon_container_has_changed;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = _eon_container_min_width_get;

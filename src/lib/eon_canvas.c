@@ -64,7 +64,7 @@ static void _eon_canvas_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_canvas_setup(Ender_Element *e)
+static Eina_Bool _eon_canvas_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
@@ -91,7 +91,7 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e)
 		eon_element_actual_position_set(child_r, ech->x, ech->y);
 		/* now add the renderer associated with the widget into the theme */
 		eon_widget_property_add(r, "child", child_rr, NULL);
-		eon_element_setup(ech->ender);
+		eon_element_setup(ech->ender, s, err);
 	}
 
 	return EINA_TRUE;

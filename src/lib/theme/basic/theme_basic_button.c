@@ -95,10 +95,31 @@ static void _button_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _button_has_changed(Enesim_Renderer *r)
+{
+	Basic_Button *thiz;
+	Eina_Bool ret;
+
+	thiz = _button_get(r);
+
+	ret = eon_basic_control_button_has_changed(thiz->cb);
+	return ret;
+}
+
+static void _button_cleanup(Enesim_Renderer *r)
+{
+	Basic_Button *thiz;
+
+	thiz = _button_get(r);
+	eon_basic_control_button_cleanup(thiz->cb);
+}
+
 static Eon_Theme_Button_Descriptor _descriptor = {
 	.margin_get = _button_margin_get,
 	.position_get = _button_position_get,
 	.renderer_get = _button_renderer_get,
+	.has_changed = _button_has_changed,
+	.cleanup = _button_cleanup,
 	.setup = _button_setup,
 	.free = _button_free,
 };

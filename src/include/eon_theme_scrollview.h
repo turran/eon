@@ -29,6 +29,7 @@ typedef struct _Eon_Theme_Scrollview_Descriptor
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
+	Eon_Theme_Widget_Has_Changed has_changed;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Scrollview_Descriptor;
 

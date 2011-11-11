@@ -15,6 +15,7 @@ typedef struct _Eon_Layout_Descriptor
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Cleanup cleanup;
+	Eon_Element_Damage damage;
 	Eon_Element_Has_Changed has_changed;
 	Eon_Layout_Child_Add child_add;
 	Eon_Layout_Child_Remove child_remove;

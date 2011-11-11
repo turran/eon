@@ -160,7 +160,7 @@ static double _eon_button_base_max_height_get(Ender_Element *e, double cmv)
 	return DBL_MAX;
 }
 
-static Eina_Bool _eon_button_base_setup(Ender_Element *e)
+static Eina_Bool _eon_button_base_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Button_Base *thiz;
 	Enesim_Renderer *r;
@@ -194,14 +194,14 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e)
 		eon_element_actual_size_set(content_r, size.width, size.height);
 		eon_theme_button_base_position_get(theme_r, &size, &position);
 		eon_element_actual_position_set(content_r, position.x, position.y);
-		if (!eon_element_setup(content))
+		if (!eon_element_setup(content, s, err))
 		{
 			printf("impossible to setup the content\n");
 			return EINA_FALSE;
 		}
 	}
 	if (thiz->setup)
-		return thiz->setup(e);
+		return thiz->setup(e, s, err);
 
 	return EINA_TRUE;
 }

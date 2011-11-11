@@ -69,7 +69,7 @@ static void _eon_image_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_image_setup(Ender_Element *e)
+static Eina_Bool _eon_image_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Image *thiz;
 	Enesim_Renderer *r;

@@ -87,17 +87,17 @@ static void _eon_widget_initialize(Ender_Element *ender)
 		thiz->initialize(ender);
 }
 
-static Eina_Bool _eon_widget_setup(Ender_Element *ender)
+static Eina_Bool _eon_widget_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Widget *thiz;
 	Enesim_Renderer *r;
 	Enesim_Color color;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
-		thiz->setup(ender);
+		thiz->setup(e, s, err);
 	return EINA_TRUE;
 }
 
@@ -195,6 +195,7 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
+	pdescriptor.damage = descriptor->damage;
 	pdescriptor.has_changed = descriptor->has_changed;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.max_width_get = descriptor->max_width_get;

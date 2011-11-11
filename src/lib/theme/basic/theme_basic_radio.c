@@ -74,6 +74,8 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 	/* set the common properties */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
+
+	printf("radio setup %g %g\n", ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
 	if (!content)

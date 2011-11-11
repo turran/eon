@@ -190,7 +190,7 @@ static void _eon_layout_initialize(Ender_Element *e)
 }
 
 /* FIXME We must delete this one */
-static Eina_Bool _eon_layout_setup(Ender_Element *e)
+static Eina_Bool _eon_layout_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error *err)
 {
 	Eon_Layout *thiz;
 	Enesim_Renderer *r;
@@ -198,7 +198,7 @@ static Eina_Bool _eon_layout_setup(Ender_Element *e)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
 	if (thiz->setup)
-		return thiz->setup(e);
+		return thiz->setup(e, s, err);
 	return EINA_TRUE;
 }
 
@@ -296,6 +296,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.preferred_height_get = descriptor->preferred_height_get;
 	pdescriptor.setup = _eon_layout_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
+	pdescriptor.damage = descriptor->damage;
 	pdescriptor.has_changed = descriptor->has_changed;
 
 	r = eon_widget_new(&pdescriptor, thiz);

@@ -313,7 +313,7 @@ static double _eon_spin_preferred_height_get(Ender_Element *e)
 	return v + margin.top + margin.bottom;
 }
 
-static Eina_Bool _eon_spin_setup(Ender_Element *e)
+static Eina_Bool _eon_spin_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Spin *thiz;
 	Eon_Size size;
@@ -341,7 +341,7 @@ static Eina_Bool _eon_spin_setup(Ender_Element *e)
 	eon_element_actual_size_set(entry_r, entry_size.width, entry_size.height);
 	/* check the real size and put the input where it should be aligned */
 	eon_element_actual_position_set(entry_r, margin.left, margin.top);
-	eon_element_setup(thiz->entry);
+	eon_element_setup(thiz->entry, s, err);
 
 	/* pass it to the theme */
 	if (thiz->entry_rr != entry_rr)

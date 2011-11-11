@@ -233,11 +233,6 @@ static Eina_Bool _idler_cb(void *data)
 	Eina_Rectangle area;
 
 	r = ender_element_renderer_get(thiz->layout);
-	if (!enesim_renderer_has_changed(r))
-	{
-		return EINA_TRUE;
-	}
-	printf("the layout has changed\n");
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);
@@ -248,7 +243,8 @@ static Eina_Bool _idler_cb(void *data)
 	 * the tiler and then only draw what's needed */
 	/* get the damage rectangles */
 	enesim_renderer_destination_damages_get(r, _sdl_damages_get, &redraws);
-
+	if (!redraws)
+		return EINA_TRUE;
 all:
 	/* render only those rectangles */
 	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))

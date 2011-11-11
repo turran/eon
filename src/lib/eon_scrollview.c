@@ -27,11 +27,18 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Eon_Scrollview_State
+{
+	Eon_Position offset;
+} Eon_Scrollview_State;
+
 typedef struct _Eon_Scrollview
 {
 	/* properties */
-	Eon_Position offset;
+	Eon_Scrollview_State current;
+	Eon_Scrollview_State past;
 	/* private */
+	Eina_Bool changed : 1;
 	Ender_Element *hbar;
 	Ender_Element *vbar;
 } Eon_Scrollview;
@@ -196,7 +203,7 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 	ender_event_listener_add(thiz->vbar, "Mutation", _bar_changed, e);
 }
 
-static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
+static Eina_Bool _eon_scrollview_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollview *thiz;
 	Ender_Element *content;
@@ -264,7 +271,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 
 			scale = length / content_size.width;
 			eon_scrollbar_page_size_set(thiz->hbar, scale * 100);
-			eon_element_setup(thiz->hbar);
+			eon_element_setup(thiz->hbar, s, err);
 		}
 		else
 		{
@@ -288,7 +295,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 
 			scale = length / content_size.height;
 			eon_scrollbar_page_size_set(thiz->vbar, scale * 100);
-			eon_element_setup(thiz->vbar);
+			eon_element_setup(thiz->vbar, s, err);
 		}
 		else
 		{
@@ -299,8 +306,8 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 		 * the gfx position is handled on the theme with theme_scrollview_offset_set
 		 */
 		eon_element_actual_size_set(content_r, content_size.width, content_size.height);
-		eon_element_actual_position_set(content_r, thiz->offset.x, thiz->offset.y);
-		if (!eon_element_setup(content))
+		eon_element_actual_position_set(content_r, thiz->current.offset.x, thiz->current.offset.y);
+		if (!eon_element_setup(content, s, err))
 		{
 			printf("impossible to setup the content\n");
 			return EINA_FALSE;
@@ -310,9 +317,54 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e)
 	return ret;
 }
 
+static void _eon_scrollview_cleanup(Ender_Element *e, Enesim_Surface *s)
+{
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+
+	eon_element_cleanup(thiz->hbar, s);
+	eon_element_cleanup(thiz->vbar, s);
+
+	thiz->changed = EINA_FALSE;
+	thiz->past = thiz->current;
+}
+
+static Eina_Bool _eon_scrollview_has_changed(Ender_Element *e)
+{
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+
+	if (eon_element_has_changed(thiz->hbar))
+	{
+		return EINA_TRUE;
+	}
+
+	if (eon_element_has_changed(thiz->vbar))
+	{
+		return EINA_TRUE;
+	}
+
+	if (!thiz->changed) return EINA_FALSE;
+	if (thiz->current.offset.x != thiz->past.offset.x)
+		return EINA_TRUE;
+
+	if (thiz->current.offset.y != thiz->past.offset.y)
+		return EINA_TRUE;
+
+	return EINA_FALSE;
+}
+
 static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
+	.cleanup = _eon_scrollview_cleanup,
+	.has_changed = _eon_scrollview_has_changed,
 	.min_width_get = _eon_scrollview_min_width_get,
 	.min_height_get = _eon_scrollview_min_height_get,
 	.max_width_get = _eon_scrollview_max_width_get,
@@ -364,9 +416,11 @@ static void _eon_scrollview_x_position_set(Enesim_Renderer *r, double x)
 	Enesim_Renderer *theme_r;
 
 	thiz = _eon_scrollview_get(r);
-	thiz->offset.x = x;
+	thiz->current.offset.x = x;
+	thiz->changed = EINA_TRUE;
+
 	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_scrollview_offset_set(theme_r, &thiz->offset);
+	eon_theme_scrollview_offset_set(theme_r, &thiz->current.offset);
 }
 
 static void _eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
@@ -374,7 +428,7 @@ static void _eon_scrollview_x_position_get(Enesim_Renderer *r, double *x)
 	Eon_Scrollview *thiz;
 
 	thiz = _eon_scrollview_get(r);
-	*x = thiz->offset.x;
+	*x = thiz->current.offset.x;
 }
 
 static void _eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
@@ -383,9 +437,11 @@ static void _eon_scrollview_y_position_set(Enesim_Renderer *r, double y)
 	Enesim_Renderer *theme_r;
 
 	thiz = _eon_scrollview_get(r);
-	thiz->offset.y = y;
+	thiz->current.offset.y = y;
+	thiz->changed = EINA_TRUE;
+
 	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_scrollview_offset_set(theme_r, &thiz->offset);
+	eon_theme_scrollview_offset_set(theme_r, &thiz->current.offset);
 }
 
 static void _eon_scrollview_y_position_get(Enesim_Renderer *r, double *y)
@@ -393,7 +449,7 @@ static void _eon_scrollview_y_position_get(Enesim_Renderer *r, double *y)
 	Eon_Scrollview *thiz;
 
 	thiz = _eon_scrollview_get(r);
-	*y = thiz->offset.y;
+	*y = thiz->current.offset.y;
 }
 /*============================================================================*
  *                                 Global                                     *

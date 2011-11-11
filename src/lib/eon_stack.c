@@ -123,7 +123,7 @@ static double _stack_horizontal_min_width(Eon_Stack *thiz)
 	return min_width;
 }
 
-static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double aw, double ah)
+static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double aw, double ah, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Stack_Child *ech;
 	Eon_Stack_Child *last_ech;
@@ -184,7 +184,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 		eon_element_actual_position_set(child_r, last_x, y);
 		/* now add the renderer associated with the widget into the theme */
 		eon_widget_property_add(r, "child", child_rr, NULL);
-		eon_element_setup(ech->ender);
+		eon_element_setup(ech->ender, s, err);
 		ech->curr_x = last_x;
 		ech->curr_y = y;
 		last_x += child_size.width;
@@ -192,7 +192,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 	}
 }
 
-static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw, double ah)
+static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw, double ah, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Stack_Child *ech;
 	Eon_Stack_Child *last_ech;
@@ -248,13 +248,13 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 
 			enesim_renderer_name_get(r, &name);
 			enesim_renderer_name_get(child_r, &child_name);
-			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
+			printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, x, last_y);
 		/* now add the renderer associated with the widget into the theme */
 		eon_widget_property_add(r, "child", child_rr, NULL);
-		eon_element_setup(ech->ender);
+		eon_element_setup(ech->ender, s, err);
 		ech->curr_x = x;
 		ech->curr_y = last_y;
 		last_y += child_size.height;
@@ -262,7 +262,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 	}
 }
 
-static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
+static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Size size;
 	Enesim_Renderer *r;
@@ -274,9 +274,9 @@ static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz)
 	eon_widget_property_clear(r, "child");
 	eon_element_actual_size_get(r, &size);
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
-		_stack_horizontal_arrange(e, thiz, size.width, size.height);
+		_stack_horizontal_arrange(e, thiz, size.width, size.height, s, err);
 	else
-		_stack_vertical_arrange(e, thiz, size.width, size.height);
+		_stack_vertical_arrange(e, thiz, size.width, size.height, s, err);
 	/* FIXME */
 	return EINA_TRUE;
 }
@@ -290,6 +290,40 @@ static void _eon_stack_free(Enesim_Renderer *r)
 
 	thiz = _eon_stack_get(r);
 	free(thiz);
+}
+
+static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
+{
+	Eon_Stack *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_stack_get(r);
+
+	/* if we have changed then just return our size */
+	if (thiz->changed)
+	{
+		Enesim_Rectangle area;
+
+		eon_element_actual_position_get(r, &area.x, &area.y);
+		eon_element_actual_width_get(e, &area.w);
+		eon_element_actual_height_get(e, &area.h);
+
+		cb(r, &area, EINA_FALSE, data);
+		return;
+	}
+	/* if not, return the children's */
+	else
+	{
+		Eon_Stack_Child *ech;
+		Eina_List *l;
+
+		EINA_LIST_FOREACH (thiz->children, l, ech)
+		{
+			printf("calling the child_r\n");
+			eon_element_damages_get(ech->ender, cb, data);
+		}
+	}
 }
 
 static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
@@ -314,7 +348,7 @@ static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
 	return ret;
 }
 
-static Eina_Bool _eon_stack_setup(Ender_Element *e)
+static Eina_Bool _eon_stack_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Stack *thiz;
 	Enesim_Renderer *r;
@@ -328,10 +362,10 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e)
 	/* if the actual size has changed, then relayout
 	 * if some child preferred/min/max size has changed then call the relayout
 	 */
-	return _stack_relayout(e, thiz);
+	return _stack_relayout(e, thiz, s, err);
 }
 
-static void _eon_stack_cleanup(Ender_Element *e)
+static void _eon_stack_cleanup(Ender_Element *e, Enesim_Surface *s)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
@@ -342,7 +376,7 @@ static void _eon_stack_cleanup(Ender_Element *e)
 	thiz = _eon_stack_get(r);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
-		eon_element_cleanup(ech->ender);
+		eon_element_cleanup(ech->ender, s);
 	}
 	thiz->changed = EINA_FALSE;
 }
@@ -585,6 +619,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.min_height_get = _eon_stack_min_height_get,
 	.preferred_width_get = _eon_stack_preferred_width_get,
 	.preferred_height_get = _eon_stack_preferred_height_get,
+	.damage = _eon_stack_damage,
 	.has_changed = _eon_stack_has_changed,
 	.cleanup = _eon_stack_cleanup,
 	.setup = _eon_stack_setup,
