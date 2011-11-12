@@ -565,6 +565,10 @@ static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb
 #endif
 }
 
+/*
+ * the changed value depends whenever the widget has changed or the
+ * inner renderer has changed. This makes sense only on the enesim interface
+ */
 Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 {
 	Eon_Element *thiz;
@@ -575,12 +579,44 @@ Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
 
-	ret = eon_element_has_changed(e);
-	if (ret) goto done;
+ 	ret = thiz->changed;
+	/* check that some property has actually changed */
+	if (ret)
+	{
+		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
+		{
+			return EINA_TRUE;
+		}
+		if (thiz->current.actual_size.height != thiz->past.actual_size.height)
+		{
+			return EINA_TRUE;
+		}
+		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
+		{
+			return EINA_TRUE;
+		}
+		if (thiz->current.actual_position.y != thiz->past.actual_position.y)
+		{
+			return EINA_TRUE;
+		}
+	}
+	/* check the instance case */
+	if (thiz->has_changed)
+	{
+		ret = thiz->has_changed(e);
+		if (ret) goto done;
+	}
+	/* by default it hasnt changed */
+	else
+	{
+		ret = EINA_FALSE;
+	}
+
 	/* check if the real renderer has changed */
 	real_r = eon_element_renderer_get(e);
 	ret = enesim_renderer_has_changed(real_r);
 	r = real_r;
+
 done:
 	if (ret)
 	{
@@ -712,47 +748,11 @@ void * eon_element_data_get(Enesim_Renderer *r)
 
 Eina_Bool eon_element_has_changed(Ender_Element *e)
 {
-	Eon_Element *thiz;
 	Enesim_Renderer *r;
-	Eina_Bool ret;
 
 	r = ender_element_renderer_get(e);
-	thiz = _eon_element_get(r);
 
- 	ret = thiz->changed;
-	/* check that some property has actually changed */
-	if (ret) 
-	{
-		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
-		{
-			return EINA_TRUE;
-		}
-		if (thiz->current.actual_size.height != thiz->past.actual_size.height)
-		{
-			return EINA_TRUE;
-		}
-		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
-		{
-			return EINA_TRUE;
-		}
-		if (thiz->current.actual_position.y != thiz->past.actual_position.y)
-		{
-			return EINA_TRUE;
-		}
-	}
-
-	/* check the instance case */
-	if (thiz->has_changed)
-	{
-		ret = thiz->has_changed(e);
-	}
-	/* by default it hasnt changed */
-	else
-	{
-		ret = EINA_FALSE;
-	}
-
-	return ret;
+	return enesim_renderer_has_changed(r);
 }
 
 void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
@@ -760,14 +760,14 @@ void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, voi
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	if (!eon_element_has_changed(e)) return;
-	
 	r = ender_element_renderer_get(e);
-	thiz = _eon_element_get(r);
 
+	if (!enesim_renderer_has_changed(r)) return;
+
+	thiz = _eon_element_get(r);
 	if (thiz->damage)
 	{
-		thiz->damage(e, cb, data);	
+		thiz->damage(e, cb, data);
 	}
 	else
 	{

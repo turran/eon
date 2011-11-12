@@ -352,12 +352,21 @@ static Eina_Bool _eon_scrollview_has_changed(Ender_Element *e)
 
 	if (!thiz->changed) return EINA_FALSE;
 	if (thiz->current.offset.x != thiz->past.offset.x)
+	{
 		return EINA_TRUE;
+	}
 
 	if (thiz->current.offset.y != thiz->past.offset.y)
+	{
 		return EINA_TRUE;
+	}
 
 	return EINA_FALSE;
+}
+
+static void _eon_scrollview_free(Enesim_Renderer *r)
+{
+	/* TODO destroy the two bars */
 }
 
 static Eon_Container_Descriptor _descriptor = {
@@ -365,6 +374,7 @@ static Eon_Container_Descriptor _descriptor = {
 	.setup = _eon_scrollview_setup,
 	.cleanup = _eon_scrollview_cleanup,
 	.has_changed = _eon_scrollview_has_changed,
+	.free = _eon_scrollview_free,
 	.min_width_get = _eon_scrollview_min_width_get,
 	.min_height_get = _eon_scrollview_min_height_get,
 	.max_width_get = _eon_scrollview_max_width_get,
