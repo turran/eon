@@ -49,12 +49,32 @@ typedef struct _Eon_Stack
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Stack;
 
+typedef struct _Eon_Stack_Damage_Data
+{
+	double x;
+	double y;
+	Enesim_Renderer_Damage_Cb real_cb;
+	void *real_data;
+} Eon_Stack_Damage_Data;
+
 static inline Eon_Stack * _eon_stack_get(Enesim_Renderer *r)
 {
 	Eon_Stack *thiz;
 
 	thiz = eon_layout_data_get(r);
 	return thiz;
+}
+
+static Eina_Bool _stack_damage_cb(Enesim_Renderer *child_r, Enesim_Rectangle *rect, Eina_Bool past, void *data)
+{
+	Eon_Stack_Damage_Data *ddata = data;
+
+	/* TODO the previous data should be added with the previous x, y */
+	rect->x += ddata->x;
+	rect->y += ddata->y;
+
+	ddata->real_cb(child_r, rect, past, ddata->real_data);
+	return EINA_TRUE;
 }
 
 static double _stack_vertical_min_width(Eon_Stack *thiz)
@@ -296,16 +316,20 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 {
 	Eon_Stack *thiz;
 	Enesim_Renderer *r;
+	double x;
+	double y;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 
+	eon_element_actual_position_get(r, &x, &y);
 	/* if we have changed then just return our size */
 	if (thiz->changed)
 	{
 		Enesim_Rectangle area;
 
-		eon_element_actual_position_get(r, &area.x, &area.y);
+		area.x = x;
+		area.y = y;
 		eon_element_actual_width_get(e, &area.w);
 		eon_element_actual_height_get(e, &area.h);
 
@@ -315,13 +339,19 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 	/* if not, return the children's */
 	else
 	{
+		Eon_Stack_Damage_Data ddata;
 		Eon_Stack_Child *ech;
 		Eina_List *l;
+
+		ddata.x = x;
+		ddata.y = y;
+		ddata.real_cb = cb;
+		ddata.real_data = data;
 
 		EINA_LIST_FOREACH (thiz->children, l, ech)
 		{
 			printf("calling the child_r\n");
-			eon_element_damages_get(ech->ender, cb, data);
+			eon_element_damages_get(ech->ender, _stack_damage_cb, &ddata);
 		}
 	}
 }
