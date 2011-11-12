@@ -148,7 +148,7 @@ static double _eon_entry_min_height_get(Ender_Element *e)
 
 static double _eon_entry_preferred_width_get(Ender_Element *e)
 {
-	return DBL_MAX;
+	return -1;
 }
 
 static Eon_Widget_Descriptor _eon_entry_widget_descriptor = {

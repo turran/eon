@@ -237,7 +237,11 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e, Enesim_Surface *s, Enes
 		size.width = aw;
 		size.height = ah;
 		eon_element_real_relative_size_get(content, &size, &content_size);
-
+		// the size calucaltion is wrong, the stack does not call the setup/cleanup on the hidden
+		// elements, but the has_changed always compares them, so bascially the stack always changes as it cannot
+		// cleanup
+		//printf("size = %g %g %g %g\n", size.width, size.height, content_size.width, content_size.height);
+		//content_size.height =740;
 
 		/* hbar */
 		eon_element_real_size_get(thiz->hbar, &hbar_size);
@@ -364,6 +368,36 @@ static Eina_Bool _eon_scrollview_has_changed(Ender_Element *e)
 	return EINA_FALSE;
 }
 
+static void _eon_scrollview_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
+{
+	Eon_Scrollview *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_scrollview_get(r);
+
+	/* if we have changed then just return our size */
+	if (thiz->changed)
+	{
+		Enesim_Rectangle area;
+
+		eon_element_actual_position_get(r, &area.x, &area.y);
+		eon_element_actual_width_get(e, &area.w);
+		eon_element_actual_height_get(e, &area.h);
+
+		cb(r, &area, EINA_FALSE, data);
+		return;
+	}
+	/* if not, return the children's */
+	else
+	{
+		Ender_Element *content;
+		eon_container_content_get(e, &content);
+
+		eon_element_damages_get(content, cb, data);
+	}
+}
+
 static void _eon_scrollview_free(Enesim_Renderer *r)
 {
 	/* TODO destroy the two bars */
@@ -373,6 +407,7 @@ static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
 	.cleanup = _eon_scrollview_cleanup,
+	.damage = _eon_scrollview_damage,
 	.has_changed = _eon_scrollview_has_changed,
 	.free = _eon_scrollview_free,
 	.min_width_get = _eon_scrollview_min_width_get,

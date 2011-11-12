@@ -622,7 +622,7 @@ done:
 	{
 		char *name;
 		enesim_renderer_name_get(r, &name);
-		//printf("%s has changed = %d\n", name, ret);
+		printf("%s has changed = %d\n", name, ret);
 	}
 
 	return ret;
@@ -899,8 +899,8 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 		set = relative->width;
 	_eon_element_min_width_get(r, &min);
 	_eon_element_max_width_get(r, &max);
-	rw = set > max ? max : set;
-	rw = rw < min ? min : rw;
+	rw = MIN(max, set);
+	rw = MAX(rw, min);
 	size->width = rw;
 	//printf("relative width %s = %g (%g %g %g) %g\n", thiz->name, rw, min, set, max, relative->width);
 
@@ -910,8 +910,8 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 		set = relative->height;
 	_eon_element_min_height_get(r, &min);
 	_eon_element_max_height_get(r, &max);
-	rh = set > max ? max : set;
-	rh = rh < min ? min : rh;
+	rh = MIN(max, set);
+	rh = MAX(rh, min);
 	size->height = rh;
 	//printf("relative height %s = %g (%g %g %g) %g\n", thiz->name, rh, min, set, max, relative->height);
 
