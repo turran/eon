@@ -78,7 +78,7 @@ static void _color_content_color_set(Enesim_Renderer *r, Enesim_Color color)
 static Enesim_Renderer * _color_renderer_get(Enesim_Renderer *r)
 {
 	Basic_Color *thiz;
-	
+
 	thiz = _color_get(r);
 	return eon_basic_control_button_renderer_get(thiz->cb);
 }
@@ -166,6 +166,7 @@ EAPI Enesim_Renderer * eon_basic_color_new(void)
 	enesim_renderer_rectangle_size_set(r, 20.0, 20.0);
 	enesim_renderer_rectangle_corner_radius_set(r, 3);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->content_fill);
 	thiz->content = e;
 

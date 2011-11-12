@@ -22,7 +22,10 @@
  *============================================================================*/
 typedef struct _Eon_Wrapper
 {
+	/* properties */
 	Ender_Element *wrapped;
+	/* private */
+	Eina_Bool changed : 1;
 	Enesim_Renderer *clipper;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *fallback;
@@ -36,15 +39,6 @@ static inline Eon_Wrapper * _eon_wrapper_get(Enesim_Renderer *r)
 
 	thiz = eon_element_data_get(r);
 	return thiz;
-}
-
-static void _wrapped_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Enesim_Renderer *r = data;
-	Ender_Element *element;
-
-	element = ender_element_renderer_from(r);
-	eon_element_changed_set(element, EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
@@ -65,13 +59,8 @@ static Eina_Bool _eon_wrapper_has_changed(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
-	ret = enesim_renderer_has_changed(thiz->wrapped_renderer);
 
-	if (ret)
-	{
-		printf("wrapped changed\n");
-	}
-	return ret;
+	return thiz->changed;
 }
 
 static double _eon_wrapper_preferred_height_get(Ender_Element *e)
@@ -246,14 +235,17 @@ static Enesim_Renderer * _eon_wrapper_new(void)
 	r = enesim_renderer_background_new();
 	thiz->fallback = r;
 	enesim_renderer_background_color_set(r, 0xff00ffff);
+	enesim_renderer_rop_set(r, ENESIM_FILL);
 
 	r = enesim_renderer_clipper_new();
 	thiz->clipper = r;
 	enesim_renderer_clipper_content_set(r, thiz->fallback);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_compound_new();
-	thiz->compound = r;
 	enesim_renderer_compound_layer_add(r, thiz->clipper);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	thiz->compound = r;
 
 	r = eon_element_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -271,18 +263,13 @@ static void _eon_wrapper_wrapped_set(Enesim_Renderer *r, Ender_Element *wrapped)
 
 	thiz = _eon_wrapper_get(r);
 	/* FIXME check that the wrapped element does support the origin property */
-	//if (thiz->wrapped)
-	//	ender_event_listener_remove(thiz->wrapped, "Mutation", _wrapped_changed, r);
 	thiz->wrapped = wrapped;
 	thiz->wrapped_renderer = NULL;
 	if (!thiz->wrapped)
 		return;
 	thiz->wrapped_renderer = ender_element_renderer_get(wrapped);
-	ender_event_listener_add(thiz->wrapped, "Mutation", _wrapped_changed, r);
 
 	enesim_renderer_clipper_content_set(thiz->clipper, thiz->wrapped_renderer);
-	/* FIXME this should be part of the renderer itself */
-	enesim_renderer_rop_set(thiz->wrapped_renderer, ENESIM_BLEND);
 }
 
 static void _eon_wrapper_wrapped_get(Enesim_Renderer *r, Ender_Element **wrapped)

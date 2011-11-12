@@ -146,7 +146,6 @@ static void _spin_arrows_is_inside(Enesim_Renderer *r, Eon_Position *cursor, Ein
 	rect.w = thiz->increment_size.width;
 	rect.h = thiz->increment_size.height;
 
-	printf("%g %g %g %g - %g %g\n", rect.x, rect.y, rect.w, rect.h, cursor->x, cursor->y);
 	if (enesim_rectangle_is_inside(&rect, cursor->x, cursor->y))
 		*inc = EINA_TRUE;
 	else
