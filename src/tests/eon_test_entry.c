@@ -18,6 +18,7 @@ int main(int argc, char **argv)
 
 	win = eon_window_new(backend, layout, 320, 240);
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_HORIZONTAL);
+	eon_stack_last_expand_set(layout, EINA_TRUE);
 
 	entry = eon_entry_new();
 	eon_entry_text_set(entry, "hello");
