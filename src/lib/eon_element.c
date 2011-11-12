@@ -536,7 +536,7 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 	{
 		char *name;
 		enesim_renderer_name_get(r, &name);
-		printf("cleaning up %s\n", name);
+		//printf("cleaning up %s\n", name);
 	}
 	thiz->past = thiz->current;
 	thiz->changed = EINA_FALSE;

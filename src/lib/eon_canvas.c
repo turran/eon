@@ -36,6 +36,14 @@ typedef struct _Eon_Canvas_State
 	Enesim_Color color;
 } Eon_Canvas_State;
 
+typedef struct _Eon_Canvas_Damage_Data
+{
+	double x;
+	double y;
+	Enesim_Renderer_Damage_Cb real_cb;
+	void *real_data;
+} Eon_Canvas_Damage_Data;
+
 typedef struct _Eon_Canvas
 {
 	Eina_Tiler *tiler;
@@ -50,6 +58,18 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 
 	thiz = eon_layout_data_get(r);
 	return thiz;
+}
+
+static Eina_Bool _canvas_damage_cb(Enesim_Renderer *child_r, Enesim_Rectangle *rect, Eina_Bool past, void *data)
+{
+	Eon_Canvas_Damage_Data *ddata = data;
+
+	/* TODO the previous data should be added with the previous x, y */
+	rect->x += ddata->x;
+	rect->y += ddata->y;
+
+	ddata->real_cb(child_r, rect, past, ddata->real_data);
+	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -109,6 +129,51 @@ static void _eon_canvas_cleanup(Ender_Element *e, Enesim_Surface *s)
 	}
 }
 
+static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
+{
+	Eon_Canvas *thiz;
+	Enesim_Renderer *r;
+	double x;
+	double y;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_canvas_get(r);
+
+	eon_element_actual_position_get(r, &x, &y);
+#if 0
+	/* if we have changed then just return our size */
+	if (thiz->changed)
+	{
+		Enesim_Rectangle area;
+
+		area.x = x;
+		area.y = y;
+		eon_element_actual_width_get(e, &area.w);
+		eon_element_actual_height_get(e, &area.h);
+
+		cb(r, &area, EINA_FALSE, data);
+		return;
+	}
+	/* if not, return the children's */
+	else
+#endif
+	{
+		Eon_Canvas_Damage_Data ddata;
+		Eon_Canvas_Child *ech;
+		Eina_List *l;
+
+		ddata.x = x;
+		ddata.y = y;
+		ddata.real_cb = cb;
+		ddata.real_data = data;
+
+		EINA_LIST_FOREACH (thiz->children, l, ech)
+		{
+			printf("calling the child_r\n");
+			eon_element_damages_get(ech->ender, _canvas_damage_cb, &ddata);
+		}
+	}
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -188,6 +253,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
 	.free = _eon_canvas_free,
+	.damage = _eon_canvas_damage,
 	.cleanup = _eon_canvas_cleanup,
 	.setup = _eon_canvas_setup,
 	.name = "canvas",

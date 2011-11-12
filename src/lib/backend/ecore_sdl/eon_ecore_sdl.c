@@ -53,19 +53,13 @@ static Eina_Bool _initialized = EINA_FALSE;
 
 static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina_Bool past, void *data)
 {
-	Eina_List **redraws = data;
+	Eon_Ecore_SDL_Window *thiz = data;
 	Eina_Rectangle *dest;
 	char *name;
 
-	dest = malloc(sizeof(Eina_Rectangle));
-	dest->x = area->x;
-	dest->y = area->y;
-	dest->w = area->w;
-	dest->h = area->h;
-
-	*redraws = eina_list_append(*redraws, dest);
 	enesim_renderer_name_get(r, &name);
-	printf("new damage for %s of %d %d %d %d\n", name, dest->x, dest->y, dest->w, dest->h);
+	printf("new damage for %s of %d %d %d %d\n", name, area->x, area->y, area->w, area->h);
+	eina_tiler_rect_add(thiz->tiler, area);
 }
 
 static void _sdl_setup_buffers(Eon_Ecore_SDL_Window *thiz)
@@ -223,6 +217,14 @@ static Eina_Bool _feed_events(void *data)
 	return ECORE_CALLBACK_RENEW;
 }
 
+static double get_time(void)
+{
+        struct timeval timev;
+
+        gettimeofday(&timev, NULL);
+        return (double)timev.tv_sec + (((double)timev.tv_usec) / 1000000);
+}
+
 static Eina_Bool _idler_cb(void *data)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
@@ -231,22 +233,47 @@ static Eina_Bool _idler_cb(void *data)
 	Eina_List *redraws = NULL;
 	//Eina_List *l;
 	Eina_Rectangle area;
+	double start, end;
 
 	r = ender_element_renderer_get(thiz->layout);
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);
+		if (thiz->tiler)
+			eina_tiler_free(thiz->tiler);
+		thiz->tiler = eina_tiler_new(thiz->width, thiz->height);
 		goto all;
 	}
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */
 	/* get the damage rectangles */
-	enesim_renderer_destination_damages_get(r, _sdl_damages_get, &redraws);
+	{
+		Eina_Iterator *iter;
+		Eina_Rectangle *r1;
+
+		enesim_renderer_destination_damages_get(r, _sdl_damages_get, thiz);
+		iter = eina_tiler_iterator_new(thiz->tiler);
+		EINA_ITERATOR_FOREACH(iter, r1)
+		{
+			Eina_Rectangle *r2;
+
+			r2 = malloc(sizeof(Eina_Rectangle));
+			*r2 = *r1;
+			/* FIXME we should avoid this malloc, maybe make the enesim function
+			 * receive an iterator instead? or something like that
+			 */
+			printf("new area %d %d %d %d\n", r1->x, r1->y, r1->w, r1->h);
+			redraws = eina_list_append(redraws, r2);
+		}
+		eina_iterator_free(iter);
+	}
+
 	if (!redraws)
 		return EINA_TRUE;
 all:
 	/* render only those rectangles */
+	start = get_time();
 	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))
 	{
 		enesim_error_dump(error);
@@ -257,14 +284,20 @@ all:
 	//ee->flush(ee->data, redraws);
 	//EINA_LIST_FOREACH
 	{
-		if (redraws || thiz->needs_resize)
+		//if (redraws || thiz->needs_resize)
 		{
 			eina_rectangle_coords_from(&area, 0, 0, thiz->width, thiz->height);
 			_sdl_flush(thiz, &area);
 		}
 	}
+	end = get_time();
+	printf("SDL redrawing took %gs\n", end - start);
 done:
 	thiz->needs_resize = EINA_FALSE;
+	eina_tiler_clear(thiz->tiler);
+	/* FIXME free the list rectangles */
+	eina_list_free(redraws);
+
 	return EINA_TRUE;
 }
 
@@ -286,6 +319,7 @@ static Eina_Bool _sdl_window_new(void *data, Ender_Element *layout, unsigned int
 
 	thiz = calloc(1, sizeof(Eon_Ecore_SDL_Window));
 	thiz->layout = layout;
+	thiz->tiler = eina_tiler_new(width, height);
 	thiz->width = width;
 	thiz->height = height;
 	thiz->input = eon_input_new();
@@ -328,6 +362,8 @@ static void _sdl_window_delete(void *data, void *window_data)
 			enesim_surface_unref(thiz->surface);
 		if (thiz->buffer)
 			enesim_buffer_unref(thiz->buffer);
+		if (thiz->tiler)
+			eina_tiler_free(thiz->tiler);
 		free(data);
 
 		_initialized = EINA_FALSE;
