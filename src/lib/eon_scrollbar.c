@@ -79,7 +79,7 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 	/* get the absolute position of the event */
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
-		c = ev->x - thiz->offset_dragging; 
+		c = ev->x - thiz->offset_dragging;
 		length = size.width;
 	}
 	else
@@ -246,7 +246,7 @@ static Eina_Bool _eon_scrollbar_has_changed(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollbar_get(r);
-	return thiz->changed;	
+	return thiz->changed;
 }
 
 static void _eon_scrollbar_free(Enesim_Renderer *r)

@@ -263,7 +263,7 @@ static Eina_Bool _idler_cb(void *data)
 			/* FIXME we should avoid this malloc, maybe make the enesim function
 			 * receive an iterator instead? or something like that
 			 */
-			printf("new area %d %d %d %d\n", r1->x, r1->y, r1->w, r1->h);
+			printf("AREA to redraw %d %d %d %d\n", r1->x, r1->y, r1->w, r1->h);
 			redraws = eina_list_append(redraws, r2);
 		}
 		eina_iterator_free(iter);
