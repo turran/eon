@@ -5,6 +5,7 @@ eon_test_button \
 eon_test_button_image \
 eon_test_canvas \
 eon_test_checkbox \
+eon_test_color \
 eon_test_entry \
 eon_test_image \
 eon_test_frame \
@@ -52,6 +53,11 @@ eon_test_checkbox_SOURCES = eon_test_checkbox.c
 eon_test_checkbox_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_checkbox_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_checkbox_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_color_SOURCES = eon_test_color.c
+eon_test_color_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_color_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_color_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_scrollview_SOURCES = eon_test_scrollview.c
 eon_test_scrollview_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

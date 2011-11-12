@@ -41,8 +41,6 @@ typedef struct _Eon_Canvas
 	Eina_Tiler *tiler;
 	Eina_List *children;
 	Eon_Canvas_State old, curr;
-	Enesim_Renderer *background;
-	Enesim_Renderer *compound;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Canvas;
 
@@ -71,7 +69,6 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e, Enesim_Surface *s, Enesim_E
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-
 	r = ender_element_renderer_get(e);
 	thiz = _eon_canvas_get(r);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
@@ -96,6 +93,22 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e, Enesim_Surface *s, Enesim_E
 
 	return EINA_TRUE;
 }
+
+static void _eon_canvas_cleanup(Ender_Element *e, Enesim_Surface *s)
+{
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *ech;
+	Enesim_Renderer *r;
+	Eina_List *l;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_canvas_get(r);
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		eon_element_cleanup(ech->ender, s);
+	}
+}
+
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -161,7 +174,6 @@ static void _eon_canvas_child_add(Enesim_Renderer *r, Ender_Element *child)
 	ech = calloc(1, sizeof(Eon_Canvas_Child));
 	ech->ender = child;
 	thiz->children = eina_list_append(thiz->children, ech);
-	enesim_renderer_compound_layer_add(thiz->compound, ender_element_renderer_get(child));
 }
 
 static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
@@ -176,6 +188,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
 	.free = _eon_canvas_free,
+	.cleanup = _eon_canvas_cleanup,
 	.setup = _eon_canvas_setup,
 	.name = "canvas",
 };
@@ -184,36 +197,19 @@ static Eon_Layout_Descriptor _descriptor = {
  *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _eon_canvas_new(void)
 {
-	Eon_Canvas *e;
-	Enesim_Renderer *thiz;
+	Eon_Canvas *thiz;
 	Enesim_Renderer *r;
 
-	e = calloc(1, sizeof(Eon_Canvas));
-	if (!e) return NULL;
+	thiz = calloc(1, sizeof(Eon_Canvas));
+	if (!thiz) return NULL;
 
-	r = enesim_renderer_compound_new();
-	if (!r) goto compound_err;
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-	e->compound = r;
+	r = eon_layout_new(&_descriptor, thiz);
+	if (!r) goto renderer_err;
 
-	r = enesim_renderer_background_new();
-	if (!r) goto background_err;
-	enesim_renderer_background_color_set(r, 0xffffffff);
-	enesim_renderer_compound_layer_add(e->compound, r);
-	enesim_renderer_rop_set(r, ENESIM_FILL);
-	e->background = r;
-
-	thiz = eon_layout_new(&_descriptor, e);
-	if (!thiz) goto renderer_err;
-
-	return thiz;
+	return r;
 
 renderer_err:
-	enesim_renderer_unref(e->background);
-background_err:
-	enesim_renderer_unref(e->compound);
-compound_err:
-	free(e);
+	free(thiz);
 	return NULL;
 }
 

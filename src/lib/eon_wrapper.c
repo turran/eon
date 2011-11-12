@@ -57,6 +57,23 @@ static void _eon_wrapper_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _eon_wrapper_has_changed(Ender_Element *e)
+{
+	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
+	Eina_Bool ret;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_wrapper_get(r);
+	ret = enesim_renderer_has_changed(thiz->wrapped_renderer);
+
+	if (ret)
+	{
+		printf("wrapped changed\n");
+	}
+	return ret;
+}
+
 static double _eon_wrapper_preferred_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
@@ -133,7 +150,7 @@ static double _eon_wrapper_max_height_get(Ender_Element *e)
 	//return rect.h;
 }
 
-static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
+static Eina_Bool _eon_wrapper_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
@@ -175,6 +192,15 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e)
 	return EINA_TRUE;
 }
 
+static void _eon_wrapper_cleanup(Ender_Element *e, Enesim_Surface *s)
+{
+	Eon_Wrapper *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_wrapper_get(r);
+}
+
 static Enesim_Renderer * _eon_wrapper_renderer_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
@@ -200,7 +226,9 @@ static Eon_Element_Descriptor _descriptor = {
 	.preferred_width_get = _eon_wrapper_preferred_width_get,
 	.preferred_height_get = _eon_wrapper_preferred_height_get,
 	.setup = _eon_wrapper_setup,
+	.cleanup = _eon_wrapper_cleanup,
 	.renderer_get = _eon_wrapper_renderer_get,
+	.has_changed = _eon_wrapper_has_changed,
 	.initialize = _eon_wrapper_initialize,
 	.free = _eon_wrapper_free,
 	.name = "wrapper",
