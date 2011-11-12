@@ -44,6 +44,7 @@ typedef struct _Eon_Theme_Spin
 	void *data;
 	Eon_Theme_Spin_Margin_Get margin_get;
 	Eon_Theme_Spin_Entry_Set entry_set;
+	Eon_Theme_Spin_Arrows_Is_Inside arrows_is_inside;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Spin;
 
@@ -87,6 +88,7 @@ Enesim_Renderer * eon_theme_spin_new(Eon_Theme_Spin_Descriptor *descriptor,
 	thiz->free = descriptor->free;
 	thiz->margin_get = descriptor->margin_get;
 	thiz->entry_set = descriptor->entry_set;
+	thiz->arrows_is_inside = descriptor->arrows_is_inside;
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
@@ -148,7 +150,21 @@ void eon_theme_spin_entry_set(Enesim_Renderer *r, Enesim_Renderer *entry, Enesim
 	thiz = _eon_theme_spin_get(r);
 	if (thiz->entry_set)
 		thiz->entry_set(r, entry, old_entry);
+}
 
+void eon_theme_spin_arrows_is_inside(Enesim_Renderer *r, Eon_Position *cursor, Eina_Bool *inc, Eina_Bool *dec)
+{
+	Eon_Theme_Spin *thiz;
+
+	thiz = _eon_theme_spin_get(r);
+	*inc = EINA_FALSE;
+	*dec = EINA_FALSE;
+	/* get the inc/dec arrow anc check if we are inside its bounds */
+	if (thiz->arrows_is_inside)
+		thiz->arrows_is_inside(r, cursor, inc, dec);
+	/* FIXME add a default case tht we should get the renderers for each arrow
+	 * and just intersect on them
+	 */
 }
 /*============================================================================*
  *                                   API                                      *

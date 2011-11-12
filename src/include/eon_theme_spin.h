@@ -24,11 +24,13 @@
  */
 typedef void (*Eon_Theme_Spin_Margin_Get)(Enesim_Renderer *r, Eon_Margin *margin);
 typedef void (*Eon_Theme_Spin_Entry_Set)(Enesim_Renderer *r, Enesim_Renderer *entry, Enesim_Renderer *old_entry);
+typedef void (*Eon_Theme_Spin_Arrows_Is_Inside)(Enesim_Renderer *r, Eon_Position *cursor, Eina_Bool *inc, Eina_Bool *dec);
 
 typedef struct _Eon_Theme_Spin_Descriptor
 {
 	Eon_Theme_Spin_Margin_Get margin_get;
 	Eon_Theme_Spin_Entry_Set entry_set;
+	Eon_Theme_Spin_Arrows_Is_Inside arrows_is_inside;
 	/* renderer needed functions */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;

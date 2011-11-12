@@ -178,6 +178,46 @@ static void _eon_spin_mouse_wheel(Ender_Element *e, const char *event_name, void
 	/* FIXME */
 	eon_input_state_feed_mouse_wheel(eis, 0);
 }
+
+static void _eon_spin_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Spin *thiz;
+	Eon_Event_Mouse_Click *ev = event_data;
+	Enesim_Renderer *r;
+	Enesim_Renderer *theme_r;
+	Eina_Bool inc = EINA_FALSE;
+	Eina_Bool dec = EINA_FALSE;
+	Eon_Position cursor;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_spin_get(r);
+	/* check inside what arrow are we */
+
+	cursor.x = ev->rel_x;
+	cursor.y = ev->rel_y;
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_spin_arrows_is_inside(theme_r, &cursor, &inc, &dec);
+
+	//printf("inc = %d, dec = %d\n", inc, dec);
+	if (inc || dec)
+	{
+		double v;
+
+		if (inc)
+		{
+			v = thiz->value + thiz->step_increment;
+			if (v >= thiz->max_range)
+				v = thiz->max_range;
+		}
+		else
+		{
+			v = thiz->value - thiz->step_increment;
+			if (v <= thiz->min_range)
+				v = thiz->min_range;
+		}
+		eon_spin_value_set(e, v);
+	}
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
  *----------------------------------------------------------------------------*/
@@ -196,6 +236,7 @@ static void _eon_spin_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN], _eon_spin_mouse_down, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP], _eon_spin_mouse_up, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], _eon_spin_mouse_wheel, NULL);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_spin_mouse_click, NULL);
 	ender_event_listener_add(thiz->entry, "Mutation", _entry_changed, e);
 }
 
@@ -389,6 +430,12 @@ static Enesim_Renderer * _eon_spin_new(void)
 
 	r = eon_widget_new(&_eon_spin_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
+
+	/* default values */
+	eon_entry_text_set(thiz->entry, "0");
+	thiz->max_range = 100;
+	thiz->min_range = 0;
+	thiz->step_increment = 1;
 
 	return r;
 

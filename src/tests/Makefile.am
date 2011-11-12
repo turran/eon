@@ -14,6 +14,7 @@ eon_test_radio \
 eon_test_scrollview \
 eon_test_scrollbar \
 eon_test_splitter \
+eon_test_spin \
 eon_test_toggle \
 eon_test_wrapper
 
@@ -86,6 +87,11 @@ eon_test_scrollbar_SOURCES = eon_test_scrollbar.c
 eon_test_scrollbar_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_scrollbar_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_scrollbar_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_spin_SOURCES = eon_test_spin.c
+eon_test_spin_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_spin_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_spin_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_splitter_SOURCES = eon_test_splitter.c
 eon_test_splitter_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

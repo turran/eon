@@ -28,6 +28,12 @@ typedef struct _Basic_Spin
 	Enesim_Color end_shadow;
 	double radius;
 	/* private */
+	Eon_Position increment_position;
+	Eon_Size increment_size;
+	Eon_Position decrement_position;
+	Eon_Size decrement_size;
+
+	Eon_Position arrows_position;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *arrows;
 	Eon_Basic_Control_Arrow *increment_arrow;
@@ -59,8 +65,6 @@ static Enesim_Renderer * _spin_renderer_get(Enesim_Renderer *r)
 static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Basic_Spin *thiz;
-	Eon_Size size;
-	Eon_Position position;
 	Enesim_Matrix m;
 	Enesim_Renderer *rr;
 	double ox, oy;
@@ -82,21 +86,25 @@ static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_transformation_set(rr, &m);
 
 	rr = thiz->arrows;
-	enesim_renderer_origin_set(rr, width - _arrow_width - 3, 1);
+	thiz->arrows_position.x = width - _arrow_width - 3;
+	thiz->arrows_position.y = 1;
+	enesim_renderer_origin_set(rr, thiz->arrows_position.x, thiz->arrows_position.y);
 
 	rr = thiz->arrows_background;
 	enesim_renderer_rectangle_width_set(rr, _arrow_width + 2);
 	enesim_renderer_rectangle_height_set(rr, height - 2);
 
-	size.width = _arrow_width;
-	size.height = (height - 4 - 1) / 2;
+	thiz->increment_size.width = _arrow_width;
+	thiz->increment_size.height = (height - 4 - 1) / 2;
+	thiz->increment_position.x = 1;
+	thiz->increment_position.y = 1;
+	eon_basic_control_arrow_setup(thiz->increment_arrow, &thiz->increment_position, &thiz->increment_size, EON_BASIC_CONTROL_ARROW_DIRECTION_TOP);
 
-	position.x = 1;
-	position.y = 1;
-	eon_basic_control_arrow_setup(thiz->increment_arrow, &position, &size, EON_BASIC_CONTROL_ARROW_DIRECTION_TOP);
-	position.x = 1;
-	position.y = size.height + 2;
-	eon_basic_control_arrow_setup(thiz->decrement_arrow, &position, &size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
+	thiz->decrement_position.x = 1;
+	thiz->decrement_position.y = thiz->increment_size.height + 2;
+	thiz->decrement_size.width = thiz->increment_size.width;
+	thiz->decrement_size.height = thiz->increment_size.height;
+	eon_basic_control_arrow_setup(thiz->decrement_arrow, &thiz->decrement_position, &thiz->decrement_size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
 
 	return EINA_TRUE;
 }
@@ -126,6 +134,32 @@ static void _spin_entry_set(Enesim_Renderer *r, Enesim_Renderer *entry, Enesim_R
 	}
 }
 
+static void _spin_arrows_is_inside(Enesim_Renderer *r, Eon_Position *cursor, Eina_Bool *inc, Eina_Bool *dec)
+{
+	Basic_Spin *thiz;
+	Enesim_Rectangle rect;
+
+	thiz = _spin_get(r);
+
+	rect.x = thiz->increment_position.x + thiz->arrows_position.x;
+	rect.y = thiz->increment_position.y + thiz->arrows_position.y;
+	rect.w = thiz->increment_size.width;
+	rect.h = thiz->increment_size.height;
+
+	printf("%g %g %g %g - %g %g\n", rect.x, rect.y, rect.w, rect.h, cursor->x, cursor->y);
+	if (enesim_rectangle_is_inside(&rect, cursor->x, cursor->y))
+		*inc = EINA_TRUE;
+	else
+	{
+		rect.x = thiz->decrement_position.x + thiz->arrows_position.x;
+		rect.y = thiz->decrement_position.y + thiz->arrows_position.y;
+		rect.w = thiz->decrement_size.width;
+		rect.h = thiz->decrement_size.height;
+		if (enesim_rectangle_is_inside(&rect, cursor->x, cursor->y))
+			*dec = EINA_TRUE;
+	}
+}
+
 static void _spin_free(Enesim_Renderer *r)
 {
 	Basic_Spin *thiz;
@@ -137,6 +171,7 @@ static void _spin_free(Enesim_Renderer *r)
 static Eon_Theme_Spin_Descriptor _descriptor = {
 	.entry_set = _spin_entry_set,
 	.margin_get = _spin_margin_get,
+	.arrows_is_inside = _spin_arrows_is_inside,
 	.renderer_get = _spin_renderer_get,
 	.setup = _spin_setup,
 	.free = _spin_free,
