@@ -139,6 +139,7 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	eon_theme_scrollbar_decrement_arrow_geometry_get(theme_r, &ig);
 	eon_theme_scrollbar_increment_arrow_geometry_get(theme_r, &dg);
 	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
+
 	if (enesim_rectangle_is_inside(&dg, ev->rel_x, ev->rel_y))
 	{
 		eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value - thiz->step_increment));

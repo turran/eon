@@ -129,10 +129,8 @@ static void _basic_scrollbar_thumb_geometry_get(Enesim_Renderer *r, Enesim_Recta
 	Basic_Scrollbar *thiz;
 
 	thiz = _scrollbar_get(r);
-	enesim_renderer_translated_boundings(thiz->bar, geometry);
-	/* FIXME the coodinates are not on renderer coordinate space */
-	geometry->x = -geometry->x;
-	geometry->y = -geometry->y;
+	enesim_renderer_boundings(thiz->bar, geometry);
+	enesim_renderer_origin_get(thiz->bar, &geometry->x, &geometry->y);
 }
 
 static void _basic_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
