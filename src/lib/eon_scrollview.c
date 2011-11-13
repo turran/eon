@@ -43,7 +43,9 @@ typedef struct _Eon_Scrollview
 	/* private */
 	Eina_Bool changed : 1;
 	Ender_Element *hbar;
+	Eina_Bool has_vbar;
 	Ender_Element *vbar;
+	Eina_Bool has_hbar;
 } Eon_Scrollview;
 
 static inline Eon_Scrollview * _eon_scrollview_get(Enesim_Renderer *r)
@@ -176,17 +178,23 @@ static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, do
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 
-	bar_r = ender_element_renderer_get(thiz->hbar);
-	eon_element_actual_size_get(bar_r, &size);
-	eon_element_actual_position_get(bar_r, &ax, &ay);
-	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
-		return thiz->hbar;
+	if (thiz->has_hbar)
+	{
+		bar_r = ender_element_renderer_get(thiz->hbar);
+		eon_element_actual_size_get(bar_r, &size);
+		eon_element_actual_position_get(bar_r, &ax, &ay);
+		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
+			return thiz->hbar;
+	}
 
-	bar_r = ender_element_renderer_get(thiz->vbar);
-	eon_element_actual_size_get(bar_r, &size);
-	eon_element_actual_position_get(bar_r, &ax, &ay);
-	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
-		return thiz->vbar;
+	if (thiz->has_vbar)
+	{
+		bar_r = ender_element_renderer_get(thiz->vbar);
+		eon_element_actual_size_get(bar_r, &size);
+		eon_element_actual_position_get(bar_r, &ax, &ay);
+		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
+			return thiz->vbar;
+	}
 
 	return NULL;
 }
@@ -309,6 +317,9 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e, Enesim_Surface *s, Enes
 			eon_theme_scrollview_vbar_set(theme_r, NULL);
 			eon_scrollbar_value_set(thiz->vbar, 0);
 		}
+
+		thiz->has_vbar = has_vbar;
+		thiz->has_hbar = has_hbar;
 		/* set the logic size and position, so all the events continue working
 		 * the gfx position is handled on the theme with theme_scrollview_offset_set
 		 */
