@@ -23,6 +23,9 @@
  * should not be the contents plus this, but only this
  * Add the inset/outset theme property
  * Add the hbar, vbar position property (left, right, top, bottom)
+ * The best way to do this renderer would be to create another thread for rendering
+ * the content but only when we are scrolling, whenever we stop scrolling continue
+ * using the content renderer
  */
 /*============================================================================*
  *                                  Local                                     *
