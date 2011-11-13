@@ -131,6 +131,7 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 		case ENDER_DOUBLE:
 		data->type = EON_ECORE_REMOTE_DATA_DOUBLE;
 		data->value.ddouble.d = ender_value_double_get(v);
+		printf(">>> setting double %g\n", data->value.ddouble.d);
 		break;
 
 		case ENDER_COLOR:
@@ -392,7 +393,7 @@ static Eina_Bool _remote_window_new(void *data, Ender_Element *layout, unsigned 
 	return EINA_TRUE;
 }
 
-static void _remote_window_delete(void *window_data)
+static void _remote_window_delete(void *data, void *window_data)
 {
 	Eon_Ecore_Remote *thiz = window_data;
 

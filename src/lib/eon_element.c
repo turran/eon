@@ -27,6 +27,7 @@
  * globally. Then add functions to get this type from renderers or enders, and change all the
  * global/local functions to use that. So the API will remain with enders only and the global
  * and local functions with the opaque handler
+ * - Add a visibility property to be able to show and hide widgets easily
  */
 /*============================================================================*
  *                                  Local                                     *

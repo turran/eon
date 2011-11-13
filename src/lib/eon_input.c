@@ -1,5 +1,29 @@
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "Eon.h"
 #include "eon_private.h"
+/**
+ * @todo
+ * Handle focus, it should be one per keyboard input
+ * Add flags to the input to know for example if we are using a touch based
+ * input or a mouse input, etc. The widget may interact differently on that
+ * cases
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -36,6 +60,7 @@ struct _Eon_Input_State
 	} pointer;
 	struct
 	{
+		Ender_Element *focus;
 		Eon_Input_Modifiers mods;
 	} keyboard;
 };
@@ -242,7 +267,7 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 	ev.input = eis->input;
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN],
-			&ev);	
+			&ev);
 	printf("mouse down at %g %g\n", eis->pointer.x, eis->pointer.y);
 }
 
@@ -259,7 +284,7 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 	ev.input = eis->input;
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP],
-			&ev);	
+			&ev);
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */

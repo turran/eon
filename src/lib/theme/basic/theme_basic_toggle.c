@@ -95,10 +95,31 @@ static void _toggle_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _toggle_has_changed(Enesim_Renderer *r)
+{
+	Basic_Toggle *thiz;
+	Eina_Bool ret;
+
+	thiz = _toggle_get(r);
+
+	ret = eon_basic_control_button_has_changed(thiz->cb);
+	return ret;
+}
+
+static void _toggle_cleanup(Enesim_Renderer *r)
+{
+	Basic_Toggle *thiz;
+
+	thiz = _toggle_get(r);
+	eon_basic_control_button_cleanup(thiz->cb);
+}
+
 static Eon_Theme_Toggle_Descriptor _descriptor = {
 	.margin_get = _toggle_margin_get,
 	.position_get = _toggle_position_get,
 	.renderer_get = _toggle_renderer_get,
+	.has_changed = _toggle_has_changed,
+	.cleanup = _toggle_cleanup,
 	.setup = _toggle_setup,
 	.free = _toggle_free,
 };

@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 	ecore_init();
 
 	backend = eon_ecore_sdl_new();
+	//backend = eon_ecore_remote_new();
 
 	layout = eon_canvas_new();
 

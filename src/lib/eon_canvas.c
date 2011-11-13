@@ -20,19 +20,24 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Eon_Canvas_Child_State
+{
+	double x;
+	double y;
+	double width;
+	double height;
+} Eon_Canvas_Child_State;
+
 typedef struct _Eon_Canvas_Child
 {
 	Ender_Element *ender;
-	double old_x;
-	double old_y;
-	double x;
-	double y;
+	Eon_Canvas_Child_State past;
+	Eon_Canvas_Child_State current;
+	Eina_Bool changed : 1;
 } Eon_Canvas_Child;
 
 typedef struct _Eon_Canvas_State
 {
-	unsigned int width;
-	unsigned int height;
 	Enesim_Color color;
 } Eon_Canvas_State;
 
@@ -46,8 +51,8 @@ typedef struct _Eon_Canvas_Damage_Data
 
 typedef struct _Eon_Canvas
 {
-	Eina_Tiler *tiler;
 	Eina_List *children;
+	Eina_Bool changed : 1;
 	Eon_Canvas_State old, curr;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Canvas;
@@ -90,22 +95,22 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e, Enesim_Surface *s, Enesim_E
 	Eina_List *l;
 
 	r = ender_element_renderer_get(e);
+	eon_widget_property_clear(r, "child");
+
 	thiz = _eon_canvas_get(r);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *child_r;
 		Enesim_Renderer *child_rr;
-		double h;
-		double w;
 
 		child_r = ender_element_renderer_get(ech->ender);
 		child_rr = eon_element_renderer_get(ech->ender);
 
-		eon_element_real_height_get(ech->ender, &h);
-		eon_element_real_width_get(ech->ender, &w);
+		eon_element_real_width_get(ech->ender, &ech->current.width);
+		eon_element_real_height_get(ech->ender, &ech->current.height);
 
-		eon_element_actual_size_set(child_r, w, h);
-		eon_element_actual_position_set(child_r, ech->x, ech->y);
+		eon_element_actual_size_set(child_r, ech->current.width, ech->current.height);
+		eon_element_actual_position_set(child_r, ech->current.x, ech->current.y);
 		/* now add the renderer associated with the widget into the theme */
 		eon_widget_property_add(r, "child", child_rr, NULL);
 		eon_element_setup(ech->ender, s, err);
@@ -126,7 +131,10 @@ static void _eon_canvas_cleanup(Ender_Element *e, Enesim_Surface *s)
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		eon_element_cleanup(ech->ender, s);
+		ech->past = ech->current;
+		ech->changed = EINA_FALSE;
 	}
+	thiz->changed = EINA_FALSE;
 }
 
 static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
@@ -140,7 +148,6 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 	thiz = _eon_canvas_get(r);
 
 	eon_element_actual_position_get(r, &x, &y);
-#if 0
 	/* if we have changed then just return our size */
 	if (thiz->changed)
 	{
@@ -151,28 +158,76 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 		eon_element_actual_width_get(e, &area.w);
 		eon_element_actual_height_get(e, &area.h);
 
+		/* FIXME we should pass the previous and current */
 		cb(r, &area, EINA_FALSE, data);
 		return;
 	}
 	/* if not, return the children's */
 	else
-#endif
 	{
-		Eon_Canvas_Damage_Data ddata;
 		Eon_Canvas_Child *ech;
 		Eina_List *l;
 
-		ddata.x = x;
-		ddata.y = y;
-		ddata.real_cb = cb;
-		ddata.real_data = data;
-
 		EINA_LIST_FOREACH (thiz->children, l, ech)
 		{
-			printf("calling the child_r\n");
-			eon_element_damages_get(ech->ender, _canvas_damage_cb, &ddata);
+			/* in case the child changed the x, y (FIXME or the w, h) */
+			if (ech->changed)
+			{
+				Enesim_Renderer *child_r;
+				Enesim_Rectangle area;
+
+
+				printf("CHILDREN CHANGED!!!\n");
+				child_r = ender_element_renderer_get(ech->ender);
+				/* the past */
+				area.x = ech->past.x;
+				area.y = ech->past.y;
+				area.w = ech->past.width;
+				area.h = ech->past.height;
+				cb(child_r, &area, EINA_TRUE, data);
+				/* the current */
+				area.x = ech->past.x;
+				area.y = ech->past.y;
+				eon_element_real_width_get(ech->ender, &area.w);
+				eon_element_real_height_get(ech->ender, &area.h);
+				cb(child_r, &area, EINA_FALSE, data);
+			}
+			else
+			{
+				Eon_Canvas_Damage_Data ddata;
+				ddata.x = x;
+				ddata.y = y;
+				ddata.real_cb = cb;
+				ddata.real_data = data;
+
+				eon_element_damages_get(ech->ender, _canvas_damage_cb, &ddata);
+			}
 		}
 	}
+}
+
+Eina_Bool _eon_canvas_has_changed(Ender_Element *e)
+{
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *ech;
+	Enesim_Renderer *r;
+	Eina_List *l;
+	Eina_Bool ret = EINA_FALSE;
+
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_canvas_get(r);
+
+	if (thiz->changed) return EINA_TRUE;
+
+
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		if (ech->changed) return EINA_TRUE;
+		ret = eon_element_has_changed(ech->ender);
+		if (ret) break;
+	}
+	return ret;
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
@@ -198,9 +253,9 @@ static Ender_Element * _eon_canvas_child_at(Ender_Element *e, double x, double y
 		double child_x, child_y;
 		Eon_Size child_size;
 
-		child_x = x - ech->x;
+		child_x = x - ech->current.x;
 		if (child_x < 0) continue;
-		child_y = y - ech->y;
+		child_y = y - ech->current.y;
 		if (child_y < 0) continue;
 
 		/* TODO still need the width and height */
@@ -239,13 +294,25 @@ static void _eon_canvas_child_add(Enesim_Renderer *r, Ender_Element *child)
 	ech = calloc(1, sizeof(Eon_Canvas_Child));
 	ech->ender = child;
 	thiz->children = eina_list_append(thiz->children, ech);
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
+	Eon_Canvas_Child *ech;
+	Eina_List *l, *l_next;
 
 	thiz = _eon_canvas_get(r);
+	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, ech)
+	{
+		if (ech->ender == child)
+		{
+			thiz->children = eina_list_remove_list(thiz->children, l);
+			break;
+		}
+	}
+	thiz->changed = EINA_TRUE;
 }
 
 static Eon_Layout_Descriptor _descriptor = {
@@ -255,6 +322,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.free = _eon_canvas_free,
 	.damage = _eon_canvas_damage,
 	.cleanup = _eon_canvas_cleanup,
+	.has_changed = _eon_canvas_has_changed,
 	.setup = _eon_canvas_setup,
 	.name = "canvas",
 };
@@ -292,7 +360,8 @@ static void _eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, do
 	{
 		if (ech->ender == child)
 		{
-			ech->x = x;
+			ech->current.x = x;
+			ech->changed = EINA_TRUE;
 		}
 	}
 }
@@ -314,7 +383,8 @@ static void _eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, do
 	{
 		if (ech->ender == child)
 		{
-			ech->y = y;
+			ech->current.y = y;
+			ech->changed = EINA_TRUE;
 		}
 	}
 }
