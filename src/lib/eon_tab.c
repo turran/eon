@@ -192,7 +192,7 @@ static Enesim_Renderer * _eon_tab_new(void)
 	thiz = calloc(1, sizeof(Eon_Tab));
 	if (!thiz) return NULL;
 	/* default values */
-	
+
 	r = eon_widget_new(&_eon_tab_widget_descriptor, thiz);
 	if (!r) goto renderer_err;
 

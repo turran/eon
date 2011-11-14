@@ -5,6 +5,7 @@ typedef struct _Eon_Element_State
 {
 	Eon_Position actual_position;
 	Eon_Size actual_size;
+	Eina_Bool visible;
 } Eon_Element_State;
 
 /* TODO rename all this max/min/preferred width/height into min/max/preferred size only */

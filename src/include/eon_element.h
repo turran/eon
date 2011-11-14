@@ -50,6 +50,8 @@ EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width);
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
 EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width);
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
+EAPI void eon_element_visibility_set(Ender_Element *e, double visibility);
+EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility);
 
 /**
  * @}

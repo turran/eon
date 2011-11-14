@@ -244,7 +244,6 @@ static void _eon_element_min_width_set(Enesim_Renderer *r, double width)
 {
 	Eon_Element *thiz;
 
-	if (!width) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->min_size.width = width;
@@ -297,7 +296,6 @@ static void _eon_element_max_width_set(Enesim_Renderer *r, double width)
 {
 	Eon_Element *thiz;
 
-	if (!width) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->max_size.width = width;
@@ -325,7 +323,6 @@ static void _eon_element_max_height_set(Enesim_Renderer *r, double height)
 {
 	Eon_Element *thiz;
 
-	if (!height) return;
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 	thiz->max_size.height = height;
@@ -372,6 +369,27 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 	*height = -1;
 	if (thiz->preferred_height_get)
 		*height = thiz->preferred_height_get(e);
+}
+
+
+static void _eon_element_visibility_set(Enesim_Renderer *r, double visible)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	thiz->current.visible = visible;
+}
+
+static void _eon_element_visibility_get(Enesim_Renderer *r, double *visible)
+{
+	Eon_Element *thiz;
+
+	if (!visible) return;
+
+	thiz = _eon_element_get(r);
+	if (!thiz) return;
+	*visible = thiz->current.visible;
 }
 
 /*----------------------------------------------------------------------------*
@@ -1147,4 +1165,21 @@ EAPI void eon_element_max_height_set(Ender_Element *e, double height)
 EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 {
 	ender_element_value_get(e, "max_height", height, NULL);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_visibility_set(Ender_Element *e, double visibility)
+{
+	ender_element_value_set(e, "visibility", visibility, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility)
+{
+	ender_element_value_get(e, "visibility", visibility, NULL);
 }

@@ -190,7 +190,7 @@ static void _eon_layout_initialize(Ender_Element *e)
 }
 
 /* FIXME We must delete this one */
-static Eina_Bool _eon_layout_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error *err)
+static Eina_Bool _eon_layout_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Layout *thiz;
 	Enesim_Renderer *r;
