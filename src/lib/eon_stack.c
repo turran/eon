@@ -44,7 +44,7 @@ typedef struct _Eon_Stack_State
 typedef struct _Eon_Stack
 {
 	Eina_List *children;
-	Eina_Bool changed;
+	Eina_Bool changed : 1;
 	Eon_Stack_State old, curr;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Stack;

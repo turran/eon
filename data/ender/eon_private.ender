@@ -118,5 +118,10 @@ namespace "eon" {
 		double "step_increment";
 		double "value";
 	};
+
+	class "tab" : "widget" {
+		[ender] "child";
+		rel ender "child_description";
+	};
 };
 

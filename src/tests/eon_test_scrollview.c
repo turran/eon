@@ -13,10 +13,12 @@ int main(int argc, char **argv)
 	eon_init();
 	ecore_init();
 
+	backend = eon_ecore_sdl_new();
+	//backend = eon_ecore_remote_new();
+
 	layout = eon_stack_new();
 
 	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
-	backend = eon_ecore_sdl_new();
 	win = eon_window_new(backend, layout, 320, 240);
 	scrollview = eon_scrollview_new();
 
