@@ -34,6 +34,14 @@ typedef struct _Eon_Tab
 	Eina_Bool changed : 1;
 } Eon_Tab;
 
+static inline Eon_Tab * _eon_tab_get(Enesim_Renderer *r)
+{
+	Eon_Tab *thiz;
+
+	thiz = eon_widget_data_get(r);
+	return thiz;
+}
+
 static void _eon_tab_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 
