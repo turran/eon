@@ -23,7 +23,8 @@
 typedef struct _Eon_Tab_Child
 {
 	Eina_Bool changed : 1;
-	Ender_Element *description;
+	Ender_Element *e;
+	Ender_Element *content;
 } Eon_Tab_Child;
 
 typedef struct _Eon_Tab
@@ -44,7 +45,7 @@ static inline Eon_Tab * _eon_tab_get(Enesim_Renderer *r)
 
 static void _eon_tab_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-
+	/* whenever we click on it we should change the theme content based on what tab we have clicked */
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -63,12 +64,20 @@ static void _eon_tab_initialize(Ender_Element *e)
 static Eina_Bool _eon_tab_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Tab *thiz;
+	Eon_Tab_Child *ech;
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
+	Eina_List *l;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_tab_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
+
+	EINA_LIST_FOREACH(thiz->children, l, ech)
+	{
+		/* we should set the size of every descriptor based on its min/max/preferred size */
+		/* while iterating if the current tab is selected set the content of the theme too */
+	}
 
 	return EINA_TRUE;
 }
@@ -206,17 +215,32 @@ renderer_err:
 static void _eon_tab_child_remove(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *child_r;
+	Eon_Tab_Child *ech;
+	Eina_List *l, *l_next;
 
 	thiz = _eon_tab_get(r);
+	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, ech)
+	{
+		if (ech->e == child)
+		{
+			thiz->children = eina_list_remove_list(thiz->children, l);
+			thiz->changed = EINA_TRUE;
+			break;
+		}
+	}
 }
 
 static void _eon_tab_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *child_r;
+	Eon_Tab_Child *ech;
 
 	thiz = _eon_tab_get(r);
+	ech = calloc(1, sizeof(Eon_Tab_Child));
+	ech->e = child;
+
+	thiz->children = eina_list_append(thiz->children, ech);
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_tab_child_clear(Enesim_Renderer *r)
@@ -224,19 +248,48 @@ static void _eon_tab_child_clear(Enesim_Renderer *r)
 	Eon_Tab *thiz;
 
 	thiz = _eon_tab_get(r);
+	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_tab_child_description_set(Enesim_Renderer *r, Ender_Element *child,
-		Ender_Element *description)
+static void _eon_tab_child_content_set(Enesim_Renderer *r, Ender_Element *child,
+		Ender_Element *content)
 {
 	Eon_Tab *thiz;
+	Eon_Tab_Child *ech;
+	Eina_List *l;
 
 	thiz = _eon_tab_get(r);
+	EINA_LIST_FOREACH(thiz->children, l, ech)
+	{
+		if (ech->e == child)
+		{
+			ech->content = content;
+			ech->changed = EINA_TRUE;
+			break;
+		}
+	}
+}
+
+static void _eon_tab_child_selected_set(Enesim_Renderer *r, Ender_Element *child,
+		Eina_Bool selected)
+{
+	Eon_Tab *thiz;
+	Eon_Tab_Child *ech;
+	Eina_List *l;
+
+	thiz = _eon_tab_get(r);
+	EINA_LIST_FOREACH(thiz->children, l, ech)
+	{
+		if (ech->e == child)
+		{
+			break;
+		}
+	}
 }
 
 #define _eon_tab_child_get NULL
 #define _eon_tab_child_set NULL
-#define _eon_tab_child_description_get NULL
+#define _eon_tab_child_content_get NULL
 #include "eon_generated_tab.c"
 /*============================================================================*
  *                                 Global                                     *
@@ -251,6 +304,18 @@ static void _eon_tab_child_description_set(Enesim_Renderer *r, Ender_Element *ch
 EAPI Ender_Element * eon_tab_new(void)
 {
 	return ender_element_new_with_namespace("tab", "eon");
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_tab_child_add_with_label(Ender_Element *e, const char *text)
+{
+	Ender_Element *child;
+
+	child = eon_label_new_with_text(text);
+	eon_tab_child_add(e, child);
 }
 
 /**
@@ -284,8 +349,17 @@ EAPI void eon_tab_child_clear(Ender_Element *e)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_tab_child_description_set(Ender_Element *e, Ender_Element *child, Ender_Element *description)
+EAPI void eon_tab_child_content_set(Ender_Element *e, Ender_Element *child, Ender_Element *content)
 {
-	ender_element_value_set(child, "child_description", description, NULL);
+	ender_element_value_set(child, "child_content", content, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_tab_child_selected_set(Ender_Element *e, Ender_Element *child, Eina_Bool selected)
+{
+	ender_element_value_set(child, "child_selected", selected, NULL);
 }
 

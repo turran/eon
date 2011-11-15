@@ -22,7 +22,7 @@
 /**
  * @{
  */
-typedef double (*Eon_Theme_Image_Source_Set)(Enesim_Renderer *r, Enesim_Surface *src);
+typedef void (*Eon_Theme_Image_Source_Set)(Enesim_Renderer *r, Enesim_Surface *src);
 typedef void (*Eon_Theme_Image_Min_Size_Get)(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
 typedef void (*Eon_Theme_Image_Max_Size_Get)(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
 typedef void (*Eon_Theme_Image_Preferred_Size_Get)(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);

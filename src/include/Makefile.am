@@ -27,6 +27,7 @@ eon_scrollview.h \
 eon_spin.h \
 eon_splitter.h \
 eon_stack.h \
+eon_tab.h \
 eon_theme.h \
 eon_theme_button_base.h \
 eon_theme_button.h \

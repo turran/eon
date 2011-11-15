@@ -23,7 +23,6 @@
  *============================================================================*/
 typedef struct _Label
 {
-	Enesim_Renderer *text;
 } Label;
 
 static inline Label * _label_get(Enesim_Renderer *r)
@@ -36,100 +35,12 @@ static inline Label * _label_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme label interface                       *
  *----------------------------------------------------------------------------*/
-static void _label_font_set(Enesim_Renderer *r, const char *name)
+static void _label_padding_get(Enesim_Renderer *r, Eon_Margin *padding)
 {
-	Label *thiz;
-
-	thiz = _label_get(r);
-	etex_base_font_name_set(thiz->text, name);
-}
-
-static const char * _label_font_get(Enesim_Renderer *r)
-{
-	Label *thiz;
-	const char *name;
-
-	thiz = _label_get(r);
-	etex_base_font_name_get(thiz->text, &name);
-	return name;
-}
-
-static void _label_size_set(Enesim_Renderer *r, int size)
-{
-	Label *thiz;
-
-	thiz = _label_get(r);
-	etex_base_size_set(thiz->text, size);
-}
-
-static int _label_size_get(Enesim_Renderer *r)
-{
-	Label *thiz;
-	unsigned int size;
-
-	thiz = _label_get(r);
-	etex_base_size_get(thiz->text, &size);
-	return size;
-}
-
-static void _label_text_set(Enesim_Renderer *r, const char *str)
-{
-	Label *thiz;
-
-	thiz = _label_get(r);
-	etex_span_text_set(thiz->text, str);
-}
-
-static const char * _label_text_get(Enesim_Renderer *r)
-{
-	Label *thiz;
-	const char *str;
-
-	thiz = _label_get(r);
-	etex_span_text_get(thiz->text, &str);
-	return str;
-}
-
-static unsigned int _label_height_get(Enesim_Renderer *r)
-{
-	Label *thiz;
-	Enesim_Rectangle boundings;
-
-	thiz = _label_get(r);
-	enesim_renderer_boundings(thiz->text, &boundings);
-	return boundings.h;
-}
-
-static unsigned int _label_width_get(Enesim_Renderer *r)
-{
-	Label *thiz;
-	Enesim_Rectangle boundings;
-
-	thiz = _label_get(r);
-	enesim_renderer_boundings(thiz->text, &boundings);
-	return boundings.w;
-}
-
-static Enesim_Renderer * _label_renderer_get(Enesim_Renderer *r)
-{
-	Label *thiz;
-	thiz = _label_get(r);
-	return thiz->text;
-}
-
-static Eina_Bool _label_setup(Enesim_Renderer *r, Enesim_Error **error)
-{
-	Label *thiz;
-	Enesim_Color color;
-	double ox, oy;
-
-	thiz = _label_get(r);
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->text, ox, oy);
-	enesim_renderer_color_get(r, &color);
-	enesim_renderer_color_set(thiz->text, color);
-
-	return EINA_TRUE;
+	padding->top = 0;
+	padding->left = 0;
+	padding->right = 0;
+	padding->bottom = 0;
 }
 
 static void _label_free(Enesim_Renderer *r)
@@ -137,22 +48,11 @@ static void _label_free(Enesim_Renderer *r)
 	Label *thiz;
 
 	thiz = _label_get(r);
-	if (thiz->text)
-		enesim_renderer_unref(thiz->text);
 	free(thiz);
 }
 
 static Eon_Theme_Label_Descriptor _descriptor = {
-	.text_set = _label_text_set,
-	.text_get = _label_text_get,
-	.size_set = _label_size_set,
-	.size_get = _label_size_get,
-	.font_set = _label_font_set,
-	.font_get = _label_font_get,
-	.height_get = _label_height_get,
-	.width_get = _label_width_get,
-	.renderer_get = _label_renderer_get,
-	.setup = _label_setup,
+	.padding_get = _label_padding_get,
 	.free = _label_free,
 };
 /*============================================================================*
@@ -170,17 +70,12 @@ EAPI Enesim_Renderer * eon_basic_label_new(void)
 	thiz = calloc(1, sizeof(Label));
 	if (!thiz) return NULL;
 
-	r = etex_span_new();
-	if (!r) goto etex_err;
-	thiz->text = r;
-
 	r = eon_theme_label_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
+
 renderer_err:
-	enesim_renderer_unref(thiz->text);
-etex_err:
 	free(thiz);
 	return NULL;
 }

@@ -1,10 +1,14 @@
 #include "Eon.h"
 
+static Enesim_Color _color[2] = { 0xff0000ff, 0xff00ffff};
+static int _color_selected = 0;
+
 static void _wrapper_clicked(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Ender_Element *rectangle = data;
 
-	ender_element_value_set(rectangle, "fill_color", 0xff0000ff, NULL);
+	_color_selected = (_color_selected + 1) % 2;
+	ender_element_value_set(rectangle, "fill_color", _color[_color_selected], NULL);
 }
 
 int main(int argc, char **argv)
@@ -29,7 +33,7 @@ int main(int argc, char **argv)
 
 	/* create an external ender */
 	rectangle = ender_element_new("rectangle");
-	ender_element_value_set(rectangle, "fill_color", 0xff00ffff, NULL);
+	ender_element_value_set(rectangle, "fill_color", _color[0], NULL);
 	ender_element_value_set(rectangle, "stroke_color", 0xffff0000, NULL);
 	ender_element_value_set(rectangle, "stroke_weight", 2.0, NULL);
 	ender_element_value_set(rectangle, "draw_mode", 3, NULL);

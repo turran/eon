@@ -95,6 +95,8 @@ void eon_element_real_size_get(Ender_Element *e, Eon_Size *size);
 void eon_element_changed_set(Ender_Element *e, Eina_Bool changed);
 Eina_Bool eon_element_has_changed(Ender_Element *e);
 
+void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data);
+
 Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err);
 void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s);
 

@@ -47,7 +47,7 @@ static Enesim_Renderer * _image_renderer_get(Enesim_Renderer *r)
 	return thiz->image;
 }
 
-static Enesim_Renderer * _image_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Error **err)
 {
 	Image *thiz;
 	double ox, oy;

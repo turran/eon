@@ -163,21 +163,25 @@ renderer_err:
 static void _eon_label_text_set(Enesim_Renderer *r, const char *text)
 {
 	Eon_Label *thiz;
+	Enesim_Renderer *theme_r;
 
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "text", text, NULL);
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_label_text_set(theme_r, text);
 }
 
 static void _eon_label_text_get(Enesim_Renderer *r, const char **text)
 {
 	Eon_Label *thiz;
+	Enesim_Renderer *theme_r;
 
 	thiz = _eon_label_get(r);
 	if (!thiz) return;
 
-	eon_widget_property_get(r, "text", text, NULL);
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_label_text_get(theme_r, text);
 }
 
 static void _eon_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)

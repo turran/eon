@@ -22,52 +22,21 @@
 /**
  * @{
  */
-typedef double (*Eon_Theme_Label_Max_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Label_Max_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Label_Min_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Label_Min_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Label_Preferred_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Label_Preferred_Width_Get)(Enesim_Renderer *r);
 
-/* font name */
-typedef void (*Eon_Theme_Label_Font_Set)(Enesim_Renderer *r, const char *font);
-typedef const char * (*Eon_Theme_Label_Font_Get)(Enesim_Renderer *r);
-/* font size */
-typedef void (*Eon_Theme_Label_Size_Set)(Enesim_Renderer *r, int size);
-typedef int (*Eon_Theme_Label_Size_Get)(Enesim_Renderer *r);
-/* text */
-typedef void (*Eon_Theme_Label_Text_Set)(Enesim_Renderer *r, const char *str);
-typedef const char * (*Eon_Theme_Label_Text_Get)(Enesim_Renderer *r);
-/* ellipsize */
-typedef void (*Eon_Theme_Label_Ellipsize_Set)(Enesim_Renderer *r, Eina_Bool enable);
-typedef Eina_Bool (*Eon_Theme_Label_Ellipsize_Get)(Enesim_Renderer *r);
-/* height ascender + ascender */
-typedef unsigned int (*Eon_Theme_Label_Height_Get)(Enesim_Renderer *r);
-typedef unsigned int (*Eon_Theme_Label_Width_Get)(Enesim_Renderer *r);
+typedef Eina_Bool (*Eon_Theme_Label_Setup)(Enesim_Renderer *r, Enesim_Renderer *text, Enesim_Error **err);
+typedef void (*Eon_Theme_Label_Cleanup)(Enesim_Renderer *r);
+typedef Enesim_Renderer * (*Eon_Theme_Label_Renderer_Get)(Enesim_Renderer *r, Enesim_Renderer *text);
+typedef void (*Eon_Theme_Label_Padding_Get)(Enesim_Renderer *r, Eon_Margin padding);
 
 typedef struct _Eon_Theme_Label_Descriptor
 {
 	/* the label needed functions */
-	Eon_Theme_Label_Font_Set font_set;
-	Eon_Theme_Label_Font_Get font_get;
-	Eon_Theme_Label_Size_Set size_set;
-	Eon_Theme_Label_Size_Get size_get;
-	Eon_Theme_Label_Text_Set text_set;
-	Eon_Theme_Label_Text_Get text_get;
-	Eon_Theme_Label_Ellipsize_Set ellipsize_set;
-	Eon_Theme_Label_Ellipsize_Get ellipsize_get;
-	Eon_Theme_Label_Height_Get height_get;
-	Eon_Theme_Label_Width_Get width_get;
-	Eon_Theme_Label_Max_Width_Get max_width_get;
-	Eon_Theme_Label_Min_Width_Get min_width_get;
-	Eon_Theme_Label_Max_Height_Get max_height_get;
-	Eon_Theme_Label_Min_Height_Get min_height_get;
-	Eon_Theme_Label_Preferred_Width_Get preferred_width_get;
-	Eon_Theme_Label_Preferred_Height_Get preferred_height_get;
+	Eon_Theme_Label_Renderer_Get renderer_get;
+	Eon_Theme_Label_Setup setup;
+	Eon_Theme_Label_Cleanup cleanup;
+	Eon_Theme_Label_Padding_Get padding_get;
+	Eina_Bool can_ellipsize;
 	/* renderer needed functions */
-	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Widget_Setup setup;
-	Eon_Theme_Widget_Cleanup cleanup;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Label_Descriptor;
 

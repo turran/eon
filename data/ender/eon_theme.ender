@@ -48,16 +48,8 @@ namespace "eon" {
 	};
 
 	abstract "theme_label" : "theme_widget" {
-		int "ellipsize";
-		string "text";
 		string "font";
 		int "size";
-		double "min_width";
-		double "max_width";
-		double "min_height";
-		double "max_height";
-		double "preferred_width";
-		double "preferred_height";
 	};
 
 	abstract "theme_splitter" : "theme_container" {
