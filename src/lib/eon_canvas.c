@@ -177,7 +177,6 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 				Enesim_Rectangle area;
 
 
-				printf("CHILDREN CHANGED!!!\n");
 				child_r = ender_element_renderer_get(ech->ender);
 				/* the past */
 				area.x = ech->past.x;
@@ -206,7 +205,7 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 	}
 }
 
-Eina_Bool _eon_canvas_has_changed(Ender_Element *e)
+Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
@@ -246,7 +245,6 @@ static Ender_Element * _eon_canvas_child_at(Ender_Element *e, double x, double y
 	r = ender_element_renderer_get(e);
 	thiz = _eon_canvas_get(r);
 	if (!thiz) return NULL;
-	printf("canvas looking for a child at %g %g\n", x, y);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *rchild;
@@ -322,7 +320,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.free = _eon_canvas_free,
 	.damage = _eon_canvas_damage,
 	.cleanup = _eon_canvas_cleanup,
-	.has_changed = _eon_canvas_has_changed,
+	.needs_setup = _eon_canvas_needs_setup,
 	.setup = _eon_canvas_setup,
 	.name = "canvas",
 };

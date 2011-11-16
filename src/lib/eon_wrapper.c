@@ -51,7 +51,7 @@ static void _eon_wrapper_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_wrapper_has_changed(Ender_Element *e)
+static Eina_Bool _eon_wrapper_needs_setup(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
@@ -217,7 +217,7 @@ static Eon_Element_Descriptor _descriptor = {
 	.setup = _eon_wrapper_setup,
 	.cleanup = _eon_wrapper_cleanup,
 	.renderer_get = _eon_wrapper_renderer_get,
-	.has_changed = _eon_wrapper_has_changed,
+	.needs_setup = _eon_wrapper_needs_setup,
 	.initialize = _eon_wrapper_initialize,
 	.free = _eon_wrapper_free,
 	.name = "wrapper",

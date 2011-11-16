@@ -240,7 +240,7 @@ static void _eon_scrollbar_cleanup(Ender_Element *e, Enesim_Surface *s)
 	thiz->changed = EINA_FALSE;
 }
 
-static Eina_Bool _eon_scrollbar_has_changed(Ender_Element *e)
+static Eina_Bool _eon_scrollbar_needs_setup(Ender_Element *e)
 {
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
@@ -361,7 +361,7 @@ static Eon_Widget_Descriptor _eon_scrollbar_widget_descriptor = {
 	.free = _eon_scrollbar_free,
 	.setup = _eon_scrollbar_setup,
 	.cleanup = _eon_scrollbar_cleanup,
-	.has_changed = _eon_scrollbar_has_changed,
+	.needs_setup = _eon_scrollbar_needs_setup,
 	.min_width_get = _eon_scrollbar_min_width_get,
 	.max_width_get = _eon_scrollbar_max_width_get,
 	.min_height_get = _eon_scrollbar_min_height_get,

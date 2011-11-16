@@ -108,7 +108,6 @@ static void _bar_changed(Ender_Element *e, const char *event_name, void *event_d
 			eon_scrollview_y_position_set(element, -v);
 		}
 	}
-	eon_element_changed_set(element, EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
  *                       The Eon's container interface                        *
@@ -247,9 +246,10 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e, Enesim_Surface *s, Enes
 
 		size.width = aw;
 		size.height = ah;
-		eon_element_real_relative_size_get(content, &size, &content_size);
+		//eon_element_real_relative_size_get(content, &size, &content_size);
+		eon_element_real_size_get(content, &content_size);
 		// the size calucaltion is wrong, the stack does not call the setup/cleanup on the hidden
-		// elements, but the has_changed always compares them, so bascially the stack always changes as it cannot
+		// elements, but the needs_setup always compares them, so bascially the stack always changes as it cannot
 		// cleanup
 		//printf("size = %g %g %g %g\n", size.width, size.height, content_size.width, content_size.height);
 		//content_size.height =740;
@@ -350,7 +350,7 @@ static void _eon_scrollview_cleanup(Ender_Element *e, Enesim_Surface *s)
 	thiz->past = thiz->current;
 }
 
-static Eina_Bool _eon_scrollview_has_changed(Ender_Element *e)
+static Eina_Bool _eon_scrollview_needs_setup(Ender_Element *e)
 {
 	Eon_Scrollview *thiz;
 	Enesim_Renderer *r;
@@ -358,12 +358,12 @@ static Eina_Bool _eon_scrollview_has_changed(Ender_Element *e)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 
-	if (eon_element_has_changed(thiz->hbar))
+	if (eon_element_needs_setup(thiz->hbar))
 	{
 		return EINA_TRUE;
 	}
 
-	if (eon_element_has_changed(thiz->vbar))
+	if (eon_element_needs_setup(thiz->vbar))
 	{
 		return EINA_TRUE;
 	}
@@ -422,7 +422,7 @@ static Eon_Container_Descriptor _descriptor = {
 	.setup = _eon_scrollview_setup,
 	.cleanup = _eon_scrollview_cleanup,
 	.damage = _eon_scrollview_damage,
-	.has_changed = _eon_scrollview_has_changed,
+	.needs_setup = _eon_scrollview_needs_setup,
 	.free = _eon_scrollview_free,
 	.min_width_get = _eon_scrollview_min_width_get,
 	.min_height_get = _eon_scrollview_min_height_get,

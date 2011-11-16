@@ -268,7 +268,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 
 			enesim_renderer_name_get(r, &name);
 			enesim_renderer_name_get(child_r, &child_name);
-			printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
+			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, x, last_y);
@@ -350,13 +350,12 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 
 		EINA_LIST_FOREACH (thiz->children, l, ech)
 		{
-			printf("calling the child_r\n");
 			eon_element_damages_get(ech->ender, _stack_damage_cb, &ddata);
 		}
 	}
 }
 
-static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
+static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
@@ -372,7 +371,7 @@ static Eina_Bool _eon_stack_has_changed(Ender_Element *e)
 
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
-		ret = eon_element_has_changed(ech->ender);
+		ret = eon_element_needs_setup(ech->ender);
 		if (ret) break;
 	}
 	return ret;
@@ -606,6 +605,8 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
+	thiz->changed = EINA_TRUE;
+
 	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
 }
 
@@ -614,6 +615,7 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
 	Eina_List *l, *l_next;
+	Eina_Bool found = EINA_FALSE;
 
 	thiz = _eon_stack_get(r);
 	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, thiz_child)
@@ -621,9 +623,12 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 		if (thiz_child->ender == child)
 		{
 			thiz->children = eina_list_remove_list(thiz->children, l);
+			found = EINA_TRUE;
 			break;
 		}
 	}
+	if (found)
+		thiz->changed = EINA_TRUE;
 }
 
 static void _eon_stack_child_clear(Enesim_Renderer *r)
@@ -638,6 +643,7 @@ static void _eon_stack_child_clear(Enesim_Renderer *r)
 		thiz->children = eina_list_remove_list(thiz->children, l);
 	}
 	eon_widget_property_clear(r, "child");
+	thiz->changed = EINA_TRUE;
 }
 
 static Eon_Layout_Descriptor _descriptor = {
@@ -650,7 +656,7 @@ static Eon_Layout_Descriptor _descriptor = {
 	.preferred_width_get = _eon_stack_preferred_width_get,
 	.preferred_height_get = _eon_stack_preferred_height_get,
 	.damage = _eon_stack_damage,
-	.has_changed = _eon_stack_has_changed,
+	.needs_setup = _eon_stack_needs_setup,
 	.cleanup = _eon_stack_cleanup,
 	.setup = _eon_stack_setup,
 	.free = _eon_stack_free,

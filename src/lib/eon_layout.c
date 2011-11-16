@@ -297,7 +297,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.setup = _eon_layout_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.damage = descriptor->damage;
-	pdescriptor.has_changed = descriptor->has_changed;
+	pdescriptor.needs_setup = descriptor->needs_setup;
 
 	r = eon_widget_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;

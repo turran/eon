@@ -86,7 +86,6 @@ static Eina_Bool _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 	}
 	/* chech the alignment */
 	enesim_renderer_boundings(text, &boundings);
-	printf("bounds %g\n", boundings.w);
 	switch (alignment)
 	{
 		case EON_HORIZONTAL_ALIGNMENT_LEFT:

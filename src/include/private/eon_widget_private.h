@@ -12,7 +12,7 @@ typedef struct _Eon_Widget_Descriptor
 	Eon_Element_Initialize initialize;
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Setup setup;
-	Eon_Element_Has_Changed has_changed;
+	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Damage damage;
 	Enesim_Renderer_Delete free;
 	const char *name;

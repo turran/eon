@@ -269,6 +269,12 @@ Eina_Bool eon_theme_widget_has_changed(Enesim_Renderer *r)
 		return thiz->has_changed(r);
 	return EINA_FALSE;
 }
+
+/* FIXME */
+Eina_Bool eon_theme_widget_informs_setup(Enesim_Renderer *r)
+{
+	return EINA_FALSE;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

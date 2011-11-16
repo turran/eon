@@ -54,7 +54,6 @@ static void _eon_entry_click(Ender_Element *e, const char *event_name, void *eve
 		etex_buffer_string_insert(thiz->buffer, "l>", -1, offset);
 		offset += 2;
 		/* inform the position of the cursor */
-		eon_element_changed_set(e, EINA_TRUE);
 	}
 }
 

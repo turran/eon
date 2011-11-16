@@ -50,7 +50,8 @@ static void _entry_changed(Ender_Element *e, const char *event_name, void *event
 	r = ender_element_renderer_get(e);
 	thiz = _eon_spin_get(r);
 
-	eon_element_changed_set(element, EINA_TRUE);
+	/* a change on the entry should be a change on the graphic component right?
+	 * no need to call the setup again ... */
 }
 /*----------------------------------------------------------------------------*
  *                              The input wrapper                             *

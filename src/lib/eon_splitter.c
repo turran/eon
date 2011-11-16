@@ -533,7 +533,7 @@ static void _eon_splitter_cleanup(Ender_Element *e, Enesim_Surface *s)
 	thiz->changed = EINA_FALSE;
 }
 
-static Eina_Bool _eon_splitter_has_changed(Ender_Element *e)
+static Eina_Bool _eon_splitter_needs_setup(Ender_Element *e)
 {
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
@@ -551,7 +551,7 @@ static Eina_Bool _eon_splitter_has_changed(Ender_Element *e)
 
 	/* check if the second content has changed */
 	if (thiz->current.second_content)
-		ret = eon_element_has_changed(thiz->current.second_content);
+		ret = eon_element_needs_setup(thiz->current.second_content);
 
 	return ret;
 }
@@ -563,7 +563,7 @@ static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
 	.setup = _eon_splitter_setup,
 	.cleanup = _eon_splitter_cleanup,
 	.damage = _eon_splitter_damage,
-	.has_changed = _eon_splitter_has_changed,
+	.needs_setup = _eon_splitter_needs_setup,
 	.min_width_get = _eon_splitter_min_width_get,
 	.max_width_get = _eon_splitter_max_width_get,
 	.min_height_get = _eon_splitter_min_height_get,

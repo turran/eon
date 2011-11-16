@@ -22,7 +22,7 @@ typedef struct _Eon_Container_Descriptor
 	Eon_Element_Setup setup;
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Damage damage;
-	Eon_Element_Has_Changed has_changed;
+	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 	const char *name;
 	Eina_Bool pass_events;

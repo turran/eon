@@ -29,7 +29,7 @@ typedef struct _Eon_Container
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Cleanup cleanup;
-	Eon_Element_Has_Changed has_changed;
+	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 	Eon_Container_Min_Width_Get min_width_get;
 	Eon_Container_Max_Width_Get max_width_get;
@@ -337,7 +337,7 @@ static double _eon_container_preferred_height_get(Ender_Element *e)
 	return v;
 }
 
-static Eina_Bool _eon_container_has_changed(Ender_Element *e)
+static Eina_Bool _eon_container_needs_setup(Ender_Element *e)
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
@@ -350,13 +350,13 @@ static Eina_Bool _eon_container_has_changed(Ender_Element *e)
 	ret = thiz->changed;
 	if (ret) return ret;
 
-	if (thiz->has_changed)
-		ret = thiz->has_changed(e);
+	if (thiz->needs_setup)
+		ret = thiz->needs_setup(e);
 	if (ret) return ret;
 
 	/* check if the content has changed */
 	if (thiz->content)
-		ret = eon_element_has_changed(thiz->content);
+		ret = eon_element_needs_setup(thiz->content);
 	return ret;
 }
 
@@ -413,7 +413,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	thiz->data = data;
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
-	thiz->has_changed = descriptor->has_changed;
+	thiz->needs_setup = descriptor->needs_setup;
 	thiz->cleanup = descriptor->cleanup;
 	thiz->free = descriptor->free;
 	thiz->min_width_get = descriptor->min_width_get;
@@ -430,7 +430,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = _eon_container_cleanup;
 	pdescriptor.damage = descriptor->damage;
-	pdescriptor.has_changed = _eon_container_has_changed;
+	pdescriptor.needs_setup = _eon_container_needs_setup;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.min_width_get = _eon_container_min_width_get;
 	pdescriptor.max_width_get = _eon_container_max_width_get;

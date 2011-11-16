@@ -52,7 +52,7 @@ typedef struct _Eon_Element
 	Eon_Element_Setup setup;
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
-	Eon_Element_Has_Changed has_changed;
+	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Damage damage;
 	Enesim_Renderer_Delete free;
 	Eon_Element_Min_Height_Get min_height_get;
@@ -152,11 +152,6 @@ static double _element_max_height_get(Ender_Element *e)
 	if (thiz->max_height_get)
 		v = thiz->max_height_get(e);
 	return MIN(v, thiz->max_size.height);
-}
-
-static void _element_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	eon_element_changed_set(e, EINA_TRUE);
 }
 
 static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
@@ -620,11 +615,13 @@ Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 		}
 	}
 	/* check the instance case */
+#if FIXME
 	if (thiz->has_changed)
 	{
 		ret = thiz->has_changed(e);
 		if (ret) goto done;
 	}
+#endif
 	/* by default it hasnt changed */
 	else
 	{
@@ -641,7 +638,7 @@ done:
 	{
 		char *name;
 		enesim_renderer_name_get(r, &name);
-		printf("%s has changed = %d\n", name, ret);
+		//printf("%s has changed = %d\n", name, ret);
 	}
 
 	return ret;
@@ -672,7 +669,6 @@ void eon_element_initialize(Ender_Element *ender)
 	/* whenever the theme has changed we should notify
 	 * the change on this element too
 	 */
-	ender_event_listener_add(ender, "Mutation", _element_changed, NULL);
 	if (thiz->initialize)
 		thiz->initialize(ender);
 }
@@ -728,7 +724,7 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->cleanup = descriptor->cleanup;
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->damage = descriptor->damage;
-	thiz->has_changed = descriptor->has_changed;
+	thiz->needs_setup = descriptor->needs_setup;
 	thiz->free = descriptor->free;
 	/* min */
 	thiz->min_width_get = descriptor->min_width_get;
@@ -772,6 +768,16 @@ Eina_Bool eon_element_has_changed(Ender_Element *e)
 	r = ender_element_renderer_get(e);
 
 	return enesim_renderer_has_changed(r);
+}
+
+Eina_Bool eon_element_needs_setup(Ender_Element *e)
+{
+	Enesim_Renderer *r;
+	Eon_Element *thiz;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_element_get(r);
+	/* call the needs setup interface */
 }
 
 void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
@@ -960,25 +966,6 @@ void eon_element_real_height_get(Ender_Element *e, double *height)
 
 	r = ender_element_renderer_get(e);
 	_eon_element_real_height_get(r, height);
-}
-
-/* FIXME this should go away someday */
-void eon_element_changed_set(Ender_Element *e, Eina_Bool changed)
-{
-	Eon_Element *thiz;
-	Ender_Element *parent;
-	Enesim_Renderer *r;
-
-#if 0
-	r = ender_element_renderer_get(e);
-	thiz = _eon_element_get(r);
-	thiz->changed = changed;
-	parent = ender_element_parent_get(e);
-	if (parent)
-	{
-		eon_element_changed_set(parent, changed);
-	}
-#endif
 }
 
 Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)

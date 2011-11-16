@@ -30,13 +30,11 @@ typedef void (*Eon_Element_Actual_Height_Set)(Enesim_Renderer *r, double height)
  */
 typedef Enesim_Renderer* (*Eon_Element_Renderer_Get)(Ender_Element *e);
 /**
- * Every element needs a way to inform to inform whenever some property has changed
- * This fucntions does exactly that, provide the caller a way to know if the element
- * has changed. This function is important because it will trigger or not a call to the
- * Eon_Element_Setup function. That means that a change on a property that is needed
- * for the setup function should make this function return true.
+ * Every element needs a way to inform whenever something internal has changed
+ * in a way that the caller needs to call the Eon_Element_Setup function on this element
+ * to make it work properly.
  */
-typedef Eina_Bool (*Eon_Element_Has_Changed)(Ender_Element *e);
+typedef Eina_Bool (*Eon_Element_Needs_Setup)(Ender_Element *e);
 /**
  * This function gives you back the damaged area of an element between two setup/draw/cleanup combo 
  * Whenever we setup an element we usually set some properties on the graphics representation
@@ -52,7 +50,7 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Setup setup;
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
-	Eon_Element_Has_Changed has_changed;
+	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Damage damage;
 	Eon_Element_Min_Width_Get min_width_get;
 	Eon_Element_Max_Width_Get max_width_get;
@@ -92,8 +90,8 @@ void eon_element_real_height_get(Ender_Element *e, double *height);
 void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size);
 void eon_element_real_size_get(Ender_Element *e, Eon_Size *size);
 
-void eon_element_changed_set(Ender_Element *e, Eina_Bool changed);
 Eina_Bool eon_element_has_changed(Ender_Element *e);
+Eina_Bool eon_element_needs_setup(Ender_Element *e);
 
 void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data);
 

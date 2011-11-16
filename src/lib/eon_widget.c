@@ -39,6 +39,7 @@ typedef struct _Eon_Widget
 	Enesim_Renderer *theme_renderer;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 	void *data;
 } Eon_Widget;
@@ -52,13 +53,6 @@ static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
 	EON_WIDGET_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
-}
-
-static void _theme_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Ender_Element *element = data;
-
-	eon_element_changed_set(element, EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -80,11 +74,28 @@ static void _eon_widget_initialize(Ender_Element *ender)
 
 	r = ender_element_renderer_get(ender);
 	thiz = _eon_widget_get(r);
-	if (thiz->theme_element)
-		ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, ender);
 	/* register every needed callback */
 	if (thiz->initialize)
 		thiz->initialize(ender);
+}
+
+static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	Eina_Bool ret = EINA_FALSE;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_widget_get(r);
+
+	/* first check if the theme associated with this widget needs a setup */
+	ret = eon_theme_widget_informs_setup(thiz->theme_renderer);
+	if (ret) return ret;
+
+	/* call the change interface */
+	if (thiz->needs_setup)
+		return thiz->needs_setup(e);
+	return ret;
 }
 
 static Eina_Bool _eon_widget_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
@@ -190,13 +201,14 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	thiz->theme_element = theme_element;
 	thiz->theme_renderer = theme_renderer;
 	thiz->setup = descriptor->setup;
+	thiz->needs_setup = descriptor->needs_setup;
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
 	pdescriptor.damage = descriptor->damage;
-	pdescriptor.has_changed = descriptor->has_changed;
+	pdescriptor.needs_setup = _eon_widget_needs_setup; 
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.max_width_get = descriptor->max_width_get;
 	pdescriptor.min_height_get = descriptor->min_height_get;
@@ -259,7 +271,6 @@ static Eina_Bool _eon_widget_theme_setup(Eon_Widget *thiz, Ender_Element *e, Esc
 	thiz->theme_instance = theme_instance;
 	thiz->theme_element = theme_element;
 	thiz->theme_renderer = theme_renderer;
-	ender_event_listener_add(thiz->theme_element, "Mutation", _theme_changed, e);
 
 	return EINA_TRUE;
 }
@@ -285,8 +296,6 @@ static void _eon_widget_theme_set(Enesim_Renderer *r, const char *file)
 	old_instance = thiz->theme_instance;
 
 	_eon_widget_theme_setup(thiz, e, theme_escen);
-	if (old_element)
-		ender_event_listener_remove(old_element, "Mutation", _theme_changed);
 	/* FIXME delete the old instance/element */
 
 	thiz->theme = strdup(file);
