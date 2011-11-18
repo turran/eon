@@ -76,6 +76,51 @@ static Eina_Bool _canvas_damage_cb(Enesim_Renderer *child_r, Enesim_Rectangle *r
 	ddata->real_cb(child_r, rect, past, ddata->real_data);
 	return EINA_TRUE;
 }
+
+static Ender_Element * _canvas_child_down_at(Ender_Element *e, Ender_Element *rel, double x, double y)
+{
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *ech;
+	Ender_Element *current;
+	Ender_Element *child = NULL;
+	Enesim_Renderer *r;
+	Eina_List *l;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_canvas_get(r);
+	if (!thiz) return NULL;
+	current = NULL;
+
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		Enesim_Renderer *rchild;
+		double child_x, child_y;
+		Eon_Size child_size;
+
+		child_x = x - ech->current.x;
+		if (child_x < 0) continue;
+		child_y = y - ech->current.y;
+		if (child_y < 0) continue;
+
+		/* TODO still need the width and height */
+		rchild = ender_element_renderer_get(ech->ender);
+		eon_element_actual_size_get(rchild, &child_size);
+		if (child_x <= child_size.width && child_y <= child_size.height)
+		{
+			if (enesim_renderer_is_inside(rchild, child_x, child_y))
+			{
+				child = ech->ender;
+			}
+		}
+
+		if (current == rel)
+			break;
+		current = child;
+	}
+	printf("returning %p relative to %p\n", child, rel);
+
+	return child;
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -242,50 +287,9 @@ Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
  */
 static Ender_Element * _eon_canvas_child_at(Ender_Element *e, double x, double y)
 {
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *ech;
-	Ender_Element *child = NULL;
-	Enesim_Renderer *r;
-	Eina_List *l;
+	Ender_Element * child;
 
-	r = ender_element_renderer_get(e);
-	thiz = _eon_canvas_get(r);
-	if (!thiz) return NULL;
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		Enesim_Renderer *rchild;
-		double child_x, child_y;
-		Eon_Size child_size;
-
-		child_x = x - ech->current.x;
-		if (child_x < 0) continue;
-		child_y = y - ech->current.y;
-		if (child_y < 0) continue;
-
-		/* TODO still need the width and height */
-		rchild = ender_element_renderer_get(ech->ender);
-		if (eon_is_element(rchild))
-		{
-			eon_element_actual_size_get(rchild, &child_size);
-		}
-		else
-		{
-			Enesim_Rectangle bounds;
-			enesim_renderer_boundings(rchild, &bounds);
-			child_size.width = bounds.w;
-			child_size.height = bounds.h;
-		}
-		if (child_x <= child_size.width && child_y <= child_size.height)
-		{
-			if (enesim_renderer_is_inside(rchild, child_x, child_y))
-			{
-				child = ech->ender;
-				break;
-			}
-		}
-	}
-	//printf("returning %p\n", child);
-
+	child = _canvas_child_down_at(e, NULL, x, y);
 	return child;
 }
 
@@ -426,4 +430,16 @@ EAPI void eon_canvas_child_x_set(Ender_Element *e, Ender_Element *child, double 
 EAPI void eon_canvas_child_y_set(Ender_Element *e, Ender_Element *child, double y)
 {
 	ender_element_value_set(child, "child_y", y, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ender_Element * eon_canvas_child_at_down_relative(Ender_Element *e, Ender_Element *rel, double x, double y)
+{
+	Ender_Element *child;
+
+	child = _canvas_child_down_at(e, rel, x, y);
+	return child;
 }

@@ -29,6 +29,8 @@ EAPI Ender_Element * eon_canvas_new(void);
 EAPI void eon_canvas_child_x_set(Ender_Element *r, Ender_Element *child, double x);
 EAPI void eon_canvas_child_y_set(Ender_Element *r, Ender_Element *child, double y);
 
+EAPI Ender_Element * eon_canvas_child_at_down_relative(Ender_Element *e, Ender_Element *rel, double x, double y);
+
 /**
  * @}
  */
