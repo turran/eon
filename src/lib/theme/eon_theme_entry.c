@@ -170,7 +170,7 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 		void *data)
 {
 	Eon_Theme_Entry *thiz;
-	Eon_Theme_Widget_Descriptor pdescriptor;
+	Eon_Theme_Widget_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Entry));

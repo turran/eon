@@ -188,6 +188,7 @@ static void _eon_wrapper_cleanup(Ender_Element *e, Enesim_Surface *s)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
+	thiz->changed = EINA_FALSE;
 }
 
 static Enesim_Renderer * _eon_wrapper_renderer_get(Ender_Element *e)
@@ -268,8 +269,8 @@ static void _eon_wrapper_wrapped_set(Enesim_Renderer *r, Ender_Element *wrapped)
 	if (!thiz->wrapped)
 		return;
 	thiz->wrapped_renderer = ender_element_renderer_get(wrapped);
-
 	enesim_renderer_clipper_content_set(thiz->clipper, thiz->wrapped_renderer);
+	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_wrapper_wrapped_get(Enesim_Renderer *r, Ender_Element **wrapped)

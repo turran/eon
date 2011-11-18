@@ -251,7 +251,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e, Enesim_Surface *s, Enes
 		// the size calucaltion is wrong, the stack does not call the setup/cleanup on the hidden
 		// elements, but the needs_setup always compares them, so bascially the stack always changes as it cannot
 		// cleanup
-		//printf("size = %g %g %g %g\n", size.width, size.height, content_size.width, content_size.height);
+		printf("SCROLLVIEW size = %g %g -> %g %g\n", size.width, size.height, content_size.width, content_size.height);
 		//content_size.height =740;
 
 		/* hbar */

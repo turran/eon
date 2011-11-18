@@ -34,6 +34,7 @@ typedef struct _Eon_Theme_Label
 	Enesim_Renderer_Delete free;
 	Eina_Bool can_ellipsize;
 	/* private */
+	Eina_Bool informs_setup : 1;
 	/* data needed for our own callbacks */
 	Enesim_Renderer *text;
 	Eina_Bool ellipsized;
@@ -92,6 +93,7 @@ static void _eon_theme_label_cleanup(Enesim_Renderer *r)
 	{
 		thiz->cleanup(r);
 	}
+	thiz->informs_setup = EINA_FALSE;
 }
 
 static void _eon_theme_label_free(Enesim_Renderer *r)
@@ -101,6 +103,14 @@ static void _eon_theme_label_free(Enesim_Renderer *r)
 	thiz = _eon_theme_label_get(r);
 	if (thiz->free) thiz->free(r);
 	free(thiz);
+}
+
+static Eina_Bool _eon_theme_informs_setup(Enesim_Renderer *r)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(r);
+	return thiz->informs_setup;
 }
 
 static double _eon_theme_label_min_width_ellipsized_get(Enesim_Renderer *r)
@@ -166,7 +176,6 @@ void eon_theme_label_text_get(Enesim_Renderer *r, const char **str)
 	Eon_Theme_Label *thiz;
 
 	thiz = _eon_theme_label_get(r);
-	printf("GETTING TEXXXXXT\n");
 	etex_span_text_get(thiz->text, str);
 }
 
@@ -317,6 +326,7 @@ EAPI void eon_theme_label_font_set(Enesim_Renderer *r, const char *str)
 
 	thiz = _eon_theme_label_get(r);
 	etex_base_font_name_set(thiz->text, str);
+	thiz->informs_setup = EINA_TRUE;
 }
 
 /**
@@ -341,6 +351,7 @@ EAPI void eon_theme_label_size_set(Enesim_Renderer *r, int size)
 
 	thiz = _eon_theme_label_get(r);
 	etex_base_size_set(thiz->text, size);
+	thiz->informs_setup = EINA_TRUE;
 }
 
 

@@ -67,6 +67,7 @@ typedef struct _Eon_Element
 	Eon_Element_Preferred_Width_Get preferred_width_get;
 	/* misc */
 	Eina_Bool changed : 1;
+	Eina_Bool do_needs_setup : 1;
 	Eina_Bool managed : 1;
 	const char *name;
 	void *data;
@@ -162,6 +163,9 @@ static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
 
+	/* FIXME for later, only call the setup when needed */
+	//if (!eon_element_needs_setup(e))
+	//	return EINA_TRUE;
 	if (thiz->setup)
 		return thiz->setup(e, s, error);
 	return EINA_TRUE;
@@ -554,6 +558,7 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 	}
 	thiz->past = thiz->current;
 	thiz->changed = EINA_FALSE;
+	thiz->do_needs_setup = EINA_FALSE;
 }
 
 static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
@@ -561,27 +566,43 @@ static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
 	*flags = ENESIM_RENDERER_FLAG_ARGB8888;
 }
 
+/* For now we damage the whole widget geometry */
 static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
 {
+	Eon_Element *thiz;
 	Ender_Element *e;
 	Enesim_Renderer *real_r;
 
 	e = ender_element_renderer_from(r);
-	eon_element_damages_get(e, cb, data);
+	thiz = _eon_element_get(r);
 
-	/* get the real renderer damages */
-	/* we should avoid calling the real_r damages, the area might be smaller than
-	 * the whole widget, but how to only redraw one?
-	 */
-#if 0
-	real_r = eon_element_renderer_get(e);
-	enesim_renderer_damages_get(real_r, cb, data);
-#endif
+	/* if we need to do the setup we call send the whole geometry */
+	if (!thiz->damage)
+	{
+		Enesim_Rectangle area;
+
+		/* send old boundings */
+		area.x = thiz->past.actual_position.x;
+		area.y = thiz->past.actual_position.y;
+		area.w = thiz->past.actual_size.width;
+		area.h = thiz->past.actual_size.height;
+		cb(r, &area, EINA_TRUE, data);
+		/* send new boundings */
+		area.x = thiz->current.actual_position.x;
+		area.y = thiz->current.actual_position.y;
+		area.w = thiz->current.actual_size.width;
+		area.h = thiz->current.actual_size.height;
+		cb(r, &area, EINA_TRUE, data);
+	}
+	else
+	{
+		thiz->damage(e, cb, data);
+	}
 }
 
 /*
  * the changed value depends whenever the widget has changed or the
- * inner renderer has changed. This makes sense only on the enesim interface
+ * inner renderer has changed.
  */
 Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 {
@@ -598,41 +619,35 @@ Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 	if (ret)
 	{
 		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
-		{
-			return EINA_TRUE;
-		}
+			ret = EINA_FALSE;
 		if (thiz->current.actual_size.height != thiz->past.actual_size.height)
-		{
-			return EINA_TRUE;
-		}
-		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
-		{
-			return EINA_TRUE;
-		}
+			ret = EINA_FALSE;
+		if (thiz->current.actual_position.x != thiz->past.actual_position.x)
+			ret = EINA_FALSE;
 		if (thiz->current.actual_position.y != thiz->past.actual_position.y)
-		{
-			return EINA_TRUE;
-		}
+			ret = EINA_FALSE;
 	}
-	/* check the instance case */
-#if FIXME
+	if (ret) goto done;
+
+	if (thiz->needs_setup)
+		ret = thiz->needs_setup(e);
+	if (ret) goto done;
+#if 0
+	/* FIXME Having to call the has_changed on the widget and on the inner renderer
+	 * is too much, because we have to iterate twice. For example on the stack
+	 * the has_changed is called per each stack widget and also the has_changed
+	 * will be called on the compound renderer of the stack and of course
+	 * on every widget's inner renderer the stack has
+	 */
 	if (thiz->has_changed)
-	{
 		ret = thiz->has_changed(e);
-		if (ret) goto done;
-	}
+	if (ret) goto done;
 #endif
-	/* by default it hasnt changed */
-	else
-	{
-		ret = EINA_FALSE;
-	}
 
 	/* check if the real renderer has changed */
 	real_r = eon_element_renderer_get(e);
 	ret = enesim_renderer_has_changed(real_r);
 	r = real_r;
-
 done:
 	if (ret)
 	{
@@ -761,6 +776,10 @@ void * eon_element_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
+/*
+ * Check whenever an element has changed, both a setup case or not
+ * It is just a wrapper on top of the enesim interface
+ */
 Eina_Bool eon_element_has_changed(Ender_Element *e)
 {
 	Enesim_Renderer *r;
@@ -770,47 +789,40 @@ Eina_Bool eon_element_has_changed(Ender_Element *e)
 	return enesim_renderer_has_changed(r);
 }
 
+/*
+ * Check whenever an element needs to do the setup
+ * The only property relative to a setup is the size
+ */
 Eina_Bool eon_element_needs_setup(Ender_Element *e)
 {
 	Enesim_Renderer *r;
 	Eon_Element *thiz;
+	Eina_Bool ret;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
-	/* call the needs setup interface */
+
+	ret = thiz->do_needs_setup;
+	if (ret)
+	{
+		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
+			ret = EINA_FALSE;
+		if (thiz->current.actual_size.height != thiz->past.actual_size.height)
+			ret = EINA_FALSE;
+	}
+	if (ret) return ret;
+
+	if (thiz->needs_setup)
+		ret = thiz->needs_setup(e);
+	return ret;
 }
 
 void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
 {
-	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
 	r = ender_element_renderer_get(e);
-
-	if (!enesim_renderer_has_changed(r)) return;
-
-	thiz = _eon_element_get(r);
-	if (thiz->damage)
-	{
-		thiz->damage(e, cb, data);
-	}
-	else
-	{
-		Enesim_Rectangle area;
-
-		/* send old boundings */
-		area.x = thiz->past.actual_position.x;
-		area.y = thiz->past.actual_position.y;
-		area.w = thiz->past.actual_size.width;
-		area.h = thiz->past.actual_size.height;
-		cb(r, &area, EINA_TRUE, data);
-		/* send new boundings */
-		area.x = thiz->current.actual_position.x;
-		area.y = thiz->current.actual_position.y;
-		area.w = thiz->current.actual_size.width;
-		area.h = thiz->current.actual_size.height;
-		cb(r, &area, EINA_TRUE, data);
-	}
+	enesim_renderer_damages_get(r, cb, data);
 }
 
 void eon_element_actual_width_set(Enesim_Renderer *r, double width)
@@ -823,6 +835,7 @@ void eon_element_actual_width_set(Enesim_Renderer *r, double width)
 	if (thiz->actual_width_set)
 		thiz->actual_width_set(r, width);
 	thiz->changed = EINA_TRUE;
+	thiz->do_needs_setup = EINA_TRUE;
 }
 
 void eon_element_actual_height_set(Enesim_Renderer *r, double height)
@@ -835,6 +848,7 @@ void eon_element_actual_height_set(Enesim_Renderer *r, double height)
 	if (thiz->actual_height_set)
 		thiz->actual_height_set(r, height);
 	thiz->changed = EINA_TRUE;
+	thiz->do_needs_setup = EINA_TRUE;
 }
 
 void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height)
@@ -850,6 +864,7 @@ void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height
 	if (thiz->actual_height_set)
 		thiz->actual_height_set(r, height);
 	thiz->changed = EINA_TRUE;
+	thiz->do_needs_setup = EINA_TRUE;
 }
 
 void eon_element_actual_size_get(Enesim_Renderer *r, Eon_Size *size)

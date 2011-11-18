@@ -79,7 +79,7 @@ EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Button_Descriptor *descrip
 		void *data)
 {
 	Eon_Theme_Button *thiz;
-	Eon_Theme_Button_Base_Descriptor pdescriptor;
+	Eon_Theme_Button_Base_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Button));

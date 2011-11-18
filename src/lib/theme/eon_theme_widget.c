@@ -38,12 +38,12 @@ typedef struct _Eon_Theme_Widget
 	double x;
 	double y;
 	/* private */
-	Enesim_Renderer *real_r;
 	Enesim_Renderer_Sw_Fill fill;
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
 	Eon_Theme_Widget_Has_Changed has_changed;
+	Eon_Theme_Widget_Informs_Setup informs_setup;
 	Enesim_Renderer_Name name;
 	Enesim_Renderer_Delete free;
 	void *data;
@@ -71,17 +71,18 @@ static Enesim_Renderer * _eon_theme_widget_renderer_get(Enesim_Renderer *r)
 	Eon_Theme_Widget *thiz;
 
 	thiz = _eon_theme_widget_get(r);
-	if (!thiz->real_r)
-		thiz->real_r = thiz->renderer_get(r);
-	return thiz->real_r;
+	return thiz->renderer_get(r);
 }
 
 static void _eon_theme_widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
 {
 	Eon_Theme_Widget *thiz;
+	Enesim_Renderer *real_r;
 
 	thiz = _eon_theme_widget_get(r);
-	thiz->fill(thiz->real_r, x, y, len, dst);
+
+	real_r = _eon_theme_widget_renderer_get(r);
+	thiz->fill(real_r, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -137,13 +138,13 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
 static void _eon_theme_widget_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 {
 	Eon_Theme_Widget *thiz;
+	Enesim_Renderer *real_r;
 
 	thiz = _eon_theme_widget_get(r);
 	if (thiz->cleanup)
 		thiz->cleanup(r);
-	/* FIXME */
-	if (thiz->real_r)
-		enesim_renderer_cleanup(thiz->real_r, s);
+	real_r = _eon_theme_widget_renderer_get(r);
+	enesim_renderer_cleanup(real_r, s);
 }
 
 static const char * _eon_theme_widget_name(Enesim_Renderer *r)
@@ -227,6 +228,7 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
 	thiz->has_changed = descriptor->has_changed;
+	thiz->informs_setup = descriptor->informs_setup;
 	thiz->name = descriptor->name;
 	thiz->free = descriptor->free;
 	thiz->data = data;
@@ -273,6 +275,12 @@ Eina_Bool eon_theme_widget_has_changed(Enesim_Renderer *r)
 /* FIXME */
 Eina_Bool eon_theme_widget_informs_setup(Enesim_Renderer *r)
 {
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (thiz->informs_setup)
+		return thiz->informs_setup(r);
+	
 	return EINA_FALSE;
 }
 /*============================================================================*

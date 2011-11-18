@@ -44,7 +44,7 @@ typedef struct _Eon_Stack_State
 typedef struct _Eon_Stack
 {
 	Eina_List *children;
-	Eina_Bool changed : 1;
+	Eina_Bool needs_setup : 1;
 	Eon_Stack_State old, curr;
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Stack;
@@ -156,6 +156,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 	last_ech = eina_list_data_get(eina_list_last(thiz->children));
 	size.width = aw;
 	size.height = ah;
+	//printf("H stack initial size %g %g\n", aw, ah);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *child_r;
@@ -225,6 +226,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 	last_ech = eina_list_data_get(eina_list_last(thiz->children));
 	size.width = aw;
 	size.height = ah;
+	//printf("V stack initial size %g %g\n", aw, ah);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		Enesim_Renderer *child_r;
@@ -239,6 +241,12 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		child_rr = eon_element_renderer_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
+		{
+			const char *name;
+			const char *child_name;
+
+			//printf("V child %s %s relative size %g %g -> %g %g\n", name, child_name, size.width, size.height, child_size.width, child_size.height);
+		}
 		if (!thiz->curr.last_expand || ech != last_ech)
 		{
 			eon_element_real_height_get(ech->ender, &child_size.height);
@@ -324,7 +332,8 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 
 	eon_element_actual_position_get(r, &x, &y);
 	/* if we have changed then just return our size */
-	if (thiz->changed)
+	if (thiz->needs_setup)
+whole:
 	{
 		Enesim_Rectangle area;
 
@@ -350,6 +359,10 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 
 		EINA_LIST_FOREACH (thiz->children, l, ech)
 		{
+			/* in case a children needs a setup given that the size allocation is relative to others
+			 * we need to do the setup again on the whole stack*/
+			if (eon_element_needs_setup(ech->ender))
+				goto whole;
 			eon_element_damages_get(ech->ender, _stack_damage_cb, &ddata);
 		}
 	}
@@ -366,7 +379,7 @@ static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
 	r = ender_element_renderer_get(e);
 	thiz = _eon_stack_get(r);
 
-	ret = thiz->changed;
+	ret = thiz->needs_setup;
 	if (ret) return EINA_TRUE;
 
 	EINA_LIST_FOREACH (thiz->children, l, ech)
@@ -407,7 +420,7 @@ static void _eon_stack_cleanup(Ender_Element *e, Enesim_Surface *s)
 	{
 		eon_element_cleanup(ech->ender, s);
 	}
-	thiz->changed = EINA_FALSE;
+	thiz->needs_setup = EINA_FALSE;
 }
 
 static double _eon_stack_min_width_get(Ender_Element *e)
@@ -605,7 +618,7 @@ static void _eon_stack_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
-	thiz->changed = EINA_TRUE;
+	thiz->needs_setup = EINA_TRUE;
 
 	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
 }
@@ -628,7 +641,7 @@ static void _eon_stack_child_remove(Enesim_Renderer *r, Ender_Element *child)
 		}
 	}
 	if (found)
-		thiz->changed = EINA_TRUE;
+		thiz->needs_setup = EINA_TRUE;
 }
 
 static void _eon_stack_child_clear(Enesim_Renderer *r)
@@ -643,7 +656,7 @@ static void _eon_stack_child_clear(Enesim_Renderer *r)
 		thiz->children = eina_list_remove_list(thiz->children, l);
 	}
 	eon_widget_property_clear(r, "child");
-	thiz->changed = EINA_TRUE;
+	thiz->needs_setup = EINA_TRUE;
 }
 
 static Eon_Layout_Descriptor _descriptor = {
@@ -689,7 +702,7 @@ static void _eon_stack_direction_set(Enesim_Renderer *r, Eon_Stack_Direction dir
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.direction = direction;
-	thiz->changed = EINA_TRUE;
+	thiz->needs_setup = EINA_TRUE;
 }
 
 static void _eon_stack_direction_get(Enesim_Renderer *r, Eon_Stack_Direction *direction)
@@ -714,7 +727,7 @@ static void _eon_stack_child_horizontal_alignment_set(Enesim_Renderer *r, Ender_
 		if (ech->ender == child)
 		{
 			ech->halign = alignment;
-			thiz->changed = EINA_TRUE;
+			thiz->needs_setup = EINA_TRUE;
 		}
 	}
 }
@@ -732,7 +745,7 @@ static void _eon_stack_child_vertical_alignment_set(Enesim_Renderer *r, Ender_El
 		if (ech->ender == child)
 		{
 			ech->valign = alignment;
-			thiz->changed = EINA_TRUE;
+			thiz->needs_setup = EINA_TRUE;
 		}
 	}
 }
@@ -743,7 +756,7 @@ static void _eon_stack_last_expand_set(Enesim_Renderer *r, Eina_Bool last_expand
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.last_expand = last_expand;
-	thiz->changed = EINA_TRUE;
+	thiz->needs_setup = EINA_TRUE;
 }
 
 static void _eon_stack_last_expand_get(Enesim_Renderer *r, Eina_Bool *last_expand)
@@ -760,7 +773,7 @@ static void _eon_stack_homogeneous_set(Enesim_Renderer *r, Eina_Bool homogeneous
 
 	thiz = _eon_stack_get(r);
 	thiz->curr.homogeneous = homogeneous;
-	thiz->changed = EINA_TRUE;
+	thiz->needs_setup = EINA_TRUE;
 }
 
 static void _eon_stack_homogeneous_get(Enesim_Renderer *r, Eina_Bool *homogeneous)
