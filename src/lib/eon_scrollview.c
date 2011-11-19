@@ -41,6 +41,8 @@ typedef struct _Eon_Scrollview
 	Eon_Scrollview_State current;
 	Eon_Scrollview_State past;
 	/* private */
+	Enesim_Surface *content_s;
+	Enesim_Renderer *image;
 	Eina_Bool changed : 1;
 	Ender_Element *hbar;
 	Eina_Bool has_vbar;
