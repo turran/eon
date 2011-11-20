@@ -197,16 +197,17 @@ static Eina_Bool _eon_theme_widget_is_inside(Enesim_Renderer *r, double x, doubl
 }
 
 static Enesim_Renderer_Descriptor _descriptor = {
-	/* .version =     */ ENESIM_RENDERER_API,
-	/* .name =        */ _eon_theme_widget_name,
-	/* .free =        */ _eon_theme_widget_free,
-	/* .boundings =   */ _eon_theme_widget_boundings,
-	/* .flags =       */ _eon_theme_widget_flags,
-	/* .is_inside =   */ _eon_theme_widget_is_inside,
-	/* .damage =      */ _eon_theme_widget_damage,
-	/* .has_changed = */ _eon_theme_widget_has_changed,
-	/* .sw_setup =    */ _eon_theme_widget_sw_setup,
-	/* .sw_cleanup =  */ _eon_theme_widget_sw_cleanup
+	/* .version = 			*/ ENESIM_RENDERER_API,
+	/* .name = 			*/ _eon_theme_widget_name,
+	/* .free = 			*/ _eon_theme_widget_free,
+	/* .boundings = 		*/ _eon_theme_widget_boundings,
+	/* .destination_transform = 	*/ NULL,
+	/* .flags = 			*/ _eon_theme_widget_flags,
+	/* .is_inside = 		*/ _eon_theme_widget_is_inside,
+	/* .damage = 			*/ _eon_theme_widget_damage,
+	/* .has_changed =		*/ _eon_theme_widget_has_changed,
+	/* .sw_setup = 			*/ _eon_theme_widget_sw_setup,
+	/* .sw_cleanup = 		*/ _eon_theme_widget_sw_cleanup
 };
 /*============================================================================*
  *                                 Global                                     *
