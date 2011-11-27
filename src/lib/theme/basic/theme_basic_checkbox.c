@@ -209,7 +209,7 @@ EAPI void eon_basic_checkbox_size_set(Enesim_Renderer *r, unsigned int size)
 
 	enesim_renderer_rectangle_size_set(thiz->box, size, size);
 	/* create the vertices */
-	enesim_renderer_path_clear(thiz->check);
+	enesim_renderer_path_command_clear(thiz->check);
 	enesim_renderer_path_move_to(thiz->check, size * 0.1, size * 0.45);
 	enesim_renderer_path_line_to(thiz->check, size * 0.2, size * 0.35);
 	enesim_renderer_path_line_to(thiz->check, size * 0.4, size * 0.6);
