@@ -153,7 +153,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 			ev_ds.y = y;
 			ev_ds.rel_x = rel_x;
 			ev_ds.rel_y = rel_y;
-			ender_event_dispatch(eis->pointer.grabbed, "MouseDragStart", &ev_ds);
+			ender_event_dispatch(eis->pointer.grabbed,
+					eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], &ev_ds);
 			eis->pointer.dragging = EINA_TRUE;
 		}
 
@@ -164,7 +165,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		ev.rel_y = rel_y;
 		ev.offset_x = offset_x;
 		ev.offset_y = offset_y;
-		ender_event_dispatch(eis->pointer.grabbed, "MouseMove", &ev);
+		ender_event_dispatch(eis->pointer.grabbed,
+					eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], &ev);
 
 		return;
 	}
@@ -182,7 +184,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 			ev.rel_y = rel_y;
 			ev.offset_x = offset_x;
 			ev.offset_y = offset_y;
-			ender_event_dispatch(child, "MouseMove", &ev);
+			ender_event_dispatch(child,
+					eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], &ev);
 		}
 	}
 	else
@@ -193,7 +196,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 			Eon_Event_Mouse_Out ev;
 
 			ev.input = eis->input;
-			ender_event_dispatch(eis->pointer.last, "MouseOut", &ev);
+			ender_event_dispatch(eis->pointer.last,
+					eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], &ev);
 		}
 		/* send in event on r */
 		if (child)
@@ -201,7 +205,8 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 			Eon_Event_Mouse_In ev;
 
 			ev.input = eis->input;
-			ender_event_dispatch(child, "MouseIn", &ev);
+			ender_event_dispatch(child,
+					eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], &ev);
 		}
 	}
 	/* update the current inside */
@@ -224,7 +229,8 @@ void eon_input_state_feed_mouse_in(Eon_Input_State *eis)
 	if (!child)
 		return;
 	ev.input = eis->input;
-	ender_event_dispatch(child, "MouseIn", &ev);
+	ender_event_dispatch(child,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], &ev);
 }
 /**
  *
@@ -242,7 +248,8 @@ void eon_input_state_feed_mouse_out(Eon_Input_State *eis)
 	if (!child)
 		return;
 	ev.input = eis->input;
-	ender_event_dispatch(child, "MouseOut", &ev);
+	ender_event_dispatch(child,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], &ev);
 }
 
 void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
@@ -268,7 +275,6 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN],
 			&ev);
-	printf("mouse down at %g %g\n", eis->pointer.x, eis->pointer.y);
 }
 
 void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
@@ -288,7 +294,6 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */
-	printf("mouse up\n");
 	if ((fabs(eis->pointer.downx - eis->pointer.x) < DBL_EPSILON) &&
 			(fabs(eis->pointer.downy - eis->pointer.y) < DBL_EPSILON))
 	{
@@ -302,14 +307,6 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
 		ender_event_dispatch(child,
 				eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
 				&ev_click);
-		{
-			Enesim_Renderer *r;
-			char *name;
-
-			r = ender_element_renderer_get(child);
-			enesim_renderer_name_get(r, &name);
-			printf("mouse click at %s %g %g - %g %g\n", name, ev_click.x, ev_click.y, ev_click.rel_x, ev_click.rel_y);
-		}
 	}
 	/* send the drag stop */
 	if (eis->pointer.dragging)
