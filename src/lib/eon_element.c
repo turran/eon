@@ -488,7 +488,7 @@ static void _eon_element_free(Enesim_Renderer *r)
  * the renderer as unchanged.
  */
 static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r,
-		const Enesim_Renderer_State *state,
+		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
 		Enesim_Surface *s,
 		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
 {

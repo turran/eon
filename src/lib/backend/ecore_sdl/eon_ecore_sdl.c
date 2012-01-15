@@ -55,7 +55,7 @@ static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	Eina_Rectangle *dest;
-	char *name;
+	const char *name;
 
 	enesim_renderer_name_get(r, &name);
 	printf("new damage for %s of %d %d %d %d\n", name, area->x, area->y, area->w, area->h);
