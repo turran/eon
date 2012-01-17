@@ -60,6 +60,15 @@ ENDER_DATADIR=$(pkg-config --variable=datadir ender)
 AC_SUBST(ENDER_DATADIR)
 PKG_CHECK_MODULES(EINA, [eina >= 1.0.0])
 PKG_CHECK_MODULES(ECORE, [ecore >= 1.0.0])
+# Extensions
+PKG_CHECK_MODULES(ESVG, [esvg >= 0.0.1], [have_esvg=yes], [have_esvg=no])
+if test "x$have_esvg" = "xyes"; then
+	build_extension_esvg=yes
+	AC_DEFINE(BUILD_EXTENSION_ESVG, [1], [Build support for Esvg extension])
+else
+	build_extension_esvg=no
+fi
+AM_CONDITIONAL(BUILD_EXTENSION_ESVG, test "x$build_extension_esvg" = "xyes")
 
 EON_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS -DENESIM_EXTENSION $EMAGE_CFLAGS $ENDER_CFLAGS $ESCEN_CFLAGS $ETEX_CFLAGS $ECORE_CFLAGS -Wall"
 EON_LIBS="$EINA_LIBS $ENESIM_LIBS $EMAGE_LIBS $ENDER_LIBS $ESCEN_LIBS $ETEX_LIBS $ECORE_LIBS"
@@ -100,6 +109,8 @@ src/lib/backend/Makefile
 src/lib/backend/ecore_common/Makefile
 src/lib/backend/ecore_sdl/Makefile
 src/lib/backend/ecore_remote/Makefile
+src/lib/extension/Makefile
+src/lib/extension/esvg/Makefile
 src/lib/theme/Makefile
 src/lib/theme/basic/Makefile
 src/include/Makefile

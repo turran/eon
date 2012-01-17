@@ -450,7 +450,9 @@ static const char * _eon_element_name(Enesim_Renderer *r)
 
 /* Given that we dont support the x_origin property, we must inform correctly to the enesim system that we can be at a specific position*/
 /* TODO Remove the function call */
-static void _eon_element_boundings(Enesim_Renderer *r, Enesim_Rectangle *rect)
+static void _eon_element_boundings(Enesim_Renderer *r,
+		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
+		Enesim_Rectangle *rect)
 {
 	Eon_Element *thiz;
 	Eon_Size size;
@@ -579,7 +581,7 @@ static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb
 	/* if we need to do the setup we call send the whole geometry */
 	if (!thiz->damage)
 	{
-		Enesim_Rectangle area;
+		Eina_Rectangle area;
 
 		/* send old boundings */
 		area.x = thiz->past.actual_position.x;
@@ -664,7 +666,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .name = 			*/ _eon_element_name,
 	/* .free = 			*/ _eon_element_free,
 	/* .boundings = 		*/ _eon_element_boundings,
-	/* .destination_transform = 	*/ NULL,
+	/* .destination_boundings = 	*/ NULL,
 	/* .flags = 			*/ _eon_element_flags,
 	/* .is_inside = 		*/ NULL,
 	/* .damage = 			*/ _eon_element_damage,

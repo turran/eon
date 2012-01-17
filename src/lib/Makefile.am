@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS = backend theme
+SUBDIRS = backend extension theme
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \

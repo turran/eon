@@ -252,7 +252,7 @@ static Eina_Bool _idler_cb(void *data)
 		Eina_Iterator *iter;
 		Eina_Rectangle *r1;
 
-		enesim_renderer_destination_damages_get(r, _sdl_damages_get, thiz);
+		enesim_renderer_damages_get(r, _sdl_damages_get, thiz);
 		iter = eina_tiler_iterator_new(thiz->tiler);
 		EINA_ITERATOR_FOREACH(iter, r1)
 		{

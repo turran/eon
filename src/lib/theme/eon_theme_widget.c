@@ -96,7 +96,9 @@ static void _eon_theme_widget_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _eon_theme_widget_boundings(Enesim_Renderer *r, Enesim_Rectangle *rectangle)
+static void _eon_theme_widget_boundings(Enesim_Renderer *r,
+		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
+		Enesim_Rectangle *rectangle)
 {
 	Eon_Theme_Widget *thiz;
 
@@ -201,7 +203,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .name = 			*/ _eon_theme_widget_name,
 	/* .free = 			*/ _eon_theme_widget_free,
 	/* .boundings = 		*/ _eon_theme_widget_boundings,
-	/* .destination_transform = 	*/ NULL,
+	/* .destination_boundings = 	*/ NULL,
 	/* .flags = 			*/ _eon_theme_widget_flags,
 	/* .is_inside = 		*/ _eon_theme_widget_is_inside,
 	/* .damage = 			*/ _eon_theme_widget_damage,
