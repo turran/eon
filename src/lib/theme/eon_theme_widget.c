@@ -38,7 +38,6 @@ typedef struct _Eon_Theme_Widget
 	double x;
 	double y;
 	/* private */
-	Enesim_Renderer_Sw_Fill fill;
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
@@ -74,7 +73,9 @@ static Enesim_Renderer * _eon_theme_widget_renderer_get(Enesim_Renderer *r)
 	return thiz->renderer_get(r);
 }
 
-static void _eon_theme_widget_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
+static void _eon_theme_widget_draw(Enesim_Renderer *r,
+		const Enesim_Renderer_State *state,
+		int x, int y, unsigned int len, void *dst)
 {
 	Eon_Theme_Widget *thiz;
 	Enesim_Renderer *real_r;
@@ -82,7 +83,7 @@ static void _eon_theme_widget_draw(Enesim_Renderer *r, int x, int y, unsigned in
 	thiz = _eon_theme_widget_get(r);
 
 	real_r = _eon_theme_widget_renderer_get(r);
-	thiz->fill(real_r, x, y, len, dst);
+	enesim_renderer_sw_draw(real_r, x, y, len, dst);
 }
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
@@ -128,10 +129,8 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
 		return EINA_FALSE;
 	if (!thiz->setup(r, error))
 		return EINA_FALSE;
-	enesim_renderer_setup(real_r, s, error);
-	thiz->fill = enesim_renderer_sw_fill_get(real_r);
-	if (!thiz->fill) return EINA_FALSE;
-
+	if (!enesim_renderer_setup(real_r, s, error))
+		return EINA_FALSE;
 	*fill = _eon_theme_widget_draw;
 
 	return EINA_TRUE;
@@ -160,7 +159,7 @@ static const char * _eon_theme_widget_name(Enesim_Renderer *r)
 		return "theme_widget";
 }
 
-static void _eon_theme_widget_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
+static void _eon_theme_widget_flags(Enesim_Renderer *r, const Enesim_Renderer_State *state, Enesim_Renderer_Flag *flags)
 {
 	Enesim_Renderer *real_r;
 

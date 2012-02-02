@@ -54,12 +54,12 @@ static Eina_Bool _initialized = EINA_FALSE;
 static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina_Bool past, void *data)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
-	Eina_Rectangle *dest;
 	const char *name;
 
 	enesim_renderer_name_get(r, &name);
 	printf("new damage for %s of %d %d %d %d\n", name, area->x, area->y, area->w, area->h);
 	eina_tiler_rect_add(thiz->tiler, area);
+	return EINA_TRUE;
 }
 
 static void _sdl_setup_buffers(Eon_Ecore_SDL_Window *thiz)
@@ -160,7 +160,7 @@ static Eina_Bool _mouse_button_up(void *data, int type, void *event)
 
 static Eina_Bool _key_down(void *data, int type, void *event)
 {
-	Eon_Ecore_SDL_Window *thiz = data;
+	//Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
 
 	printf("DOWN %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
@@ -169,7 +169,7 @@ static Eina_Bool _key_down(void *data, int type, void *event)
 
 static Eina_Bool _key_up(void *data, int type, void *event)
 {
-	Eon_Ecore_SDL_Window *thiz = data;
+	//Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
 
 	printf("UP %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);

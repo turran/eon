@@ -24,7 +24,6 @@
  * @{
  */
 
-
 #include "eon_theme_widget.h"
 #include "eon_theme_container.h"
 #include "eon_theme_button_base.h"

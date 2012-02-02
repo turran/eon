@@ -46,7 +46,6 @@ typedef struct _Eon_Element
 	Eon_Size max_size;
 	Eon_Size size;
 	/* private */
-	Enesim_Renderer_Sw_Fill fill;
 	/* function pointers */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
@@ -87,7 +86,8 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static void _eon_element_draw(Enesim_Renderer *r, int x, int y, unsigned int len, void *dst)
+static void _eon_element_draw(Enesim_Renderer *r, const Enesim_Renderer_State *state,
+		int x, int y, unsigned int len, void *dst)
 {
 	Eon_Element *thiz;
 	Ender_Element *e;
@@ -96,7 +96,7 @@ static void _eon_element_draw(Enesim_Renderer *r, int x, int y, unsigned int len
 	thiz = _eon_element_get(r);
 	e = ender_element_renderer_from(r);
 	real_r = eon_element_renderer_get(e);
-	thiz->fill(real_r, x, y, len, dst);
+	enesim_renderer_sw_draw(real_r, x, y, len, dst);
 }
 
 static double _element_min_width_get(Ender_Element *e)
@@ -529,8 +529,6 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r,
 		 * setup on the inner renderer might happen later (if it is managed) and the fill
 		 * function might change
 		 */
-		thiz->fill = enesim_renderer_sw_fill_get(real_r);
-		if (!thiz->fill) return EINA_FALSE;
 	}
 
 	*fill = _eon_element_draw;
@@ -554,7 +552,7 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 		enesim_renderer_cleanup(real_r, s);
 	}
 	{
-		char *name;
+		const char *name;
 		enesim_renderer_name_get(r, &name);
 		//printf("cleaning up %s\n", name);
 	}
@@ -563,7 +561,8 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 	thiz->do_needs_setup = EINA_FALSE;
 }
 
-static void _eon_element_flags(Enesim_Renderer *r, Enesim_Renderer_Flag *flags)
+static void _eon_element_flags(Enesim_Renderer *r, const Enesim_Renderer_State *state,
+		Enesim_Renderer_Flag *flags)
 {
 	*flags = ENESIM_RENDERER_FLAG_ARGB8888;
 }
@@ -573,7 +572,6 @@ static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb
 {
 	Eon_Element *thiz;
 	Ender_Element *e;
-	Enesim_Renderer *real_r;
 
 	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
@@ -653,7 +651,7 @@ Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 done:
 	if (ret)
 	{
-		char *name;
+		const char *name;
 		enesim_renderer_name_get(r, &name);
 		//printf("%s has changed = %d\n", name, ret);
 	}

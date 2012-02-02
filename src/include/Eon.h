@@ -36,6 +36,13 @@
  * @section Design
  */
 
+/* FIXME for now
+ * if the user wants to include this header, including eon_theme.h will fail
+ */
+#ifndef ENESIM_EXTENSION
+#define ENESIM_EXTENSION
+#endif
+
 #include "Enesim.h"
 #include "Ender.h"
 

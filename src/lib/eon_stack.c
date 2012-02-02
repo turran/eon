@@ -65,7 +65,7 @@ static inline Eon_Stack * _eon_stack_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static Eina_Bool _stack_damage_cb(Enesim_Renderer *child_r, Enesim_Rectangle *rect, Eina_Bool past, void *data)
+static Eina_Bool _stack_damage_cb(Enesim_Renderer *child_r, Eina_Rectangle *rect, Eina_Bool past, void *data)
 {
 	Eon_Stack_Damage_Data *ddata = data;
 
@@ -335,12 +335,16 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 	if (thiz->needs_setup)
 whole:
 	{
-		Enesim_Rectangle area;
+		Eina_Rectangle area;
+		double w;
+		double h;
 
+		eon_element_actual_width_get(e, &w);
+		eon_element_actual_height_get(e, &h);
 		area.x = x;
 		area.y = y;
-		eon_element_actual_width_get(e, &area.w);
-		eon_element_actual_height_get(e, &area.h);
+		area.w = (int)w;
+		area.h = (int)h;
 
 		cb(r, &area, EINA_FALSE, data);
 		return;
