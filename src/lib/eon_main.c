@@ -83,6 +83,8 @@ static void _register_enders(void *data)
 	eon_toggle_init();
 	eon_color_init();
 	eon_frame_init();
+	/* extensions */
+	eon_svg_init();
 }
 /*============================================================================*
  *                                 Global                                     *

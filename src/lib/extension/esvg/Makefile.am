@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libeon_svg.la
 
 libeon_svg_la_CFLAGS = \
 -I$(top_srcdir)/src/include \
+-I$(top_srcdir)/src/include/generated \
 -I. \
 @EON_CFLAGS@ \
 @ESVG_CFLAGS@

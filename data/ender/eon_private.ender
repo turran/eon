@@ -124,5 +124,9 @@ namespace "eon" {
 		[ender] "child";
 		rel ender "child_content";
 	};
+
+	class "svg" : "element" {
+		string "file";
+	};
 };
 

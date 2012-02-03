@@ -4,7 +4,8 @@ SUBDIRS = generated
 
 
 include_HEADERS = \
-Eon.h
+Eon.h \
+Eon_Svg.h
 
 EON_UTILHEADERS = \
 eon_main.h \

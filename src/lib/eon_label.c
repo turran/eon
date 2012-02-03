@@ -232,7 +232,6 @@ EAPI Ender_Element * eon_label_new_with_text(const char *text)
 	return e;
 }
 
-
 /**
  * To be documented
  * FIXME: To be fixed

@@ -65,7 +65,7 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static Eina_Bool _canvas_damage_cb(Enesim_Renderer *child_r, Enesim_Rectangle *rect, Eina_Bool past, void *data)
+static Eina_Bool _canvas_damage_cb(Enesim_Renderer *child_r, Eina_Rectangle *rect, Eina_Bool past, void *data)
 {
 	Eon_Canvas_Damage_Data *ddata = data;
 
@@ -242,12 +242,17 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 	/* if we have changed then just return our size */
 	if (thiz->needs_setup)
 	{
-		Enesim_Rectangle area;
+		Eina_Rectangle area;
+		double w;
+		double h;
+
+		eon_element_actual_width_get(e, &w);
+		eon_element_actual_height_get(e, &h);
 
 		area.x = x;
 		area.y = y;
-		eon_element_actual_width_get(e, &area.w);
-		eon_element_actual_height_get(e, &area.h);
+		area.w = (int)w;
+		area.h = (int)h;
 
 		/* FIXME we should pass the previous and current */
 		cb(r, &area, EINA_FALSE, data);
@@ -265,8 +270,9 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 			if (ech->needs_setup)
 			{
 				Enesim_Renderer *child_r;
-				Enesim_Rectangle area;
-
+				Eina_Rectangle area;
+				double w;
+				double h;
 
 				child_r = ender_element_renderer_get(ech->ender);
 				/* the past */
@@ -276,10 +282,12 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 				area.h = ech->past.height;
 				cb(child_r, &area, EINA_TRUE, data);
 				/* the current */
+				eon_element_real_width_get(ech->ender, &w);
+				eon_element_real_height_get(ech->ender, &h);
 				area.x = ech->past.x;
 				area.y = ech->past.y;
-				eon_element_real_width_get(ech->ender, &area.w);
-				eon_element_real_height_get(ech->ender, &area.h);
+				area.w = (int)w;
+				area.h = (int)h;
 				cb(child_r, &area, EINA_FALSE, data);
 			}
 			else

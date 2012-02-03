@@ -20,8 +20,12 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static int _esvg_init = 0;
+
 typedef struct _Eon_Svg
 {
+	char *file;
+	Enesim_Renderer *generated_r;
 } Eon_Svg;
 
 static inline Eon_Svg * _eon_svg_get(Enesim_Renderer *r)
@@ -44,6 +48,8 @@ static void _eon_svg_initialize(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);
+	if (!_esvg_init++)
+		esvg_init();
 #if 0
 	ender_event_listener_add(e, "MouseIn", _svg_mouse_in, NULL);
 	ender_event_listener_add(e, "MouseOut", _svg_mouse_out, NULL);
@@ -91,6 +97,11 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Erro
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);
+	if (thiz->file && !thiz->generated_r)
+	{
+		thiz->generated_r = esvg_parser_load(thiz->file);
+	}
+
 	return EINA_TRUE;
 }
 
@@ -110,7 +121,7 @@ static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);
-	return NULL;
+	return thiz->generated_r;
 }
 
 static Eina_Bool _eon_svg_needs_setup(Ender_Element *e)
@@ -168,12 +179,19 @@ renderer_err:
 	free(thiz);
 	return NULL;
 }
+
+static void _eon_svg_file_set(Enesim_Renderer *r, const char *file)
+{
+	Eon_Svg *thiz;
+
+	thiz = _eon_svg_get(r);
+	thiz->file = strdup(file);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#if 0
+#define _eon_svg_file_get NULL
 #include "eon_generated_svg.c"
-#endif
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -186,3 +204,11 @@ EAPI Ender_Element * eon_svg_new(void)
 	return ender_element_new_with_namespace("svg", "eon");
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_svg_file_set(Ender_Element *e, const char *file)
+{
+	ender_element_value_set(e, "file", file, NULL);
+}

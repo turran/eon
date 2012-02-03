@@ -44,10 +44,12 @@ eon_window.c
 libeon_la_LIBADD = \
 theme/libtheme.la \
 backend/libbackend.la \
+extension/libextension.la \
 @EON_LIBS@
 
 libeon_la_DEPENDENCIES = \
 theme/libtheme.la \
-backend/libbackend.la
+backend/libbackend.la \
+extension/libextension.la
 
 libeon_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
