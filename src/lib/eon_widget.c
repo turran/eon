@@ -98,17 +98,18 @@ static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
 	return ret;
 }
 
-static Eina_Bool _eon_widget_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_widget_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Widget *thiz;
 	Enesim_Renderer *r;
-	Enesim_Color color;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_widget_get(r);
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
-		thiz->setup(e, s, err);
+		thiz->setup(e, state, s, err);
 	return EINA_TRUE;
 }
 

@@ -167,7 +167,7 @@ static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_
 	//if (!eon_element_needs_setup(e))
 	//	return EINA_TRUE;
 	if (thiz->setup)
-		return thiz->setup(e, s, error);
+		return thiz->setup(e, &thiz->current, s, error);
 	return EINA_TRUE;
 }
 

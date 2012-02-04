@@ -44,7 +44,6 @@ static inline Eon_Spin * _eon_spin_get(Enesim_Renderer *r)
 static void _entry_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Spin *thiz;
-	Ender_Element *element = data;
 	Enesim_Renderer *r;
 
 	r = ender_element_renderer_get(e);
@@ -355,7 +354,9 @@ static double _eon_spin_preferred_height_get(Ender_Element *e)
 	return v + margin.top + margin.bottom;
 }
 
-static Eina_Bool _eon_spin_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_spin_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Spin *thiz;
 	Eon_Size size;

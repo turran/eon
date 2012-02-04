@@ -139,7 +139,6 @@ static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, voi
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Input_State *eis;
-	Eon_Position position;
 	Enesim_Renderer *r;
 	double ox, oy;
 
@@ -172,7 +171,6 @@ static void _eon_layout_initialize(Ender_Element *e)
 {
 	Eon_Layout *thiz;
 	Enesim_Renderer *r;
-	int i;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
@@ -190,7 +188,9 @@ static void _eon_layout_initialize(Ender_Element *e)
 }
 
 /* FIXME We must delete this one */
-static Eina_Bool _eon_layout_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_layout_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Layout *thiz;
 	Enesim_Renderer *r;
@@ -198,7 +198,7 @@ static Eina_Bool _eon_layout_setup(Ender_Element *e, Enesim_Surface *s, Enesim_E
 	r = ender_element_renderer_get(e);
 	thiz = _eon_layout_get(r);
 	if (thiz->setup)
-		return thiz->setup(e, s, err);
+		return thiz->setup(e, state, s, err);
 	return EINA_TRUE;
 }
 
@@ -226,7 +226,6 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 {
 	Eon_Layout *thiz;
 	Ender_Element *curr_parent;
-	Ender_Element *theme;
 	Enesim_Renderer *child_r;
 
 	thiz = _eon_layout_get(r);

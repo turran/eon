@@ -215,7 +215,9 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 	ender_event_listener_add(thiz->vbar, "Mutation", _bar_changed, e);
 }
 
-static Eina_Bool _eon_scrollview_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollview *thiz;
 	Ender_Element *content;

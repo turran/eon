@@ -324,7 +324,6 @@ static Ender_Element * _eon_splitter_element_at(Ender_Element *e, double x, doub
 {
 	Eon_Splitter *thiz;
 	Eon_Size size;
-	Ender_Element *content;
 	Enesim_Renderer *r;
 	double ax, ay;
 
@@ -359,7 +358,9 @@ static void _eon_splitter_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_splitter_mouse_move, NULL);
 }
 
-static Eina_Bool _eon_splitter_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_splitter_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Splitter *thiz;
 	Ender_Element *content;
@@ -495,11 +496,16 @@ static void _eon_splitter_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb,
 	printf("entering the damages\n");
 	if (thiz->changed)
 	{
-		Enesim_Rectangle area;
+		Eina_Rectangle area;
+		double x, y, w, h;
 
-		eon_element_actual_position_get(r, &area.x, &area.y);
-		eon_element_actual_width_get(e, &area.w);
-		eon_element_actual_height_get(e, &area.h);
+		eon_element_actual_position_get(r, &x, &y);
+		eon_element_actual_width_get(e, &w);
+		eon_element_actual_height_get(e, &h);
+		area.x = (int)x;
+		area.y = (int)y;
+		area.w = (int)w;
+		area.h = (int)h;
 
 		cb(r, &area, EINA_FALSE, data);
 		return;

@@ -55,7 +55,6 @@ static Eina_Bool _eon_wrapper_needs_setup(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;
-	Eina_Bool ret;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_wrapper_get(r);
@@ -139,7 +138,9 @@ static double _eon_wrapper_max_height_get(Ender_Element *e)
 	//return rect.h;
 }
 
-static Eina_Bool _eon_wrapper_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_wrapper_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Wrapper *thiz;
 	Enesim_Renderer *r;

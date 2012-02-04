@@ -89,7 +89,9 @@ static void _eon_entry_initialize(Ender_Element *e)
 	thiz->buffer = eon_theme_entry_buffer_get(theme_r);
 }
 
-static Eina_Bool _eon_entry_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_entry_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Entry *thiz;
 	Eon_Size size;
@@ -238,7 +240,6 @@ static void _eon_entry_enabled_set(Enesim_Renderer *r, Eina_Bool enabled)
 	Eon_Entry *thiz;
 
 	thiz = _eon_entry_get(r);
-	etex_buffer_string_set(thiz->buffer, enabled, -1);
 }
 
 static void _eon_entry_enabled_get(Enesim_Renderer *r, Eina_Bool enabled)

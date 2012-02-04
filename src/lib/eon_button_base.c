@@ -160,7 +160,9 @@ static double _eon_button_base_max_height_get(Ender_Element *e, double cmv)
 	return DBL_MAX;
 }
 
-static Eina_Bool _eon_button_base_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_button_base_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Button_Base *thiz;
 	Enesim_Renderer *r;
@@ -201,7 +203,7 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e, Enesim_Surface *s, Ene
 		}
 	}
 	if (thiz->setup)
-		return thiz->setup(e, s, err);
+		return thiz->setup(e, state, s, err);
 
 	return EINA_TRUE;
 }

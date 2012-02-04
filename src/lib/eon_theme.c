@@ -30,7 +30,7 @@ Escen * eon_theme_get(void)
 	return _theme;
 }
 
-Escen * eon_theme_get_from_file(char *file)
+Escen * eon_theme_get_from_file(const char *file)
 {
 	Escen *theme;
 

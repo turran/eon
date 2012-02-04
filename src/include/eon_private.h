@@ -50,6 +50,7 @@ Ender_Namespace * eon_namespace_get(void);
 
 /* theme */
 Escen * eon_theme_get(void);
+Escen * eon_theme_get_from_file(const char *file);
 Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
 

@@ -194,7 +194,9 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_scrollbar_mouse_move, NULL);
 }
 
-static Eina_Bool _eon_scrollbar_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollbar *thiz;
 	Eon_Size size;

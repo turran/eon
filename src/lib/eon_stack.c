@@ -394,7 +394,9 @@ static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
 	return ret;
 }
 
-static Eina_Bool _eon_stack_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_stack_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Stack *thiz;
 	Enesim_Renderer *r;

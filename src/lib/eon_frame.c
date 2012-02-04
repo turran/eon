@@ -46,14 +46,14 @@ static void _eon_frame_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_frame_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_frame_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Frame *thiz;
 	Ender_Element *content;
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
-	double rw;
-	double rh;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_frame_get(r);

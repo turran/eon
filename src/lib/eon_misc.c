@@ -15,6 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#include <unistd.h>
+
 #include "Eon.h"
 #include "eon_private.h"
 /*============================================================================*

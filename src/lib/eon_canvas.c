@@ -178,7 +178,9 @@ static void _eon_canvas_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_canvas_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_canvas_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;

@@ -25,6 +25,7 @@ Ender_Element * eon_widget_theme_element_get(Enesim_Renderer *r);
 Enesim_Renderer * eon_widget_theme_renderer_get(Enesim_Renderer *r);
 Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r);
 Escen_Ender * eon_widget_theme_ender_get(Enesim_Renderer *r);
+void eon_widget_property_clear(Enesim_Renderer *r, const char *name);
 void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...);
 void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...);
 void eon_widget_property_add(Enesim_Renderer *r, const char *name, ...);

@@ -10,7 +10,9 @@ typedef struct _Eon_Element_State
 
 /* TODO rename all this max/min/preferred width/height into min/max/preferred size only */
 typedef void (*Eon_Element_Initialize)(Ender_Element *e);
-typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error);
+typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **error);
 typedef void (*Eon_Element_Cleanup)(Ender_Element *e, Enesim_Surface *s);
 typedef void (*Eon_Element_Free)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Min_Width_Get)(Ender_Element *e);

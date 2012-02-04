@@ -16,6 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
+#include "Esvg.h"
 #include "eon_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -89,11 +90,12 @@ static double _eon_svg_max_height_get(Ender_Element *e)
 	return DBL_MAX;
 }
 
-static Eina_Bool _eon_svg_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_svg_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
-	Ender_Element *content;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);
@@ -128,7 +130,6 @@ static Eina_Bool _eon_svg_needs_setup(Ender_Element *e)
 {
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
-	Eina_Bool ret;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);

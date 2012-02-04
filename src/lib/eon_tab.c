@@ -61,7 +61,9 @@ static void _eon_tab_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_tab_mouse_click, NULL);
 }
 
-static Eina_Bool _eon_tab_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _eon_tab_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;
