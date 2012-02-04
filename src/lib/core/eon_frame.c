@@ -46,6 +46,32 @@ static void _eon_frame_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _content_relayout(Ender_Element *content,
+		Enesim_Renderer *theme_r,
+		double ax,
+		double ay,
+		double aw,
+		double ah,
+		Enesim_Surface *s,
+		Enesim_Error **err)
+{
+	Eon_Margin margin;
+	Enesim_Renderer *content_r;
+
+	content_r = ender_element_renderer_get(content);
+
+	eon_theme_frame_margin_get(theme_r, &margin);
+	eon_element_actual_size_set(content_r, aw - margin.left - margin.right,
+			ah - margin.bottom - margin.top);
+	eon_element_actual_position_set(content_r, margin.left, margin.top);
+	if (!eon_element_setup(content, s, err))
+	{
+		printf("impossible to setup the content\n");
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
+}
+
 static Eina_Bool _eon_frame_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **err)
@@ -61,28 +87,16 @@ static Eina_Bool _eon_frame_setup(Ender_Element *e,
 	eon_container_content_get(e, &content);
 	if (content)
 	{
-		Eon_Margin margin;
 		Enesim_Renderer *theme_r;
-		Enesim_Renderer *content_r;
-		double aw, ah;
-		double ax, ay;
-
 		theme_r = eon_widget_theme_renderer_get(r);
-		content_r = ender_element_renderer_get(content);
 
-		eon_element_actual_width_get(e, &aw);
-		eon_element_actual_height_get(e, &ah);
-		eon_element_actual_position_get(r, &ax, &ay);
-
-		eon_theme_frame_margin_get(theme_r, &margin);
-		eon_element_actual_size_set(content_r, aw - margin.left - margin.right,
-				ah - margin.bottom - margin.top);
-		eon_element_actual_position_set(content_r, margin.left, margin.top);
-		if (!eon_element_setup(content, s, err))
-		{
-			printf("impossible to setup the content\n");
-			return EINA_FALSE;
-		}
+		ret =_content_relayout(content, theme_r,
+				state->actual_position.x,
+				state->actual_position.y,
+				state->actual_size.width,
+				state->actual_size.height,
+				s,
+				err);
 	}
 
 	return ret;

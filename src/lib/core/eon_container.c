@@ -58,21 +58,23 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 	Eon_Container *thiz;
 	Ender_Element *at = NULL;
 	Enesim_Renderer *r;
-	Enesim_Renderer *content_r;
-	double ax, ay;
-	Eon_Size size;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
 
-	content_r = ender_element_renderer_get(thiz->content);
-	eon_element_actual_size_get(content_r, &size);
-	eon_element_actual_position_get(content_r, &ax, &ay);
-
+	/* there's a default handler */
 	if (thiz->element_at)
 		at = thiz->element_at(e, x, y);
 	if (!at)
 	{
+		Enesim_Renderer *content_r;
+		double ax, ay;
+		Eon_Size size;
+
+		content_r = ender_element_renderer_get(thiz->content);
+		eon_element_actual_size_get(content_r, &size);
+		eon_element_actual_position_get(content_r, &ax, &ay);
+
 		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 			at = thiz->content;
 	}

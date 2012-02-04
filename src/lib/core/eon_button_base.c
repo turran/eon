@@ -184,9 +184,10 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		content_r = ender_element_renderer_get(content);
 		theme_r = eon_widget_theme_renderer_get(r);
 		/* set the size and position of the content */
-		eon_element_actual_width_get(e, &aw);
-		eon_element_actual_height_get(e, &ah);
-		eon_element_actual_position_get(r, &ax, &ay);
+		aw = state->actual_size.width;
+		ah = state->actual_size.height;
+		ax = state->actual_position.x;
+		ay = state->actual_position.y;
 
 		eon_theme_button_base_margin_get(theme_r, &margin);
 		size.width = aw - margin.left - margin.right;

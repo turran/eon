@@ -151,9 +151,10 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e,
 	thiz = _eon_wrapper_get(r);
 	if (!thiz->wrapped) return EINA_FALSE;
 
-	eon_element_actual_position_get(r, &ox, &oy);
-	eon_element_actual_width_get(e, &aw);
-	eon_element_actual_height_get(e, &ah);
+	ox = state->actual_position.x;
+	oy = state->actual_position.y;
+	aw = state->actual_size.width;
+	ah = state->actual_size.height;
 	//printf("setting wrapper @ %g %g - %g %g\n", ox, oy, aw, ah);
 
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
