@@ -50,7 +50,6 @@ static void _eon_splitter_mouse_move(Ender_Element *e, const char *event_name, v
 {
 	Eon_Splitter *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
-	Eon_Size size;
 	Enesim_Renderer *r;
 	double c;
 	double v = 0;
@@ -60,7 +59,6 @@ static void _eon_splitter_mouse_move(Ender_Element *e, const char *event_name, v
 	thiz = _eon_splitter_get(r);
 	if (!thiz->dragging) return;
 
-	eon_element_actual_size_get(r, &size);
 	/* get the absolute position of the event */
 	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{

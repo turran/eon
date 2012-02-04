@@ -458,7 +458,7 @@ static void _eon_element_boundings(Enesim_Renderer *r,
 	Eon_Size size;
 
 	thiz = _eon_element_get(r);
-	eon_element_actual_size_get(r, &size);
+	size = thiz->current.actual_size;
 	/* There's no layout, or the layout didnt set an active width/height */
 	if (size.width < 0 || size.height < 0)
 	{

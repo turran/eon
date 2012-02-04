@@ -290,9 +290,12 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 	}
 }
 
-static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz, Enesim_Surface *s, Enesim_Error **err)
+static Eina_Bool _stack_relayout(Ender_Element *e,
+		Eon_Stack *thiz,
+		const Eon_Size *size,
+		Enesim_Surface *s,
+		Enesim_Error **err)
 {
-	Eon_Size size;
 	Enesim_Renderer *r;
 
 	/* the idea on a layout setup is the set the actual width and height
@@ -300,11 +303,10 @@ static Eina_Bool _stack_relayout(Ender_Element *e, Eon_Stack *thiz, Enesim_Surfa
 	 */
 	r = ender_element_renderer_get(e);
 	eon_widget_property_clear(r, "child");
-	eon_element_actual_size_get(r, &size);
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
-		_stack_horizontal_arrange(e, thiz, size.width, size.height, s, err);
+		_stack_horizontal_arrange(e, thiz, size->width, size->height, s, err);
 	else
-		_stack_vertical_arrange(e, thiz, size.width, size.height, s, err);
+		_stack_vertical_arrange(e, thiz, size->width, size->height, s, err);
 	/* FIXME */
 	return EINA_TRUE;
 }
@@ -410,7 +412,7 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e,
 	/* if the actual size has changed, then relayout
 	 * if some child preferred/min/max size has changed then call the relayout
 	 */
-	return _stack_relayout(e, thiz, s, err);
+	return _stack_relayout(e, thiz, &state->actual_size, s, err);
 }
 
 static void _eon_stack_cleanup(Ender_Element *e, Enesim_Surface *s)

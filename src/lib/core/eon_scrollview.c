@@ -244,9 +244,10 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 		theme_r = eon_widget_theme_renderer_get(r);
 		content_r = ender_element_renderer_get(content);
 
-		eon_element_actual_width_get(e, &aw);
-		eon_element_actual_height_get(e, &ah);
-		eon_element_actual_position_get(r, &ax, &ay);
+		aw = state->actual_size.width;
+		ah = state->actual_size.height;
+		ax = state->actual_position.x;
+		ay = state->actual_position.y;
 
 		size.width = aw;
 		size.height = ah;

@@ -94,15 +94,12 @@ static Eina_Bool _eon_entry_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Entry *thiz;
-	Eon_Size size;
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_entry_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
-
-	eon_element_actual_size_get(r, &size);
 
 	return EINA_TRUE;
 }

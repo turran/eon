@@ -373,7 +373,7 @@ static Eina_Bool _eon_spin_setup(Ender_Element *e,
 
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	eon_element_actual_size_get(r, &size);
+	size = state->actual_size;
 	eon_theme_spin_margin_get(theme_r, &margin);
 	area.width = size.width - margin.left - margin.right;
 	area.height = size.height - margin.top - margin.bottom;
