@@ -391,11 +391,16 @@ static void _eon_scrollview_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb c
 	/* if we have changed then just return our size */
 	if (thiz->changed)
 	{
-		Enesim_Rectangle area;
+		Eina_Rectangle area;
+		double x, y, w, h;
 
-		eon_element_actual_position_get(r, &area.x, &area.y);
-		eon_element_actual_width_get(e, &area.w);
-		eon_element_actual_height_get(e, &area.h);
+		eon_element_actual_position_get(r, &x, &y);
+		eon_element_actual_width_get(e, &w);
+		eon_element_actual_height_get(e, &h);
+		area.x = (int)x;
+		area.y = (int)y;
+		area.w = (int)w;
+		area.h = (int)h;
 
 		cb(r, &area, EINA_FALSE, data);
 		return;

@@ -105,6 +105,7 @@ data/ender/Makefile
 data/theme/Makefile
 src/Makefile
 src/lib/Makefile
+src/lib/core/Makefile
 src/lib/backend/Makefile
 src/lib/backend/ecore_common/Makefile
 src/lib/backend/ecore_sdl/Makefile
