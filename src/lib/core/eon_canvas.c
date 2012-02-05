@@ -430,10 +430,6 @@ static void _eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, do
 	}
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
 static void _eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, double y)
 {
 	Eon_Canvas *thiz;

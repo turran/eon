@@ -23,14 +23,15 @@
 typedef struct _Eon_Container
 {
 	/* properties */
-	Ender_Element *content;
+	Eon_Container_State current;
+	Eon_Container_State past;
 	/* private */
 	Eina_Bool changed : 1;
 	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
+	Eon_Container_Setup setup;
 	Eon_Container_Min_Width_Get min_width_get;
 	Eon_Container_Max_Width_Get max_width_get;
 	Eon_Container_Min_Height_Get min_height_get;
@@ -71,12 +72,12 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 		double ax, ay;
 		Eon_Size size;
 
-		content_r = ender_element_renderer_get(thiz->content);
+		content_r = ender_element_renderer_get(thiz->current.content);
 		eon_element_actual_size_get(content_r, &size);
 		eon_element_actual_position_get(content_r, &ax, &ay);
 
 		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
-			at = thiz->content;
+			at = thiz->current.content;
 	}
 	return at;
 }
@@ -190,18 +191,18 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 {
 	Eon_Container *thiz;
 	Enesim_Renderer *content_r;
-	Enesim_Renderer *content_t;
 
 	thiz = _eon_container_get(r);
 	if (!thiz) return;
+
+	if (thiz->current.content == content)
+		return;
 
 	content_r = ender_element_renderer_get(content);
 	if (!eon_is_element(content_r))
 		return;
 
-	thiz->content = content;
-	content_t = eon_element_renderer_get(content);
-	eon_widget_property_set(r, "content", content_t, NULL);
+	thiz->current.content = content;
 	thiz->changed = EINA_TRUE;
 }
 
@@ -212,7 +213,7 @@ static void _eon_container_content_get(Enesim_Renderer *r, const Ender_Element *
 	thiz = _eon_container_get(r);
 	if (!thiz) return;
 
-	*content = thiz->content;
+	*content = thiz->current.content;
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -239,6 +240,25 @@ static void _eon_container_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
+static Eina_Bool _eon_container_setup(Ender_Element *e,
+		const Eon_Element_State *state,
+		Enesim_Surface *s, Enesim_Error **err)
+{
+	Eon_Container *thiz;
+	Enesim_Renderer *r;
+	Enesim_Renderer *content_t;
+	Eina_Bool ret = EINA_TRUE;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_container_get(r);
+	content_t = eon_element_renderer_get(thiz->current.content);
+	/* TODO only set whenever the content is different */
+	eon_widget_property_set(r, "content", content_t, NULL);
+	if (thiz->setup)
+		ret = thiz->setup(e, state, &thiz->current, s, err);
+	return ret;
+}
+
 static double _eon_container_min_width_get(Ender_Element *e)
 {
 	Eon_Container *thiz;
@@ -247,8 +267,8 @@ static double _eon_container_min_width_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
-	if (thiz->content)
-		eon_element_min_width_get(thiz->content, &v);
+	if (thiz->current.content)
+		eon_element_min_width_get(thiz->current.content, &v);
 	if (thiz->max_width_get)
 		v = thiz->min_width_get(e, v);
 
@@ -263,8 +283,8 @@ static double _eon_container_max_width_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
-	if (thiz->content)
-		eon_element_max_width_get(thiz->content, &v);
+	if (thiz->current.content)
+		eon_element_max_width_get(thiz->current.content, &v);
 	else
 		return DBL_MAX;
 	if (thiz->max_width_get)
@@ -281,8 +301,8 @@ static double _eon_container_min_height_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
-	if (thiz->content)
-		eon_element_min_height_get(thiz->content, &v);
+	if (thiz->current.content)
+		eon_element_min_height_get(thiz->current.content, &v);
 	if (thiz->max_height_get)
 		v = thiz->min_height_get(e, v);
 
@@ -297,8 +317,8 @@ static double _eon_container_max_height_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
-	if (thiz->content)
-		eon_element_max_height_get(thiz->content, &v);
+	if (thiz->current.content)
+		eon_element_max_height_get(thiz->current.content, &v);
 	else
 		return DBL_MAX;
 	if (thiz->max_height_get)
@@ -315,8 +335,8 @@ static double _eon_container_preferred_width_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
-	if (thiz->content)
-		eon_element_preferred_width_get(thiz->content, &v);
+	if (thiz->current.content)
+		eon_element_preferred_width_get(thiz->current.content, &v);
 	if (thiz->preferred_width_get)
 		v = thiz->preferred_width_get(e, v);
 
@@ -331,8 +351,8 @@ static double _eon_container_preferred_height_get(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_container_get(r);
-	if (thiz->content)
-		eon_element_preferred_height_get(thiz->content, &v);
+	if (thiz->current.content)
+		eon_element_preferred_height_get(thiz->current.content, &v);
 	if (thiz->preferred_height_get)
 		v = thiz->preferred_height_get(e, v);
 
@@ -357,8 +377,8 @@ static Eina_Bool _eon_container_needs_setup(Ender_Element *e)
 	if (ret) return ret;
 
 	/* check if the content has changed */
-	if (thiz->content)
-		ret = eon_element_needs_setup(thiz->content);
+	if (thiz->current.content)
+		ret = eon_element_needs_setup(thiz->current.content);
 	return ret;
 }
 
@@ -372,8 +392,10 @@ static void _eon_container_cleanup(Ender_Element *e, Enesim_Surface *s)
 	thiz->changed = EINA_FALSE;
 	if (thiz->cleanup)
 		thiz->cleanup(e, s);
-	if (thiz->content)
-		eon_element_cleanup(thiz->content, s);
+	if (thiz->current.content)
+		eon_element_cleanup(thiz->current.content, s);
+	/* TODO handle the refcounting */
+	thiz->past = thiz->current;
 }
 
 static void _eon_container_free(Enesim_Renderer *r)
@@ -429,7 +451,7 @@ Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *
 
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
-	pdescriptor.setup = descriptor->setup;
+	pdescriptor.setup = _eon_container_setup;
 	pdescriptor.cleanup = _eon_container_cleanup;
 	pdescriptor.damage = descriptor->damage;
 	pdescriptor.needs_setup = _eon_container_needs_setup;

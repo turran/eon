@@ -358,10 +358,10 @@ static void _eon_splitter_initialize(Ender_Element *e)
 
 static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 		const Eon_Element_State *state,
+		const Eon_Container_State *cstate,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Splitter *thiz;
-	Ender_Element *content;
 	Enesim_Renderer *r;
 	Enesim_Renderer *content_r;
 	Enesim_Renderer *theme_r;
@@ -378,13 +378,12 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 
 	/* calculate the real position */
 	position = thiz->current.position;
-	eon_container_content_get(e, &content);
-	if (!content)
+	if (!cstate->content)
 	{
 		printf("no content\n");
 		return EINA_FALSE;
 	}
-	content_r = ender_element_renderer_get(content);
+	content_r = ender_element_renderer_get(cstate->content);
 
 	if (!thiz->current.second_content)
 	{
@@ -401,9 +400,9 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 		double cmin, cmax;
 		double scmin, scmax;
 
-		eon_element_min_width_get(content, &cmin);
+		eon_element_min_width_get(cstate->content, &cmin);
 		eon_element_min_width_get(thiz->current.second_content, &scmin);
-		eon_element_max_width_get(content, &cmax);
+		eon_element_max_width_get(cstate->content, &cmax);
 		eon_element_max_width_get(thiz->current.second_content, &scmax);
 
 		thiz->minl = MAX(cmin, aw - thickness - scmax);
@@ -429,9 +428,9 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 		double cmin, cmax;
 		double scmin, scmax;
 
-		eon_element_min_height_get(content, &cmin);
+		eon_element_min_height_get(cstate->content, &cmin);
 		eon_element_min_height_get(thiz->current.second_content, &scmin);
-		eon_element_max_height_get(content, &cmax);
+		eon_element_max_height_get(cstate->content, &cmax);
 		eon_element_max_height_get(thiz->current.second_content, &scmax);
 
 		thiz->minl = MAX(cmin, ah - thickness - scmax);
@@ -461,7 +460,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	eon_element_actual_height_set(content_r, sch);
 	eon_element_actual_position_set(content_r, scx, scy);
 
-	if (!eon_element_setup(content, s, err))
+	if (!eon_element_setup(cstate->content, s, err))
 	{
 		printf("impossible to setup the content\n");
 		return EINA_FALSE;

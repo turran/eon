@@ -74,23 +74,22 @@ static void _eon_frame_free(Enesim_Renderer *r)
 
 static Eina_Bool _eon_frame_setup(Ender_Element *e,
 		const Eon_Element_State *state,
+		const Eon_Container_State *cstate,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Frame *thiz;
-	Ender_Element *content;
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_frame_get(r);
 	/* setup the content */
-	eon_container_content_get(e, &content);
-	if (content)
+	if (cstate->content)
 	{
 		Enesim_Renderer *theme_r;
 
 		theme_r = eon_widget_theme_renderer_get(r);
-		ret =_eon_frame_content_relayout(content, theme_r,
+		ret =_eon_frame_content_relayout(cstate->content, theme_r,
 				state->actual_position.x,
 				state->actual_position.y,
 				state->actual_size.width,

@@ -217,18 +217,17 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 
 static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 		const Eon_Element_State *state,
+		const Eon_Container_State *cstate,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollview *thiz;
-	Ender_Element *content;
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_scrollview_get(r);
 	/* setup the content */
-	eon_container_content_get(e, &content);
-	if (content)
+	if (cstate->content)
 	{
 		Eon_Size content_size;
 		Eon_Size size;
@@ -242,7 +241,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 		double ax, ay;
 
 		theme_r = eon_widget_theme_renderer_get(r);
-		content_r = ender_element_renderer_get(content);
+		content_r = ender_element_renderer_get(cstate->content);
 
 		aw = state->actual_size.width;
 		ah = state->actual_size.height;
@@ -251,7 +250,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 
 		size.width = aw;
 		size.height = ah;
-		eon_element_real_size_get(content, &content_size);
+		eon_element_real_size_get(cstate->content, &content_size);
 
 		/* hbar */
 		eon_element_real_size_get(thiz->hbar, &hbar_size);
@@ -324,7 +323,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 		 */
 		eon_element_actual_size_set(content_r, content_size.width, content_size.height);
 		eon_element_actual_position_set(content_r, thiz->current.offset.x, thiz->current.offset.y);
-		if (!eon_element_setup(content, s, err))
+		if (!eon_element_setup(cstate->content, s, err))
 		{
 			printf("impossible to setup the content\n");
 			return EINA_FALSE;

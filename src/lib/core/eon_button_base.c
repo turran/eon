@@ -194,22 +194,21 @@ static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
 
 static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		const Eon_Element_State *state,
+		const Eon_Container_State *cstate,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Button_Base *thiz;
 	Enesim_Renderer *r;
-	Ender_Element *content;
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_button_base_get(r);
-	eon_container_content_get(e, &content);
-	if (content)
+	if (cstate->content)
 	{
 		Enesim_Renderer *theme_r;
 		Eina_Bool ret;
 
 		theme_r = eon_widget_theme_renderer_get(r);
-		ret =_eon_button_base_content_relayout(content, theme_r,
+		ret =_eon_button_base_content_relayout(cstate->content, theme_r,
 				state->actual_position.x,
 				state->actual_position.y,
 				state->actual_size.width,
