@@ -160,6 +160,38 @@ static double _eon_button_base_max_height_get(Ender_Element *e, double cmv)
 	return DBL_MAX;
 }
 
+static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
+		Enesim_Renderer *theme_r,
+		double ax,
+		double ay,
+		double aw,
+		double ah,
+		Enesim_Surface *s,
+		Enesim_Error **err)
+{
+	Enesim_Renderer *content_r;
+	Eon_Margin margin;
+	Eon_Size size;
+	Eon_Position position;
+
+	content_r = ender_element_renderer_get(content);
+	eon_theme_button_base_margin_get(theme_r, &margin);
+	size.width = aw - margin.left - margin.right;
+	size.height = ah - margin.top - margin.bottom;
+
+	eon_element_real_relative_size_get(content, &size, &size);
+	eon_element_actual_size_set(content_r, size.width, size.height);
+	eon_theme_button_base_position_get(theme_r, &size, &position);
+	eon_element_actual_position_set(content_r, position.x, position.y);
+	if (!eon_element_setup(content, s, err))
+	{
+		printf("impossible to setup the content\n");
+		return EINA_FALSE;
+	}
+
+	return EINA_TRUE;
+}
+
 static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **err)
@@ -173,35 +205,22 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 	eon_container_content_get(e, &content);
 	if (content)
 	{
-		Eon_Margin margin;
-		Eon_Position position;
-		Eon_Size size;
-		Enesim_Renderer *content_r;
 		Enesim_Renderer *theme_r;
-		double aw, ah;
-		double ax, ay;
+		Eina_Bool ret;
 
-		content_r = ender_element_renderer_get(content);
 		theme_r = eon_widget_theme_renderer_get(r);
-		/* set the size and position of the content */
-		aw = state->actual_size.width;
-		ah = state->actual_size.height;
-		ax = state->actual_position.x;
-		ay = state->actual_position.y;
-
-		eon_theme_button_base_margin_get(theme_r, &margin);
-		size.width = aw - margin.left - margin.right;
-		size.height = ah - margin.top - margin.bottom;
-
-		eon_element_real_relative_size_get(content, &size, &size);
-		eon_element_actual_size_set(content_r, size.width, size.height);
-		eon_theme_button_base_position_get(theme_r, &size, &position);
-		eon_element_actual_position_set(content_r, position.x, position.y);
-		if (!eon_element_setup(content, s, err))
+		ret =_eon_button_base_content_relayout(content, theme_r,
+				state->actual_position.x,
+				state->actual_position.y,
+				state->actual_size.width,
+				state->actual_size.height,
+				s,
+				err);
+		if (!ret)
 		{
-			printf("impossible to setup the content\n");
-			return EINA_FALSE;
+			return ret;
 		}
+
 	}
 	if (thiz->setup)
 		return thiz->setup(e, state, s, err);

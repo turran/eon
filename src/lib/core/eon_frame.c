@@ -35,18 +35,8 @@ static inline Eon_Frame * _eon_frame_get(Enesim_Renderer *r)
 	thiz = eon_container_data_get(r);
 	return thiz;
 }
-/*----------------------------------------------------------------------------*
- *                        The Eon's widget interface                          *
- *----------------------------------------------------------------------------*/
-static void _eon_frame_free(Enesim_Renderer *r)
-{
-	Eon_Frame *thiz;
 
-	thiz = _eon_frame_get(r);
-	free(thiz);
-}
-
-static Eina_Bool _content_relayout(Ender_Element *content,
+static Eina_Bool _eon_frame_content_relayout(Ender_Element *content,
 		Enesim_Renderer *theme_r,
 		double ax,
 		double ay,
@@ -71,6 +61,16 @@ static Eina_Bool _content_relayout(Ender_Element *content,
 	}
 	return EINA_TRUE;
 }
+/*----------------------------------------------------------------------------*
+ *                        The Eon's widget interface                          *
+ *----------------------------------------------------------------------------*/
+static void _eon_frame_free(Enesim_Renderer *r)
+{
+	Eon_Frame *thiz;
+
+	thiz = _eon_frame_get(r);
+	free(thiz);
+}
 
 static Eina_Bool _eon_frame_setup(Ender_Element *e,
 		const Eon_Element_State *state,
@@ -88,9 +88,9 @@ static Eina_Bool _eon_frame_setup(Ender_Element *e,
 	if (content)
 	{
 		Enesim_Renderer *theme_r;
-		theme_r = eon_widget_theme_renderer_get(r);
 
-		ret =_content_relayout(content, theme_r,
+		theme_r = eon_widget_theme_renderer_get(r);
+		ret =_eon_frame_content_relayout(content, theme_r,
 				state->actual_position.x,
 				state->actual_position.y,
 				state->actual_size.width,
