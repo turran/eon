@@ -167,7 +167,6 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 		if (size.width <= 0)
 			break;
 		child_r = ender_element_renderer_get(ech->ender);
-		child_rr = eon_element_renderer_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
 		if (!thiz->curr.last_expand || ech != last_ech)
@@ -203,9 +202,10 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, last_x, y);
+		eon_element_setup(ech->ender, s, err);
+		child_rr = eon_element_renderer_get(ech->ender);
 		/* now add the renderer associated with the widget into the theme */
 		eon_widget_property_add(r, "child", child_rr, NULL);
-		eon_element_setup(ech->ender, s, err);
 		ech->curr_x = last_x;
 		ech->curr_y = y;
 		last_x += child_size.width;
@@ -238,7 +238,6 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 			break;
 
 		child_r = ender_element_renderer_get(ech->ender);
-		child_rr = eon_element_renderer_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
 		{
@@ -280,9 +279,10 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
 		eon_element_actual_position_set(child_r, x, last_y);
-		/* now add the renderer associated with the widget into the theme */
-		eon_widget_property_add(r, "child", child_rr, NULL);
 		eon_element_setup(ech->ender, s, err);
+		/* now add the renderer associated with the widget into the theme */
+		child_rr = eon_element_renderer_get(ech->ender);
+		eon_widget_property_add(r, "child", child_rr, NULL);
 		ech->curr_x = x;
 		ech->curr_y = last_y;
 		last_y += child_size.height;

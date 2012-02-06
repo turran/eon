@@ -27,6 +27,7 @@ typedef struct _Eon_Svg
 {
 	char *file;
 	Enesim_Renderer *generated_r;
+	Eina_Bool needs_setup : 1;
 } Eon_Svg;
 
 static inline Eon_Svg * _eon_svg_get(Enesim_Renderer *r)
@@ -114,6 +115,7 @@ static void _eon_svg_cleanup(Ender_Element *e, Enesim_Surface *s)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);
+	thiz->needs_setup = EINA_FALSE;
 }
 
 static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
@@ -133,8 +135,7 @@ static Eina_Bool _eon_svg_needs_setup(Ender_Element *e)
 
 	r = ender_element_renderer_get(e);
 	thiz = _eon_svg_get(r);
-
-	return EINA_TRUE;
+	return thiz->needs_setup;
 }
 
 static void _eon_svg_free(Enesim_Renderer *r)
@@ -187,6 +188,7 @@ static void _eon_svg_file_set(Enesim_Renderer *r, const char *file)
 
 	thiz = _eon_svg_get(r);
 	thiz->file = strdup(file);
+	thiz->needs_setup = EINA_TRUE;
 }
 /*============================================================================*
  *                                 Global                                     *
