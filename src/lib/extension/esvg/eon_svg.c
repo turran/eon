@@ -17,6 +17,7 @@
  */
 #include "Eon.h"
 #include "Esvg.h"
+#include "Esvg_Parser.h"
 #include "eon_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -25,9 +26,12 @@ static int _esvg_init = 0;
 
 typedef struct _Eon_Svg
 {
+	/* properties */
 	char *file;
+	/* private */
 	Enesim_Renderer *generated_r;
 	Eina_Bool needs_setup : 1;
+	/* TODO add the event handler */
 } Eon_Svg;
 
 static inline Eon_Svg * _eon_svg_get(Enesim_Renderer *r)
@@ -37,6 +41,20 @@ static inline Eon_Svg * _eon_svg_get(Enesim_Renderer *r)
 	thiz = eon_element_data_get(r);
 	return thiz;
 }
+
+/*----------------------------------------------------------------------------*
+ *                         The Esvg's parser interface                        *
+ *----------------------------------------------------------------------------*/
+static void _eon_svg_href_set(void *data, Enesim_Renderer *r, const char *href)
+{
+	Eon_Svg *thiz = data;
+
+	printf("eon svg href set %p %s\n", r, href);
+}
+
+static Esvg_Parser_Descriptor _svg_descriptor = {
+	/* .href_set = */ _eon_svg_href_set;
+};
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -102,7 +120,8 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e,
 	thiz = _eon_svg_get(r);
 	if (thiz->file && !thiz->generated_r)
 	{
-		thiz->generated_r = esvg_parser_load(thiz->file);
+
+		thiz->generated_r = esvg_parser_load(thiz->file, &_svgdescriptor, thiz);
 	}
 
 	return EINA_TRUE;
