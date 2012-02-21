@@ -53,7 +53,7 @@ static void _eon_svg_href_set(void *data, Enesim_Renderer *r, const char *href)
 }
 
 static Esvg_Parser_Descriptor _svg_descriptor = {
-	/* .href_set = */ _eon_svg_href_set;
+	/* .href_set = */ _eon_svg_href_set,
 };
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -121,7 +121,7 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e,
 	if (thiz->file && !thiz->generated_r)
 	{
 
-		thiz->generated_r = esvg_parser_load(thiz->file, &_svgdescriptor, thiz);
+		thiz->generated_r = esvg_parser_load(thiz->file, &_svg_descriptor, thiz);
 	}
 
 	return EINA_TRUE;
