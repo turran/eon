@@ -49,7 +49,7 @@ namespace "eon" {
 
 	abstract "theme_label" : "theme_widget" {
 		string "font";
-		int "size";
+		int "font_size";
 	};
 
 	abstract "theme_splitter" : "theme_container" {

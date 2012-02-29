@@ -17,6 +17,8 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+#include "Eon_Theme.h"
+#include "eon_theme_private.h"
 /**
  * @todo
  * We must need to simplify the theme creation, all of them need a renderer

@@ -5,6 +5,7 @@ SUBDIRS = basic
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
+-I$(top_srcdir)/src/include/private \
 -I$(top_srcdir)/src/include/generated \
 -I. \
 @EON_CFLAGS@

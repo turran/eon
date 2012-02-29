@@ -16,6 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
+#include "Eon_Theme.h"
 #include "Eon_Basic.h"
 #include "eon_basic_private.h"
 /*============================================================================*
@@ -69,8 +70,8 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Error **err)
 	eon_theme_widget_height_get(r, &height);
 	enesim_renderer_image_x_set(thiz->image, 0);
 	enesim_renderer_image_y_set(thiz->image, 0);
-	enesim_renderer_image_w_set(thiz->image, (int)width);
-	enesim_renderer_image_h_set(thiz->image, (int)height);
+	enesim_renderer_image_width_set(thiz->image, width);
+	enesim_renderer_image_height_set(thiz->image, height);
 	enesim_renderer_image_src_set(thiz->image, thiz->src);
 
 	return EINA_TRUE;

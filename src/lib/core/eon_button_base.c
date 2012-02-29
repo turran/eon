@@ -242,13 +242,11 @@ static void _eon_button_base_free(Enesim_Renderer *r)
 static void _eon_button_base_enabled_set(Enesim_Renderer *r, Eina_Bool enabled)
 {
 	Eon_Button_Base *thiz;
-	Ender_Element *e;
 
 	thiz = _eon_button_base_get(r);
 	if (thiz->enabled == enabled) return;
 
 	thiz->enabled = enabled;
-	e = ender_element_renderer_from(r);
 	if (enabled)
 	{
 		eon_widget_state_set(r, "enabled", EINA_FALSE);

@@ -70,10 +70,8 @@ typedef struct _Eon_Element
 	Eina_Bool managed : 1;
 	const char *name;
 	void *data;
-	/* FIXME for later
-	 * Enesim_Renderer *thiz_r;
-	 * Ender_Element *thiz_e;
-	 */
+	Enesim_Renderer *r;
+	Ender_Element *e;
 } Eon_Element;
 
 static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
@@ -94,7 +92,7 @@ static void _eon_element_draw(Enesim_Renderer *r, const Enesim_Renderer_State *s
 	Enesim_Renderer *real_r;
 
 	thiz = _eon_element_get(r);
-	e = ender_element_renderer_from(r);
+	e = thiz->e;
 	real_r = eon_element_renderer_get(e);
 	enesim_renderer_sw_draw(real_r, x, y, len, dst);
 }
@@ -256,8 +254,8 @@ static void _eon_element_min_width_get(Enesim_Renderer *r, double *width)
 	double max;
 
 	if (!width) return;
-	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
+	e = thiz->e;
 	if (!thiz) return;
 	v = _element_min_width_get(e);
 	/* make sure we dont conflict with the max */
@@ -282,8 +280,8 @@ static void _eon_element_min_height_get(Enesim_Renderer *r, double *height)
 	double max;
 
 	if (!height) return;
-	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
+	e = thiz->e;
 	if (!thiz) return;
 	v = _element_min_height_get(e);
 	/* make sure we dont conflict with the max */
@@ -309,9 +307,9 @@ static void _eon_element_max_width_get(Enesim_Renderer *r, double *width)
 	double min;
 
 	if (!width) return;
-	e = ender_element_renderer_from(r);
+
 	thiz = _eon_element_get(r);
-	if (!thiz) return;
+	e = thiz->e;
 	v = _element_max_width_get(e);
 	/* make sure we dont conflict with the min */
 	min = _element_min_width_get(e);
@@ -335,9 +333,9 @@ static void _eon_element_max_height_get(Enesim_Renderer *r, double *height)
 	double min;
 
 	if (!height) return;
-	e = ender_element_renderer_from(r);
+
 	thiz = _eon_element_get(r);
-	if (!thiz) return;
+	e = thiz->e;
 	v = _element_max_height_get(e);
 	/* make sure we dont conflict with the min */
 	min = _element_min_height_get(e);
@@ -350,9 +348,10 @@ static void _eon_element_preferred_width_get(Enesim_Renderer *r, double *width)
 	Ender_Element *e;
 
 	if (!width) return;
-	e = ender_element_renderer_from(r);
-	*width = -1;
+
 	thiz = _eon_element_get(r);
+	e = thiz->e;
+	*width = -1;
 	if (thiz->preferred_width_get)
 		*width = thiz->preferred_width_get(e);
 }
@@ -363,8 +362,9 @@ static void _eon_element_preferred_height_get(Enesim_Renderer *r, double *height
 	Ender_Element *e;
 
 	if (!height) return;
-	e = ender_element_renderer_from(r);
+
 	thiz = _eon_element_get(r);
+	e = thiz->e;
 	*height = -1;
 	if (thiz->preferred_height_get)
 		*height = thiz->preferred_height_get(e);
@@ -500,7 +500,7 @@ static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r,
 	Eina_Bool ret;
 
 	thiz = _eon_element_get(r);
-	e = ender_element_renderer_from(r);
+	e = thiz->e;
 	if (!e) return EINA_FALSE;
 
 	ret = _eon_element_setup(e, s, error);
@@ -542,7 +542,7 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 	Enesim_Renderer *real_r;
 
 	thiz = _eon_element_get(r);
-	e = ender_element_renderer_from(r);
+	e = thiz->e;
 
 	_eon_element_cleanup(e, s);
 
@@ -573,8 +573,8 @@ static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb
 	Eon_Element *thiz;
 	Ender_Element *e;
 
-	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
+	e = thiz->e;
 
 	/* if we need to do the setup we call send the whole geometry */
 	if (!thiz->damage)
@@ -611,8 +611,8 @@ Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
 	Enesim_Renderer *real_r;
 	Eina_Bool ret;
 
-	e = ender_element_renderer_from(r);
 	thiz = _eon_element_get(r);
+	e = thiz->e;
 
  	ret = thiz->changed;
 	/* check that some property has actually changed */
@@ -675,18 +675,21 @@ static Enesim_Renderer_Descriptor _descriptor = {
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_element_initialize(Ender_Element *ender)
+void eon_element_initialize(Ender_Element *e)
 {
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_renderer_get(e);
 	thiz = _eon_element_get(r);
+	/* store the renderer and the ender to avoid so many functions calls */
+	thiz->e = e;
+	thiz->r = r;
 	/* whenever the theme has changed we should notify
 	 * the change on this element too
 	 */
 	if (thiz->initialize)
-		thiz->initialize(ender);
+		thiz->initialize(e);
 }
 
 Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)

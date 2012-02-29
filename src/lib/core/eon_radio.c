@@ -24,6 +24,8 @@ typedef struct _Eon_Radio
 {
 	/* properties */
 	char *group_name;
+	/* private */
+	Ender_Element *e;
 } Eon_Radio;
 
 static Eina_Hash *_groups = NULL;
@@ -62,8 +64,15 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
  *----------------------------------------------------------------------------*/
 static void _eon_radio_initialize(Ender_Element *ender)
 {
+	Eon_Radio *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(ender);
+	thiz = _eon_radio_get(r);
+	thiz->e = ender;
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseClick", _radio_mouse_click, NULL);
+	
 }
 
 static Eon_Button_Base_Descriptor _descriptor = {
@@ -169,9 +178,11 @@ static void _eon_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 			_eon_radio_selected_get(other_radio, &other_selected);
 			if (other_selected)
 			{
+				Eon_Radio *other;
 				Ender_Element *other_radio_ender;
 
-				other_radio_ender = ender_element_renderer_from(other_radio);
+				other = _eon_radio_get(other_radio);
+				other_radio_ender = other->e;
 				eon_radio_selected_set(other_radio_ender, EINA_FALSE);
 			}
 		}

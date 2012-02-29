@@ -17,6 +17,8 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+#include "Eon_Theme.h"
+#include "eon_theme_private.h"
 /*
  * Instead of using the boundings box of the text renderer use
  * add maxdescent/maxascent properties to etex_base, this way we

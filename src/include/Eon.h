@@ -36,13 +36,6 @@
  * @section Design
  */
 
-/* FIXME for now
- * if the user wants to include this header, including eon_theme.h will fail
- */
-#ifndef ENESIM_EXTENSION
-#define ENESIM_EXTENSION
-#endif
-
 #include "Enesim.h"
 #include "Ender.h"
 
@@ -67,7 +60,6 @@
 #include "eon_label.h"
 #include "eon_spin.h"
 #include "eon_tab.h"
-#include "eon_theme.h"
 #include "eon_toggle.h"
 #include "eon_widget.h"
 #include "eon_window.h"

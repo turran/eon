@@ -5,6 +5,7 @@ SUBDIRS = generated
 
 include_HEADERS = \
 Eon.h \
+Eon_Theme.h \
 Eon_Svg.h
 
 EON_UTILHEADERS = \
@@ -29,7 +30,6 @@ eon_spin.h \
 eon_splitter.h \
 eon_stack.h \
 eon_tab.h \
-eon_theme.h \
 eon_theme_button_base.h \
 eon_theme_button.h \
 eon_theme_color.h \

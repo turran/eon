@@ -35,7 +35,6 @@ typedef struct _Eon_Theme_Label_Descriptor
 	Eon_Theme_Label_Setup setup;
 	Eon_Theme_Label_Cleanup cleanup;
 	Eon_Theme_Label_Padding_Get padding_get;
-	Eina_Bool can_ellipsize;
 	/* renderer needed functions */
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Label_Descriptor;
@@ -46,19 +45,10 @@ EAPI Eina_Bool eon_is_theme_label(Enesim_Renderer *r);
 EAPI void * eon_theme_label_data_get(Enesim_Renderer *r);
 EAPI void eon_theme_label_font_set(Enesim_Renderer *r, const char *str);
 EAPI void eon_theme_label_font_get(Enesim_Renderer *r, const char **str);
-EAPI void eon_theme_label_size_set(Enesim_Renderer *r, int size);
-EAPI void eon_theme_label_size_get(Enesim_Renderer *r, int *size);
+EAPI void eon_theme_label_font_size_set(Enesim_Renderer *r, int size);
+EAPI void eon_theme_label_font_size_get(Enesim_Renderer *r, int *size);
 EAPI void eon_theme_label_text_set(Enesim_Renderer *r, const char *text);
 EAPI void eon_theme_label_text_get(Enesim_Renderer *r, const char **text);
-EAPI void eon_theme_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable);
-EAPI void eon_theme_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enable);
-EAPI void eon_theme_label_max_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_label_max_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_label_min_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_label_min_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_label_preferred_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_label_preferred_width_get(Enesim_Renderer *r, double *width);
-
 
 /**
  * @}

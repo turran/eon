@@ -42,6 +42,7 @@ typedef struct _Eon_Widget
 	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 	void *data;
+	Ender_Element *e;
 } Eon_Widget;
 
 static inline Eon_Widget * _eon_widget_get(Enesim_Renderer *r)
@@ -74,6 +75,7 @@ static void _eon_widget_initialize(Ender_Element *ender)
 
 	r = ender_element_renderer_get(ender);
 	thiz = _eon_widget_get(r);
+	thiz->e = ender;
 	/* register every needed callback */
 	if (thiz->initialize)
 		thiz->initialize(ender);
@@ -285,7 +287,7 @@ static void _eon_widget_theme_set(Enesim_Renderer *r, const char *file)
 	Escen *theme_escen;
 
 	thiz = _eon_widget_get(r);
-	e = ender_element_renderer_from(r);
+	e = thiz->e;
 	theme_escen = eon_theme_get_from_file(file);
 	if (!theme_escen)
 	{

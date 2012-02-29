@@ -24,6 +24,8 @@ typedef struct _Eon_Checkbox
 {
 	/* properties */
 	Eina_Bool selected;
+	/* private */
+	Ender_Element *e;
 } Eon_Checkbox;
 
 static inline Eon_Checkbox * _eon_checkbox_get(Enesim_Renderer *r)
@@ -44,10 +46,16 @@ static void _checkbox_mouse_click(Ender_Element *e, const char *event_name, void
 /*----------------------------------------------------------------------------*
  *                      The Eon's button_base interface                         *
  *----------------------------------------------------------------------------*/
-static void _eon_checkbox_initialize(Ender_Element *ender)
+static void _eon_checkbox_initialize(Ender_Element *e)
 {
+	Eon_Checkbox *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(e);
+	thiz = _eon_checkbox_get(r);
+	thiz->e = e;
 	/* register every needed callback */
-	ender_event_listener_add(ender, "MouseClick", _checkbox_mouse_click, NULL);
+	ender_event_listener_add(e, "MouseClick", _checkbox_mouse_click, NULL);
 }
 
 static Eon_Button_Base_Descriptor _descriptor = {
@@ -107,7 +115,7 @@ static void _eon_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 		escen_instance_state_set(eei, new_state);
 	}
 	/* trigger the selected event */
-	e = ender_element_renderer_from(r);
+	e = thiz->e;
 	selected_event.selected = selected;
 	ender_event_dispatch(e, "Selected", &selected_event);
 }

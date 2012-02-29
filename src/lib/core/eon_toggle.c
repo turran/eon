@@ -24,6 +24,8 @@ typedef struct _Eon_Toggle
 {
 	/* properties */
 	Eina_Bool active;
+	/* private */
+	Ender_Element *e;
 } Eon_Toggle;
 
 static inline Eon_Toggle * _eon_toggle_get(Enesim_Renderer *r)
@@ -46,6 +48,12 @@ static void _toggle_mouse_click(Ender_Element *e, const char *event_name, void *
  *----------------------------------------------------------------------------*/
 static void _eon_toggle_initialize(Ender_Element *ender)
 {
+	Eon_Toggle *thiz;
+	Enesim_Renderer *r;
+
+	r = ender_element_renderer_get(ender);
+	thiz = _eon_toggle_get(r);
+	thiz->e = ender;
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseClick", _toggle_mouse_click, NULL);
 }
@@ -107,7 +115,7 @@ static void _eon_toggle_active_set(Enesim_Renderer *r, Eina_Bool active)
 		escen_instance_state_set(eei, new_state);
 	}
 	/* trigger the active event */
-	e = ender_element_renderer_from(r);
+	e = thiz->e;
 	toggle_event.active = active;
 	ender_event_dispatch(e, "Toggled", &toggle_event);
 }
