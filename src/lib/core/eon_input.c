@@ -70,7 +70,6 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *eis, double x, dou
 {
 	Enesim_Renderer *e_r;
 	Ender_Element *e;
-	Ender_Element *parent;
 	double ex, ey;
 
 	x -= eis->pointer.offset_x;

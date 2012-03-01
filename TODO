@@ -20,3 +20,10 @@
 + The theme interface should be called from the core elements directly, without passing through escen, the escen code should be moved on the theme system
   this way whenever we decide to create a svg based theme, we create a new theme which follows the theme interface, loads the escen and provides the renderer
   in case the esvg elements are no longer renderers
++ We should not call any escen function from the core elements, basically the "correct" design should be:
+  code elements (enders) ---> theme (theme element) ---> theme engine (escen, xml, whatever) ---> theme implementation (like the basic one we have)
+                          A                          B                                        C
+  Where A should be a direct call, i.e eon_theme_element_foo_set, eon_theme_element_state_set, whatever
+  Where B should be eon_theme_engine_property_set(element, enum). in the case of escen, the enum should match to a string for now given that escen does not handle
+  direct integer properties yet
+  Where C should be escen calling the correct object and set its properties, animations whatever

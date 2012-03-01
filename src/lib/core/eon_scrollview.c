@@ -17,6 +17,8 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+#include "Eon_Theme.h"
+#include "eon_theme_private.h"
 /**
  * @todo
  * The scrollview should not behave exactly as a container, the min width/height

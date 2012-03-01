@@ -72,15 +72,12 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 
 	thiz = _radio_get(r);
 	/* set the common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
 	/* FIXME the radio isnt setup correctly because when the origin is set
 	 * it still does not have any renderer inside the compound and the current
 	 * state of the enesim lib does not allow to set properties when there's no
 	 * flag available
 	 */
-	printf("radio setup %g %g\n", ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
 	if (!content)
@@ -97,9 +94,12 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 		thiz->content = content;
 		enesim_renderer_rop_set(thiz->outter_circle, ENESIM_BLEND);
 	}
-	/* set the needed properties */
+	enesim_renderer_origin_get(r, &ox, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
+
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	/* set the needed properties */
 	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);

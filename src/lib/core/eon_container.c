@@ -202,6 +202,16 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 	if (!eon_is_element(content_r))
 		return;
 
+	/* FIXME the size of the elements of a stack for example is always
+	 * calculated before calling the setup, so this first time
+	 * an application is run it wont have any valid size
+	 */
+	{
+		Enesim_Renderer *content_t;
+
+		content_t = eon_element_renderer_get(content);
+		eon_widget_property_set(r, "content", content_t, NULL);
+	}
 	thiz->current.content = content;
 	thiz->changed = EINA_TRUE;
 }

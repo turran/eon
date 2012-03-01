@@ -17,6 +17,8 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+#include "Eon_Theme.h"
+#include "eon_theme_private.h"
 /* TODO Whenever we decide how to add callbacks to eon_elements that must be called
  * at the beginning, like a mouse_in,out,down for a button, etc, every
  * laout should propagate the look_at, so the child is actually returned
@@ -234,8 +236,7 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 		return;
 
 	curr_parent = ender_element_parent_get(child);
-	if (curr_parent == r)
-		return;
+	/* TODO check if the parent is the same */
 	if (curr_parent)
 	{
 		/* FIXME this is wrong, we should remove from the theme the child_rr */

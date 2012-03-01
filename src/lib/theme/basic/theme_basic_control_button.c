@@ -233,7 +233,7 @@ void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
 	if (!content)
 	{
 		margin->left = thiz->horizontal_padding + 15;;
-		margin->right =thiz->horizontal_padding + 15;
+		margin->right = thiz->horizontal_padding + 15;
 		margin->top = thiz->vertical_padding + 15;
 		margin->bottom = thiz->vertical_padding + 15;
 

@@ -91,11 +91,13 @@ static double _eon_svg_min_height_get(Ender_Element *e)
 }
 static double _eon_svg_preferred_width_get(Ender_Element *e)
 {
+	/* use the info parser on esvg */
 	return DBL_MAX;
 }
 
 static double _eon_svg_preferred_height_get(Ender_Element *e)
 {
+	/* use the info parser on esvg */
 	return DBL_MAX;
 }
 

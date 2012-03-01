@@ -383,7 +383,6 @@ EAPI void eon_theme_widget_y_set(Enesim_Renderer *r, double y)
 	thiz->y = y;
 	/* FIXME for now */
 	enesim_renderer_y_origin_set(r, y);
-	//printf("setting y @ %g\n", y);
 }
 
 /**

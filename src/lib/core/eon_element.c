@@ -926,6 +926,27 @@ void eon_element_actual_position_get(Enesim_Renderer *r, double *x, double *y)
 	if (y) *y = thiz->current.actual_position.y;
 }
 
+void eon_element_actual_geometry_set(Enesim_Renderer *r, Eon_Geometry *g)
+{
+	Eon_Element *thiz;
+
+	thiz = _eon_element_get(r);
+	thiz->current.actual_position.x = g->x;
+	thiz->current.actual_position.y = g->y;
+	thiz->current.actual_size.width = g->width;
+	thiz->current.actual_size.height = g->height;
+
+	if (thiz->actual_x_set)
+		thiz->actual_x_set(r, g->x);
+	if (thiz->actual_y_set)
+		thiz->actual_y_set(r, g->y);
+	if (thiz->actual_width_set)
+		thiz->actual_width_set(r, g->width);
+	if (thiz->actual_height_set)
+		thiz->actual_height_set(r, g->height);
+	thiz->changed = EINA_TRUE;
+}
+
 void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size)
 {
 	Enesim_Renderer *r;

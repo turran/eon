@@ -9,6 +9,7 @@
 #include "private/eon_theme_label_private.h"
 #include "private/eon_theme_scrollbar_private.h"
 #include "private/eon_theme_scrollview_private.h"
+#include "private/eon_theme_splitter_private.h"
 #include "private/eon_theme_spin_private.h"
 
 #endif

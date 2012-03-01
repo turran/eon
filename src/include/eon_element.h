@@ -32,6 +32,7 @@
  */
 
 EAPI Eina_Bool eon_is_element(Enesim_Renderer *r);
+EAPI void eon_element_actual_geometry_set(Enesim_Renderer *r, Eon_Geometry *g);
 EAPI void eon_element_actual_height_get(Ender_Element *e, double *height);
 EAPI void eon_element_actual_width_get(Ender_Element *e, double *width);
 EAPI void eon_element_height_get(Ender_Element *e, double *height);

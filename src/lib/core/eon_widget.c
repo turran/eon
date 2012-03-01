@@ -17,6 +17,8 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+#include "Eon_Theme.h"
+#include "eon_theme_private.h"
 /* TODO
  * Add a notification whenever the theme has changed
  */

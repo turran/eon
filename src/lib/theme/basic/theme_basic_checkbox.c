@@ -77,9 +77,6 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 	double width, height;
 
 	thiz = _checkbox_get(r);
-	/* set the common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	/* setup the layers now */
 	eon_theme_container_content_get(r, &content);
 	if (!content)
@@ -110,8 +107,10 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 		}
 		enesim_renderer_compound_layer_add(thiz->compound, content);
 	}
+	enesim_renderer_origin_get(r, &ox, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
 	enesim_renderer_y_origin_set(thiz->check, height/2 - thiz->size/2);
 	enesim_renderer_rectangle_width_set(thiz->background, width);
@@ -158,7 +157,7 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	r = enesim_renderer_path_new();
 	if (!r) goto path_err;
 	thiz->check = r;
-	enesim_renderer_shape_fill_color_set(r, 0xff000000);
+	enesim_renderer_shape_fill_color_set(r, 0xffff0000);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_rectangle_new();

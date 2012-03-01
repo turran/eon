@@ -21,6 +21,14 @@ typedef struct _Eon_Size
 	double height;
 } Eon_Size;
 
+typedef struct _Eon_Geometry
+{
+	double x;
+	double y;
+	double width;
+	double height;
+} Eon_Geometry;
+
 typedef enum _Eon_Orientation
 {
 	EON_ORIENTATION_HORIZONTAL,

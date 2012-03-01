@@ -17,6 +17,8 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+#include "Eon_Theme.h"
+#include "eon_theme_private.h"
 /* This widget is kind of tricky, not by its complexity but by its nature.
  * Should this be an *instance* of a button or it should *inherit* from a button
  * i.e the "has a", "is a" issue
