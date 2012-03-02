@@ -66,6 +66,8 @@ static void _progressbar_update_size(Enesim_Renderer *r)
 	thiz = _progressbar_get(r);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
+	width -= 2;
+	height -= 2;
 
 	enesim_renderer_rectangle_width_set(thiz->widget.rectangle, width);
 	enesim_renderer_rectangle_height_set(thiz->widget.rectangle, height);
@@ -130,7 +132,7 @@ static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_transformation_set(thiz->widget.rectangle, &matrix);
 	/* the origin */
 	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->widget.rectangle, ox, oy);
+	enesim_renderer_origin_set(thiz->widget.rectangle, ox + 1, oy + 1);
 
 	/* if we are at zero progression level just draw the background and not the bar */
 	enesim_renderer_compound_layer_clear(thiz->widget.content);
@@ -234,7 +236,7 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	r = enesim_renderer_background_new();
 	if (!r) goto content_background_err;
 	thiz->content.background = r;
-	enesim_renderer_background_color_set(r, 0xffffffff);
+	enesim_renderer_background_color_set(r, 0xffcccccc);
 
 	/* now the widget */
 	r = enesim_renderer_compound_new();
@@ -251,7 +253,7 @@ Enesim_Renderer * eon_basic_progressbar_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_rectangle_corner_radius_set(r, 5);
 	enesim_renderer_shape_stroke_weight_set(r, 2);
-	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
+	enesim_renderer_shape_stroke_color_set(r, 0xff555555);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->widget.content);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 

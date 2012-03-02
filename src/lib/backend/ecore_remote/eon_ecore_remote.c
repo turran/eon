@@ -90,7 +90,7 @@ static Eon_Ecore_Remote_Element * _remote_element_ender_from(Ender_Element *e)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	return enesim_renderer_private_get(r, _renderer_key);
 }
 
@@ -164,7 +164,7 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 		break;
 
 		case ENDER_MATRIX:
-		case ENDER_RENDERER:
+		case ENDER_OBJECT:
 		case ENDER_SURFACE:
 		case ENDER_POINTER:
 		default:
@@ -297,7 +297,7 @@ static void _global_constructor_callback(Ender_Element *e, void *data)
 	Enesim_Renderer *r;
 	static int _id = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	if (!eon_is_element(r))
 	{
 		printf("is not an element\n");

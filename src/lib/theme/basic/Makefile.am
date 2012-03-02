@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 
 libtheme_basic_la_SOURCES = \
 theme_basic.c \
+theme_basic_control_bar.c \
 theme_basic_control_arrow.c \
 theme_basic_control_button.c \
 theme_basic_radio.c \

@@ -9,11 +9,11 @@ namespace "eon" {
 	};
 
 	abstract "theme_layout" : "theme_widget" {
-		[renderer] "child";
+		[object] "child";
 	};
 
 	abstract "theme_container" : "theme_widget" {
-		renderer "content";
+		object "content";
 	};
 
 	abstract "theme_spin" : "theme_widget" {
@@ -54,7 +54,7 @@ namespace "eon" {
 
 	abstract "theme_splitter" : "theme_container" {
 		int "orientation";
-		renderer "second content";
+		object "second content";
 	};
 
 	abstract "theme_scrollview" : "theme_container" {

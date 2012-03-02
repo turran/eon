@@ -96,13 +96,13 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Error **error)
 	if (thiz->hbar)
 	{
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->hbar);
-		enesim_renderer_rop_set(thiz->hbar, ENESIM_FILL);
+		enesim_renderer_rop_set(thiz->hbar, ENESIM_BLEND);
 	}
 	eon_theme_scrollview_vbar_get(r, &thiz->vbar);
 	if (thiz->vbar)
 	{
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->vbar);
-		enesim_renderer_rop_set(thiz->vbar, ENESIM_FILL);
+		enesim_renderer_rop_set(thiz->vbar, ENESIM_BLEND);
 	}
 
 	return EINA_TRUE;

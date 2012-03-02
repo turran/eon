@@ -185,7 +185,7 @@ static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int he
 	window_size.width = width;
 	window_size.height = height;
 	eon_element_real_relative_size_get(thiz->layout, &window_size, &size);
-	r = ender_element_renderer_get(thiz->layout);
+	r = ender_element_object_get(thiz->layout);
 	eon_element_actual_width_set(r, size.width);
 	eon_element_actual_height_set(r, size.height);
 	//printf("actual size %g %g\n", size.width, size.height);
@@ -235,7 +235,7 @@ static Eina_Bool _idler_cb(void *data)
 	Eina_Rectangle area;
 	double start, end;
 
-	r = ender_element_renderer_get(thiz->layout);
+	r = ender_element_object_get(thiz->layout);
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);

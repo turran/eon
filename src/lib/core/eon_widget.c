@@ -28,6 +28,8 @@
 #define EON_WIDGET_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_WIDGET_MAGIC)
 #define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_WIDGET_MAGIC, ret)
 
+static Ender_Property *EON_WIDGET_THEME;
+
 typedef struct _Eon_Widget
 {
 	EINA_MAGIC
@@ -75,7 +77,7 @@ static void _eon_widget_initialize(Ender_Element *ender)
 	Eon_Widget *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_object_get(ender);
 	thiz = _eon_widget_get(r);
 	thiz->e = ender;
 	/* register every needed callback */
@@ -89,7 +91,7 @@ static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_FALSE;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_widget_get(r);
 
 	/* first check if the theme associated with this widget needs a setup */
@@ -109,7 +111,7 @@ static Eina_Bool _eon_widget_setup(Ender_Element *e,
 	Eon_Widget *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_widget_get(r);
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
@@ -122,7 +124,7 @@ static Enesim_Renderer * _eon_widget_renderer_get(Ender_Element *ender)
 	Enesim_Renderer *r;
 	Eon_Widget *thiz;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_object_get(ender);
 	thiz = _eon_widget_get(r);
 	return thiz->theme_renderer;
 }
@@ -194,7 +196,7 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	}
 
 	theme_element = escen_instance_ender_get(theme_instance);
-	theme_renderer = ender_element_renderer_get(theme_element);
+	theme_renderer = ender_element_object_get(theme_element);
 
 	thiz = calloc(1, sizeof(Eon_Widget));
 	EINA_MAGIC_SET(thiz, EON_WIDGET_MAGIC);
@@ -270,7 +272,7 @@ static Eina_Bool _eon_widget_theme_setup(Eon_Widget *thiz, Ender_Element *e, Esc
 	}
 
 	theme_element = escen_instance_ender_get(theme_instance);
-	theme_renderer = ender_element_renderer_get(theme_element);
+	theme_renderer = ender_element_object_get(theme_element);
 
 	thiz->theme_ender = theme_ender;
 	thiz->theme_instance = theme_instance;

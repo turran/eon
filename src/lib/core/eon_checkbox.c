@@ -20,6 +20,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_CHECKBOX_SELECTED;
+
 typedef struct _Eon_Checkbox
 {
 	/* properties */
@@ -51,7 +53,7 @@ static void _eon_checkbox_initialize(Ender_Element *e)
 	Eon_Checkbox *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_checkbox_get(r);
 	thiz->e = e;
 	/* register every needed callback */

@@ -38,7 +38,7 @@ static double _eon_treeview_min_width_get(Ender_Element *e)
 {
 	Eon_Treeview *thiz;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_treeview_get(r);
 }
 
@@ -46,7 +46,7 @@ static double _eon_treeview_max_width_get(Ender_Element *e)
 {
 	Eon_Treeview *thiz;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_treeview_get(r);
 }
 
@@ -54,7 +54,7 @@ static double _eon_treeview_min_height_get(Ender_Element *e)
 {
 	Eon_Treeview *thiz;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_treeview_get(r);
 }
 
@@ -62,7 +62,7 @@ static double _eon_treeview_max_height_get(Ender_Element *e)
 {
 	Eon_Treeview *thiz;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_treeview_get(r);
 }
 
@@ -70,7 +70,7 @@ static double _eon_treeview_preferred_width_get(Ender_Element *e)
 {
 	Eon_Treeview *thiz;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_treeview_get(r);
 }
 
@@ -78,7 +78,7 @@ static double _eon_treeview_preferred_height_get(Ender_Element *e)
 {
 	Eon_Treeview *thiz;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_treeview_get(r);
 }
 

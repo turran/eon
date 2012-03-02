@@ -20,6 +20,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_CONTAINER_CONTENT;
+
 typedef struct _Eon_Container
 {
 	/* properties */
@@ -60,7 +62,7 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 	Ender_Element *at = NULL;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	/* there's a default handler */
@@ -72,7 +74,7 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 		double ax, ay;
 		Eon_Size size;
 
-		content_r = ender_element_renderer_get(thiz->current.content);
+		content_r = ender_element_object_get(thiz->current.content);
 		eon_element_actual_size_get(content_r, &size);
 		eon_element_actual_position_get(content_r, &ax, &ay);
 
@@ -104,7 +106,7 @@ static void _eon_container_mouse_down(Ender_Element *e, const char *event_name, 
 	Eon_Input_State *eis;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
@@ -118,7 +120,7 @@ static void _eon_container_mouse_up(Ender_Element *e, const char *event_name, vo
 	Eon_Input_State *eis;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
@@ -132,7 +134,7 @@ static void _eon_container_mouse_in(Ender_Element *e, const char *event_name, vo
 	Eon_Input_State *eis;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
@@ -146,7 +148,7 @@ static void _eon_container_mouse_out(Ender_Element *e, const char *event_name, v
 	Eon_Input_State *eis;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
@@ -161,7 +163,7 @@ static void _eon_container_mouse_move(Ender_Element *e, const char *event_name, 
 	Enesim_Renderer *r;
 	double ox, oy;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
@@ -176,7 +178,7 @@ static void _eon_container_mouse_wheel(Ender_Element *e, const char *event_name,
 	Eon_Input_State *eis;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	eis = _eon_container_input_state_get(thiz, e, ev->input);
@@ -198,7 +200,7 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 	if (thiz->current.content == content)
 		return;
 
-	content_r = ender_element_renderer_get(content);
+	content_r = ender_element_object_get(content);
 	if (!eon_is_element(content_r))
 		return;
 
@@ -233,7 +235,7 @@ static void _eon_container_initialize(Ender_Element *e)
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	/* we first register our own events */
 	if (thiz->pass_events)
@@ -259,7 +261,7 @@ static Eina_Bool _eon_container_setup(Ender_Element *e,
 	Enesim_Renderer *content_t;
 	Eina_Bool ret = EINA_TRUE;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	content_t = eon_element_renderer_get(thiz->current.content);
 	/* TODO only set whenever the content is different */
@@ -275,7 +277,7 @@ static double _eon_container_min_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->current.content)
 		eon_element_min_width_get(thiz->current.content, &v);
@@ -291,7 +293,7 @@ static double _eon_container_max_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->current.content)
 		eon_element_max_width_get(thiz->current.content, &v);
@@ -309,7 +311,7 @@ static double _eon_container_min_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->current.content)
 		eon_element_min_height_get(thiz->current.content, &v);
@@ -325,7 +327,7 @@ static double _eon_container_max_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->current.content)
 		eon_element_max_height_get(thiz->current.content, &v);
@@ -343,7 +345,7 @@ static double _eon_container_preferred_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->current.content)
 		eon_element_preferred_width_get(thiz->current.content, &v);
@@ -359,7 +361,7 @@ static double _eon_container_preferred_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	if (thiz->current.content)
 		eon_element_preferred_height_get(thiz->current.content, &v);
@@ -375,7 +377,7 @@ static Eina_Bool _eon_container_needs_setup(Ender_Element *e)
 	Enesim_Renderer *r;
 	Eina_Bool ret;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 
 	/* check if we have changed */
@@ -397,7 +399,7 @@ static void _eon_container_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Eon_Container *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_container_get(r);
 	thiz->changed = EINA_FALSE;
 	if (thiz->cleanup)

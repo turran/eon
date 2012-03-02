@@ -20,6 +20,9 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_CANVAS_CHILD_Y;
+static Ender_Property *EON_CANVAS_CHILD_X;
+
 typedef struct _Eon_Canvas_Child_State
 {
 	double x;
@@ -89,7 +92,7 @@ static Eina_Bool _canvas_child_is_inside(Eon_Canvas_Child *ech, double x, double
 	if (child_y < 0) return EINA_FALSE;
 
 	/* TODO still need the width and height */
-	rchild = ender_element_renderer_get(ech->ender);
+	rchild = ender_element_object_get(ech->ender);
 	eon_element_actual_size_get(rchild, &child_size);
 	if (child_x <= child_size.width && child_y <= child_size.height)
 	{
@@ -110,7 +113,7 @@ static Ender_Element * _canvas_child_up_at(Ender_Element *e, Ender_Element *rel,
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_canvas_get(r);
 	if (!thiz) return NULL;
 	current = NULL;
@@ -143,7 +146,7 @@ static Ender_Element * _canvas_child_down_at(Ender_Element *e, Ender_Element *re
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_canvas_get(r);
 	if (!thiz) return NULL;
 	current = NULL;
@@ -187,7 +190,7 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e,
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	eon_widget_property_clear(r, "child");
 
 	thiz = _eon_canvas_get(r);
@@ -196,7 +199,7 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e,
 		Enesim_Renderer *child_r;
 		Enesim_Renderer *child_rr;
 
-		child_r = ender_element_renderer_get(ech->ender);
+		child_r = ender_element_object_get(ech->ender);
 
 		eon_element_real_width_get(ech->ender, &ech->current.width);
 		eon_element_real_height_get(ech->ender, &ech->current.height);
@@ -219,7 +222,7 @@ static void _eon_canvas_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_canvas_get(r);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
@@ -237,7 +240,7 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 	double x;
 	double y;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_canvas_get(r);
 
 	eon_element_actual_position_get(r, &x, &y);
@@ -276,7 +279,7 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 				double w;
 				double h;
 
-				child_r = ender_element_renderer_get(ech->ender);
+				child_r = ender_element_object_get(ech->ender);
 				/* the past */
 				area.x = ech->past.x;
 				area.y = ech->past.y;
@@ -315,7 +318,7 @@ Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
 	Eina_Bool ret = EINA_FALSE;
 
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_canvas_get(r);
 
 	if (thiz->needs_setup) return EINA_TRUE;

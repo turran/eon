@@ -27,3 +27,5 @@
   Where B should be eon_theme_engine_property_set(element, enum). in the case of escen, the enum should match to a string for now given that escen does not handle
   direct integer properties yet
   Where C should be escen calling the correct object and set its properties, animations whatever
++ We can create a simple way of handling direct property set/get, on the ender generator, whenever a property is added, the return property can be managed
+  as an external Ender_Property so then, we can handle the direct property set

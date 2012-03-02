@@ -22,6 +22,9 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_LABEL_ELLIPSIZE;
+static Ender_Property *EON_LABEL_TEXT;
+
 typedef struct _Eon_Label
 {
 } Eon_Label;
@@ -81,7 +84,7 @@ static double _eon_label_min_width_get(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_label_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -97,7 +100,7 @@ static double _eon_label_max_width_get(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_label_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -113,7 +116,7 @@ static double _eon_label_min_height_get(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_label_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -129,7 +132,7 @@ static double _eon_label_max_height_get(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_label_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -145,7 +148,7 @@ static double _eon_label_preferred_width_get(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_label_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -161,7 +164,7 @@ static double _eon_label_preferred_height_get(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_label_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);

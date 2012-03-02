@@ -22,6 +22,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_SVG_FILE;
+
 static int _esvg_init = 0;
 
 typedef struct _Eon_Svg
@@ -66,7 +68,7 @@ static void _eon_svg_initialize(Ender_Element *e)
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_svg_get(r);
 	if (!_esvg_init++)
 		esvg_init();
@@ -118,7 +120,7 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e,
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_svg_get(r);
 	if (thiz->file && !thiz->generated_r)
 	{
@@ -134,7 +136,7 @@ static void _eon_svg_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_svg_get(r);
 	thiz->needs_setup = EINA_FALSE;
 }
@@ -144,7 +146,7 @@ static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_svg_get(r);
 	return thiz->generated_r;
 }
@@ -154,7 +156,7 @@ static Eina_Bool _eon_svg_needs_setup(Ender_Element *e)
 	Eon_Svg *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_svg_get(r);
 	return thiz->needs_setup;
 }

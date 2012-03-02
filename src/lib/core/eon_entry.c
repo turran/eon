@@ -22,6 +22,11 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_ENTRY_ALIGNMENT;
+static Ender_Property *EON_ENTRY_MAX_LENGTH;
+static Ender_Property *EON_ENTRY_TEXT;
+static Ender_Property *EON_ENTRY_ENABLED;
+
 typedef struct _Eon_Entry
 {
 	/* properties */
@@ -47,7 +52,7 @@ static void _eon_entry_click(Ender_Element *e, const char *event_name, void *eve
 	Eon_Entry *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 
 	/* FIXME just an example for now, given that the key evenst are now managed yet */
@@ -64,7 +69,7 @@ static void _eon_entry_key_down(Ender_Element *e, const char *event_name, void *
 	Eon_Entry *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 }
 /*----------------------------------------------------------------------------*
@@ -76,7 +81,7 @@ static void _eon_entry_initialize(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 
 	/* the events */
@@ -99,7 +104,7 @@ static Eina_Bool _eon_entry_setup(Ender_Element *e,
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -121,7 +126,7 @@ static double _eon_entry_min_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -137,7 +142,7 @@ static double _eon_entry_min_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);

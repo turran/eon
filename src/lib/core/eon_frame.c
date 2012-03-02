@@ -24,6 +24,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_FRAME_DESCRIPTION;
+
 typedef struct _Eon_Frame
 {
 } Eon_Frame;
@@ -48,7 +50,7 @@ static Eina_Bool _eon_frame_content_relayout(Ender_Element *content,
 	Eon_Margin margin;
 	Enesim_Renderer *content_r;
 
-	content_r = ender_element_renderer_get(content);
+	content_r = ender_element_object_get(content);
 
 	eon_theme_frame_margin_get(theme_r, &margin);
 	eon_element_actual_size_set(content_r, aw - margin.left - margin.right,
@@ -81,7 +83,7 @@ static Eina_Bool _eon_frame_setup(Ender_Element *e,
 	Enesim_Renderer *r;
 	Eina_Bool ret = EINA_TRUE;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_frame_get(r);
 	/* setup the content */
 	if (cstate->content)
@@ -108,7 +110,7 @@ static double _eon_frame_min_max_width_get(Ender_Element *e, double cmv)
 	Enesim_Renderer *theme_r;
 	Eon_Margin margin;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_frame_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_frame_margin_get(theme_r, &margin);
@@ -123,7 +125,7 @@ static double _eon_frame_min_max_height_get(Ender_Element *e, double cmv)
 	Enesim_Renderer *theme_r;
 	Eon_Margin margin;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_frame_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_frame_margin_get(theme_r, &margin);

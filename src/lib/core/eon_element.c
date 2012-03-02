@@ -35,6 +35,18 @@
 #define EON_ELEMENT_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)
 #define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 
+static Ender_Property *EON_ELEMENT_VISIBILITY;
+static Ender_Property *EON_ELEMENT_WIDTH;
+static Ender_Property *EON_ELEMENT_HEIGHT;
+static Ender_Property *EON_ELEMENT_MIN_WIDTH;
+static Ender_Property *EON_ELEMENT_MIN_HEIGHT;
+static Ender_Property *EON_ELEMENT_MAX_WIDTH;
+static Ender_Property *EON_ELEMENT_MAX_HEIGHT;
+static Ender_Property *EON_ELEMENT_PREFERRED_WIDTH;
+static Ender_Property *EON_ELEMENT_PREFERRED_HEIGHT;
+static Ender_Property *EON_ELEMENT_ACTUAL_WIDTH;
+static Ender_Property *EON_ELEMENT_ACTUAL_HEIGHT;
+
 typedef struct _Eon_Element
 {
 	EINA_MAGIC
@@ -103,7 +115,7 @@ static double _element_min_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz) return v;
 	if (thiz->min_width_get)
@@ -117,7 +129,7 @@ static double _element_min_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz) return v;
 	if (thiz->min_height_get)
@@ -131,7 +143,7 @@ static double _element_max_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = DBL_MAX;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz) return v;
 	if (thiz->max_width_get)
@@ -145,7 +157,7 @@ static double _element_max_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v = DBL_MAX;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz) return v;
 	if (thiz->max_height_get)
@@ -158,7 +170,7 @@ static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
 	/* FIXME for later, only call the setup when needed */
@@ -174,7 +186,7 @@ static void _eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
 	if (thiz->cleanup)
@@ -680,7 +692,7 @@ void eon_element_initialize(Ender_Element *e)
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	/* store the renderer and the ender to avoid so many functions calls */
 	thiz->e = e;
@@ -698,7 +710,7 @@ Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **
 	Enesim_Renderer *r;
 	Eina_Bool ret;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
 	thiz->managed = EINA_TRUE;
@@ -713,7 +725,7 @@ void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
 	thiz->managed = EINA_TRUE;
@@ -788,7 +800,7 @@ Eina_Bool eon_element_has_changed(Ender_Element *e)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 
 	return enesim_renderer_has_changed(r);
 }
@@ -803,7 +815,7 @@ Eina_Bool eon_element_needs_setup(Ender_Element *e)
 	Eon_Element *thiz;
 	Eina_Bool ret;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
 	ret = thiz->do_needs_setup;
@@ -825,7 +837,7 @@ void eon_element_damages_get(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, voi
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	enesim_renderer_damages_get(r, cb, data);
 }
 
@@ -954,7 +966,7 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 	double rw, rh;
 	double min, set, max;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	if (!thiz) return;
 
@@ -987,7 +999,7 @@ void eon_element_real_size_get(Ender_Element *e, Eon_Size *size)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	_eon_element_real_width_get(r, &size->width);
 	_eon_element_real_height_get(r, &size->height);
 }
@@ -996,7 +1008,7 @@ void eon_element_real_width_get(Ender_Element *e, double *width)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	_eon_element_real_width_get(r, width);
 }
 
@@ -1004,7 +1016,7 @@ void eon_element_real_height_get(Ender_Element *e, double *height)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	_eon_element_real_height_get(r, height);
 }
 
@@ -1013,7 +1025,7 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 	Eon_Element *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 	r =  thiz->renderer_get(e);
 	if (!r)

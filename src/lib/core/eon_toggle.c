@@ -20,6 +20,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_TOGGLE_ACTIVE;
+
 typedef struct _Eon_Toggle
 {
 	/* properties */
@@ -51,7 +53,7 @@ static void _eon_toggle_initialize(Ender_Element *ender)
 	Eon_Toggle *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_object_get(ender);
 	thiz = _eon_toggle_get(r);
 	thiz->e = ender;
 	/* register every needed callback */

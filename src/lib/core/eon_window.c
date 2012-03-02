@@ -61,7 +61,7 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 	if (!backend) return NULL;
 	if (!layout) return NULL;
 	/* FIXME we should just compare the type name */
-	l = ender_element_renderer_get(layout);
+	l = ender_element_object_get(layout);
 	if (!l) return NULL;
 	if (!eon_is_layout(l)) return NULL;
 

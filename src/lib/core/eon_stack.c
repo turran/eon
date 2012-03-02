@@ -23,6 +23,12 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_STACK_CHILD_VERTICAL_ALIGNMENT;
+static Ender_Property *EON_STACK_CHILD_HORIZONTAL_ALIGNMENT;
+static Ender_Property *EON_STACK_DIRECTION;
+static Ender_Property *EON_STACK_LAST_EXPAND;
+static Ender_Property *EON_STACK_HOMOGENEOUS;
+
 typedef struct _Eon_Stack_Child
 {
 	Ender_Element *ender;
@@ -152,7 +158,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 	Eina_List *l;
 	double last_x = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	last_ech = eina_list_data_get(eina_list_last(thiz->children));
 	size.width = aw;
 	size.height = ah;
@@ -166,7 +172,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 
 		if (size.width <= 0)
 			break;
-		child_r = ender_element_renderer_get(ech->ender);
+		child_r = ender_element_object_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
 		if (!thiz->curr.last_expand || ech != last_ech)
@@ -222,7 +228,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 	Eina_List *l;
 	double last_y = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	last_ech = eina_list_data_get(eina_list_last(thiz->children));
 	size.width = aw;
 	size.height = ah;
@@ -237,7 +243,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 		if (size.height <= 0)
 			break;
 
-		child_r = ender_element_renderer_get(ech->ender);
+		child_r = ender_element_object_get(ech->ender);
 
 		eon_element_real_relative_size_get(ech->ender, &size, &child_size);
 		{
@@ -301,7 +307,7 @@ static Eina_Bool _stack_relayout(Ender_Element *e,
 	/* the idea on a layout setup is the set the actual width and height
 	 * of every child before calling the setup of each child
 	 */
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	eon_widget_property_clear(r, "child");
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
 		_stack_horizontal_arrange(e, thiz, size->width, size->height, s, err);
@@ -329,7 +335,7 @@ static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, vo
 	double x;
 	double y;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 
 	eon_element_actual_position_get(r, &x, &y);
@@ -382,7 +388,7 @@ static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
 	Eina_List *l;
 	Eina_Bool ret;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 
 	ret = thiz->needs_setup;
@@ -403,7 +409,7 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e,
 	Eon_Stack *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	/* TODO we should only relayout whenever our properties have changed or a child
 	 * has changed properties, if not just leave it as is. Also we should not
@@ -422,7 +428,7 @@ static void _eon_stack_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
@@ -437,7 +443,7 @@ static double _eon_stack_min_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double min_width;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return 0;
 
@@ -455,7 +461,7 @@ static double _eon_stack_min_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double min_height;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return 0;
 
@@ -473,7 +479,7 @@ static double _eon_stack_preferred_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double preferred_width = -1;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return preferred_width;
 
@@ -515,7 +521,7 @@ static double _eon_stack_preferred_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double preferred_height = -1;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return preferred_height;
 
@@ -568,7 +574,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 	Enesim_Renderer *r;
 	Eina_List *l;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_stack_get(r);
 	if (!thiz) return NULL;
 #if 0
@@ -591,7 +597,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 		if (child_y < 0) continue;
 
 		/* TODO still need the width and height */
-		rchild = ender_element_renderer_get(ech->ender);
+		rchild = ender_element_object_get(ech->ender);
 		if (eon_is_element(rchild))
 		{
 			eon_element_actual_size_get(rchild, &child_size);

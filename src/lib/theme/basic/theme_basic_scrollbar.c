@@ -232,9 +232,8 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 	/* the line */
-	enesim_renderer_origin_set(thiz->line, lx, ly);
-	enesim_renderer_rectangle_width_set(thiz->line, lw);
-	enesim_renderer_rectangle_height_set(thiz->line, lh);
+	enesim_renderer_rectangle_position_set(thiz->line, lx, ly);
+	enesim_renderer_rectangle_size_set(thiz->line, lw, lh);
 	enesim_renderer_transformation_set(thiz->line, &matrix);
 	/* the bar shape */
 	/* the bar background fill */
@@ -363,6 +362,7 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	thiz->bar = r;
 	enesim_renderer_compound_layer_add(r, thiz->bar_shape);
 	enesim_renderer_compound_layer_add(r, thiz->bar_background);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;

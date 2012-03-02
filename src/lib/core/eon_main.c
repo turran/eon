@@ -35,7 +35,7 @@ static void _destructor_callback(Ender_Element *e, void *data)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	if (!eon_is_element(r))
 		return;
 }
@@ -45,7 +45,7 @@ static void _constructor_callback(Ender_Element *e, void *data)
 {
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	if (!eon_is_element(r))
 		return;
 	eon_element_initialize(e);

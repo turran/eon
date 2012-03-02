@@ -22,6 +22,14 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_SCROLLBAR_MAX;
+static Ender_Property *EON_SCROLLBAR_MIN;
+static Ender_Property *EON_SCROLLBAR_VALUE;
+static Ender_Property *EON_SCROLLBAR_ORIENTATION;
+static Ender_Property *EON_SCROLLBAR_PAGE_SIZE;
+static Ender_Property *EON_SCROLLBAR_PAGE_INCREMENT;
+static Ender_Property *EON_SCROLLBAR_STEP_INCREMENT;
+
 typedef struct _Eon_Scrollbar_State
 {
 	Eon_Orientation orientation;
@@ -73,7 +81,7 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 	double v;
 	double length;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	if (!thiz->thumb_dragging) return;
 
@@ -100,7 +108,7 @@ static void _eon_scrollbar_mouse_drag_stop(Ender_Element *e, const char *event_n
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	thiz->thumb_dragging = EINA_FALSE;
 }
@@ -113,7 +121,7 @@ static void _eon_scrollbar_mouse_drag_start(Ender_Element *e, const char *event_
 	Enesim_Renderer *theme_r;
 	Enesim_Rectangle tg;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
@@ -134,7 +142,7 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	Enesim_Renderer *theme_r;
 	Enesim_Rectangle ig, dg, tg;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -187,7 +195,7 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_scrollbar_mouse_click, NULL);
@@ -209,7 +217,7 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 	double thumb_size;
 	double length;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -239,7 +247,7 @@ static void _eon_scrollbar_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	thiz->changed = EINA_FALSE;
 }
@@ -249,7 +257,7 @@ static Eina_Bool _eon_scrollbar_needs_setup(Ender_Element *e)
 	Eon_Scrollbar *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 	return thiz->changed;
 }
@@ -269,7 +277,7 @@ static double _eon_scrollbar_min_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -285,7 +293,7 @@ static double _eon_scrollbar_max_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -301,7 +309,7 @@ static double _eon_scrollbar_min_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -317,7 +325,7 @@ static double _eon_scrollbar_max_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 
@@ -334,7 +342,7 @@ static double _eon_scrollbar_preferred_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -350,7 +358,7 @@ static double _eon_scrollbar_preferred_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);

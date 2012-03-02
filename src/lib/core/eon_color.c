@@ -28,6 +28,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_COLOR_VALUE;
+
 typedef struct _Eon_Color
 {
 	/* properties */
@@ -63,7 +65,7 @@ static void _eon_color_initialize(Ender_Element *e)
 	Enesim_Renderer *theme_r;
 	Ender_Element *content_e;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_color_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 

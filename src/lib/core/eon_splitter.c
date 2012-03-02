@@ -22,6 +22,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_SPLITTER_ORIENTATION;
+static Ender_Property *EON_SPLITTER_SECOND_CONTENT;
+static Ender_Property *EON_SPLITTER_POSITION;
+
 typedef struct _Eon_Splitter_State {
 	Eon_Orientation orientation;
 	Ender_Element *second_content;
@@ -57,7 +61,7 @@ static void _eon_splitter_mouse_move(Ender_Element *e, const char *event_name, v
 	double v = 0;
 	double length;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	if (!thiz->dragging) return;
 
@@ -86,7 +90,7 @@ static void _eon_splitter_mouse_drag_stop(Ender_Element *e, const char *event_na
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	thiz->dragging = EINA_FALSE;
 }
@@ -99,7 +103,7 @@ static void _eon_splitter_mouse_drag_start(Ender_Element *e, const char *event_n
 	Enesim_Renderer *theme_r;
 	Enesim_Rectangle g;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -135,7 +139,7 @@ static double _eon_splitter_min_width_get(Ender_Element *e, double cmv)
 	double bmv;
 	double scmv = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -169,7 +173,7 @@ static double _eon_splitter_max_width_get(Ender_Element *e, double cmv)
 	double bmv;
 	double scmv = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -203,7 +207,7 @@ static double _eon_splitter_min_height_get(Ender_Element *e, double cmv)
 	double bmv;
 	double scmv = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -236,7 +240,7 @@ static double _eon_splitter_max_height_get(Ender_Element *e, double cmv)
 	double bmv;
 	double scmv = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -270,7 +274,7 @@ static double _eon_splitter_preferred_width_get(Ender_Element *e, double cmv)
 	double bmv = cmv;
 	double scmv = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -299,7 +303,7 @@ static double _eon_splitter_preferred_height_get(Ender_Element *e, double cmv)
 	double bmv = cmv;
 	double scmv = 0;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -327,14 +331,14 @@ static Ender_Element * _eon_splitter_element_at(Ender_Element *e, double x, doub
 	Enesim_Renderer *r;
 	double ax, ay;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 
 	if (thiz->current.second_content)
 	{
 		Enesim_Renderer *content_r;
 
-		content_r = ender_element_renderer_get(thiz->current.second_content);
+		content_r = ender_element_object_get(thiz->current.second_content);
 		eon_element_actual_size_get(content_r, &size);
 		eon_element_actual_position_get(content_r, &ax, &ay);
 		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
@@ -351,7 +355,7 @@ static void _eon_splitter_initialize(Ender_Element *e)
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], _eon_splitter_mouse_drag_start, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_STOP], _eon_splitter_mouse_drag_stop, NULL);
@@ -373,7 +377,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	double position;
 	double thickness;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
@@ -385,7 +389,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 		printf("no content\n");
 		return EINA_FALSE;
 	}
-	content_r = ender_element_renderer_get(cstate->content);
+	content_r = ender_element_object_get(cstate->content);
 
 	if (!thiz->current.second_content)
 	{
@@ -457,7 +461,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	eon_element_actual_height_set(content_r, ch);
 	eon_element_actual_position_set(content_r, cx, cy);
 
-	content_r = ender_element_renderer_get(thiz->current.second_content);
+	content_r = ender_element_object_get(thiz->current.second_content);
 	eon_element_actual_width_set(content_r, scw);
 	eon_element_actual_height_set(content_r, sch);
 	eon_element_actual_position_set(content_r, scx, scy);
@@ -489,7 +493,7 @@ static void _eon_splitter_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb,
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 
 	printf("entering the damages\n");
@@ -528,7 +532,7 @@ static void _eon_splitter_cleanup(Ender_Element *e, Enesim_Surface *s)
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 
 	if (thiz->current.second_content)
@@ -544,7 +548,7 @@ static Eina_Bool _eon_splitter_needs_setup(Ender_Element *e)
 	Enesim_Renderer *r;
 	Eina_Bool ret;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 
 	/* check if we have changed */

@@ -20,6 +20,9 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_RADIO_GROUP_NAME;
+static Ender_Property *EON_RADIO_SELECTED;
+
 typedef struct _Eon_Radio
 {
 	/* properties */
@@ -47,7 +50,7 @@ static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *e
 	/* TODO Whenever the mouse is clicked, we should know if by clicking on x, y
 	 * we actually need to change the state of the radio button
 	 */
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	theme = eon_widget_theme_ender_get(r);
 	new_state = escen_ender_state_get(theme, "selected");
 	if (new_state)
@@ -67,7 +70,7 @@ static void _eon_radio_initialize(Ender_Element *ender)
 	Eon_Radio *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(ender);
+	r = ender_element_object_get(ender);
 	thiz = _eon_radio_get(r);
 	thiz->e = ender;
 	/* register every needed callback */

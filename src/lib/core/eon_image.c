@@ -22,6 +22,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ender_Property *EON_IMAGE_FILE;
+
 typedef struct _Eon_Image
 {
 	/* properties */
@@ -78,7 +80,7 @@ static Eina_Bool _eon_image_setup(Ender_Element *e,
 	Eon_Image *thiz;
 	Enesim_Renderer *r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	if (!thiz->file_changed) return EINA_TRUE;
 
@@ -97,7 +99,7 @@ static double _eon_image_max_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -115,7 +117,7 @@ static double _eon_image_max_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -133,7 +135,7 @@ static double _eon_image_min_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -151,7 +153,7 @@ static double _eon_image_min_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -169,7 +171,7 @@ static double _eon_image_preferred_width_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
@@ -190,7 +192,7 @@ static double _eon_image_preferred_height_get(Ender_Element *e)
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_renderer_get(e);
+	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
