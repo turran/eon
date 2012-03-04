@@ -247,6 +247,18 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz->child_add(r, child);
 }
 
+static void _eon_layout_hild_set(Enesim_Renderer *r, Eina_List *childs)
+{
+	Eina_List *l;
+	Ender_Element *child;
+
+	EINA_LIST_FOREACH(childs, l, child)
+	{
+		_eon_layout_child_add(r, child);
+	}
+}
+
+
 static void _eon_layout_child_clear(Enesim_Renderer *r)
 {
 	Eon_Layout *thiz;
@@ -320,7 +332,6 @@ void * eon_layout_data_get(Enesim_Renderer *r)
 }
 
 #define _eon_layout_child_get NULL
-#define _eon_layout_child_set NULL
 #include "eon_generated_layout.c"
 /*============================================================================*
  *                                   API                                      *

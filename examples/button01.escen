@@ -7,7 +7,17 @@ escen {
 						default {
 							set { content = label "label01" {
 									default {
-										set { text = "my very own label"; };
+										set { text = "My very own label"; };
+									};
+								};
+							};
+						};
+					},
+					button "button02" {
+						default {
+							set { content = label "label01" {
+									default {
+										set { text = "My second new button"; };
 									};
 								};
 							};
@@ -15,6 +25,7 @@ escen {
 					}
 				];
 			};
+			set { direction = 1; };
 		};
 	};
 };
