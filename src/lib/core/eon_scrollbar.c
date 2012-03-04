@@ -328,7 +328,6 @@ static double _eon_scrollbar_max_height_get(Ender_Element *e)
 	r = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(r);
 
-
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_scrollbar_max_height_get(theme_r, &v);
 

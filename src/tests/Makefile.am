@@ -1,6 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 check_PROGRAMS = \
+eon_test_loader \
 eon_test_button \
 eon_test_button_image \
 eon_test_canvas \
@@ -18,6 +19,11 @@ eon_test_splitter \
 eon_test_spin \
 eon_test_toggle \
 eon_test_wrapper
+
+eon_test_loader_SOURCES = eon_test_loader.c
+eon_test_loader_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_loader_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_loader_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_button_SOURCES = eon_test_button.c
 eon_test_button_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

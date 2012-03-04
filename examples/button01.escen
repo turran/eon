@@ -1,0 +1,20 @@
+escen {
+	stack "stack01" {
+		default {
+			set {
+				child = [
+					button "button01" {
+						default {
+							set { content = label "label01" {
+									default {
+										set { text = "my very own label"; };
+									};
+								};
+							};
+						};
+					}
+				];
+			};
+		};
+	};
+};

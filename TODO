@@ -29,3 +29,4 @@
   Where C should be escen calling the correct object and set its properties, animations whatever
 + We can create a simple way of handling direct property set/get, on the ender generator, whenever a property is added, the return property can be managed
   as an external Ender_Property so then, we can handle the direct property set
++ Cache every escen state a widget needs, to avoid having to fetch the state each time something changes
