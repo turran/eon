@@ -34,10 +34,7 @@ typedef struct _Basic_Scrollbar
 	Enesim_Renderer *line;
 	Enesim_Renderer *background;
 	Enesim_Renderer *background_fill;
-	Enesim_Renderer *bar;
-	Enesim_Renderer *bar_background;
-	Enesim_Renderer *bar_background_fill;
-	Enesim_Renderer *bar_shape;
+	Eon_Basic_Bar *bar;
 } Basic_Scrollbar;
 
 static const double _border_weight = 2.0;
@@ -122,40 +119,28 @@ static void _basic_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percen
 		eon_theme_widget_height_get(r, &h);
 		ofy = h * percent;
 	}
-	enesim_renderer_origin_set(thiz->bar, ox + ofx, oy + ofy);
+	eon_basic_bar_position_set(thiz->bar, ox + ofx, oy + ofy);	
 }
 
 static void _basic_scrollbar_thumb_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
 {
 	Basic_Scrollbar *thiz;
+	Enesim_Renderer *bar_r;
 
 	thiz = _scrollbar_get(r);
-	enesim_renderer_boundings(thiz->bar, geometry);
-	enesim_renderer_origin_get(thiz->bar, &geometry->x, &geometry->y);
+	bar_r = eon_basic_bar_renderer_get(thiz->bar);
+	enesim_renderer_boundings(bar_r, geometry);
+	enesim_renderer_origin_get(bar_r, &geometry->x, &geometry->y);
 }
 
 static void _basic_scrollbar_thumb_size_set(Enesim_Renderer *r, double size)
 {
 	Basic_Scrollbar *thiz;
 	Eon_Orientation orientation;
-	double bw, bh;
 
 	thiz = _scrollbar_get(r);
 	eon_theme_scrollbar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_VERTICAL)
-	{
-		bw = 14;
-		bh = size;
-	}
-	else
-	{
-		bw = size;
-		bh = 14;
-	}
-	enesim_renderer_rectangle_size_set(thiz->bar_shape, bw, bh);
-	enesim_renderer_rectangle_size_set(thiz->bar_background, bw - 6, bh - 6);
-	enesim_renderer_stripes_even_thickness_set(thiz->bar_background_fill, (size - 6) / 2);
-	enesim_renderer_stripes_odd_thickness_set(thiz->bar_background_fill, (size - 6) / 2);
+	eon_basic_bar_size_set(thiz->bar, size, orientation);
 }
 
 static double _basic_scrollbar_thumb_max_size_get(Enesim_Renderer *r)
@@ -235,11 +220,6 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error
 	enesim_renderer_rectangle_position_set(thiz->line, lx, ly);
 	enesim_renderer_rectangle_size_set(thiz->line, lw, lh);
 	enesim_renderer_transformation_set(thiz->line, &matrix);
-	/* the bar shape */
-	/* the bar background fill */
-	enesim_renderer_transformation_set(thiz->bar_background_fill, &bbf_matrix);
-	/* the bar background */
-	/* the bar */
 	/* the composition */
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
@@ -257,13 +237,7 @@ static void _basic_scrollbar_free(Enesim_Renderer *r)
 	if (thiz->compound)
 		enesim_renderer_unref(thiz->compound);
 	if (thiz->bar)
-		enesim_renderer_unref(thiz->bar);
-	if (thiz->bar_shape)
-		enesim_renderer_unref(thiz->bar_shape);
-	if (thiz->bar_background)
-		enesim_renderer_unref(thiz->bar_background);
-	if (thiz->bar_background_fill)
-		enesim_renderer_unref(thiz->bar_background_fill);
+		eon_basic_bar_free(thiz->bar);
 	if (thiz->line)
 		enesim_renderer_unref(thiz->line);
 	if (thiz->background)
@@ -300,6 +274,7 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 {
 	Basic_Scrollbar *thiz;
 	Enesim_Renderer *r;
+	Enesim_Renderer *bar_r;
 
 	thiz = calloc(1, sizeof(Basic_Scrollbar));
 	if (!thiz) return NULL;
@@ -329,47 +304,15 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
-	r = enesim_renderer_stripes_new();
-	if (!r) goto bar_background_fill_err;
-	thiz->bar_background_fill = r;
-	enesim_renderer_stripes_odd_color_set(r, 0x22000000);
-	enesim_renderer_stripes_even_color_set(r, 0x33000000);
-	enesim_renderer_origin_set(r, -1.0, -1.0);
-
-	r = enesim_renderer_rectangle_new();
-	if (!r) goto bar_background_err;
-	thiz->bar_background = r;
-	enesim_renderer_rectangle_corner_radius_set(r, 16);
-	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_renderer_set(r, thiz->bar_background_fill);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_origin_set(r, 3.0, 3.0);
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-
-	r = enesim_renderer_rectangle_new();
-	if (!r) goto bar_shape_err;
-	thiz->bar_shape = r;
-	enesim_renderer_rectangle_corner_radius_set(r, 16);
-	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-	enesim_renderer_shape_fill_color_set(r, 0xffcccccc);
-	enesim_renderer_shape_stroke_weight_set(r, _border_weight);
-	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
-
-	r = enesim_renderer_compound_new();
-	if (!r) goto bar_err;
-	thiz->bar = r;
-	enesim_renderer_compound_layer_add(r, thiz->bar_shape);
-	enesim_renderer_compound_layer_add(r, thiz->bar_background);
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	thiz->bar = eon_basic_bar_new();
+	bar_r = eon_basic_bar_renderer_get(thiz->bar);
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
 	thiz->compound = r;
 	enesim_renderer_compound_layer_add(r, thiz->background);
 	enesim_renderer_compound_layer_add(r, thiz->line);
-	enesim_renderer_compound_layer_add(r, thiz->bar);
+	enesim_renderer_compound_layer_add(r, bar_r);
 
 	r = eon_theme_scrollbar_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -379,14 +322,6 @@ Enesim_Renderer * eon_basic_scrollbar_new(void)
 renderer_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
-	enesim_renderer_unref(thiz->bar);
-bar_err:
-	enesim_renderer_unref(thiz->bar_shape);
-bar_shape_err:
-	enesim_renderer_unref(thiz->bar_background);
-bar_background_err:
-	enesim_renderer_unref(thiz->bar_background_fill);
-bar_background_fill_err:
 	enesim_renderer_unref(thiz->line);
 line_err:
 	enesim_renderer_unref(thiz->background);

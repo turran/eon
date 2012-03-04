@@ -24,13 +24,11 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Basic_Bar Eon_Basic_Bar;
-
 struct _Eon_Basic_Bar
 {
 	/* properties */
 	double radius;
-	Eon_Orientation orientation;
+	double border_weight;
 	Enesim_Color border_color;
 	/* private */
 	Enesim_Renderer *bar;
@@ -38,141 +36,12 @@ struct _Eon_Basic_Bar
 	Enesim_Renderer *bar_background_fill;
 	Enesim_Renderer *bar_shape;
 };
-
-static const double _border_weight = 2.0;
-
-/*----------------------------------------------------------------------------*
- *                   The Eon's theme bar interface                    *
- *----------------------------------------------------------------------------*/
-static double _basic_bar_min_width_get(Enesim_Renderer *r)
-{
-	Eon_Orientation orientation;
-
-	eon_theme_bar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_HORIZONTAL)
-		return 24;
-	else
-		return 16;
-}
-
-static double _basic_bar_max_width_get(Enesim_Renderer *r)
-{
-	Eon_Orientation orientation;
-
-	eon_theme_bar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_HORIZONTAL)
-		return DBL_MAX;
-	else
-		return 16;
-}
-
-static double _basic_bar_min_height_get(Enesim_Renderer *r)
-{
-	Eon_Orientation orientation;
-
-	eon_theme_bar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_HORIZONTAL)
-		return 16;
-	else
-		return 24;
-}
-
-static double _basic_bar_max_height_get(Enesim_Renderer *r)
-{
-	Eon_Orientation orientation;
-
-	eon_theme_bar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_VERTICAL)
-		return DBL_MAX;
-	else
-		return 16;
-}
-
-static Eina_Bool _basic_bar_setup(Enesim_Renderer *r, Enesim_Error **error)
-{
-	Eon_Basic_Bar *thiz;
-	Eon_Orientation orientation;
-	Enesim_Matrix matrix;
-	Enesim_Matrix bf_matrix;
-	Enesim_Matrix bbf_matrix;
-	double ox, oy;
-	double width, height;
-	double lx, ly, lw, lh;
-
-	thiz = _bar_get(r);
-	/* the origin */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	/* the size */
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-
-	/* the background fill */
-	eon_theme_bar_orientation_get(r, &orientation);
-	if (orientation == EON_ORIENTATION_VERTICAL)
-	{
-		lx = width / 2;
-		ly = thiz->radius;
-		lw = 1;
-		lh = height - (thiz->radius * 2);
-
-		enesim_matrix_scale(&matrix, 0.6, 1.0);
-
-		enesim_matrix_identity(&bbf_matrix);
-		bf_matrix.xx = 0; bf_matrix.xy = -1; bf_matrix.xz = 0;
-		bf_matrix.yx = 1; bf_matrix.yy = 0; bf_matrix.yz = 0;
-		bf_matrix.zx = 0; bf_matrix.zy = 0; bf_matrix.zz = 1;
-	}
-	else
-	{
-		lx = thiz->radius;
-		ly = height / 2;
-		lw = width - (thiz->radius * 2);
-		lh = 1;
-
-		enesim_matrix_scale(&matrix, 1.0, 0.6);
-
-		bbf_matrix.xx = 0; bbf_matrix.xy = -1; bbf_matrix.xz = 0;
-		bbf_matrix.yx = 1; bbf_matrix.yy = 0; bbf_matrix.yz = 0;
-		bbf_matrix.zx = 0; bbf_matrix.zy = 0; bbf_matrix.zz = 1;
-		enesim_matrix_identity(&bf_matrix);
-	}
-	/* the bar shape */
-	/* the bar background fill */
-	enesim_renderer_transformation_set(thiz->bar_background_fill, &bbf_matrix);
-	/* the bar background */
-	/* the bar */
-	/* the composition */
-
-	return EINA_TRUE;
-}
-
-static void _basic_bar_free(Enesim_Renderer *r)
-{
-	Eon_Basic_Bar *thiz;
-
-	thiz = _bar_get(r);
-
-	thiz = enesim_renderer_data_get(r);
-
-	if (thiz->bar)
-		enesim_renderer_unref(thiz->bar);
-	if (thiz->bar_shape)
-		enesim_renderer_unref(thiz->bar_shape);
-	if (thiz->bar_background)
-		enesim_renderer_unref(thiz->bar_background);
-	if (thiz->bar_background_fill)
-		enesim_renderer_unref(thiz->bar_background_fill);
-	free(thiz);
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- *
- */
 Eon_Basic_Bar * eon_basic_bar_new(void)
 {
 	Eon_Basic_Bar *thiz;
@@ -182,6 +51,7 @@ Eon_Basic_Bar * eon_basic_bar_new(void)
 	if (!thiz) return NULL;
 	thiz->radius = 4;
 	thiz->border_color = 0xff555555;
+	thiz->border_weight = 2.0;
 
 	r = enesim_renderer_stripes_new();
 	if (!r) goto bar_background_fill_err;
@@ -207,7 +77,7 @@ Eon_Basic_Bar * eon_basic_bar_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	enesim_renderer_shape_fill_color_set(r, 0xffcccccc);
-	enesim_renderer_shape_stroke_weight_set(r, _border_weight);
+	enesim_renderer_shape_stroke_weight_set(r, thiz->border_weight);
 	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
@@ -220,8 +90,6 @@ Eon_Basic_Bar * eon_basic_bar_new(void)
 
 	return thiz;
 
-compound_err:
-	enesim_renderer_unref(thiz->bar);
 bar_err:
 	enesim_renderer_unref(thiz->bar_shape);
 bar_shape_err:
@@ -234,46 +102,63 @@ bar_background_fill_err:
 	return NULL;
 }
 
-static void _basic_bar_thumb_size_set(Enesim_Renderer *r, double size)
+void eon_basic_bar_size_set(Eon_Basic_Bar *thiz, double size, Eon_Orientation orientation)
 {
-	Eon_Basic_Bar *thiz;
-	Eon_Orientation orientation;
+	Enesim_Matrix bbf_matrix;
 	double bw, bh;
 
-	thiz = _bar_get(r);
-	eon_theme_bar_orientation_get(r, &orientation);
 	if (orientation == EON_ORIENTATION_VERTICAL)
 	{
 		bw = 14;
 		bh = size;
+
+		enesim_matrix_identity(&bbf_matrix);
 	}
 	else
 	{
 		bw = size;
 		bh = 14;
+
+		bbf_matrix.xx = 0; bbf_matrix.xy = -1; bbf_matrix.xz = 0;
+		bbf_matrix.yx = 1; bbf_matrix.yy = 0; bbf_matrix.yz = 0;
+		bbf_matrix.zx = 0; bbf_matrix.zy = 0; bbf_matrix.zz = 1;
 	}
 	enesim_renderer_rectangle_size_set(thiz->bar_shape, bw, bh);
 	enesim_renderer_rectangle_size_set(thiz->bar_background, bw - 6, bh - 6);
 	enesim_renderer_stripes_even_thickness_set(thiz->bar_background_fill, (size - 6) / 2);
 	enesim_renderer_stripes_odd_thickness_set(thiz->bar_background_fill, (size - 6) / 2);
+	enesim_renderer_transformation_set(thiz->bar_background_fill, &bbf_matrix);
 }
 
-static double _basic_bar_thumb_max_size_get(Enesim_Renderer *r)
+double eon_basic_bar_max_size_get(Eon_Basic_Bar *thiz)
 {
 	return DBL_MAX;
 }
 
-static double _basic_bar_thumb_min_size_get(Enesim_Renderer *r)
+double eon_basic_bar_min_size_get(Eon_Basic_Bar *thiz)
 {
 	return 20;
 }
 
-static Enesim_Renderer * _basic_bar_renderer_get(Enesim_Renderer *r)
+void eon_basic_bar_position_set(Eon_Basic_Bar *thiz, double x, double y)
 {
-	Eon_Basic_Bar *thiz;
-
-	thiz = _bar_get(r);
-	return thiz->bar;
+	enesim_renderer_origin_set(thiz->bar, x, y);
 }
 
+void eon_basic_bar_free(Eon_Basic_Bar *thiz)
+{
+	if (thiz->bar)
+		enesim_renderer_unref(thiz->bar);
+	if (thiz->bar_shape)
+		enesim_renderer_unref(thiz->bar_shape);
+	if (thiz->bar_background)
+		enesim_renderer_unref(thiz->bar_background);
+	if (thiz->bar_background_fill)
+		enesim_renderer_unref(thiz->bar_background_fill);
+	free(thiz);
+}
 
+Enesim_Renderer * eon_basic_bar_renderer_get(Eon_Basic_Bar *thiz)
+{
+	return thiz->bar;
+}
