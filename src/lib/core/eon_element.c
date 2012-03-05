@@ -82,7 +82,6 @@ typedef struct _Eon_Element
 	Eina_Bool managed : 1;
 	const char *name;
 	void *data;
-	Enesim_Renderer *r;
 	Ender_Element *e;
 } Eon_Element;
 
@@ -696,7 +695,6 @@ void eon_element_initialize(Ender_Element *e)
 	thiz = _eon_element_get(r);
 	/* store the renderer and the ender to avoid so many functions calls */
 	thiz->e = e;
-	thiz->r = r;
 	/* whenever the theme has changed we should notify
 	 * the change on this element too
 	 */
