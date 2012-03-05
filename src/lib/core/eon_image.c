@@ -92,16 +92,9 @@ static Eina_Bool _eon_image_setup(Ender_Element *e,
 	return EINA_TRUE;
 }
 
-static double _eon_image_max_width_get(Ender_Element *e)
+static double _eon_image_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Image *thiz;
 	Eon_Size image_size, out;
-	Enesim_Renderer *r;
-	Enesim_Renderer *theme_r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	image_size.width = 2048;
 	image_size.height = 2048;
@@ -110,16 +103,9 @@ static double _eon_image_max_width_get(Ender_Element *e)
 	return out.width;
 }
 
-static double _eon_image_max_height_get(Ender_Element *e)
+static double _eon_image_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Image *thiz;
 	Eon_Size image_size, out;
-	Enesim_Renderer *r;
-	Enesim_Renderer *theme_r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	image_size.width = 2048;
 	image_size.height = 2048;
@@ -128,16 +114,9 @@ static double _eon_image_max_height_get(Ender_Element *e)
 	return out.height;
 }
 
-static double _eon_image_min_width_get(Ender_Element *e)
+static double _eon_image_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Image *thiz;
 	Eon_Size image_size, out;
-	Enesim_Renderer *r;
-	Enesim_Renderer *theme_r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	image_size.width = 1;
 	image_size.height = 1;
@@ -146,16 +125,9 @@ static double _eon_image_min_width_get(Ender_Element *e)
 	return out.width;
 }
 
-static double _eon_image_min_height_get(Ender_Element *e)
+static double _eon_image_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Image *thiz;
 	Eon_Size image_size, out;
-	Enesim_Renderer *r;
-	Enesim_Renderer *theme_r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	image_size.width = 1;
 	image_size.height = 1;
@@ -164,16 +136,14 @@ static double _eon_image_min_height_get(Ender_Element *e)
 	return out.height;
 }
 
-static double _eon_image_preferred_width_get(Ender_Element *e)
+static double _eon_image_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Image *thiz;
 	Eon_Size image_size, out;
 	Enesim_Renderer *r;
-	Enesim_Renderer *theme_r;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	if (thiz->original_width < 0 || thiz->original_height < 0)
 		return -1;
@@ -185,16 +155,14 @@ static double _eon_image_preferred_width_get(Ender_Element *e)
 	return out.width;
 }
 
-static double _eon_image_preferred_height_get(Ender_Element *e)
+static double _eon_image_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Image *thiz;
 	Eon_Size image_size, out;
 	Enesim_Renderer *r;
-	Enesim_Renderer *theme_r;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_image_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	if (thiz->original_width < 0 || thiz->original_height < 0)
 		return -1;

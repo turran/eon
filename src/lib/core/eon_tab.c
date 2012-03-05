@@ -117,7 +117,7 @@ static void _eon_tab_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static double _eon_tab_min_width_get(Ender_Element *e)
+static double _eon_tab_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
 	Enesim_Renderer *r;
@@ -128,7 +128,7 @@ static double _eon_tab_min_width_get(Ender_Element *e)
 	return 0;
 }
 
-static double _eon_tab_max_width_get(Ender_Element *e)
+static double _eon_tab_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
 	Enesim_Renderer *r;
@@ -139,7 +139,7 @@ static double _eon_tab_max_width_get(Ender_Element *e)
 	return 0;
 }
 
-static double _eon_tab_min_height_get(Ender_Element *e)
+static double _eon_tab_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
 	Enesim_Renderer *r;
@@ -150,7 +150,7 @@ static double _eon_tab_min_height_get(Ender_Element *e)
 	return 0;
 }
 
-static double _eon_tab_max_height_get(Ender_Element *e)
+static double _eon_tab_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
 	Enesim_Renderer *r;
@@ -161,7 +161,7 @@ static double _eon_tab_max_height_get(Ender_Element *e)
 	return 0;
 }
 
-static double _eon_tab_preferred_width_get(Ender_Element *e)
+static double _eon_tab_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
 	Enesim_Renderer *r;
@@ -172,7 +172,7 @@ static double _eon_tab_preferred_width_get(Ender_Element *e)
 	return 0;
 }
 
-static double _eon_tab_preferred_height_get(Ender_Element *e)
+static double _eon_tab_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
 	Enesim_Renderer *r;

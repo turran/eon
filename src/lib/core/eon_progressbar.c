@@ -40,97 +40,55 @@ static inline Eon_Progressbar * _eon_progressbar_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                        *
  *----------------------------------------------------------------------------*/
-static double _eon_progressbar_min_width_get(Ender_Element *e)
+static double _eon_progressbar_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Progressbar *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_progressbar_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_progressbar_min_width_get(theme_r, &v);
 
 	return v;
 }
 
-static double _eon_progressbar_max_width_get(Ender_Element *e)
+static double _eon_progressbar_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Progressbar *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_progressbar_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_progressbar_max_width_get(theme_r, &v);
 
 	return v;
 }
 
-static double _eon_progressbar_min_height_get(Ender_Element *e)
+static double _eon_progressbar_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Progressbar *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_progressbar_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_progressbar_min_height_get(theme_r, &v);
 
 	return v;
 }
 
-static double _eon_progressbar_max_height_get(Ender_Element *e)
+static double _eon_progressbar_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Progressbar *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_progressbar_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_progressbar_max_height_get(theme_r, &v);
 
 	return v;
 }
 
-static double _eon_progressbar_preferred_width_get(Ender_Element *e)
+static double _eon_progressbar_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Progressbar *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_progressbar_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_progressbar_preferred_width_get(theme_r, &v);
 
 	return v;
 }
 
-static double _eon_progressbar_preferred_height_get(Ender_Element *e)
+static double _eon_progressbar_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Progressbar *thiz;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_progressbar_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_progressbar_preferred_height_get(theme_r, &v);
 
 	return v;

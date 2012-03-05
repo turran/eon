@@ -247,18 +247,15 @@ static void _eon_spin_initialize(Ender_Element *e)
 	ender_event_listener_add(thiz->entry, "Mutation", _entry_changed, e);
 }
 
-static double _eon_spin_min_width_get(Ender_Element *e)
+static double _eon_spin_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_spin_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_min_width_get(thiz->entry, &v);
@@ -266,18 +263,15 @@ static double _eon_spin_min_width_get(Ender_Element *e)
 	return v + margin.left + margin.right;
 }
 
-static double _eon_spin_max_width_get(Ender_Element *e)
+static double _eon_spin_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_spin_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_max_width_get(thiz->entry, &v);
@@ -285,18 +279,15 @@ static double _eon_spin_max_width_get(Ender_Element *e)
 	return v + margin.left + margin.right;
 }
 
-static double _eon_spin_min_height_get(Ender_Element *e)
+static double _eon_spin_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_spin_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_min_height_get(thiz->entry, &v);
@@ -304,18 +295,15 @@ static double _eon_spin_min_height_get(Ender_Element *e)
 	return v + margin.top + margin.bottom;
 }
 
-static double _eon_spin_max_height_get(Ender_Element *e)
+static double _eon_spin_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_spin_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_max_height_get(thiz->entry, &v);
@@ -323,18 +311,15 @@ static double _eon_spin_max_height_get(Ender_Element *e)
 	return v + margin.top + margin.bottom;
 }
 
-static double _eon_spin_preferred_width_get(Ender_Element *e)
+static double _eon_spin_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_spin_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_preferred_width_get(thiz->entry, &v);
@@ -342,18 +327,15 @@ static double _eon_spin_preferred_width_get(Ender_Element *e)
 	return v + margin.left + margin.right;
 }
 
-static double _eon_spin_preferred_height_get(Ender_Element *e)
+static double _eon_spin_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
 	Enesim_Renderer *r;
 	double v;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_spin_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_preferred_height_get(thiz->entry, &v);
