@@ -5,7 +5,7 @@ escen {
         child = [
           splitter "splitter01" {
             default {
-              set { orientation = 0; };
+              set { orientation = 1; };
               set {
                 content =
                   button "button01" {
@@ -37,6 +37,7 @@ escen {
         ];
       };
       set { direction = 0; };
+      set { last_expand = 1; };
     };
   };
 };
