@@ -36,8 +36,10 @@ typedef struct _Eon_Theme_Entry
 	Eon_Theme_Entry_Margin_Get margin_get;
 	Eon_Theme_Entry_Setup setup;
 	Eon_Theme_Entry_Cleanup cleanup;
+	Eon_Theme_Widget_Has_Changed has_changed;
 	Enesim_Renderer_Delete free;
 	/* private */
+	Eina_Bool changed : 1;
 	Enesim_Renderer *text;
 	void *data;
 } Eon_Theme_Entry;
@@ -71,7 +73,7 @@ static Enesim_Renderer * _eon_theme_entry_renderer_get(Enesim_Renderer *r)
 	return thiz->text;
 }
 
-static Enesim_Renderer * _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Eon_Theme_Entry *thiz;
 	Eina_Bool ret = EINA_TRUE;
@@ -92,8 +94,21 @@ static void _eon_theme_entry_cleanup(Enesim_Renderer *r)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
+	thiz->changed = EINA_FALSE;
 	if (thiz->cleanup)
 		thiz->cleanup(r);
+}
+
+static Eina_Bool _eon_theme_entry_has_changed(Enesim_Renderer *r)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	if (thiz->changed)
+		return EINA_TRUE;
+	if (thiz->has_changed)
+		return thiz->has_changed(r);
+	return EINA_FALSE;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -161,6 +176,14 @@ Etex_Buffer * eon_theme_entry_buffer_get(Enesim_Renderer *r)
 	etex_span_buffer_get(thiz->text, &b);
 	return b;
 }
+
+void eon_theme_entry_buffer_has_changed(Enesim_Renderer *r)
+{
+	Eon_Theme_Entry *thiz;
+
+	thiz = _eon_theme_entry_get(r);
+	thiz->changed = EINA_TRUE;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -188,11 +211,12 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
 	thiz->renderer_get = descriptor->renderer_get;
+	thiz->has_changed = descriptor->has_changed;
 
 	pdescriptor.renderer_get = _eon_theme_entry_renderer_get;
 	pdescriptor.setup = _eon_theme_entry_setup;
 	pdescriptor.cleanup = _eon_theme_entry_cleanup;
-	pdescriptor.has_changed = descriptor->has_changed;
+	pdescriptor.has_changed = _eon_theme_entry_has_changed;
 
 	pdescriptor.name = _eon_theme_entry_name;
 	pdescriptor.free = _eon_theme_entry_free;

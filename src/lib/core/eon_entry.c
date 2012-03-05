@@ -53,12 +53,18 @@ static void _eon_entry_click(Ender_Element *e, const char *event_name, void *eve
 	Enesim_Renderer *r;
 
 	r = ender_element_object_get(e);
+
+	r = ender_element_object_get(e);
 	thiz = _eon_entry_get(r);
 
 	/* FIXME just an example for now, given that the key evenst are now managed yet */
 	{
+		Enesim_Renderer *theme_r;
 		static int offset = 0;
+
+		theme_r = eon_widget_theme_renderer_get(r);
 		etex_buffer_string_insert(thiz->buffer, "l>", -1, offset);
+		eon_theme_entry_buffer_has_changed(theme_r);
 		offset += 2;
 		/* inform the position of the cursor */
 	}
@@ -213,9 +219,12 @@ static void _eon_entry_alignment_get(Enesim_Renderer *r, Eon_Horizontal_Alignmen
 static void _eon_entry_text_set(Enesim_Renderer *r, char *text)
 {
 	Eon_Entry *thiz;
+	Enesim_Renderer *theme_r;
 
 	thiz = _eon_entry_get(r);
 	etex_buffer_string_set(thiz->buffer, text, -1);
+	theme_r = eon_widget_theme_renderer_get(r);
+	eon_theme_entry_buffer_has_changed(theme_r);
 }
 
 static void _eon_entry_text_get(Enesim_Renderer *r, char **text)
