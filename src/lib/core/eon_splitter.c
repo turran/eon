@@ -562,6 +562,9 @@ static Eina_Bool _eon_splitter_needs_setup(Ender_Element *e)
 	/* check if we have changed */
 	if (!thiz->changed) return EINA_FALSE;
 
+	if (thiz->current.second_content != thiz->past.second_content)
+		return EINA_TRUE;
+
 	if (thiz->current.orientation != thiz->past.orientation)
 		return EINA_TRUE;
 
