@@ -248,6 +248,15 @@ static Eina_Bool _idler_cb(void *data)
 		thiz->tiler = eina_tiler_new(thiz->width, thiz->height);
 		goto all;
 	}
+
+	/* once the eon element does not inherit from a renderer then
+	 * we should call:
+	 * Eina_Bool has_changed = eon_element_has_changed(e);
+	 * if (has_changed) eon_element_setup(e);
+	 * r = eon_element_renderer_get(e);
+	 * enesim_renderer_damages_get(r, _sdl_damages_get, thiz);
+	 */
+
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */
