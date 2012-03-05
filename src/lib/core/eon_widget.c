@@ -20,7 +20,9 @@
 #include "Eon_Theme.h"
 #include "eon_theme_private.h"
 /* TODO
- * Add a notification whenever the theme has changed
+ * - Add a notification whenever the theme has changed
+ * - A widget should have several default states:
+ *  - focus in/focus out/enabled/disabled/etc
  */
 /*============================================================================*
  *                                  Local                                     *
