@@ -41,6 +41,15 @@ typedef struct _Eon_Widget
 	Escen_Instance *theme_instance;
 	Ender_Element *theme_element;
 	Enesim_Renderer *theme_renderer;
+
+	/* interface */
+	Eon_Widget_Min_Width_Get min_width_get;
+	Eon_Widget_Max_Width_Get max_width_get;
+	Eon_Widget_Min_Height_Get min_height_get;
+	Eon_Widget_Max_Height_Get max_height_get;
+	Eon_Widget_Preferred_Width_Get preferred_width_get;
+	Eon_Widget_Preferred_Height_Get preferred_height_get;
+
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Needs_Setup needs_setup;
@@ -160,6 +169,84 @@ static void _eon_widget_actual_x_set(Enesim_Renderer *r, double x)
 	thiz = _eon_widget_get(r);
 	ender_element_value_set(thiz->theme_element, "x", x, NULL);
 }
+
+static double _eon_widget_min_width_get(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_object_get(e);
+	thiz = _eon_widget_get(r);
+	if (thiz->min_width_get)
+		v = thiz->min_width_get(e, thiz->theme_renderer);
+	return v;
+}
+
+static double _eon_widget_min_height_get(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	double v = 0;
+
+	r = ender_element_object_get(e);
+	thiz = _eon_widget_get(r);
+	if (thiz->min_height_get)
+		v = thiz->min_height_get(e, thiz->theme_renderer);
+	return v;
+}
+
+static double _eon_widget_max_width_get(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	double v = DBL_MAX;
+
+	r = ender_element_object_get(e);
+	thiz = _eon_widget_get(r);
+	if (thiz->max_width_get)
+		v = thiz->max_width_get(e, thiz->theme_renderer);
+	return v;
+}
+
+static double _eon_widget_max_height_get(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	double v = DBL_MAX;
+
+	r = ender_element_object_get(e);
+	thiz = _eon_widget_get(r);
+	if (thiz->max_height_get)
+		v = thiz->max_height_get(e, thiz->theme_renderer);
+	return v;
+}
+
+static double _eon_widget_preferred_width_get(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	double v = -1;
+
+	r = ender_element_object_get(e);
+	thiz = _eon_widget_get(r);
+	if (thiz->preferred_width_get)
+		v = thiz->preferred_width_get(e, thiz->theme_renderer);
+	return v;
+}
+
+static double _eon_widget_preferred_height_get(Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Enesim_Renderer *r;
+	double v = -1;
+
+	r = ender_element_object_get(e);
+	thiz = _eon_widget_get(r);
+	if (thiz->preferred_height_get)
+		v = thiz->preferred_height_get(e, thiz->theme_renderer);
+	return v;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -209,19 +296,25 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	thiz->theme_renderer = theme_renderer;
 	thiz->setup = descriptor->setup;
 	thiz->needs_setup = descriptor->needs_setup;
+	thiz->min_width_get = descriptor->min_width_get;
+	thiz->max_width_get = descriptor->max_width_get;
+	thiz->min_height_get = descriptor->min_height_get;
+	thiz->max_height_get = descriptor->max_height_get;
+	thiz->preferred_width_get = descriptor->preferred_width_get;
+	thiz->preferred_height_get = descriptor->preferred_height_get;
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
 	pdescriptor.damage = descriptor->damage;
-	pdescriptor.needs_setup = _eon_widget_needs_setup; 
-	pdescriptor.min_width_get = descriptor->min_width_get;
-	pdescriptor.max_width_get = descriptor->max_width_get;
-	pdescriptor.min_height_get = descriptor->min_height_get;
-	pdescriptor.max_height_get = descriptor->max_height_get;
-	pdescriptor.preferred_width_get = descriptor->preferred_width_get;
-	pdescriptor.preferred_height_get = descriptor->preferred_height_get;
+	pdescriptor.needs_setup = _eon_widget_needs_setup;
+	pdescriptor.min_width_get = _eon_widget_min_width_get;
+	pdescriptor.max_width_get = _eon_widget_max_width_get;
+	pdescriptor.min_height_get = _eon_widget_min_height_get;
+	pdescriptor.max_height_get = _eon_widget_max_height_get;
+	pdescriptor.preferred_width_get = _eon_widget_preferred_width_get;
+	pdescriptor.preferred_height_get = _eon_widget_preferred_height_get;
 	pdescriptor.actual_x_set = _eon_widget_actual_x_set;
 	pdescriptor.actual_y_set = _eon_widget_actual_y_set;
 	pdescriptor.actual_width_set = _eon_widget_actual_width_set;

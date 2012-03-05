@@ -1,14 +1,21 @@
 #ifndef _EON_WIDGET_PRIVATE_H
 #define _EON_WIDGET_PRIVATE_H
 
+typedef double (*Eon_Widget_Max_Width_Get)(Ender_Element *e, Enesim_Renderer *theme);
+typedef double (*Eon_Widget_Min_Width_Get)(Ender_Element *e, Enesim_Renderer *theme);
+typedef double (*Eon_Widget_Max_Height_Get)(Ender_Element *e, Enesim_Renderer *theme);
+typedef double (*Eon_Widget_Min_Height_Get)(Ender_Element *e, Enesim_Renderer *theme);
+typedef double (*Eon_Widget_Preferred_Width_Get)(Ender_Element *e, Enesim_Renderer *theme);
+typedef double (*Eon_Widget_Preferred_Height_Get)(Ender_Element *e, Enesim_Renderer *theme);
+
 typedef struct _Eon_Widget_Descriptor
 {
-	Eon_Element_Min_Width_Get min_width_get;
-	Eon_Element_Max_Width_Get max_width_get;
-	Eon_Element_Min_Height_Get min_height_get;
-	Eon_Element_Max_Height_Get max_height_get;
-	Eon_Element_Preferred_Width_Get preferred_width_get;
-	Eon_Element_Preferred_Height_Get preferred_height_get;
+	Eon_Widget_Min_Width_Get min_width_get;
+	Eon_Widget_Max_Width_Get max_width_get;
+	Eon_Widget_Min_Height_Get min_height_get;
+	Eon_Widget_Max_Height_Get max_height_get;
+	Eon_Widget_Preferred_Width_Get preferred_width_get;
+	Eon_Widget_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Setup setup;

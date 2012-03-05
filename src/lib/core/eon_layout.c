@@ -247,7 +247,7 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz->child_add(r, child);
 }
 
-static void _eon_layout_hild_set(Enesim_Renderer *r, Eina_List *childs)
+static void _eon_layout_child_set(Enesim_Renderer *r, Eina_List *childs)
 {
 	Eina_List *l;
 	Ender_Element *child;

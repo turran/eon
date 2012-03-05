@@ -176,6 +176,10 @@ static Eina_Bool _key_up(void *data, int type, void *event)
 	return ECORE_CALLBACK_RENEW;
 }
 
+/* here we should calculate the size of layout, if it has one set, then use that
+ * if not, try to use the one from the window, if the window is smaller
+ * then still use the layout size and clip
+ */
 static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int height)
 {
 	Enesim_Renderer *r;

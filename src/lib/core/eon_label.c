@@ -77,97 +77,55 @@ static double _eon_theme_label_min_width_ellipsized_get(Enesim_Renderer *r)
 }
 #endif
 
-static double _eon_label_min_width_get(Ender_Element *e)
+static double _eon_label_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Label *thiz;
 	Eon_Size size;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_label_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_label_size_get(theme_r, &size);
 
 	return size.width;
 }
 
-static double _eon_label_max_width_get(Ender_Element *e)
+static double _eon_label_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Label *thiz;
 	Eon_Size size;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_label_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_label_size_get(theme_r, &size);
 
 	return size.width;
 }
 
-static double _eon_label_min_height_get(Ender_Element *e)
+static double _eon_label_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Label *thiz;
 	Eon_Size size;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_label_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_label_size_get(theme_r, &size);
 
 	return size.height;
 }
 
-static double _eon_label_max_height_get(Ender_Element *e)
+static double _eon_label_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Label *thiz;
 	Eon_Size size;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_label_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_label_size_get(theme_r, &size);
 
 	return size.height;
 }
 
-static double _eon_label_preferred_width_get(Ender_Element *e)
+static double _eon_label_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Label *thiz;
 	Eon_Size size;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_label_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_label_size_get(theme_r, &size);
 
 	return size.width;
 }
 
-static double _eon_label_preferred_height_get(Ender_Element *e)
+static double _eon_label_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
-	Eon_Label *thiz;
 	Eon_Size size;
-	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_label_get(r);
-
-	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_label_size_get(theme_r, &size);
 
 	return size.height;

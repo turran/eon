@@ -284,7 +284,7 @@ Eina_Bool eon_theme_widget_informs_setup(Enesim_Renderer *r)
 	thiz = _eon_theme_widget_get(r);
 	if (thiz->informs_setup)
 		return thiz->informs_setup(r);
-	
+
 	return EINA_FALSE;
 }
 /*============================================================================*
