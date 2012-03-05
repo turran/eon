@@ -1,0 +1,32 @@
+escen {
+	stack "stack01" {
+		default {
+			set {
+				child = [
+					radio "radio01" {
+						default {
+							set { content = label "label01" {
+									default {
+										set { text = "My very own label"; };
+									};
+								};
+							};
+						};
+					},
+					radio "radio02" {
+						default {
+							set { content = label "label01" {
+									default {
+										set { text = "My second new radio"; };
+									};
+								};
+							};
+						};
+					}
+				];
+			};
+			set { direction = 1; };
+		};
+	};
+};
+
