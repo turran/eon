@@ -28,11 +28,12 @@ typedef struct _Radio
 	/* properties */
 	Eina_Bool selected;
 	/* private */
+	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
 	Enesim_Renderer *background;
 	Enesim_Renderer *outter_circle;
 	Enesim_Renderer *inner_circle;
-	Enesim_Renderer *compound;
+	Enesim_Renderer *shape;
 } Radio;
 
 const static int radio_to_content_padding = 10;
@@ -60,7 +61,7 @@ static Enesim_Renderer * _radio_renderer_get(Enesim_Renderer *r)
 	Radio *thiz;
 
 	thiz = _radio_get(r);
-	return thiz->compound;
+	return thiz->shape;
 }
 
 static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
@@ -94,15 +95,19 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 		thiz->content = content;
 		enesim_renderer_rop_set(thiz->outter_circle, ENESIM_BLEND);
 	}
+	/* FIXME we should use the correct widget x, y */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	/* set the needed properties */
+	enesim_renderer_rectangle_position_set(thiz->shape, ox, oy);
+	enesim_renderer_rectangle_width_set(thiz->shape, width);
+	enesim_renderer_rectangle_height_set(thiz->shape, height);
+
+	/* FIXME we need to avoid as many origin_get/set as we can */
+	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);
-	enesim_renderer_rectangle_width_set(thiz->background, width);
-	enesim_renderer_rectangle_height_set(thiz->background, height);
 
 	return EINA_TRUE;
 }
@@ -138,9 +143,10 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	thiz = calloc(1, sizeof(Radio));
 	if (!thiz) return NULL;
 
-	r = enesim_renderer_compound_new();
-	if (!r) goto compound_err;
-	thiz->compound = r;
+	r = enesim_renderer_background_new();
+	if (!r) goto background_err;
+	thiz->background = r;
+	enesim_renderer_background_color_set(r, 0xffeeeeee);
 
 	r = enesim_renderer_circle_new();
 	if (!r) goto outter_err;
@@ -158,12 +164,16 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	enesim_renderer_shape_stroke_color_set(r, 0xffffffff);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
+	r = enesim_renderer_compound_new();
+	if (!r) goto compound_err;
+	thiz->compound = r;
+
 	r = enesim_renderer_rectangle_new();
-	if (!r) goto background_err;
-	thiz->background = r;
+	if (!r) goto shape_err;
+	thiz->shape = r;
 	enesim_renderer_rectangle_corner_radius_set(r, circle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+	enesim_renderer_shape_fill_renderer_set(r, thiz->compound);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 
 	r = eon_theme_radio_new(&_descriptor, thiz);
@@ -171,14 +181,16 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 
 	return r;
 renderer_err:
-	enesim_renderer_unref(thiz->background);
-background_err:
+	enesim_renderer_unref(thiz->shape);
+shape_err:
+	enesim_renderer_unref(thiz->compound);
+compound_err:
 	enesim_renderer_unref(thiz->inner_circle);
 inner_err:
 	enesim_renderer_unref(thiz->outter_circle);
 outter_err:
-	enesim_renderer_unref(thiz->compound);
-compound_err:
+	enesim_renderer_unref(thiz->background);
+background_err:
 	free(thiz);
 	return NULL;
 }

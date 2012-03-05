@@ -30,11 +30,12 @@ typedef struct _Checkbox
 	Eina_Bool selected;
 	Eina_Bool was_selected;
 	/* private */
+	Enesim_Renderer *compound;
 	Enesim_Renderer *content;
 	Enesim_Renderer *background;
 	Enesim_Renderer *box;
 	Enesim_Renderer *check;
-	Enesim_Renderer *compound;
+	Enesim_Renderer *shape;
 } Checkbox;
 
 const static int checkbox_to_content_padding = 10;
@@ -65,7 +66,7 @@ static Enesim_Renderer * _checkbox_renderer_get(Enesim_Renderer *r)
 	Checkbox *thiz;
 	thiz = _checkbox_get(r);
 
-	return thiz->compound;
+	return thiz->shape;
 }
 
 static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
@@ -107,14 +108,19 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 		}
 		enesim_renderer_compound_layer_add(thiz->compound, content);
 	}
+	/* FIXME we should use the correct widget x, y */
 	enesim_renderer_origin_get(r, &ox, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
+
+	/* set the needed properties */
+	enesim_renderer_rectangle_position_set(thiz->shape, ox, oy);
+	enesim_renderer_rectangle_width_set(thiz->shape, width);
+	enesim_renderer_rectangle_height_set(thiz->shape, height);
+	/* FIXME we need to avoid as many origin_get/set as we can */
 	enesim_renderer_origin_set(thiz->compound, ox, oy);
 	enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
 	enesim_renderer_y_origin_set(thiz->check, height/2 - thiz->size/2);
-	enesim_renderer_rectangle_width_set(thiz->background, width);
-	enesim_renderer_rectangle_height_set(thiz->background, height);
 
 	return EINA_TRUE;
 }
@@ -124,8 +130,8 @@ static void _checkbox_free(Enesim_Renderer *r)
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	if (thiz->compound)
-		enesim_renderer_unref(thiz->compound);
+	if (thiz->shape)
+		enesim_renderer_unref(thiz->shape);
 	free(thiz);
 }
 
@@ -150,9 +156,10 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	thiz = calloc(1, sizeof(Checkbox));
 	if (!thiz) return NULL;
 
-	r = enesim_renderer_compound_new();
-	if (!r) goto compound_err;
-	thiz->compound = r;
+	r = enesim_renderer_background_new();
+	if (!r) goto background_err;
+	thiz->background = r;
+	enesim_renderer_background_color_set(r, 0xffeeeeee);
 
 	r = enesim_renderer_path_new();
 	if (!r) goto path_err;
@@ -168,14 +175,18 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
 	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
-	
+
+	r = enesim_renderer_compound_new();
+	if (!r) goto compound_err;
+	thiz->compound = r;
+
 	r = enesim_renderer_rectangle_new();
-	if (!r) goto background_err;
-	thiz->background = r;
+	if (!r) goto shape_err;
+	thiz->shape = r;
 	/* FIXME we are using the circle_radius from the radiobutton we must share such variable */
 	enesim_renderer_rectangle_corner_radius_set(r, 8);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+	enesim_renderer_shape_fill_renderer_set(r, thiz->compound);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 
 	r = eon_theme_checkbox_new(&_descriptor, thiz);
@@ -184,14 +195,16 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_unref(thiz->background);
-background_err:
+	enesim_renderer_unref(thiz->shape);
+shape_err:
+	enesim_renderer_unref(thiz->compound);
+compound_err:
 	enesim_renderer_unref(thiz->box);
 rectangle_err:
 	enesim_renderer_unref(thiz->check);
 path_err:
-	enesim_renderer_unref(thiz->compound);
-compound_err:
+	enesim_renderer_unref(thiz->shape);
+background_err:
 	free(thiz);
 	return NULL;
 }

@@ -103,14 +103,22 @@ static void _eon_theme_widget_boundings(Enesim_Renderer *r,
 		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
 		Enesim_Rectangle *rectangle)
 {
-	Eon_Theme_Widget *thiz;
+	Enesim_Renderer *real_r;
 
-	thiz = _eon_theme_widget_get(r);
-	rectangle->x = 0;
-	rectangle->y = 0;
-	rectangle->w = thiz->width;
-	rectangle->h = thiz->height;
+	real_r = _eon_theme_widget_renderer_get(r);
+	enesim_renderer_boundings(real_r, rectangle);
 }
+
+static void _eon_theme_widget_destination_boundings(Enesim_Renderer *r,
+		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
+		Eina_Rectangle *rectangle)
+{
+	Enesim_Renderer *real_r;
+
+	real_r = _eon_theme_widget_renderer_get(r);
+	enesim_renderer_destination_boundings(real_r, rectangle, 0, 0);
+}
+
 
 static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
 		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
@@ -204,7 +212,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .name = 			*/ _eon_theme_widget_name,
 	/* .free = 			*/ _eon_theme_widget_free,
 	/* .boundings = 		*/ _eon_theme_widget_boundings,
-	/* .destination_boundings = 	*/ NULL,
+	/* .destination_boundings = 	*/ _eon_theme_widget_destination_boundings,
 	/* .flags = 			*/ _eon_theme_widget_flags,
 	/* .is_inside = 		*/ _eon_theme_widget_is_inside,
 	/* .damage = 			*/ _eon_theme_widget_damage,

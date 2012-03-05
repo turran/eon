@@ -183,8 +183,10 @@ static double _eon_splitter_max_width_get(Ender_Element *e, double cmv)
 	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
-		bmv = scmv + cmv;
 
+		if (scmv == DBL_MAX)
+			return scmv;
+		bmv = scmv + cmv;
 		eon_theme_splitter_thickness_get(theme_r, &thickness);
 		bmv += thickness;
 	}
