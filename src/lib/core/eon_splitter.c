@@ -548,23 +548,27 @@ static Eina_Bool _eon_splitter_needs_setup(Ender_Element *e)
 {
 	Eon_Splitter *thiz;
 	Enesim_Renderer *r;
-	Eina_Bool ret;
 
 	r = ender_element_object_get(e);
 	thiz = _eon_splitter_get(r);
 
-	/* check if we have changed */
-	ret = thiz->changed;
-	if (ret)
-	{
-		return ret;
-	}
-
 	/* check if the second content has changed */
 	if (thiz->current.second_content)
-		ret = eon_element_needs_setup(thiz->current.second_content);
+	{
+		if (eon_element_needs_setup(thiz->current.second_content))
+			return EINA_TRUE;
+	}
 
-	return ret;
+	/* check if we have changed */
+	if (!thiz->changed) return EINA_FALSE;
+
+	if (thiz->current.orientation != thiz->past.orientation)
+		return EINA_TRUE;
+
+	if (thiz->current.position != thiz->past.position)
+		return EINA_TRUE;
+
+	return EINA_FALSE;
 }
 
 static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
