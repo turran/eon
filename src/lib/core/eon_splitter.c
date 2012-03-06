@@ -385,7 +385,6 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	thiz = _eon_splitter_get(r);
 
 	theme_r = eon_widget_theme_renderer_get(r);
-
 	/* calculate the real position */
 	position = thiz->current.position;
 	if (!cstate->content)
@@ -692,7 +691,7 @@ EAPI Ender_Element * eon_vsplitter_new(void)
  */
 EAPI void eon_splitter_orientation_set(Ender_Element *e, Eon_Orientation orientation)
 {
-	ender_element_value_set(e, "orientation", orientation, NULL);
+	ender_element_property_value_set(e, EON_SPLITTER_ORIENTATION, orientation, NULL);
 }
 
 /**
@@ -701,7 +700,7 @@ EAPI void eon_splitter_orientation_set(Ender_Element *e, Eon_Orientation orienta
  */
 EAPI void eon_splitter_orientation_get(Ender_Element *e, Eon_Orientation *orientation)
 {
-	ender_element_value_get(e, "orientation", orientation, NULL);
+	ender_element_property_value_get(e, EON_SPLITTER_SECOND_CONTENT, orientation, NULL);
 }
 
 /**
@@ -710,7 +709,7 @@ EAPI void eon_splitter_orientation_get(Ender_Element *e, Eon_Orientation *orient
  */
 EAPI void eon_splitter_second_content_set(Ender_Element *e, Ender_Element *content)
 {
-	ender_element_value_set(e, "second_content", content, NULL);
+	ender_element_property_value_set(e, EON_SPLITTER_SECOND_CONTENT, content, NULL);
 }
 
 /**
@@ -719,7 +718,7 @@ EAPI void eon_splitter_second_content_set(Ender_Element *e, Ender_Element *conte
  */
 EAPI void eon_splitter_second_content_get(Ender_Element *e, Ender_Element **content)
 {
-	ender_element_value_get(e, "second_content", content, NULL);
+	ender_element_property_value_get(e, EON_SPLITTER_SECOND_CONTENT, content, NULL);
 }
 
 /**
@@ -728,7 +727,7 @@ EAPI void eon_splitter_second_content_get(Ender_Element *e, Ender_Element **cont
  */
 EAPI void eon_splitter_position_set(Ender_Element *e, double position)
 {
-	ender_element_value_set(e, "position", position, NULL);
+	ender_element_property_value_set(e, EON_SPLITTER_POSITION, position, NULL);
 }
 
 /**
@@ -737,6 +736,6 @@ EAPI void eon_splitter_position_set(Ender_Element *e, double position)
  */
 EAPI void eon_splitter_position_get(Ender_Element *e, double *position)
 {
-	ender_element_value_get(e, "position", position, NULL);
+	ender_element_property_value_get(e, EON_SPLITTER_POSITION, position, NULL);
 }
 
