@@ -135,7 +135,7 @@ static double _eon_button_base_min_preferred_width_get(Ender_Element *e, double 
 	theme_r = eon_widget_theme_renderer_get(r);
 	eon_theme_button_base_margin_get(theme_r, &margin);
 
-	return cmv + margin.top + margin.bottom;
+	return cmv + margin.left + margin.right;
 }
 
 static double _eon_button_base_min_preferred_height_get(Ender_Element *e, double cmv)
@@ -325,7 +325,7 @@ renderer_err:
  */
 EAPI void eon_button_base_enabled_set(Ender_Element *e, Eina_Bool enabled)
 {
-	ender_element_value_set(e, "enabled", enabled, NULL);
+	ender_element_property_value_set(e, EON_BUTTON_BASE_ENABLED, enabled, NULL);
 }
 
 /**
@@ -334,6 +334,6 @@ EAPI void eon_button_base_enabled_set(Ender_Element *e, Eina_Bool enabled)
  */
 EAPI void eon_button_base_enabled_get(Ender_Element *e, Eina_Bool *enabled)
 {
-	ender_element_value_get(e, "enabled", enabled, NULL);
+	ender_element_property_value_get(e, EON_BUTTON_BASE_ENABLED, enabled, NULL);
 }
 

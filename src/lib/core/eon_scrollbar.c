@@ -209,7 +209,6 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollbar *thiz;
-	Eon_Size size;
 	Enesim_Renderer *r;
 	Enesim_Renderer *theme_r;
 	double percent;
@@ -221,11 +220,10 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 	thiz = _eon_scrollbar_get(r);
 	theme_r = eon_widget_theme_renderer_get(r);
 
-	eon_element_actual_size_get(r, &size);
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
-		length = size.width;
+		length = state->actual_size.width;
 	else
-		length = size.height;
+		length = state->actual_size.height;
 
 	/* first set the size of the thumb */
 	thumb_size = (thiz->page_size / (thiz->max - thiz->min)) * length;
@@ -550,7 +548,7 @@ EAPI Ender_Element * eon_vscrollbar_new(void)
  */
 EAPI void eon_scrollbar_orientation_set(Ender_Element *e, Eon_Orientation orientation)
 {
-	ender_element_value_set(e, "orientation", orientation, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_ORIENTATION, orientation, NULL);
 }
 
 /**
@@ -559,7 +557,7 @@ EAPI void eon_scrollbar_orientation_set(Ender_Element *e, Eon_Orientation orient
  */
 EAPI void eon_scrollbar_orientation_get(Ender_Element *e, Eon_Orientation *orientation)
 {
-	ender_element_value_get(e, "orientation", orientation, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_ORIENTATION, orientation, NULL);
 }
 
 /**
@@ -568,7 +566,7 @@ EAPI void eon_scrollbar_orientation_get(Ender_Element *e, Eon_Orientation *orien
  */
 EAPI void eon_scrollbar_max_set(Ender_Element *e, double max)
 {
-	ender_element_value_set(e, "max", max, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_MAX, max, NULL);
 }
 
 /**
@@ -577,7 +575,7 @@ EAPI void eon_scrollbar_max_set(Ender_Element *e, double max)
  */
 EAPI void eon_scrollbar_max_get(Ender_Element *e, double *max)
 {
-	ender_element_value_get(e, "max", max, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_MAX, max, NULL);
 }
 
 /**
@@ -586,7 +584,7 @@ EAPI void eon_scrollbar_max_get(Ender_Element *e, double *max)
  */
 EAPI void eon_scrollbar_min_set(Ender_Element *e, double min)
 {
-	ender_element_value_set(e, "min", min, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_MIN, min, NULL);
 }
 
 /**
@@ -595,7 +593,7 @@ EAPI void eon_scrollbar_min_set(Ender_Element *e, double min)
  */
 EAPI void eon_scrollbar_min_get(Ender_Element *e, double *min)
 {
-	ender_element_value_get(e, "min", min, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_MIN, min, NULL);
 }
 
 /**
@@ -604,7 +602,7 @@ EAPI void eon_scrollbar_min_get(Ender_Element *e, double *min)
  */
 EAPI void eon_scrollbar_page_increment_set(Ender_Element *e, double page_increment)
 {
-	ender_element_value_set(e, "page_increment", page_increment, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_PAGE_INCREMENT, page_increment, NULL);
 }
 
 /**
@@ -613,7 +611,7 @@ EAPI void eon_scrollbar_page_increment_set(Ender_Element *e, double page_increme
  */
 EAPI void eon_scrollbar_page_increment_get(Ender_Element *e, double *page_increment)
 {
-	ender_element_value_get(e, "page_increment", page_increment, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_PAGE_INCREMENT, page_increment, NULL);
 }
 
 /**
@@ -622,7 +620,7 @@ EAPI void eon_scrollbar_page_increment_get(Ender_Element *e, double *page_increm
  */
 EAPI void eon_scrollbar_page_size_set(Ender_Element *e, double page_size)
 {
-	ender_element_value_set(e, "page_size", page_size, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_PAGE_SIZE, page_size, NULL);
 }
 
 /**
@@ -631,7 +629,7 @@ EAPI void eon_scrollbar_page_size_set(Ender_Element *e, double page_size)
  */
 EAPI void eon_scrollbar_page_size_get(Ender_Element *e, double *page_size)
 {
-	ender_element_value_get(e, "page_size", page_size, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_PAGE_SIZE, page_size, NULL);
 }
 
 /**
@@ -640,7 +638,7 @@ EAPI void eon_scrollbar_page_size_get(Ender_Element *e, double *page_size)
  */
 EAPI void eon_scrollbar_step_increment_set(Ender_Element *e, double step_increment)
 {
-	ender_element_value_set(e, "step_increment", step_increment, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_STEP_INCREMENT, step_increment, NULL);
 }
 
 /**
@@ -649,7 +647,7 @@ EAPI void eon_scrollbar_step_increment_set(Ender_Element *e, double step_increme
  */
 EAPI void eon_scrollbar_step_increment_get(Ender_Element *e, double *step_increment)
 {
-	ender_element_value_get(e, "step_increment", step_increment, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_STEP_INCREMENT, step_increment, NULL);
 }
 
 /**
@@ -658,7 +656,7 @@ EAPI void eon_scrollbar_step_increment_get(Ender_Element *e, double *step_increm
  */
 EAPI void eon_scrollbar_value_set(Ender_Element *e, double value)
 {
-	ender_element_value_set(e, "value", value, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_VALUE, value, NULL);
 }
 
 /**
@@ -667,6 +665,6 @@ EAPI void eon_scrollbar_value_set(Ender_Element *e, double value)
  */
 EAPI void eon_scrollbar_value_get(Ender_Element *e, double *value)
 {
-	ender_element_value_get(e, "value", value, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_VALUE, value, NULL);
 }
 

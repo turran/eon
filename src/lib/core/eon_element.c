@@ -190,6 +190,9 @@ static void _eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 
 	if (thiz->cleanup)
 		return thiz->cleanup(e, s);
+	thiz->past = thiz->current;
+	thiz->changed = EINA_FALSE;
+	thiz->do_needs_setup = EINA_FALSE;
 }
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -567,9 +570,6 @@ static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 		enesim_renderer_name_get(r, &name);
 		//printf("cleaning up %s\n", name);
 	}
-	thiz->past = thiz->current;
-	thiz->changed = EINA_FALSE;
-	thiz->do_needs_setup = EINA_FALSE;
 }
 
 static void _eon_element_flags(Enesim_Renderer *r, const Enesim_Renderer_State *state,
@@ -714,6 +714,21 @@ Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **
 	thiz->managed = EINA_TRUE;
 	ret = enesim_renderer_setup(r, s, error);
 	thiz->managed = EINA_FALSE;
+
+	return ret;
+}
+
+Eina_Bool eon_element_setup2(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
+{
+	Eina_Bool ret;
+
+	ret = _eon_element_setup(e, s, error);
+	if (!ret)
+	{
+		printf("The element_setup() failed");
+		return EINA_FALSE;
+	}
+	_eon_element_cleanup(e, s);
 
 	return ret;
 }
@@ -1065,7 +1080,7 @@ EAPI Eina_Bool eon_is_element(Enesim_Renderer *r)
  */
 EAPI void eon_element_actual_height_get(Ender_Element *e, double *height)
 {
-	ender_element_value_get(e, "actual_height", height, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_ACTUAL_HEIGHT, height, NULL);
 }
 
 /**
@@ -1074,7 +1089,7 @@ EAPI void eon_element_actual_height_get(Ender_Element *e, double *height)
  */
 EAPI void eon_element_actual_width_get(Ender_Element *e, double *width)
 {
-	ender_element_value_get(e, "actual_width", width, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_ACTUAL_WIDTH, width, NULL);
 }
 
 /**
@@ -1083,7 +1098,7 @@ EAPI void eon_element_actual_width_get(Ender_Element *e, double *width)
  */
 EAPI void eon_element_height_get(Ender_Element *e, double *height)
 {
-	ender_element_value_get(e, "height", height, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_HEIGHT, height, NULL);
 }
 
 /**
@@ -1092,7 +1107,7 @@ EAPI void eon_element_height_get(Ender_Element *e, double *height)
  */
 EAPI void eon_element_height_set(Ender_Element *e, double height)
 {
-	ender_element_value_set(e, "height", height, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_HEIGHT, height, NULL);
 }
 
 /**
@@ -1101,7 +1116,7 @@ EAPI void eon_element_height_set(Ender_Element *e, double height)
  */
 EAPI void eon_element_width_get(Ender_Element *e, double *width)
 {
-	ender_element_value_get(e, "width", width, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_WIDTH, width, NULL);
 }
 
 /**
@@ -1110,7 +1125,7 @@ EAPI void eon_element_width_get(Ender_Element *e, double *width)
  */
 EAPI void eon_element_width_set(Ender_Element *e, double width)
 {
-	ender_element_value_set(e, "width", width, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_WIDTH, width, NULL);
 }
 
 /**
@@ -1119,7 +1134,7 @@ EAPI void eon_element_width_set(Ender_Element *e, double width)
  */
 EAPI void eon_element_min_width_get(Ender_Element *e, double *width)
 {
-	ender_element_value_get(e, "min_width", width, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_MIN_WIDTH, width, NULL);
 }
 
 /**
@@ -1128,7 +1143,7 @@ EAPI void eon_element_min_width_get(Ender_Element *e, double *width)
  */
 EAPI void eon_element_min_width_set(Ender_Element *e, double width)
 {
-	ender_element_value_set(e, "min_width", width, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_MIN_WIDTH, width, NULL);
 }
 
 /**
@@ -1137,7 +1152,7 @@ EAPI void eon_element_min_width_set(Ender_Element *e, double width)
  */
 EAPI void eon_element_min_height_set(Ender_Element *e, double height)
 {
-	ender_element_value_set(e, "min_height", height, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_MIN_HEIGHT, height, NULL);
 }
 
 /**
@@ -1146,7 +1161,7 @@ EAPI void eon_element_min_height_set(Ender_Element *e, double height)
  */
 EAPI void eon_element_min_height_get(Ender_Element *e, double *height)
 {
-	ender_element_value_get(e, "min_height", height, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_MIN_HEIGHT, height, NULL);
 }
 
 /**
@@ -1155,7 +1170,7 @@ EAPI void eon_element_min_height_get(Ender_Element *e, double *height)
  */
 EAPI void eon_element_max_width_get(Ender_Element *e, double *width)
 {
-	ender_element_value_get(e, "max_width", width, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_MAX_WIDTH, width, NULL);
 }
 
 /**
@@ -1164,7 +1179,7 @@ EAPI void eon_element_max_width_get(Ender_Element *e, double *width)
  */
 EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 {
-	ender_element_value_set(e, "max_width", width, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_MAX_WIDTH, width, NULL);
 }
 
 /**
@@ -1174,7 +1189,7 @@ EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width)
 {
 	*width = -1;
-	ender_element_value_get(e, "preferred_width", width, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_PREFERRED_WIDTH, width, NULL);
 }
 
 /**
@@ -1184,7 +1199,7 @@ EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width)
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height)
 {
 	*height = -1;
-	ender_element_value_get(e, "preferred_height", height, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_PREFERRED_HEIGHT, height, NULL);
 }
 /**
  * To be documented
@@ -1192,7 +1207,7 @@ EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height)
  */
 EAPI void eon_element_max_height_set(Ender_Element *e, double height)
 {
-	ender_element_value_set(e, "max_height", height, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_MAX_HEIGHT, height, NULL);
 }
 
 /**
@@ -1201,7 +1216,7 @@ EAPI void eon_element_max_height_set(Ender_Element *e, double height)
  */
 EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
 {
-	ender_element_value_get(e, "max_height", height, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_MAX_HEIGHT, height, NULL);
 }
 /**
  * To be documented
@@ -1209,7 +1224,7 @@ EAPI void eon_element_max_height_get(Ender_Element *e, double *height)
  */
 EAPI void eon_element_visibility_set(Ender_Element *e, double visibility)
 {
-	ender_element_value_set(e, "visibility", visibility, NULL);
+	ender_element_property_value_set(e, EON_ELEMENT_VISIBILITY, visibility, NULL);
 }
 
 /**
@@ -1218,5 +1233,5 @@ EAPI void eon_element_visibility_set(Ender_Element *e, double visibility)
  */
 EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility)
 {
-	ender_element_value_get(e, "visibility", visibility, NULL);
+	ender_element_property_value_get(e, EON_ELEMENT_VISIBILITY, visibility, NULL);
 }

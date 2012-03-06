@@ -334,14 +334,15 @@ void eon_input_state_feed_mouse_wheel(Eon_Input_State *eis, int direction)
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], &ev);
 }
 
-void eon_input_state_feed_key_down(Eon_Input_State *eis)
+/* FIXME we still need to define how to handle this */
+void eon_input_state_feed_key_down(Eon_Input_State *eis, const char *key)
 {
-
+	printf("key down %s\n", key);
 }
 
-void eon_input_state_feed_key_up(Eon_Input_State *eis)
+void eon_input_state_feed_key_up(Eon_Input_State *eis, const char *key)
 {
-
+	printf("key up %s\n", key);
 }
 /*============================================================================*
  *                                   API                                      *

@@ -475,7 +475,7 @@ EAPI Ender_Element * eon_canvas_new(void)
  */
 EAPI void eon_canvas_child_x_set(Ender_Element *e, Ender_Element *child, double x)
 {
-	ender_element_value_set(child, "child_x", x, NULL);
+	ender_element_property_value_set(child, EON_CANVAS_CHILD_X, x, NULL);
 }
 
 /**
@@ -484,7 +484,7 @@ EAPI void eon_canvas_child_x_set(Ender_Element *e, Ender_Element *child, double 
  */
 EAPI void eon_canvas_child_y_set(Ender_Element *e, Ender_Element *child, double y)
 {
-	ender_element_value_set(child, "child_y", y, NULL);
+	ender_element_property_value_set(child, EON_CANVAS_CHILD_Y, y, NULL);
 }
 
 /**

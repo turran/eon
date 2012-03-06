@@ -143,7 +143,7 @@ EAPI Ender_Element * eon_color_new(void)
  */
 EAPI void eon_color_value_set(Ender_Element *e, Enesim_Argb value)
 {
-	ender_element_value_set(e, "value", value, NULL);
+	ender_element_property_value_set(e, EON_COLOR_VALUE, value, NULL);
 }
 
 /**
@@ -152,5 +152,5 @@ EAPI void eon_color_value_set(Ender_Element *e, Enesim_Argb value)
  */
 EAPI void eon_color_value_get(Ender_Element *e, Enesim_Argb *value)
 {
-	ender_element_value_get(e, "value", value, NULL);
+	ender_element_property_value_get(e, EON_COLOR_VALUE, value, NULL);
 }

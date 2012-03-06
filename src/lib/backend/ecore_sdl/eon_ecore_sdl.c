@@ -160,19 +160,21 @@ static Eina_Bool _mouse_button_up(void *data, int type, void *event)
 
 static Eina_Bool _key_down(void *data, int type, void *event)
 {
-	//Eon_Ecore_SDL_Window *thiz = data;
+	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
 
-	printf("DOWN %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
+	//printf("DOWN %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
+	eon_input_state_feed_key_down(thiz->input_state, ev->keyname);
 	return ECORE_CALLBACK_RENEW;
 }
 
 static Eina_Bool _key_up(void *data, int type, void *event)
 {
-	//Eon_Ecore_SDL_Window *thiz = data;
+	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
 
-	printf("UP %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
+	//printf("UP %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
+	eon_input_state_feed_key_up(thiz->input_state, ev->keyname);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -239,7 +241,11 @@ static Eina_Bool _idler_cb(void *data)
 	Eina_Rectangle area;
 	double start, end;
 
+#if 1
+	r = eon_element_renderer_get(thiz->layout);
+#else
 	r = ender_element_object_get(thiz->layout);
+#endif
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);
@@ -262,7 +268,35 @@ static Eina_Bool _idler_cb(void *data)
 	 * the element tree once and over the renderer tree once, it might
 	 * be too much
 	 */
+#if 1
+	if (eon_element_needs_setup(thiz->layout))
+	{
+		printf("needs setup!!!\n");
+		eon_element_setup2(thiz->layout, thiz->surface, &error);
+	}
+	{
+		Eina_Iterator *iter;
+		Eina_Rectangle *r1;
 
+		eon_element_damages_get(thiz->layout, _sdl_damages_get, thiz);
+		iter = eina_tiler_iterator_new(thiz->tiler);
+		EINA_ITERATOR_FOREACH(iter, r1)
+		{
+			Eina_Rectangle *r2;
+
+			r2 = malloc(sizeof(Eina_Rectangle));
+			*r2 = *r1;
+			/* FIXME we should avoid this malloc, maybe make the enesim function
+			 * receive an iterator instead? or something like that
+			 */
+			printf("AREA to redraw %d %d %d %d\n", r1->x, r1->y, r1->w, r1->h);
+			redraws = eina_list_append(redraws, r2);
+		}
+		eina_iterator_free(iter);
+	}
+	r = eon_element_renderer_get(thiz->layout);
+#else
+	r = ender_element_object_get(thiz->layout);
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */
@@ -287,6 +321,7 @@ static Eina_Bool _idler_cb(void *data)
 		}
 		eina_iterator_free(iter);
 	}
+#endif
 
 	if (!redraws)
 		return EINA_TRUE;

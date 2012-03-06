@@ -143,7 +143,7 @@ EAPI Ender_Element * eon_checkbox_new(void)
  */
 EAPI void eon_checkbox_selected_set(Ender_Element *e, Eina_Bool selected)
 {
-	ender_element_value_set(e, "selected", selected, NULL);
+	ender_element_property_value_set(e, EON_CHECKBOX_SELECTED, selected, NULL);
 }
 
 /**
@@ -152,7 +152,7 @@ EAPI void eon_checkbox_selected_set(Ender_Element *e, Eina_Bool selected)
  */
 EAPI void eon_checkbox_selected_get(Ender_Element *e, Eina_Bool *selected)
 {
-	ender_element_value_get(e, "selected", selected, NULL);
+	ender_element_property_value_get(e, EON_CHECKBOX_SELECTED, selected, NULL);
 }
 
 
