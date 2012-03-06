@@ -68,18 +68,6 @@ static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static Eina_Bool _canvas_damage_cb(Enesim_Renderer *child_r, Eina_Rectangle *rect, Eina_Bool past, void *data)
-{
-	Eon_Canvas_Damage_Data *ddata = data;
-
-	/* TODO the previous data should be added with the previous x, y */
-	rect->x += ddata->x;
-	rect->y += ddata->y;
-
-	ddata->real_cb(child_r, rect, past, ddata->real_data);
-	return EINA_TRUE;
-}
-
 static Eina_Bool _canvas_child_is_inside(Eon_Canvas_Child *ech, double x, double y)
 {
 	Eon_Size child_size;
@@ -233,83 +221,6 @@ static void _eon_canvas_cleanup(Ender_Element *e, Enesim_Surface *s)
 	thiz->needs_setup = EINA_FALSE;
 }
 
-static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
-{
-	Eon_Canvas *thiz;
-	Enesim_Renderer *r;
-	double x;
-	double y;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_canvas_get(r);
-
-	printf("canvas damage\n");
-	eon_element_actual_position_get(r, &x, &y);
-	/* if we have changed then just return our size */
-	if (thiz->needs_setup)
-	{
-		Eina_Rectangle area;
-		double w;
-		double h;
-
-		eon_element_actual_width_get(e, &w);
-		eon_element_actual_height_get(e, &h);
-
-		area.x = x;
-		area.y = y;
-		area.w = (int)w;
-		area.h = (int)h;
-
-		/* FIXME we should pass the previous and current */
-		cb(r, &area, EINA_FALSE, data);
-		return;
-	}
-	/* if not, return the children's */
-	else
-	{
-		Eon_Canvas_Child *ech;
-		Eina_List *l;
-
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			/* in case the child changed the x, y (FIXME or the w, h) */
-			if (ech->needs_setup)
-			{
-				Enesim_Renderer *child_r;
-				Eina_Rectangle area;
-				double w;
-				double h;
-
-				child_r = ender_element_object_get(ech->ender);
-				/* the past */
-				area.x = ech->past.x;
-				area.y = ech->past.y;
-				area.w = ech->past.width;
-				area.h = ech->past.height;
-				cb(child_r, &area, EINA_TRUE, data);
-				/* the current */
-				eon_element_real_width_get(ech->ender, &w);
-				eon_element_real_height_get(ech->ender, &h);
-				area.x = ech->past.x;
-				area.y = ech->past.y;
-				area.w = (int)w;
-				area.h = (int)h;
-				cb(child_r, &area, EINA_FALSE, data);
-			}
-			else
-			{
-				Eon_Canvas_Damage_Data ddata;
-				ddata.x = x;
-				ddata.y = y;
-				ddata.real_cb = cb;
-				ddata.real_data = data;
-
-				eon_element_damages_get(ech->ender, _canvas_damage_cb, &ddata);
-			}
-		}
-	}
-}
-
 Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
 {
 	Eon_Canvas *thiz;
@@ -388,7 +299,6 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
 	.free = _eon_canvas_free,
-	.damage = _eon_canvas_damage,
 	.cleanup = _eon_canvas_cleanup,
 	.needs_setup = _eon_canvas_needs_setup,
 	.setup = _eon_canvas_setup,

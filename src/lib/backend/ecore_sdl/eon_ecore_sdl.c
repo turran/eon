@@ -237,18 +237,18 @@ static Eina_Bool _idler_cb(void *data)
 	Enesim_Renderer *r;
 	Enesim_Error *error = NULL;
 	Eina_List *redraws = NULL;
+	Eina_Bool full = EINA_FALSE;
 	//Eina_List *l;
 	Eina_Rectangle area;
 	double start, end;
 
-	r = eon_element_renderer_get(thiz->layout);
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);
 		if (thiz->tiler)
 			eina_tiler_free(thiz->tiler);
 		thiz->tiler = eina_tiler_new(thiz->width, thiz->height);
-		goto all;
+		full = EINA_TRUE;
 	}
 
 	/* TODO
@@ -270,6 +270,9 @@ static Eina_Bool _idler_cb(void *data)
 		eon_element_setup(thiz->layout, thiz->surface, &error);
 		eon_element_cleanup(thiz->layout, thiz->surface);
 	}
+	r = eon_element_renderer_get(thiz->layout);
+	if (full)
+		goto all;
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */

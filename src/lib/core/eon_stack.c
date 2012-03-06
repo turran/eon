@@ -71,18 +71,6 @@ static inline Eon_Stack * _eon_stack_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static Eina_Bool _stack_damage_cb(Enesim_Renderer *child_r, Eina_Rectangle *rect, Eina_Bool past, void *data)
-{
-	Eon_Stack_Damage_Data *ddata = data;
-
-	/* TODO the previous data should be added with the previous x, y */
-	rect->x += ddata->x;
-	rect->y += ddata->y;
-
-	ddata->real_cb(child_r, rect, past, ddata->real_data);
-	return EINA_TRUE;
-}
-
 static double _stack_vertical_min_width(Eon_Stack *thiz)
 {
 	Eon_Stack_Child *ech;
@@ -326,58 +314,6 @@ static void _eon_stack_free(Enesim_Renderer *r)
 
 	thiz = _eon_stack_get(r);
 	free(thiz);
-}
-
-static void _eon_stack_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
-{
-	Eon_Stack *thiz;
-	Enesim_Renderer *r;
-	double x;
-	double y;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_stack_get(r);
-
-	eon_element_actual_position_get(r, &x, &y);
-	/* if we have changed then just return our size */
-	if (thiz->needs_setup)
-whole:
-	{
-		Eina_Rectangle area;
-		double w;
-		double h;
-
-		eon_element_actual_width_get(e, &w);
-		eon_element_actual_height_get(e, &h);
-		area.x = x;
-		area.y = y;
-		area.w = (int)w;
-		area.h = (int)h;
-
-		cb(r, &area, EINA_FALSE, data);
-		return;
-	}
-	/* if not, return the children's */
-	else
-	{
-		Eon_Stack_Damage_Data ddata;
-		Eon_Stack_Child *ech;
-		Eina_List *l;
-
-		ddata.x = x;
-		ddata.y = y;
-		ddata.real_cb = cb;
-		ddata.real_data = data;
-
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			/* in case a children needs a setup given that the size allocation is relative to others
-			 * we need to do the setup again on the whole stack*/
-			if (eon_element_needs_setup(ech->ender))
-				goto whole;
-			eon_element_damages_get(ech->ender, _stack_damage_cb, &ddata);
-		}
-	}
 }
 
 static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
@@ -682,7 +618,6 @@ static Eon_Layout_Descriptor _descriptor = {
 	.min_height_get = _eon_stack_min_height_get,
 	.preferred_width_get = _eon_stack_preferred_width_get,
 	.preferred_height_get = _eon_stack_preferred_height_get,
-	.damage = _eon_stack_damage,
 	.needs_setup = _eon_stack_needs_setup,
 	.cleanup = _eon_stack_cleanup,
 	.setup = _eon_stack_setup,

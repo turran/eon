@@ -44,7 +44,6 @@ typedef Eina_Bool (*Eon_Element_Needs_Setup)(Ender_Element *e);
  * property it wants. Whenever enesim requires the damages of an element we cannot give back
  * the graphical representation damages, as it might not have all its properties correctly setup
  */
-typedef void (*Eon_Element_Damage)(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data);
 
 typedef struct _Eon_Element_Descriptor
 {
@@ -53,7 +52,6 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
-	Eon_Element_Damage damage;
 	Eon_Element_Min_Width_Get min_width_get;
 	Eon_Element_Max_Width_Get max_width_get;
 	Eon_Element_Min_Height_Get min_height_get;

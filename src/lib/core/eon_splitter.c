@@ -492,45 +492,6 @@ static void _eon_splitter_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static void _eon_splitter_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
-{
-	Eon_Splitter *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_splitter_get(r);
-
-	printf("entering the damages\n");
-	if (thiz->changed)
-	{
-		Eina_Rectangle area;
-		double x, y, w, h;
-
-		eon_element_actual_position_get(r, &x, &y);
-		eon_element_actual_width_get(e, &w);
-		eon_element_actual_height_get(e, &h);
-		area.x = (int)x;
-		area.y = (int)y;
-		area.w = (int)w;
-		area.h = (int)h;
-
-		cb(r, &area, EINA_FALSE, data);
-		return;
-	}
-	else
-	{
-		Ender_Element *content;
-
-		eon_container_content_get(e, &content);
-		eon_element_damages_get(content, cb, data);
-
-		if (thiz->current.second_content)
-		{
-			eon_element_damages_get(thiz->current.second_content, cb, data);
-		}
-	}
-}
-
 static void _eon_splitter_cleanup(Ender_Element *e, Enesim_Surface *s)
 {
 	Eon_Splitter *thiz;
@@ -582,7 +543,6 @@ static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
 	.free = _eon_splitter_free,
 	.setup = _eon_splitter_setup,
 	.cleanup = _eon_splitter_cleanup,
-	.damage = _eon_splitter_damage,
 	.needs_setup = _eon_splitter_needs_setup,
 	.min_width_get = _eon_splitter_min_width_get,
 	.max_width_get = _eon_splitter_max_width_get,

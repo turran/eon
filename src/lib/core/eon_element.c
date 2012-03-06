@@ -76,7 +76,6 @@ typedef struct _Eon_Element
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Preferred_Width_Get preferred_width_get;
 	/* misc */
-	Eina_Bool changed : 1;
 	Eina_Bool do_needs_setup : 1;
 	const char *name;
 	void *data;
@@ -157,9 +156,6 @@ static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_
 	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
-	/* FIXME for later, only call the setup when needed */
-	//if (!eon_element_needs_setup(e))
-	//	return EINA_TRUE;
 	if (thiz->setup)
 		return thiz->setup(e, &thiz->current, s, error);
 	return EINA_TRUE;
@@ -176,7 +172,6 @@ static void _eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 	if (thiz->cleanup)
 		return thiz->cleanup(e, s);
 	thiz->past = thiz->current;
-	thiz->changed = EINA_FALSE;
 	thiz->do_needs_setup = EINA_FALSE;
 }
 /*----------------------------------------------------------------------------*
@@ -648,7 +643,6 @@ void eon_element_actual_width_set(Enesim_Renderer *r, double width)
 	thiz->current.actual_size.width = width;
 	if (thiz->actual_width_set)
 		thiz->actual_width_set(r, width);
-	thiz->changed = EINA_TRUE;
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
@@ -661,7 +655,6 @@ void eon_element_actual_height_set(Enesim_Renderer *r, double height)
 	thiz->current.actual_size.height = height;
 	if (thiz->actual_height_set)
 		thiz->actual_height_set(r, height);
-	thiz->changed = EINA_TRUE;
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
@@ -677,7 +670,6 @@ void eon_element_actual_size_set(Enesim_Renderer *r, double width, double height
 		thiz->actual_width_set(r, width);
 	if (thiz->actual_height_set)
 		thiz->actual_height_set(r, height);
-	thiz->changed = EINA_TRUE;
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
@@ -699,7 +691,6 @@ void eon_element_actual_x_set(Enesim_Renderer *r, double x)
 	thiz->current.actual_position.x = x;
 	if (thiz->actual_x_set)
 		thiz->actual_x_set(r, x);
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_element_actual_y_set(Enesim_Renderer *r, double y)
@@ -710,7 +701,6 @@ void eon_element_actual_y_set(Enesim_Renderer *r, double y)
 	thiz->current.actual_position.y = y;
 	if (thiz->actual_y_set)
 		thiz->actual_y_set(r, y);
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
@@ -724,7 +714,6 @@ void eon_element_actual_position_set(Enesim_Renderer *r, double x, double y)
 		thiz->actual_x_set(r, x);
 	if (thiz->actual_y_set)
 		thiz->actual_y_set(r, y);
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_element_actual_position_get(Enesim_Renderer *r, double *x, double *y)
@@ -754,7 +743,7 @@ void eon_element_actual_geometry_set(Enesim_Renderer *r, Eon_Geometry *g)
 		thiz->actual_width_set(r, g->width);
 	if (thiz->actual_height_set)
 		thiz->actual_height_set(r, g->height);
-	thiz->changed = EINA_TRUE;
+	thiz->do_needs_setup = EINA_TRUE;
 }
 
 void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size)

@@ -385,41 +385,6 @@ static Eina_Bool _eon_scrollview_needs_setup(Ender_Element *e)
 	return EINA_FALSE;
 }
 
-static void _eon_scrollview_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, void *data)
-{
-	Eon_Scrollview *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollview_get(r);
-
-	/* if we have changed then just return our size */
-	if (thiz->changed)
-	{
-		Eina_Rectangle area;
-		double x, y, w, h;
-
-		eon_element_actual_position_get(r, &x, &y);
-		eon_element_actual_width_get(e, &w);
-		eon_element_actual_height_get(e, &h);
-		area.x = (int)x;
-		area.y = (int)y;
-		area.w = (int)w;
-		area.h = (int)h;
-
-		cb(r, &area, EINA_FALSE, data);
-		return;
-	}
-	/* if not, return the children's */
-	else
-	{
-		Ender_Element *content;
-		eon_container_content_get(e, &content);
-
-		eon_element_damages_get(content, cb, data);
-	}
-}
-
 static void _eon_scrollview_free(Enesim_Renderer *r)
 {
 	/* TODO destroy the two bars */
@@ -429,7 +394,6 @@ static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
 	.cleanup = _eon_scrollview_cleanup,
-	.damage = _eon_scrollview_damage,
 	.needs_setup = _eon_scrollview_needs_setup,
 	.free = _eon_scrollview_free,
 	.min_width_get = _eon_scrollview_min_width_get,

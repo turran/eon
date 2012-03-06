@@ -20,7 +20,6 @@ typedef struct _Eon_Widget_Descriptor
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Setup setup;
 	Eon_Element_Needs_Setup needs_setup;
-	Eon_Element_Damage damage;
 	Enesim_Renderer_Delete free;
 	const char *name;
 } Eon_Widget_Descriptor;

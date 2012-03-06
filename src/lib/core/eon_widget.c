@@ -309,7 +309,6 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
-	pdescriptor.damage = descriptor->damage;
 	pdescriptor.needs_setup = _eon_widget_needs_setup;
 	pdescriptor.min_width_get = _eon_widget_min_width_get;
 	pdescriptor.max_width_get = _eon_widget_max_width_get;
