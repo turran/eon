@@ -64,7 +64,6 @@ typedef struct _Eon_Element
 	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
-	Eon_Element_Damage damage;
 	Enesim_Renderer_Delete free;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
@@ -79,7 +78,6 @@ typedef struct _Eon_Element
 	/* misc */
 	Eina_Bool changed : 1;
 	Eina_Bool do_needs_setup : 1;
-	Eina_Bool managed : 1;
 	const char *name;
 	void *data;
 	Ender_Element *e;
@@ -93,19 +91,6 @@ static inline Eon_Element * _eon_element_get(Enesim_Renderer *r)
 	EON_ELEMENT_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
-}
-
-static void _eon_element_draw(Enesim_Renderer *r, const Enesim_Renderer_State *state,
-		int x, int y, unsigned int len, void *dst)
-{
-	Eon_Element *thiz;
-	Ender_Element *e;
-	Enesim_Renderer *real_r;
-
-	thiz = _eon_element_get(r);
-	e = thiz->e;
-	real_r = eon_element_renderer_get(e);
-	enesim_renderer_sw_draw(real_r, x, y, len, dst);
 }
 
 static double _element_min_width_get(Ender_Element *e)
@@ -496,192 +481,18 @@ static void _eon_element_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-/* Ok this is getting tricky. The main issue on this refactoring process
- * is to know exactly what and when has changed. Given the nature of an element
- * which is a renderer *and* has a renderer whenever we call a setup/cleanup
- * we should call this same thing on every child, but we must go through
- * the enesim_renderer_setup/cleanup interface or enesim wont unmark
- * the renderer as unchanged.
- */
-static Eina_Bool _eon_element_sw_setup(Enesim_Renderer *r,
-		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
-		Enesim_Surface *s,
-		Enesim_Renderer_Sw_Fill *fill, Enesim_Error **error)
-{
-	Eon_Element *thiz;
-	Ender_Element *e;
-	Enesim_Renderer *real_r;
-	Eina_Bool ret;
-
-	thiz = _eon_element_get(r);
-	e = thiz->e;
-	if (!e) return EINA_FALSE;
-
-	ret = _eon_element_setup(e, s, error);
-	if (!ret)
-	{
-		ENESIM_RENDERER_ERROR(r, error, "The element_setup() failed");
-		return EINA_FALSE;
-	}
-
-	/* we should only call the real renderer setup when we are not managed,
-	 * that is, whenever our inner renderer is not managed by another renderer
-	 * like the case of another inner renderer (a compound for example) having
-	 * our inner renderer.
-	 * On that case the setup on the compound we'll trigger the setup of the inner renderer
-	 * so we dont need to call it twice
-	 */
-	if (!thiz->managed)
-	{
-		real_r = eon_element_renderer_get(e);
-		if (!enesim_renderer_setup(real_r, s, error))
-		{
-			ENESIM_RENDERER_ERROR(r, error, "The renderer setup failed");
-			return EINA_FALSE;
-		}
-		/* FIXME Should we pick the sw fill here or better on our own drawing function? as the
-		 * setup on the inner renderer might happen later (if it is managed) and the fill
-		 * function might change
-		 */
-	}
-
-	*fill = _eon_element_draw;
-	return EINA_TRUE;
-}
-
-static void _eon_element_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
-{
-	Eon_Element *thiz;
-	Ender_Element *e;
-	Enesim_Renderer *real_r;
-
-	thiz = _eon_element_get(r);
-	e = thiz->e;
-
-	_eon_element_cleanup(e, s);
-
-	if (!thiz->managed)
-	{
-		real_r = eon_element_renderer_get(e);
-		enesim_renderer_cleanup(real_r, s);
-	}
-	{
-		const char *name;
-		enesim_renderer_name_get(r, &name);
-		//printf("cleaning up %s\n", name);
-	}
-}
-
-static void _eon_element_flags(Enesim_Renderer *r, const Enesim_Renderer_State *state,
-		Enesim_Renderer_Flag *flags)
-{
-	*flags = ENESIM_RENDERER_FLAG_ARGB8888;
-}
-
-/* For now we damage the whole widget geometry */
-static void _eon_element_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
-{
-	Eon_Element *thiz;
-	Ender_Element *e;
-
-	thiz = _eon_element_get(r);
-	e = thiz->e;
-
-	/* if we need to do the setup we call send the whole geometry */
-	if (!thiz->damage)
-	{
-		Eina_Rectangle area;
-
-		/* send old boundings */
-		area.x = thiz->past.actual_position.x;
-		area.y = thiz->past.actual_position.y;
-		area.w = thiz->past.actual_size.width;
-		area.h = thiz->past.actual_size.height;
-		cb(r, &area, EINA_TRUE, data);
-		/* send new boundings */
-		area.x = thiz->current.actual_position.x;
-		area.y = thiz->current.actual_position.y;
-		area.w = thiz->current.actual_size.width;
-		area.h = thiz->current.actual_size.height;
-		cb(r, &area, EINA_TRUE, data);
-	}
-	else
-	{
-		thiz->damage(e, cb, data);
-	}
-}
-
-/*
- * the changed value depends whenever the widget has changed or the
- * inner renderer has changed.
- */
-Eina_Bool _eon_element_has_changed(Enesim_Renderer *r)
-{
-	Eon_Element *thiz;
-	Ender_Element *e;
-	Enesim_Renderer *real_r;
-	Eina_Bool ret;
-
-	thiz = _eon_element_get(r);
-	e = thiz->e;
-
- 	ret = thiz->changed;
-	/* check that some property has actually changed */
-	if (ret)
-	{
-		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
-			ret = EINA_FALSE;
-		if (thiz->current.actual_size.height != thiz->past.actual_size.height)
-			ret = EINA_FALSE;
-		if (thiz->current.actual_position.x != thiz->past.actual_position.x)
-			ret = EINA_FALSE;
-		if (thiz->current.actual_position.y != thiz->past.actual_position.y)
-			ret = EINA_FALSE;
-	}
-	if (ret) goto done;
-
-	if (thiz->needs_setup)
-		ret = thiz->needs_setup(e);
-	if (ret) goto done;
-#if 0
-	/* FIXME Having to call the has_changed on the widget and on the inner renderer
-	 * is too much, because we have to iterate twice. For example on the stack
-	 * the has_changed is called per each stack widget and also the has_changed
-	 * will be called on the compound renderer of the stack and of course
-	 * on every widget's inner renderer the stack has
-	 */
-	if (thiz->has_changed)
-		ret = thiz->has_changed(e);
-	if (ret) goto done;
-#endif
-
-	/* check if the real renderer has changed */
-	real_r = eon_element_renderer_get(e);
-	ret = enesim_renderer_has_changed(real_r);
-	r = real_r;
-done:
-	if (ret)
-	{
-		const char *name;
-		enesim_renderer_name_get(r, &name);
-		//printf("%s has changed = %d\n", name, ret);
-	}
-
-	return ret;
-}
-
 static Enesim_Renderer_Descriptor _descriptor = {
 	/* .version = 			*/ ENESIM_RENDERER_API,
 	/* .name = 			*/ _eon_element_name,
 	/* .free = 			*/ _eon_element_free,
 	/* .boundings = 		*/ _eon_element_boundings,
 	/* .destination_boundings = 	*/ NULL,
-	/* .flags = 			*/ _eon_element_flags,
+	/* .flags = 			*/ NULL,
 	/* .is_inside = 		*/ NULL,
-	/* .damage = 			*/ _eon_element_damage,
-	/* .has_changed = 		*/ _eon_element_has_changed,
-	/* .sw_setup = 			*/ _eon_element_sw_setup,
-	/* .sw_cleanup = 		*/ _eon_element_sw_cleanup
+	/* .damage = 			*/ NULL,
+	/* .has_changed = 		*/ NULL,
+	/* .sw_setup = 			*/ NULL,
+	/* .sw_cleanup = 		*/ NULL
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -704,22 +515,6 @@ void eon_element_initialize(Ender_Element *e)
 
 Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
 {
-	Eon_Element *thiz;
-	Enesim_Renderer *r;
-	Eina_Bool ret;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_element_get(r);
-
-	thiz->managed = EINA_TRUE;
-	ret = enesim_renderer_setup(r, s, error);
-	thiz->managed = EINA_FALSE;
-
-	return ret;
-}
-
-Eina_Bool eon_element_setup2(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
-{
 	Eina_Bool ret;
 
 	ret = _eon_element_setup(e, s, error);
@@ -728,22 +523,13 @@ Eina_Bool eon_element_setup2(Ender_Element *e, Enesim_Surface *s, Enesim_Error *
 		printf("The element_setup() failed");
 		return EINA_FALSE;
 	}
-	_eon_element_cleanup(e, s);
 
 	return ret;
 }
 
 void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 {
-	Eon_Element *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_element_get(r);
-
-	thiz->managed = EINA_TRUE;
-	enesim_renderer_cleanup(r, s);
-	thiz->managed = EINA_FALSE;
+	_eon_element_cleanup(e, s);
 }
 
 Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
@@ -767,7 +553,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
 	thiz->renderer_get = descriptor->renderer_get;
-	thiz->damage = descriptor->damage;
 	thiz->needs_setup = descriptor->needs_setup;
 	thiz->free = descriptor->free;
 	/* min */

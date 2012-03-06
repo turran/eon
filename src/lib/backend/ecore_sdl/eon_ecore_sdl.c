@@ -241,11 +241,7 @@ static Eina_Bool _idler_cb(void *data)
 	Eina_Rectangle area;
 	double start, end;
 
-#if 1
 	r = eon_element_renderer_get(thiz->layout);
-#else
-	r = ender_element_object_get(thiz->layout);
-#endif
 	if (thiz->needs_resize)
 	{
 		_sdl_setup_buffers(thiz);
@@ -268,35 +264,12 @@ static Eina_Bool _idler_cb(void *data)
 	 * the element tree once and over the renderer tree once, it might
 	 * be too much
 	 */
-#if 1
 	if (eon_element_needs_setup(thiz->layout))
 	{
 		printf("needs setup!!!\n");
-		eon_element_setup2(thiz->layout, thiz->surface, &error);
+		eon_element_setup(thiz->layout, thiz->surface, &error);
+		eon_element_cleanup(thiz->layout, thiz->surface);
 	}
-	{
-		Eina_Iterator *iter;
-		Eina_Rectangle *r1;
-
-		eon_element_damages_get(thiz->layout, _sdl_damages_get, thiz);
-		iter = eina_tiler_iterator_new(thiz->tiler);
-		EINA_ITERATOR_FOREACH(iter, r1)
-		{
-			Eina_Rectangle *r2;
-
-			r2 = malloc(sizeof(Eina_Rectangle));
-			*r2 = *r1;
-			/* FIXME we should avoid this malloc, maybe make the enesim function
-			 * receive an iterator instead? or something like that
-			 */
-			printf("AREA to redraw %d %d %d %d\n", r1->x, r1->y, r1->w, r1->h);
-			redraws = eina_list_append(redraws, r2);
-		}
-		eina_iterator_free(iter);
-	}
-	r = eon_element_renderer_get(thiz->layout);
-#else
-	r = ender_element_object_get(thiz->layout);
 	/* FIXME for now */
 	/* the damage callback should add the areas into
 	 * the tiler and then only draw what's needed */
@@ -321,7 +294,6 @@ static Eina_Bool _idler_cb(void *data)
 		}
 		eina_iterator_free(iter);
 	}
-#endif
 
 	if (!redraws)
 		return EINA_TRUE;

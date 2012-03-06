@@ -243,6 +243,7 @@ static void _eon_canvas_damage(Ender_Element *e, Enesim_Renderer_Damage_Cb cb, v
 	r = ender_element_object_get(e);
 	thiz = _eon_canvas_get(r);
 
+	printf("canvas damage\n");
 	eon_element_actual_position_get(r, &x, &y);
 	/* if we have changed then just return our size */
 	if (thiz->needs_setup)
