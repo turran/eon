@@ -177,7 +177,10 @@ static void _eon_theme_widget_flags(Enesim_Renderer *r, const Enesim_Renderer_St
 	enesim_renderer_flags(real_r, flags);
 }
 
-static void _eon_theme_widget_damage(Enesim_Renderer *r, Enesim_Renderer_Damage_Cb cb, void *data)
+static void _eon_theme_widget_damage(Enesim_Renderer *r,
+		const Eina_Rectangle *old_boundings,
+		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
+		Enesim_Renderer_Damage_Cb cb, void *data)
 {
 	Enesim_Renderer *real_r;
 
