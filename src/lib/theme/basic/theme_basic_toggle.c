@@ -96,7 +96,7 @@ static void _toggle_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _toggle_has_changed(Enesim_Renderer *r)
+static Eina_Bool _toggle_needs_setup(Enesim_Renderer *r)
 {
 	Basic_Toggle *thiz;
 	Eina_Bool ret;
@@ -116,13 +116,13 @@ static void _toggle_cleanup(Enesim_Renderer *r)
 }
 
 static Eon_Theme_Toggle_Descriptor _descriptor = {
-	.margin_get = _toggle_margin_get,
-	.position_get = _toggle_position_get,
-	.renderer_get = _toggle_renderer_get,
-	.has_changed = _toggle_has_changed,
-	.cleanup = _toggle_cleanup,
-	.setup = _toggle_setup,
-	.free = _toggle_free,
+	/* .position_get 	= */ _toggle_position_get,
+	/* .margin_get 		= */ _toggle_margin_get,
+	/* .renderer_get 	= */ _toggle_renderer_get,
+	/* .setup		= */ _toggle_setup,
+	/* .cleanup 		= */ _toggle_cleanup,
+	/* .needs_setup 	= */ _toggle_needs_setup,
+	/* .free 		= */ _toggle_free,
 };
 /*============================================================================*
  *                                   API                                      *

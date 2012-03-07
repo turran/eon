@@ -37,16 +37,24 @@
 		}\
 	} while(0)
 
+typedef struct _Eon_Theme_Splitter_State
+{
+	Enesim_Renderer *second_content;
+	Eon_Orientation orientation;
+	double position;
+} Eon_Theme_Splitter_State;
+
 typedef struct _Eon_Theme_Splitter
 {
 	EINA_MAGIC;
 	/* properties */
+	Eon_Theme_Splitter_State current;
+	Eon_Theme_Splitter_State past;
 	/* private */
-	Enesim_Renderer *second_content;
-	Eon_Orientation orientation;
-	double position;
+	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Eon_Theme_Splitter_Thickness_Get thickness_get;
 	Eon_Theme_Splitter_Min_Length_Get min_length_get;
+	Eina_Bool do_needs_setup : 1;
 	void *data;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Splitter;
@@ -64,6 +72,12 @@ static inline Eon_Theme_Splitter * _eon_theme_splitter_get(Enesim_Renderer *r)
 static const char * _eon_theme_splitter_name(Enesim_Renderer *r)
 {
 	return "theme_splitter";
+}
+
+static Eina_Bool _eon_theme_splitter_needs_setup(Enesim_Renderer *r)
+{
+	Eon_Theme_Splitter *thiz;
+	return EINA_TRUE;
 }
 
 static void _eon_theme_splitter_free(Enesim_Renderer *r)
@@ -107,7 +121,7 @@ void eon_theme_splitter_orientation_set(Enesim_Renderer *r, Eon_Orientation orie
 	Eon_Theme_Splitter *thiz;
 
 	thiz = _eon_theme_splitter_get(r);
-	thiz->orientation = orientation;
+	thiz->current.orientation = orientation;
 }
 
 void eon_theme_splitter_second_content_set(Enesim_Renderer *r, Enesim_Renderer *second_content)
@@ -115,7 +129,7 @@ void eon_theme_splitter_second_content_set(Enesim_Renderer *r, Enesim_Renderer *
 	Eon_Theme_Splitter *thiz;
 
 	thiz = _eon_theme_splitter_get(r);
-	thiz->second_content = second_content;
+	thiz->current.second_content = second_content;
 }
 
 void eon_theme_splitter_position_set(Enesim_Renderer *r, double position)
@@ -123,7 +137,7 @@ void eon_theme_splitter_position_set(Enesim_Renderer *r, double position)
 	Eon_Theme_Splitter *thiz;
 
 	thiz = _eon_theme_splitter_get(r);
-	thiz->position = position;
+	thiz->current.position = position;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -142,6 +156,7 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 	thiz = calloc(1, sizeof(Eon_Theme_Splitter));
 	EINA_MAGIC_SET(thiz, EON_THEME_SPLITTER_MAGIC);
 	thiz->data = data;
+	thiz->needs_setup = descriptor->needs_setup;
 	thiz->free = descriptor->free;
 
 	thiz->min_length_get = descriptor->min_length_get;
@@ -149,7 +164,7 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
 	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.has_changed = descriptor->has_changed;
+	pdescriptor.needs_setup = _eon_theme_splitter_needs_setup;
 	pdescriptor.name = _eon_theme_splitter_name;
 	pdescriptor.free = _eon_theme_splitter_free;
 
@@ -194,7 +209,7 @@ EAPI void eon_theme_splitter_second_content_get(Enesim_Renderer *r, Enesim_Rende
 	Eon_Theme_Splitter *thiz;
 
 	thiz = _eon_theme_splitter_get(r);
-	*second_content = thiz->second_content;	
+	*second_content = thiz->current.second_content;
 }
 
 /**
@@ -206,7 +221,7 @@ EAPI void eon_theme_splitter_position_get(Enesim_Renderer *r, double *position)
 	Eon_Theme_Splitter *thiz;
 
 	thiz = _eon_theme_splitter_get(r);
-	*position = thiz->position;
+	*position = thiz->current.position;
 }
 
 /**
@@ -218,5 +233,5 @@ EAPI void eon_theme_splitter_orientation_get(Enesim_Renderer *r, Eon_Orientation
 	Eon_Theme_Splitter *thiz;
 
 	thiz = _eon_theme_splitter_get(r);
-	*orientation = thiz->orientation;
+	*orientation = thiz->current.orientation;
 }

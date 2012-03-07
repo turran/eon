@@ -30,3 +30,4 @@
 + We can create a simple way of handling direct property set/get, on the ender generator, whenever a property is added, the return property can be managed
   as an external Ender_Property so then, we can handle the direct property set
 + Cache every escen state a widget needs, to avoid having to fetch the state each time something changes
++ We need to avoid having to go through the list of widgets that much, one to check if the widget needs a setup, another to do the setup, another for the cleanup, etc, etc, etc

@@ -43,7 +43,7 @@ typedef struct _Eon_Theme_Widget
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
 	Eon_Theme_Widget_Cleanup cleanup;
-	Eon_Theme_Widget_Has_Changed has_changed;
+	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Eon_Theme_Widget_Informs_Setup informs_setup;
 	Enesim_Renderer_Name name;
 	Enesim_Renderer_Delete free;
@@ -135,10 +135,6 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
 	enesim_renderer_rop_get(r, &rop);
 	enesim_renderer_rop_set(real_r, rop);
 
-	if (!thiz->setup)
-		return EINA_FALSE;
-	if (!thiz->setup(r, error))
-		return EINA_FALSE;
 	if (!enesim_renderer_setup(real_r, s, error))
 		return EINA_FALSE;
 	*fill = _eon_theme_widget_draw;
@@ -193,9 +189,6 @@ static Eina_Bool _eon_theme_widget_has_changed(Enesim_Renderer *r)
 	Enesim_Renderer *real_r;
 	Eina_Bool ret;
 
-	ret = eon_theme_widget_has_changed(r);
-	if (ret) return ret;
-
 	real_r = _eon_theme_widget_renderer_get(r);
 	ret = enesim_renderer_has_changed(real_r);
 
@@ -242,7 +235,7 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->setup = descriptor->setup;
 	thiz->cleanup = descriptor->cleanup;
-	thiz->has_changed = descriptor->has_changed;
+	thiz->needs_setup = descriptor->needs_setup;
 	thiz->informs_setup = descriptor->informs_setup;
 	thiz->name = descriptor->name;
 	thiz->free = descriptor->free;
@@ -277,14 +270,27 @@ void * eon_theme_widget_data_get(Enesim_Renderer *r)
 	return thiz->data;
 }
 
-Eina_Bool eon_theme_widget_has_changed(Enesim_Renderer *r)
+Eina_Bool eon_theme_widget_needs_setup(Enesim_Renderer *r)
 {
 	Eon_Theme_Widget *thiz;
 
 	thiz = _eon_theme_widget_get(r);
-	if (thiz->has_changed)
-		return thiz->has_changed(r);
-	return EINA_FALSE;
+	if (thiz->needs_setup)
+		return thiz->needs_setup(r);
+
+	return EINA_TRUE;
+}
+
+Eina_Bool eon_theme_widget_setup(Enesim_Renderer *r, Enesim_Error **error)
+{
+	Eon_Theme_Widget *thiz;
+
+	thiz = _eon_theme_widget_get(r);
+	if (!thiz->setup)
+		return EINA_FALSE;
+	if (!thiz->setup(r, error))
+		return EINA_FALSE;
+	return EINA_TRUE;
 }
 
 /* FIXME */

@@ -37,14 +37,24 @@
 		}\
 	} while(0)
 
+typedef struct _Eon_Theme_Container_State
+{
+	Enesim_Renderer *content;
+} Eon_Theme_Container_State;
+
 typedef struct _Eon_Theme_Container
 {
 	EINA_MAGIC;
 	/* properties */
-	Enesim_Renderer *content;
-	/* private */
-	void *data;
+	Eon_Theme_Container_State current;
+	Eon_Theme_Container_State past;
+	/* interface */
+	Eon_Theme_Widget_Needs_Setup needs_setup;
+	Eon_Theme_Widget_Setup setup;
 	Enesim_Renderer_Delete free;
+	/* private */
+	Eina_Bool do_needs_setup : 1;
+	void *data;
 } Eon_Theme_Container;
 
 static inline Eon_Theme_Container * _eon_theme_container_get(Enesim_Renderer *r)
@@ -66,6 +76,29 @@ static void _eon_theme_container_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
+static Eina_Bool _eon_theme_container_needs_setup(Enesim_Renderer *r)
+{
+	Eon_Theme_Container *thiz;
+
+	thiz = _eon_theme_container_get(r);
+	if (thiz->do_needs_setup)
+		return EINA_TRUE;
+	if (thiz->needs_setup)
+		return thiz->needs_setup(r);
+	return EINA_FALSE;
+}
+
+static Eina_Bool _eon_theme_container_setup(Enesim_Renderer *r, Enesim_Error **error)
+{
+	Eon_Theme_Container *thiz;
+
+	thiz = _eon_theme_container_get(r);
+	if (thiz->setup)
+		return thiz->setup(r, error);
+	thiz->do_needs_setup = EINA_FALSE;
+	thiz->past = thiz->current;
+	return EINA_TRUE;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -80,10 +113,13 @@ Enesim_Renderer * eon_theme_container_new(Eon_Theme_Container_Descriptor *descri
 	EINA_MAGIC_SET(thiz, EON_THEME_CONTAINER_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
+	thiz->needs_setup = descriptor->needs_setup;
+	thiz->setup = descriptor->setup;
+
 	pdescriptor.renderer_get = descriptor->renderer_get;
-	pdescriptor.setup = descriptor->setup;
+	pdescriptor.setup = _eon_theme_container_setup;
 	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.has_changed = descriptor->has_changed;
+	pdescriptor.needs_setup = _eon_theme_container_needs_setup;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.free = _eon_theme_container_free;
 
@@ -129,7 +165,10 @@ EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *c
 	Eon_Theme_Container *thiz;
 
 	thiz = _eon_theme_container_get(r);
-	thiz->content = content;
+	if (thiz->current.content == content)
+		return;
+	thiz->current.content = content;
+	thiz->do_needs_setup = EINA_TRUE;
 }
 
 /**
@@ -141,6 +180,6 @@ EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **
 	Eon_Theme_Container *thiz;
 
 	thiz = _eon_theme_container_get(r);
-	*content = thiz->content;
+	*content = thiz->current.content;
 }
 

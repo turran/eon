@@ -127,6 +127,9 @@ static Eina_Bool _eon_widget_setup(Ender_Element *e,
 	enesim_renderer_rop_set(thiz->theme_renderer, ENESIM_BLEND);
 	if (thiz->setup)
 		thiz->setup(e, state, s, err);
+	if (eon_theme_widget_needs_setup(thiz->theme_renderer))
+		eon_theme_widget_setup(thiz->theme_renderer, err);
+
 	return EINA_TRUE;
 }
 
