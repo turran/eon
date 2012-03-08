@@ -74,9 +74,8 @@ static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 	thiz = _spin_get(r);
 
 	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
-
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 
@@ -87,25 +86,28 @@ static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_transformation_set(rr, &m);
 
 	rr = thiz->arrows;
-	thiz->arrows_position.x = width - _arrow_width - 3;
-	thiz->arrows_position.y = 1;
-	enesim_renderer_origin_set(rr, thiz->arrows_position.x, thiz->arrows_position.y);
+	thiz->arrows_position.x = ox + width - _arrow_width - 3;
+	thiz->arrows_position.y = oy + 1;
 
 	rr = thiz->arrows_background;
+	enesim_renderer_rectangle_position_set(rr, thiz->arrows_position.x, thiz->arrows_position.y);
 	enesim_renderer_rectangle_width_set(rr, _arrow_width + 2);
 	enesim_renderer_rectangle_height_set(rr, height - 2);
 
 	thiz->increment_size.width = _arrow_width;
 	thiz->increment_size.height = (height - 4 - 1) / 2;
-	thiz->increment_position.x = 1;
-	thiz->increment_position.y = 1;
+	thiz->increment_position.x = thiz->arrows_position.x + 1;
+	thiz->increment_position.y = thiz->arrows_position.y + 1;
 	eon_basic_control_arrow_setup(thiz->increment_arrow, &thiz->increment_position, &thiz->increment_size, EON_BASIC_CONTROL_ARROW_DIRECTION_TOP);
 
-	thiz->decrement_position.x = 1;
-	thiz->decrement_position.y = thiz->increment_size.height + 2;
+	thiz->decrement_position.x = thiz->arrows_position.x + 1;
+	thiz->decrement_position.y = thiz->arrows_position.y + thiz->increment_size.height + 2;
 	thiz->decrement_size.width = thiz->increment_size.width;
 	thiz->decrement_size.height = thiz->increment_size.height;
 	eon_basic_control_arrow_setup(thiz->decrement_arrow, &thiz->decrement_position, &thiz->decrement_size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
+
+	rr = thiz->arrows_background_shadow;
+	enesim_renderer_origin_set(rr, 0, thiz->arrows_position.y + thiz->increment_size.height + 1);
 
 	return EINA_TRUE;
 }
@@ -206,7 +208,8 @@ EAPI Enesim_Renderer * eon_basic_spin_new(void)
 	r = enesim_renderer_rectangle_new();
 	enesim_renderer_rectangle_corner_radius_set(r, thiz->radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_fill_renderer_set(r, thiz->arrows_background_shadow);
+	enesim_renderer_shape_fill_color_set(r, 0xffeeeeee);
+	//enesim_renderer_shape_fill_renderer_set(r, thiz->arrows_background_shadow);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	thiz->arrows_background = r;
 

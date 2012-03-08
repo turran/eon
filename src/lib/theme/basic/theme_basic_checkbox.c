@@ -109,7 +109,8 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 		enesim_renderer_compound_layer_add(thiz->compound, content);
 	}
 	/* FIXME we should use the correct widget x, y */
-	enesim_renderer_origin_get(r, &ox, &oy);
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 
@@ -117,10 +118,8 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_rectangle_position_set(thiz->shape, ox, oy);
 	enesim_renderer_rectangle_width_set(thiz->shape, width);
 	enesim_renderer_rectangle_height_set(thiz->shape, height);
-	/* FIXME we need to avoid as many origin_get/set as we can */
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	enesim_renderer_y_origin_set(thiz->box, height/2 - thiz->size/2);
-	enesim_renderer_y_origin_set(thiz->check, height/2 - thiz->size/2);
+	enesim_renderer_origin_set(thiz->box, ox, oy + height/2 - thiz->size/2);
+	enesim_renderer_origin_set(thiz->check, ox, oy + height/2 - thiz->size/2);
 
 	return EINA_TRUE;
 }
@@ -165,6 +164,7 @@ EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
 	if (!r) goto path_err;
 	thiz->check = r;
 	enesim_renderer_shape_fill_color_set(r, 0xffff0000);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_rectangle_new();
@@ -241,6 +241,7 @@ EAPI void eon_basic_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
+	printf("selected %d\n", selected);
 	if (thiz->selected == selected)
 		return;
 

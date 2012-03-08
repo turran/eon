@@ -64,7 +64,7 @@ static void _eon_entry_click(Ender_Element *e, const char *event_name, void *eve
 
 		theme_r = eon_widget_theme_renderer_get(r);
 		etex_buffer_string_insert(thiz->buffer, "l>", -1, offset);
-		eon_theme_entry_buffer_has_changed(theme_r);
+		eon_theme_entry_buffer_needs_setup(theme_r);
 		offset += 2;
 		/* inform the position of the cursor */
 	}
@@ -224,7 +224,7 @@ static void _eon_entry_text_set(Enesim_Renderer *r, char *text)
 	thiz = _eon_entry_get(r);
 	etex_buffer_string_set(thiz->buffer, text, -1);
 	theme_r = eon_widget_theme_renderer_get(r);
-	eon_theme_entry_buffer_has_changed(theme_r);
+	eon_theme_entry_buffer_needs_setup(theme_r);
 }
 
 static void _eon_entry_text_get(Enesim_Renderer *r, char **text)

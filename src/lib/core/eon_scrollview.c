@@ -285,7 +285,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 			eon_theme_scrollview_hbar_set(theme_r, bar_rr);
 			length = aw - (has_vbar ? vbar_size.width : 0);
 			eon_element_actual_size_set(bar_r, length, hbar_size.height);
-			eon_element_actual_position_set(bar_r, 0, ah - hbar_size.height);
+			eon_element_actual_position_set(bar_r, ax, ay + ah - hbar_size.height);
 
 			scale = length / content_size.width;
 			eon_scrollbar_page_size_set(thiz->hbar, scale * 100);
@@ -309,7 +309,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 			eon_theme_scrollview_vbar_set(theme_r, bar_rr);
 			length = ah - (has_hbar ? hbar_size.height : 0);
 			eon_element_actual_size_set(bar_r, vbar_size.width, length);
-			eon_element_actual_position_set(bar_r, aw - vbar_size.width, 0);
+			eon_element_actual_position_set(bar_r, ax + aw - vbar_size.width, ay);
 
 			scale = length / content_size.height;
 			eon_scrollbar_page_size_set(thiz->vbar, scale * 100);
@@ -327,7 +327,7 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 		 * the gfx position is handled on the theme with theme_scrollview_offset_set
 		 */
 		eon_element_actual_size_set(content_r, content_size.width, content_size.height);
-		eon_element_actual_position_set(content_r, thiz->current.offset.x, thiz->current.offset.y);
+		eon_element_actual_position_set(content_r, ax + thiz->current.offset.x, ay + thiz->current.offset.y);
 		if (!eon_element_setup(cstate->content, s, err))
 		{
 			printf("impossible to setup the content\n");

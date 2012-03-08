@@ -70,21 +70,18 @@ static Eina_Bool _toggle_setup(Enesim_Renderer *r, Enesim_Error **error)
 	Basic_Toggle *thiz;
 	Enesim_Renderer *content;
 	Enesim_Renderer *real_r;
-	double ox, oy;
+	double x, y;
 	double width, height;
 
 	thiz = _toggle_get(r);
 
+	eon_theme_widget_x_get(r, &x);
+	eon_theme_widget_y_get(r, &y);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 	eon_theme_container_content_get(r, &content);
 
-	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	real_r = eon_basic_control_button_renderer_get(thiz->cb);
-	enesim_renderer_origin_set(real_r, ox, oy);
-
-	return eon_basic_control_button_setup(thiz->cb, content, width, height, error);
+	return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
 }
 
 static void _toggle_free(Enesim_Renderer *r)

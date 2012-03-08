@@ -58,7 +58,6 @@ Eon_Basic_Bar * eon_basic_bar_new(void)
 	thiz->bar_background_fill = r;
 	enesim_renderer_stripes_odd_color_set(r, 0x22000000);
 	enesim_renderer_stripes_even_color_set(r, 0x33000000);
-	enesim_renderer_origin_set(r, -1.0, -1.0);
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto bar_background_err;
@@ -67,7 +66,6 @@ Eon_Basic_Bar * eon_basic_bar_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->bar_background_fill);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_origin_set(r, 3.0, 3.0);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	r = enesim_renderer_rectangle_new();
@@ -131,8 +129,7 @@ void eon_basic_bar_size_set(Eon_Basic_Bar *thiz, double size, Eon_Orientation or
 }
 
 double eon_basic_bar_max_size_get(Eon_Basic_Bar *thiz)
-{
-	return DBL_MAX;
+{	return DBL_MAX;
 }
 
 double eon_basic_bar_min_size_get(Eon_Basic_Bar *thiz)
@@ -140,9 +137,23 @@ double eon_basic_bar_min_size_get(Eon_Basic_Bar *thiz)
 	return 20;
 }
 
-void eon_basic_bar_position_set(Eon_Basic_Bar *thiz, double x, double y)
+void eon_basic_bar_position_set(Eon_Basic_Bar *thiz, double x, double y, Eon_Orientation orientation)
 {
-	enesim_renderer_origin_set(thiz->bar, x, y);
+	double bbfx, bbfy;
+
+	enesim_renderer_origin_set(thiz->bar_shape, x, y);
+	enesim_renderer_origin_set(thiz->bar_background, x + 3, y + 3);
+	if (orientation == EON_ORIENTATION_VERTICAL)
+	{
+		bbfx = x + 2;
+		bbfy = y + 2;
+	}
+	else
+	{
+		bbfx = y + 2;
+		bbfy = x + 2;
+	}
+	enesim_renderer_origin_set(thiz->bar_background_fill, bbfx, bbfy);
 }
 
 void eon_basic_bar_free(Eon_Basic_Bar *thiz)

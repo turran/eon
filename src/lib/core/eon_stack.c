@@ -137,7 +137,10 @@ static double _stack_horizontal_min_width(Eon_Stack *thiz)
 	return min_width;
 }
 
-static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double aw, double ah, Enesim_Surface *s, Enesim_Error **err)
+static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz,
+		double ax, double ay,
+		double aw, double ah,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Stack_Child *ech;
 	Eon_Stack_Child *last_ech;
@@ -195,7 +198,7 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 			//printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
-		eon_element_actual_position_set(child_r, last_x, y);
+		eon_element_actual_position_set(child_r, ax + last_x, ay + y);
 		eon_element_setup(ech->ender, s, err);
 		child_rr = eon_element_renderer_get(ech->ender);
 		/* now add the renderer associated with the widget into the theme */
@@ -207,7 +210,10 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz, double 
 	}
 }
 
-static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw, double ah, Enesim_Surface *s, Enesim_Error **err)
+static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz,
+		double ax, double ay,
+		double aw, double ah,
+		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Stack_Child *ech;
 	Eon_Stack_Child *last_ech;
@@ -272,7 +278,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
-		eon_element_actual_position_set(child_r, x, last_y);
+		eon_element_actual_position_set(child_r, ax + x, ay + last_y);
 		eon_element_setup(ech->ender, s, err);
 		/* now add the renderer associated with the widget into the theme */
 		child_rr = eon_element_renderer_get(ech->ender);
@@ -286,6 +292,7 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz, double aw
 
 static Eina_Bool _stack_relayout(Ender_Element *e,
 		Eon_Stack *thiz,
+		const Eon_Position *position,
 		const Eon_Size *size,
 		Enesim_Surface *s,
 		Enesim_Error **err)
@@ -298,9 +305,9 @@ static Eina_Bool _stack_relayout(Ender_Element *e,
 	r = ender_element_object_get(e);
 	eon_widget_property_clear(r, "child");
 	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
-		_stack_horizontal_arrange(e, thiz, size->width, size->height, s, err);
+		_stack_horizontal_arrange(e, thiz, position->x, position->y, size->width, size->height, s, err);
 	else
-		_stack_vertical_arrange(e, thiz, size->width, size->height, s, err);
+		_stack_vertical_arrange(e, thiz, position->x, position->y, size->width, size->height, s, err);
 	/* FIXME */
 	return EINA_TRUE;
 }
@@ -354,7 +361,7 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e,
 	/* if the actual size has changed, then relayout
 	 * if some child preferred/min/max size has changed then call the relayout
 	 */
-	return _stack_relayout(e, thiz, &state->actual_size, s, err);
+	return _stack_relayout(e, thiz, &state->actual_position, &state->actual_size, s, err);
 }
 
 static void _eon_stack_cleanup(Ender_Element *e, Enesim_Surface *s)

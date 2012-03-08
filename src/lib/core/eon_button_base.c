@@ -186,7 +186,7 @@ static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
 	eon_element_real_relative_size_get(content, &size, &size);
 	eon_element_actual_size_set(content_r, size.width, size.height);
 	eon_theme_button_base_position_get(theme_r, &size, &position);
-	eon_element_actual_position_set(content_r, position.x, position.y);
+	eon_element_actual_position_set(content_r, ax + position.x, ay + position.y);
 	if (!eon_element_setup(content, s, err))
 	{
 		printf("impossible to setup the content\n");

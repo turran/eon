@@ -180,6 +180,9 @@ static void _eon_theme_widget_damage(Enesim_Renderer *r,
 {
 	Enesim_Renderer *real_r;
 
+	/* TODO before calling the damages on the real renderer we might need to
+	 * do the setup on the theme itself so the theme can propagate
+	 * the properties into the real renderer */
 	real_r = _eon_theme_widget_renderer_get(r);
 	enesim_renderer_damages_get(real_r, cb, data);
 }

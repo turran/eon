@@ -95,8 +95,8 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 		thiz->content = content;
 		enesim_renderer_rop_set(thiz->outter_circle, ENESIM_BLEND);
 	}
-	/* FIXME we should use the correct widget x, y */
-	enesim_renderer_origin_get(r, &ox, &oy);
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 
@@ -105,9 +105,8 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r, Enesim_Error **error)
 	enesim_renderer_rectangle_width_set(thiz->shape, width);
 	enesim_renderer_rectangle_height_set(thiz->shape, height);
 
-	/* FIXME we need to avoid as many origin_get/set as we can */
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
-	enesim_renderer_y_origin_set(thiz->outter_circle, height/2);
+	enesim_renderer_origin_set(thiz->inner_circle, ox + circle_radius + 2, oy + height/2);
+	enesim_renderer_origin_set(thiz->outter_circle, ox + circle_radius + 2, oy + height/2);
 
 	return EINA_TRUE;
 }
@@ -151,7 +150,6 @@ EAPI Enesim_Renderer * eon_basic_radio_new(void)
 	r = enesim_renderer_circle_new();
 	if (!r) goto outter_err;
 	thiz->outter_circle = r;
-	enesim_renderer_origin_set(r, circle_radius + 2, circle_radius + 2);
 	enesim_renderer_circle_radius_set(r, circle_radius);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_stroke_weight_set(r, 2);

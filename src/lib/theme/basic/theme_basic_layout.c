@@ -116,7 +116,7 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 {
 	Enesim_Renderer *r;
 	Theme_Basic_Layout *thiz;
-#if 0
+#if 1
 	const int color[] = { 0xffffffff, 0xff00ff00, 0x88008888 };
 	static int i = 0;
 #endif
@@ -132,7 +132,7 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 	if (!r) goto background_err;
 	enesim_renderer_compound_layer_add(thiz->compound, r);
 	enesim_renderer_rop_set(r, ENESIM_FILL);
-#if 0
+#if 1
 	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
 #else
 	enesim_renderer_background_color_set(r, 0xffd7d7d7);

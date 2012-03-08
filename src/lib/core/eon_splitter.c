@@ -376,6 +376,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	Enesim_Renderer *content_r;
 	Enesim_Renderer *theme_r;
 	double aw, ah;
+	double ax, ay;
 	double cw, ch, cx, cy;
 	double scw, sch, scx, scy;
 	double position;
@@ -401,8 +402,11 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	}
 	/* set the content position and size */
 	eon_theme_splitter_thickness_get(theme_r, &thickness);
-	eon_element_actual_width_get(e, &aw);
-	eon_element_actual_height_get(e, &ah);
+	aw = state->actual_size.width;
+	ah = state->actual_size.height;
+	ax = state->actual_position.x;
+	ay = state->actual_position.y;
+
 	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double len;
@@ -462,12 +466,12 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 
 	eon_element_actual_width_set(content_r, cw);
 	eon_element_actual_height_set(content_r, ch);
-	eon_element_actual_position_set(content_r, cx, cy);
+	eon_element_actual_position_set(content_r, ax + cx, ay + cy);
 
 	content_r = ender_element_object_get(thiz->current.second_content);
 	eon_element_actual_width_set(content_r, scw);
 	eon_element_actual_height_set(content_r, sch);
-	eon_element_actual_position_set(content_r, scx, scy);
+	eon_element_actual_position_set(content_r, ax + scx, ay + scy);
 
 	if (!eon_element_setup(cstate->content, s, err))
 	{

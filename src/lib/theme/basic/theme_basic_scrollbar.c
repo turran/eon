@@ -103,7 +103,10 @@ static void _basic_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percen
 
 	thiz = _scrollbar_get(r);
 	eon_theme_scrollbar_orientation_get(r, &orientation);
-	ox = oy = _border_weight / 2;
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
+	ox += _border_weight / 2;
+	oy += _border_weight / 2;
 	/* given that we dont have arrow, just move it relative to the set widht/height */
 	if (orientation == EON_ORIENTATION_HORIZONTAL)
 	{
@@ -119,7 +122,7 @@ static void _basic_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percen
 		eon_theme_widget_height_get(r, &h);
 		ofy = h * percent;
 	}
-	eon_basic_bar_position_set(thiz->bar, ox + ofx, oy + ofy);	
+	eon_basic_bar_position_set(thiz->bar, ox + ofx, oy + ofy, orientation);
 }
 
 static void _basic_scrollbar_thumb_geometry_get(Enesim_Renderer *r, Enesim_Rectangle *geometry)
@@ -165,17 +168,14 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error
 {
 	Basic_Scrollbar *thiz;
 	Eon_Orientation orientation;
-	Enesim_Matrix matrix;
 	Enesim_Matrix bf_matrix;
-	Enesim_Matrix bbf_matrix;
 	double ox, oy;
 	double width, height;
 	double lx, ly, lw, lh;
 
 	thiz = _scrollbar_get(r);
-	/* the origin */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	/* the size */
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 
@@ -188,9 +188,6 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error
 		lw = 1;
 		lh = height - (thiz->radius * 2);
 
-		enesim_matrix_scale(&matrix, 0.6, 1.0);
-
-		enesim_matrix_identity(&bbf_matrix);
 		bf_matrix.xx = 0; bf_matrix.xy = -1; bf_matrix.xz = 0;
 		bf_matrix.yx = 1; bf_matrix.yy = 0; bf_matrix.yz = 0;
 		bf_matrix.zx = 0; bf_matrix.zy = 0; bf_matrix.zz = 1;
@@ -202,26 +199,20 @@ static Eina_Bool _basic_scrollbar_setup(Enesim_Renderer *r, Enesim_Error **error
 		lw = width - (thiz->radius * 2);
 		lh = 1;
 
-		enesim_matrix_scale(&matrix, 1.0, 0.6);
-
-		bbf_matrix.xx = 0; bbf_matrix.xy = -1; bbf_matrix.xz = 0;
-		bbf_matrix.yx = 1; bbf_matrix.yy = 0; bbf_matrix.yz = 0;
-		bbf_matrix.zx = 0; bbf_matrix.zy = 0; bbf_matrix.zz = 1;
 		enesim_matrix_identity(&bf_matrix);
 	}
+	enesim_renderer_origin_set(thiz->background_fill, ox, oy);
 	enesim_renderer_stripes_even_thickness_set(thiz->background_fill, 8);
 	enesim_renderer_stripes_odd_thickness_set(thiz->background_fill, 8);
 	enesim_renderer_transformation_set(thiz->background_fill, &bf_matrix);
 
 	/* the background */
+	enesim_renderer_rectangle_position_set(thiz->background, ox, oy);
 	enesim_renderer_rectangle_width_set(thiz->background, width);
 	enesim_renderer_rectangle_height_set(thiz->background, height);
 	/* the line */
-	enesim_renderer_rectangle_position_set(thiz->line, lx, ly);
+	enesim_renderer_origin_set(thiz->line, ox + lx, oy + ly);
 	enesim_renderer_rectangle_size_set(thiz->line, lw, lh);
-	enesim_renderer_transformation_set(thiz->line, &matrix);
-	/* the composition */
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
 
 	return EINA_TRUE;
 }
