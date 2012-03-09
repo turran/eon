@@ -131,9 +131,6 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
 
 	thiz = _eon_theme_widget_get(r);
 	real_r = _eon_theme_widget_renderer_get(r);
-	/* common properties */
-	enesim_renderer_rop_get(r, &rop);
-	enesim_renderer_rop_set(real_r, rop);
 
 	if (!enesim_renderer_setup(real_r, s, error))
 		return EINA_FALSE;
@@ -173,6 +170,14 @@ static void _eon_theme_widget_flags(Enesim_Renderer *r, const Enesim_Renderer_St
 	enesim_renderer_flags(real_r, flags);
 }
 
+static void _eon_theme_widget_hints(Enesim_Renderer *r, const Enesim_Renderer_State *state, Enesim_Renderer_Hint *hints)
+{
+	Enesim_Renderer *real_r;
+
+	real_r = _eon_theme_widget_renderer_get(r);
+	enesim_renderer_hints_get(real_r, hints);
+}
+
 static void _eon_theme_widget_damage(Enesim_Renderer *r,
 		const Eina_Rectangle *old_boundings,
 		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES],
@@ -180,14 +185,12 @@ static void _eon_theme_widget_damage(Enesim_Renderer *r,
 {
 	Enesim_Renderer *real_r;
 
-	/* TODO before calling the damages on the real renderer we might need to
-	 * do the setup on the theme itself so the theme can propagate
-	 * the properties into the real renderer */
 	real_r = _eon_theme_widget_renderer_get(r);
 	enesim_renderer_damages_get(real_r, cb, data);
 }
 
-static Eina_Bool _eon_theme_widget_has_changed(Enesim_Renderer *r)
+static Eina_Bool _eon_theme_widget_has_changed(Enesim_Renderer *r,
+		const Enesim_Renderer_State *states[ENESIM_RENDERER_STATES])
 {
 	Enesim_Renderer *real_r;
 	Eina_Bool ret;
@@ -213,6 +216,7 @@ static Enesim_Renderer_Descriptor _descriptor = {
 	/* .boundings = 		*/ _eon_theme_widget_boundings,
 	/* .destination_boundings = 	*/ _eon_theme_widget_destination_boundings,
 	/* .flags = 			*/ _eon_theme_widget_flags,
+	/* .hints_get =			*/ _eon_theme_widget_hints,
 	/* .is_inside = 		*/ _eon_theme_widget_is_inside,
 	/* .damage = 			*/ _eon_theme_widget_damage,
 	/* .has_changed =		*/ _eon_theme_widget_has_changed,

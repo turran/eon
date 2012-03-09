@@ -264,12 +264,16 @@ static Eina_Bool _idler_cb(void *data)
 	 * the element tree once and over the renderer tree once, it might
 	 * be too much
 	 */
+#if 1
+	eon_element_setup(thiz->layout, thiz->surface, &error);
+#else
 	if (eon_element_needs_setup(thiz->layout))
 	{
 		printf("needs setup!!!\n");
 		eon_element_setup(thiz->layout, thiz->surface, &error);
 		eon_element_cleanup(thiz->layout, thiz->surface);
 	}
+#endif
 	r = eon_element_renderer_get(thiz->layout);
 	if (full)
 		goto all;

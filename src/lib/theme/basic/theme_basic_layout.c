@@ -25,6 +25,7 @@
 typedef struct _Theme_Basic_Layout
 {
 	Enesim_Renderer *background;
+	Enesim_Renderer *clipper;
 	Enesim_Renderer *compound;
 } Theme_Basic_Layout;
 
@@ -68,7 +69,7 @@ static Enesim_Renderer * _layout_renderer_get(Enesim_Renderer *r)
 	Theme_Basic_Layout *thiz;
 
 	thiz = _layout_get(r);
-	return thiz->compound;
+	return thiz->clipper;
 }
 
 
@@ -77,12 +78,20 @@ static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Error **error)
 	Theme_Basic_Layout *thiz;
 	double ox;
 	double oy;
+	double width;
+	double height;
 
 	thiz = _layout_get(r);
 
 	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
+	eon_theme_widget_width_get(r, &width);
+	eon_theme_widget_height_get(r, &height);
+
+	enesim_renderer_origin_set(thiz->clipper, ox, oy);
+	enesim_renderer_clipper_width_set(thiz->clipper, width);
+	enesim_renderer_clipper_height_set(thiz->clipper, height);
 
 	return EINA_TRUE;
 }
@@ -92,6 +101,10 @@ static void _layout_free(Enesim_Renderer *r)
 	Theme_Basic_Layout *thiz;
 
 	thiz = _layout_get(r);
+	if (thiz->clipper)
+		enesim_renderer_unref(thiz->clipper);
+	if (thiz->background)
+		enesim_renderer_unref(thiz->background);
 	if (thiz->compound)
 		enesim_renderer_unref(thiz->compound);
 	free(thiz);
@@ -116,7 +129,7 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 {
 	Enesim_Renderer *r;
 	Theme_Basic_Layout *thiz;
-#if 1
+#if 0
 	const int color[] = { 0xffffffff, 0xff00ff00, 0x88008888 };
 	static int i = 0;
 #endif
@@ -124,20 +137,26 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 	thiz = calloc(1, sizeof(Theme_Basic_Layout));
 	if (!thiz) return NULL;
 
-	r = enesim_renderer_compound_new();
-	if (!r) goto compound_err;
-	thiz->compound = r;
-
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
-	enesim_renderer_compound_layer_add(thiz->compound, r);
 	enesim_renderer_rop_set(r, ENESIM_FILL);
-#if 1
+#if 0
 	enesim_renderer_background_color_set(r, color[i++ % (sizeof(color) / sizeof(int))]);
 #else
 	enesim_renderer_background_color_set(r, 0xffd7d7d7);
 #endif
 	thiz->background = r;
+
+	r = enesim_renderer_compound_new();
+	if (!r) goto compound_err;
+	enesim_renderer_compound_layer_add(r, thiz->background);
+	thiz->compound = r;
+
+	r = enesim_renderer_clipper_new();
+	if (!r) goto clipper_err;
+	enesim_renderer_clipper_content_set(r, thiz->compound);
+	thiz->clipper = r;
+
 
 	r = eon_theme_layout_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
@@ -145,10 +164,12 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 	return r;
 
 renderer_err:
-	enesim_renderer_unref(thiz->background);
-background_err:
+	enesim_renderer_unref(thiz->clipper);
+clipper_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
+	enesim_renderer_unref(thiz->background);
+background_err:
 	free(thiz);
 	return NULL;
 }

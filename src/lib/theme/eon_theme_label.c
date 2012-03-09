@@ -74,7 +74,8 @@ static Eina_Bool _eon_theme_label_setup(Enesim_Renderer *r, Enesim_Error **err)
 	double ox, oy;
 
 	thiz = _eon_theme_label_get(r);
-	enesim_renderer_origin_get(r, &ox, &oy);
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	enesim_renderer_origin_set(thiz->text, ox, oy);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
