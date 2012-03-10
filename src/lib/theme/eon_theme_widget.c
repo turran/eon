@@ -35,10 +35,8 @@ typedef struct _Eon_Theme_Widget
 {
 	EINA_MAGIC
 	/* properties */
-	double width;
-	double height;
-	double x;
-	double y;
+	Eon_Theme_Widget_State current;
+	Eon_Theme_Widget_State past;
 	/* private */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
@@ -291,12 +289,17 @@ Eina_Bool eon_theme_widget_needs_setup(Enesim_Renderer *r)
 Eina_Bool eon_theme_widget_setup(Enesim_Renderer *r, Enesim_Error **error)
 {
 	Eon_Theme_Widget *thiz;
+	const Eon_Theme_Widget_State *states[2];
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz->setup)
 		return EINA_FALSE;
-	if (!thiz->setup(r, error))
+
+	states[ENESIM_STATE_CURRENT] = &thiz->current;
+	states[ENESIM_STATE_PAST] = &thiz->past;
+	if (!thiz->setup(r, states, error))
 		return EINA_FALSE;
+	thiz->past = thiz->current;
 	return EINA_TRUE;
 }
 
@@ -324,7 +327,7 @@ EAPI void eon_theme_widget_width_set(Enesim_Renderer *r, double width)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	thiz->width = width;
+	thiz->current.width = width;
 }
 
 /**
@@ -337,7 +340,7 @@ EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	*width = thiz->width;
+	*width = thiz->current.width;
 }
 
 /**
@@ -350,7 +353,7 @@ EAPI void eon_theme_widget_height_set(Enesim_Renderer *r, double height)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	thiz->height = height;
+	thiz->current.height = height;
 }
 
 /**
@@ -363,7 +366,7 @@ EAPI void eon_theme_widget_height_get(Enesim_Renderer *r, double *height)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	*height = thiz->height;
+	*height = thiz->current.height;
 }
 
 /**
@@ -376,7 +379,7 @@ EAPI void eon_theme_widget_x_set(Enesim_Renderer *r, double x)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	thiz->x = x;
+	thiz->current.x = x;
 	/* FIXME for now */
 	enesim_renderer_x_origin_set(r, x);
 }
@@ -391,7 +394,7 @@ EAPI void eon_theme_widget_x_get(Enesim_Renderer *r, double *x)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	*x = thiz->x;
+	*x = thiz->current.x;
 }
 
 /**
@@ -404,7 +407,7 @@ EAPI void eon_theme_widget_y_set(Enesim_Renderer *r, double y)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	thiz->y = y;
+	thiz->current.y = y;
 	/* FIXME for now */
 	enesim_renderer_y_origin_set(r, y);
 }
@@ -419,5 +422,5 @@ EAPI void eon_theme_widget_y_get(Enesim_Renderer *r, double *y)
 
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
-	*y = thiz->y;
+	*y = thiz->current.y;
 }

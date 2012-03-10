@@ -23,8 +23,16 @@
  * @{
  */
 
+typedef struct _Eon_Theme_Widget_State
+{
+	double x;
+	double y;
+	double width;
+	double height;
+} Eon_Theme_Widget_State;
+
 typedef Enesim_Renderer * (*Eon_Theme_Widget_Renderer_Get)(Enesim_Renderer *r);
-typedef Eina_Bool (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, Enesim_Error **error);
+typedef Eina_Bool (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, const Eon_Theme_Widget_State *states[2], Enesim_Error **error);
 typedef void (*Eon_Theme_Widget_Cleanup)(Enesim_Renderer *r);
 typedef Eina_Bool (*Eon_Theme_Widget_Needs_Setup)(Enesim_Renderer *r);
 /*

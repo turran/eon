@@ -22,6 +22,17 @@
 /**
  * @{
  */
+typedef struct _Eon_Theme_Container_State
+{
+	Enesim_Renderer *content;
+} Eon_Theme_Container_State;
+
+typedef Eina_Bool (*Eon_Theme_Container_Setup)(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error);
+
+
 
 EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *content);
 EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **content);

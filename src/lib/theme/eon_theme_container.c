@@ -37,11 +37,6 @@
 		}\
 	} while(0)
 
-typedef struct _Eon_Theme_Container_State
-{
-	Enesim_Renderer *content;
-} Eon_Theme_Container_State;
-
 typedef struct _Eon_Theme_Container
 {
 	EINA_MAGIC;
@@ -50,7 +45,7 @@ typedef struct _Eon_Theme_Container
 	Eon_Theme_Container_State past;
 	/* interface */
 	Eon_Theme_Widget_Needs_Setup needs_setup;
-	Eon_Theme_Widget_Setup setup;
+	Eon_Theme_Container_Setup setup;
 	Enesim_Renderer_Delete free;
 	/* private */
 	Eina_Bool do_needs_setup : 1;
@@ -88,13 +83,18 @@ static Eina_Bool _eon_theme_container_needs_setup(Enesim_Renderer *r)
 	return EINA_FALSE;
 }
 
-static Eina_Bool _eon_theme_container_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _eon_theme_container_setup(Enesim_Renderer *r,
+		Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		Enesim_Error **error)
 {
 	Eon_Theme_Container *thiz;
+	const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES];
 
 	thiz = _eon_theme_container_get(r);
+	cstates[ENESIM_STATE_CURRENT] = &thiz->current;
+	cstates[ENESIM_STATE_PAST] = &thiz->past;
 	if (thiz->setup)
-		return thiz->setup(r, error);
+		return thiz->setup(r, states, cstates, error);
 	thiz->do_needs_setup = EINA_FALSE;
 	thiz->past = thiz->current;
 	return EINA_TRUE;
