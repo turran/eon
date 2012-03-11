@@ -65,24 +65,15 @@ static Enesim_Renderer * _button_renderer_get(Enesim_Renderer *r)
 	return eon_basic_control_button_renderer_get(thiz->cb);
 }
 
-static Eina_Bool _button_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _button_setup(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error)
 {
 	Basic_Button *thiz;
-	Enesim_Renderer *content;
-	Enesim_Renderer *real_r;
-	double x, y;
-	double width, height;
 
 	thiz = _button_get(r);
-
-	eon_theme_widget_x_get(r, &x);
-	eon_theme_widget_y_get(r, &y);
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-	eon_theme_container_content_get(r, &content);
-
-	/* setup common properties */
-	return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
+	return eon_basic_control_button_setup(thiz->cb, states, cstates, error);
 }
 
 static void _button_free(Enesim_Renderer *r)
@@ -94,32 +85,11 @@ static void _button_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _button_needs_setup(Enesim_Renderer *r)
-{
-	Basic_Button *thiz;
-	Eina_Bool ret;
-
-	thiz = _button_get(r);
-
-	ret = eon_basic_control_button_has_changed(thiz->cb);
-	return ret;
-}
-
-static void _button_cleanup(Enesim_Renderer *r)
-{
-	Basic_Button *thiz;
-
-	thiz = _button_get(r);
-	eon_basic_control_button_cleanup(thiz->cb);
-}
-
 static Eon_Theme_Button_Descriptor _descriptor = {
 	/* .position_get 	= */ _button_position_get,
 	/* .margin_get 		= */ _button_margin_get,
 	/* .renderer_get 	= */ _button_renderer_get,
 	/* .setup		= */ _button_setup,
-	/* .cleanup 		= */ _button_cleanup,
-	/* .needs_setup 	= */ _button_needs_setup,
 	/* .free 		= */ _button_free,
 };
 /*============================================================================*

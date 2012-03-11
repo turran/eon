@@ -385,15 +385,9 @@ static Eina_Bool _eon_spin_setup(Ender_Element *e,
 	return EINA_TRUE;
 }
 
-static void _eon_spin_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-
-}
-
 static Eon_Widget_Descriptor _eon_spin_widget_descriptor = {
 	.initialize = _eon_spin_initialize,
 	.setup = _eon_spin_setup,
-	.cleanup = _eon_spin_cleanup,
 	.name = "spin",
 	.min_width_get = _eon_spin_min_width_get,
 	.max_width_get = _eon_spin_max_width_get,

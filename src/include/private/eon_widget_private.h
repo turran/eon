@@ -17,7 +17,6 @@ typedef struct _Eon_Widget_Descriptor
 	Eon_Widget_Preferred_Width_Get preferred_width_get;
 	Eon_Widget_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Initialize initialize;
-	Eon_Element_Cleanup cleanup;
 	Eon_Element_Setup setup;
 	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;

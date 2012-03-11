@@ -93,8 +93,6 @@ EAPI Enesim_Renderer * eon_theme_button_new(Eon_Theme_Button_Descriptor *descrip
 	pdescriptor.margin_get = descriptor->margin_get;
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
-	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.needs_setup = descriptor->needs_setup;
 	pdescriptor.name = _eon_theme_button_name;
 	pdescriptor.free = _eon_theme_button_free;
 

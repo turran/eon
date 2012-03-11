@@ -198,27 +198,13 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e,
 		eon_element_setup(ech->ender, s, err);
 		child_rr = eon_element_renderer_get(ech->ender);
 		eon_widget_property_add(r, "child", child_rr, NULL);
-	}
 
-	return EINA_TRUE;
-}
-
-static void _eon_canvas_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *ech;
-	Enesim_Renderer *r;
-	Eina_List *l;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_canvas_get(r);
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		eon_element_cleanup(ech->ender, s);
 		ech->past = ech->current;
 		ech->needs_setup = EINA_FALSE;
 	}
 	thiz->needs_setup = EINA_FALSE;
+
+	return EINA_TRUE;
 }
 
 Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
@@ -299,7 +285,6 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
 	.free = _eon_canvas_free,
-	.cleanup = _eon_canvas_cleanup,
 	.needs_setup = _eon_canvas_needs_setup,
 	.setup = _eon_canvas_setup,
 	.name = "canvas",

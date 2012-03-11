@@ -93,8 +93,6 @@ Enesim_Renderer * eon_theme_spin_new(Eon_Theme_Spin_Descriptor *descriptor,
 	thiz->arrows_is_inside = descriptor->arrows_is_inside;
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
-	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.needs_setup = descriptor->needs_setup;
 	pdescriptor.name = _eon_theme_spin_name;
 	pdescriptor.free = _eon_theme_spin_free;
 

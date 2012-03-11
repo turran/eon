@@ -36,8 +36,6 @@ typedef struct _Eon_Theme_Color_Descriptor
 	/* renderer needed functions */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
-	Eon_Theme_Widget_Cleanup cleanup;
-	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Color_Descriptor;
 

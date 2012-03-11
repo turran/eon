@@ -32,7 +32,6 @@ typedef struct _Eon_Theme_Label
 {
 	/* the label interface */
 	Eon_Theme_Label_Setup setup;
-	Eon_Theme_Label_Cleanup cleanup;
 	Eon_Theme_Label_Renderer_Get renderer_get;
 	Enesim_Renderer_Delete free;
 	/* private */
@@ -66,36 +65,25 @@ static Enesim_Renderer * _eon_theme_label_renderer_get(Enesim_Renderer *r)
 	return thiz->text;
 }
 
-static Eina_Bool _eon_theme_label_setup(Enesim_Renderer *r, Enesim_Error **err)
+static Eina_Bool _eon_theme_label_setup(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		Enesim_Error **err)
 {
 	Eon_Theme_Label *thiz;
+	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
 	Enesim_Color color;
 	Eina_Bool ret = EINA_TRUE;
-	double ox, oy;
 
 	thiz = _eon_theme_label_get(r);
-	eon_theme_widget_x_get(r, &ox);
-	eon_theme_widget_y_get(r, &oy);
-	enesim_renderer_origin_set(thiz->text, ox, oy);
+	enesim_renderer_origin_set(thiz->text, cs->x, cs->y);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->text, color);
 	if (thiz->setup)
 	{
 		ret = thiz->setup(r, thiz->text, err);
 	}
-	return ret;
-}
-
-static void _eon_theme_label_cleanup(Enesim_Renderer *r)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	if (thiz->cleanup)
-	{
-		thiz->cleanup(r);
-	}
 	thiz->informs_setup = EINA_FALSE;
+	return ret;
 }
 
 static void _eon_theme_label_free(Enesim_Renderer *r)
@@ -163,13 +151,11 @@ EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descripto
 	thiz->free = descriptor->free;
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->setup = descriptor->setup;
-	thiz->cleanup = descriptor->cleanup;
 	/* set default values */
 
 	/* now the needed enesim functions */
 	pdescriptor.renderer_get = _eon_theme_label_renderer_get;
 	pdescriptor.setup = _eon_theme_label_setup;
-	pdescriptor.cleanup = _eon_theme_label_cleanup;
 	pdescriptor.name = _eon_theme_label_name;
 	pdescriptor.free = _eon_theme_label_free;
 

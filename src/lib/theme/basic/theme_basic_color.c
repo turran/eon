@@ -98,8 +98,8 @@ static Eina_Bool _color_setup(Enesim_Renderer *r, Enesim_Error **error)
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 	eon_theme_container_content_get(r, &content);
-
-	return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
+	return EINA_FALSE;
+	//return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
 }
 
 static void _color_free(Enesim_Renderer *r)

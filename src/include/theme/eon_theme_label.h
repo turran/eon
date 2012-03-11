@@ -33,7 +33,6 @@ typedef struct _Eon_Theme_Label_Descriptor
 	/* the label needed functions */
 	Eon_Theme_Label_Renderer_Get renderer_get;
 	Eon_Theme_Label_Setup setup;
-	Eon_Theme_Label_Cleanup cleanup;
 	Eon_Theme_Label_Padding_Get padding_get;
 	/* renderer needed functions */
 	Enesim_Renderer_Delete free;

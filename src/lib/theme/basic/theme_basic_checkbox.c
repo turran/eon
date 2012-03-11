@@ -31,7 +31,6 @@ typedef struct _Checkbox
 	Eina_Bool was_selected;
 	/* private */
 	Enesim_Renderer *compound;
-	Enesim_Renderer *content;
 	Enesim_Renderer *background;
 	Enesim_Renderer *box;
 	Enesim_Renderer *check;
@@ -69,13 +68,18 @@ static Enesim_Renderer * _checkbox_renderer_get(Enesim_Renderer *r)
 	return thiz->shape;
 }
 
-static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool  _checkbox_setup(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error)
 {
 	Checkbox *thiz;
 	Enesim_Renderer *content;
 	Eina_Bool restack = EINA_FALSE;
-	double ox, oy;
-	double width, height;
+	const Eon_Theme_Container_State *ccs = cstates[ENESIM_STATE_CURRENT];
+	const Eon_Theme_Container_State *pcs = cstates[ENESIM_STATE_PAST];
+	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
+	const Eon_Theme_Widget_State *ps = states[ENESIM_STATE_PAST];
 
 	thiz = _checkbox_get(r);
 	/* setup the layers now */
@@ -85,11 +89,8 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 		printf("checkbox no content\n");
 		return EINA_FALSE;
 	}
-	if (thiz->content != content)
+	if (ccs->content != pcs->content)
 	{
-		/* FIXME at the cleanup we should restore this */
-		enesim_renderer_rop_set(content, ENESIM_BLEND);
-		thiz->content = content;
 		restack = EINA_TRUE;
 	}
 	if (thiz->was_selected != thiz->selected)
@@ -106,20 +107,25 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r, Enesim_Error **error)
 		{
 			enesim_renderer_compound_layer_add(thiz->compound, thiz->check);
 		}
-		enesim_renderer_compound_layer_add(thiz->compound, content);
+		enesim_renderer_compound_layer_add(thiz->compound, ccs->content);
 	}
-	/* FIXME we should use the correct widget x, y */
-	eon_theme_widget_x_get(r, &ox);
-	eon_theme_widget_y_get(r, &oy);
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
+	if ((cs->x != ps->x) ||
+			(cs->y != ps->y) ||
+			(cs->width != ps->width) ||
+			(cs->height != ps->height))
+	{
+		double x = cs->x;
+		double y = cs->y;
+		double width = cs->width;
+		double height = cs->height;
 
-	/* set the needed properties */
-	enesim_renderer_rectangle_position_set(thiz->shape, ox, oy);
-	enesim_renderer_rectangle_width_set(thiz->shape, width);
-	enesim_renderer_rectangle_height_set(thiz->shape, height);
-	enesim_renderer_origin_set(thiz->box, ox, oy + height/2 - thiz->size/2);
-	enesim_renderer_origin_set(thiz->check, ox, oy + height/2 - thiz->size/2);
+		/* set the needed properties */
+		enesim_renderer_rectangle_position_set(thiz->shape, x, y);
+		enesim_renderer_rectangle_width_set(thiz->shape, width);
+		enesim_renderer_rectangle_height_set(thiz->shape, height);
+		enesim_renderer_origin_set(thiz->box, x, y + height/2 - thiz->size/2);
+		enesim_renderer_origin_set(thiz->check, x, y + height/2 - thiz->size/2);
+	}
 
 	return EINA_TRUE;
 }
@@ -241,7 +247,6 @@ EAPI void eon_basic_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected
 	Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
-	printf("selected %d\n", selected);
 	if (thiz->selected == selected)
 		return;
 

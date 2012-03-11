@@ -19,9 +19,9 @@ void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
 		Enesim_Renderer *content, Eon_Margin *margin);
 void eon_basic_control_button_position_get(Eon_Basic_Control_Button *thiz, Eon_Size *size,
 		Eon_Position *position);
-Eina_Bool eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz, Enesim_Renderer *content,
-		double x, double y,
-		double width, double height,
+Eina_Bool eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
 		Enesim_Error **error);
 void eon_basic_control_button_free(Eon_Basic_Control_Button *thiz);
 Enesim_Renderer * eon_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz);

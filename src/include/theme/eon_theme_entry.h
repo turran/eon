@@ -34,8 +34,6 @@ typedef struct _Eon_Theme_Entry_Descriptor
 	Eon_Theme_Entry_Margin_Get margin_get;
 	Eon_Theme_Entry_Renderer_Get renderer_get;
 	Eon_Theme_Entry_Setup setup;
-	Eon_Theme_Entry_Cleanup cleanup;
-	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Entry_Descriptor;
 

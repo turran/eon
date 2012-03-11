@@ -32,9 +32,8 @@ typedef struct _Eon_Theme_Widget_State
 } Eon_Theme_Widget_State;
 
 typedef Enesim_Renderer * (*Eon_Theme_Widget_Renderer_Get)(Enesim_Renderer *r);
-typedef Eina_Bool (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r, const Eon_Theme_Widget_State *states[2], Enesim_Error **error);
-typedef void (*Eon_Theme_Widget_Cleanup)(Enesim_Renderer *r);
-typedef Eina_Bool (*Eon_Theme_Widget_Needs_Setup)(Enesim_Renderer *r);
+typedef Eina_Bool (*Eon_Theme_Widget_Setup)(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES], Enesim_Error **error);
 /*
  * This functions defines a way for the widget to know whenever there is a
  * change on the theme that requires the widget to do its own setup again.
@@ -48,9 +47,6 @@ typedef Eina_Bool (*Eon_Theme_Widget_Needs_Setup)(Enesim_Renderer *r);
  * size (preferred, min, max, whatever) might have changed
  */
 typedef Eina_Bool (*Eon_Theme_Widget_Informs_Setup)(Enesim_Renderer *r);
-
-EAPI void eon_theme_widget_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_widget_height_get(Enesim_Renderer *r, double *width);
 
 /**
  * @}

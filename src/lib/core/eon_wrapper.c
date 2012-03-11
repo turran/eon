@@ -181,18 +181,9 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e,
 		enesim_renderer_scale_set(thiz->wrapped_renderer, sx, sy);
 
 	}
+	thiz->changed = EINA_FALSE;
 
 	return EINA_TRUE;
-}
-
-static void _eon_wrapper_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
-	thiz->changed = EINA_FALSE;
 }
 
 static Enesim_Renderer * _eon_wrapper_renderer_get(Ender_Element *e)
@@ -220,7 +211,6 @@ static Eon_Element_Descriptor _descriptor = {
 	.preferred_width_get = _eon_wrapper_preferred_width_get,
 	.preferred_height_get = _eon_wrapper_preferred_height_get,
 	.setup = _eon_wrapper_setup,
-	.cleanup = _eon_wrapper_cleanup,
 	.renderer_get = _eon_wrapper_renderer_get,
 	.needs_setup = _eon_wrapper_needs_setup,
 	.initialize = _eon_wrapper_initialize,

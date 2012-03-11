@@ -44,7 +44,6 @@ typedef struct _Eon_Theme_Container
 	Eon_Theme_Container_State current;
 	Eon_Theme_Container_State past;
 	/* interface */
-	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Eon_Theme_Container_Setup setup;
 	Enesim_Renderer_Delete free;
 	/* private */
@@ -71,20 +70,8 @@ static void _eon_theme_container_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _eon_theme_container_needs_setup(Enesim_Renderer *r)
-{
-	Eon_Theme_Container *thiz;
-
-	thiz = _eon_theme_container_get(r);
-	if (thiz->do_needs_setup)
-		return EINA_TRUE;
-	if (thiz->needs_setup)
-		return thiz->needs_setup(r);
-	return EINA_FALSE;
-}
-
 static Eina_Bool _eon_theme_container_setup(Enesim_Renderer *r,
-		Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		Enesim_Error **error)
 {
 	Eon_Theme_Container *thiz;
@@ -94,9 +81,13 @@ static Eina_Bool _eon_theme_container_setup(Enesim_Renderer *r,
 	cstates[ENESIM_STATE_CURRENT] = &thiz->current;
 	cstates[ENESIM_STATE_PAST] = &thiz->past;
 	if (thiz->setup)
-		return thiz->setup(r, states, cstates, error);
-	thiz->do_needs_setup = EINA_FALSE;
-	thiz->past = thiz->current;
+		thiz->setup(r, states, cstates, error);
+	/* swap the states */
+	if (thiz->do_needs_setup)
+	{
+		thiz->do_needs_setup = EINA_FALSE;
+		thiz->past = thiz->current;
+	}
 	return EINA_TRUE;
 }
 /*============================================================================*
@@ -113,13 +104,10 @@ Enesim_Renderer * eon_theme_container_new(Eon_Theme_Container_Descriptor *descri
 	EINA_MAGIC_SET(thiz, EON_THEME_CONTAINER_MAGIC);
 	thiz->data = data;
 	thiz->free = descriptor->free;
-	thiz->needs_setup = descriptor->needs_setup;
 	thiz->setup = descriptor->setup;
 
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = _eon_theme_container_setup;
-	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.needs_setup = _eon_theme_container_needs_setup;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.free = _eon_theme_container_free;
 

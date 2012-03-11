@@ -61,7 +61,6 @@ typedef struct _Eon_Element
 	/* function pointers */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
-	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
@@ -169,8 +168,6 @@ static void _eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 	r = ender_element_object_get(e);
 	thiz = _eon_element_get(r);
 
-	if (thiz->cleanup)
-		return thiz->cleanup(e, s);
 	thiz->past = thiz->current;
 	thiz->do_needs_setup = EINA_FALSE;
 }
@@ -547,7 +544,6 @@ Enesim_Renderer * eon_element_new(Eon_Element_Descriptor *descriptor,
 	/* Set the function pointers */
 	thiz->initialize = descriptor->initialize;
 	thiz->setup = descriptor->setup;
-	thiz->cleanup = descriptor->cleanup;
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->needs_setup = descriptor->needs_setup;
 	thiz->free = descriptor->free;

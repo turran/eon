@@ -40,8 +40,6 @@ typedef struct _Eon_Theme_Widget
 	/* private */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_Setup setup;
-	Eon_Theme_Widget_Cleanup cleanup;
-	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Eon_Theme_Widget_Informs_Setup informs_setup;
 	Enesim_Renderer_Name name;
 	Enesim_Renderer_Delete free;
@@ -125,7 +123,6 @@ static Eina_Bool _eon_theme_widget_sw_setup(Enesim_Renderer *r,
 {
 	Eon_Theme_Widget *thiz;
 	Enesim_Renderer *real_r;
-	Enesim_Rop rop;
 
 	thiz = _eon_theme_widget_get(r);
 	real_r = _eon_theme_widget_renderer_get(r);
@@ -143,8 +140,6 @@ static void _eon_theme_widget_sw_cleanup(Enesim_Renderer *r, Enesim_Surface *s)
 	Enesim_Renderer *real_r;
 
 	thiz = _eon_theme_widget_get(r);
-	if (thiz->cleanup)
-		thiz->cleanup(r);
 	real_r = _eon_theme_widget_renderer_get(r);
 	enesim_renderer_cleanup(real_r, s);
 }
@@ -239,8 +234,6 @@ Enesim_Renderer * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor,
 	}
 	thiz->renderer_get = descriptor->renderer_get;
 	thiz->setup = descriptor->setup;
-	thiz->cleanup = descriptor->cleanup;
-	thiz->needs_setup = descriptor->needs_setup;
 	thiz->informs_setup = descriptor->informs_setup;
 	thiz->name = descriptor->name;
 	thiz->free = descriptor->free;
@@ -273,17 +266,6 @@ void * eon_theme_widget_data_get(Enesim_Renderer *r)
 
 	thiz = _eon_theme_widget_get(r);
 	return thiz->data;
-}
-
-Eina_Bool eon_theme_widget_needs_setup(Enesim_Renderer *r)
-{
-	Eon_Theme_Widget *thiz;
-
-	thiz = _eon_theme_widget_get(r);
-	if (thiz->needs_setup)
-		return thiz->needs_setup(r);
-
-	return EINA_TRUE;
 }
 
 Eina_Bool eon_theme_widget_setup(Enesim_Renderer *r, Enesim_Error **error)
@@ -380,8 +362,6 @@ EAPI void eon_theme_widget_x_set(Enesim_Renderer *r, double x)
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
 	thiz->current.x = x;
-	/* FIXME for now */
-	enesim_renderer_x_origin_set(r, x);
 }
 
 /**
@@ -408,8 +388,6 @@ EAPI void eon_theme_widget_y_set(Enesim_Renderer *r, double y)
 	thiz = _eon_theme_widget_get(r);
 	if (!thiz) return;
 	thiz->current.y = y;
-	/* FIXME for now */
-	enesim_renderer_y_origin_set(r, y);
 }
 
 /**

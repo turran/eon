@@ -309,7 +309,6 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.preferred_width_get = descriptor->preferred_width_get;
 	pdescriptor.preferred_height_get = descriptor->preferred_height_get;
 	pdescriptor.setup = _eon_layout_setup;
-	pdescriptor.cleanup = descriptor->cleanup;
 	pdescriptor.needs_setup = descriptor->needs_setup;
 
 	r = eon_widget_new(&pdescriptor, thiz);

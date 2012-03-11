@@ -64,7 +64,11 @@ static Enesim_Renderer * _basic_splitter_renderer_get(Enesim_Renderer *r)
 	return thiz->compound;
 }
 
-static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Splitter_State *sstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error)
 {
 	Basic_Splitter *thiz;
 	Eon_Orientation orientation;
@@ -83,8 +87,6 @@ static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r, Enesim_Error **error)
 	/* the contents */
 	eon_theme_container_content_get(r, &content);
 	eon_theme_splitter_second_content_get(r, &second_content);
-
-	printf("splitter setup %p %p\n", content, second_content);
 
 	/* the separator */
 	eon_theme_splitter_orientation_get(r, &orientation);

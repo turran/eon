@@ -334,23 +334,10 @@ static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 			return EINA_FALSE;
 		}
 	}
-
-	return ret;
-}
-
-static void _eon_scrollview_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Scrollview *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollview_get(r);
-
-	eon_element_cleanup(thiz->hbar, s);
-	eon_element_cleanup(thiz->vbar, s);
-
 	thiz->changed = EINA_FALSE;
 	thiz->past = thiz->current;
+
+	return ret;
 }
 
 static Eina_Bool _eon_scrollview_needs_setup(Ender_Element *e)
@@ -393,7 +380,6 @@ static void _eon_scrollview_free(Enesim_Renderer *r)
 static Eon_Container_Descriptor _descriptor = {
 	.initialize = _eon_scrollview_initialize,
 	.setup = _eon_scrollview_setup,
-	.cleanup = _eon_scrollview_cleanup,
 	.needs_setup = _eon_scrollview_needs_setup,
 	.free = _eon_scrollview_free,
 	.min_width_get = _eon_scrollview_min_width_get,

@@ -237,17 +237,8 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 	percent = thiz->value / (thiz->max - thiz->min);
 	eon_theme_scrollbar_thumb_percent_set(theme_r, percent);
 
-	return EINA_TRUE;
-}
-
-static void _eon_scrollbar_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Scrollbar *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
 	thiz->changed = EINA_FALSE;
+	return EINA_TRUE;
 }
 
 static Eina_Bool _eon_scrollbar_needs_setup(Ender_Element *e)
@@ -327,7 +318,6 @@ static Eon_Widget_Descriptor _eon_scrollbar_widget_descriptor = {
 	.initialize = _eon_scrollbar_initialize,
 	.free = _eon_scrollbar_free,
 	.setup = _eon_scrollbar_setup,
-	.cleanup = _eon_scrollbar_cleanup,
 	.needs_setup = _eon_scrollbar_needs_setup,
 	.min_width_get = _eon_scrollbar_min_width_get,
 	.max_width_get = _eon_scrollbar_max_width_get,

@@ -29,7 +29,6 @@ typedef struct _Eon_Container_Descriptor
 	Eon_Container_Preferred_Height_Get preferred_height_get;
 	Eon_Container_Element_At element_at;
 	Eon_Element_Initialize initialize;
-	Eon_Element_Cleanup cleanup;
 	Eon_Element_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 	const char *name;

@@ -37,13 +37,6 @@
 		}\
 	} while(0)
 
-typedef struct _Eon_Theme_Splitter_State
-{
-	Enesim_Renderer *second_content;
-	Eon_Orientation orientation;
-	double position;
-} Eon_Theme_Splitter_State;
-
 typedef struct _Eon_Theme_Splitter
 {
 	EINA_MAGIC;
@@ -51,7 +44,6 @@ typedef struct _Eon_Theme_Splitter
 	Eon_Theme_Splitter_State current;
 	Eon_Theme_Splitter_State past;
 	/* private */
-	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Eon_Theme_Splitter_Thickness_Get thickness_get;
 	Eon_Theme_Splitter_Min_Length_Get min_length_get;
 	Eina_Bool do_needs_setup : 1;
@@ -72,12 +64,6 @@ static inline Eon_Theme_Splitter * _eon_theme_splitter_get(Enesim_Renderer *r)
 static const char * _eon_theme_splitter_name(Enesim_Renderer *r)
 {
 	return "theme_splitter";
-}
-
-static Eina_Bool _eon_theme_splitter_needs_setup(Enesim_Renderer *r)
-{
-	Eon_Theme_Splitter *thiz;
-	return EINA_TRUE;
 }
 
 static void _eon_theme_splitter_free(Enesim_Renderer *r)
@@ -156,15 +142,12 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 	thiz = calloc(1, sizeof(Eon_Theme_Splitter));
 	EINA_MAGIC_SET(thiz, EON_THEME_SPLITTER_MAGIC);
 	thiz->data = data;
-	thiz->needs_setup = descriptor->needs_setup;
 	thiz->free = descriptor->free;
 
 	thiz->min_length_get = descriptor->min_length_get;
 	thiz->thickness_get = descriptor->thickness_get;
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
-	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.needs_setup = _eon_theme_splitter_needs_setup;
 	pdescriptor.name = _eon_theme_splitter_name;
 	pdescriptor.free = _eon_theme_splitter_free;
 

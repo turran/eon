@@ -22,6 +22,20 @@
 /**
  * @{
  */
+
+typedef struct _Eon_Theme_Splitter_State
+{
+	Enesim_Renderer *second_content;
+	Eon_Orientation orientation;
+	double position;
+} Eon_Theme_Splitter_State;
+
+typedef Eina_Bool (*Eon_Theme_Splitter_Setup)(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Splitter_State *sstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error);
+
 typedef double (*Eon_Theme_Splitter_Min_Length_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Splitter_Thickness_Get)(Enesim_Renderer *r);
 
@@ -31,9 +45,7 @@ typedef struct _Eon_Theme_Splitter_Descriptor
 	Eon_Theme_Splitter_Thickness_Get thickness_get;
 	/* renderer needed functions */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Widget_Setup setup;
-	Eon_Theme_Widget_Cleanup cleanup;
-	Eon_Theme_Widget_Needs_Setup needs_setup;
+	Eon_Theme_Splitter_Setup setup;
 	Enesim_Renderer_Delete free;
 } Eon_Theme_Splitter_Descriptor;
 

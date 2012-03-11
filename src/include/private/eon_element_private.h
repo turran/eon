@@ -13,7 +13,6 @@ typedef void (*Eon_Element_Initialize)(Ender_Element *e);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **error);
-typedef void (*Eon_Element_Cleanup)(Ender_Element *e, Enesim_Surface *s);
 typedef void (*Eon_Element_Free)(Enesim_Renderer *r);
 typedef double (*Eon_Element_Min_Width_Get)(Ender_Element *e);
 typedef double (*Eon_Element_Max_Width_Get)(Ender_Element *e);
@@ -49,7 +48,6 @@ typedef struct _Eon_Element_Descriptor
 {
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
-	Eon_Element_Cleanup cleanup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Min_Width_Get min_width_get;

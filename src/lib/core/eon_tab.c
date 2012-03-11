@@ -85,18 +85,9 @@ static Eina_Bool _eon_tab_setup(Ender_Element *e,
 		/* we should set the size of every descriptor based on its min/max/preferred size */
 		/* while iterating if the current tab is selected set the content of the theme too */
 	}
+	thiz->changed = EINA_FALSE;
 
 	return EINA_TRUE;
-}
-
-static void _eon_tab_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Tab *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
-	thiz->changed = EINA_FALSE;
 }
 
 static Eina_Bool _eon_tab_needs_setup(Ender_Element *e)
@@ -188,7 +179,6 @@ static Eon_Widget_Descriptor _eon_tab_widget_descriptor = {
 	.initialize = _eon_tab_initialize,
 	.free = _eon_tab_free,
 	.setup = _eon_tab_setup,
-	.cleanup = _eon_tab_cleanup,
 	.needs_setup = _eon_tab_needs_setup,
 	.min_width_get = _eon_tab_min_width_get,
 	.max_width_get = _eon_tab_max_width_get,

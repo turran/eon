@@ -81,7 +81,8 @@ static Eina_Bool _toggle_setup(Enesim_Renderer *r, Enesim_Error **error)
 	eon_theme_widget_height_get(r, &height);
 	eon_theme_container_content_get(r, &content);
 
-	return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
+	return EINA_TRUE;
+	//return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
 }
 
 static void _toggle_free(Enesim_Renderer *r)
@@ -93,32 +94,11 @@ static void _toggle_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eina_Bool _toggle_needs_setup(Enesim_Renderer *r)
-{
-	Basic_Toggle *thiz;
-	Eina_Bool ret;
-
-	thiz = _toggle_get(r);
-
-	ret = eon_basic_control_button_has_changed(thiz->cb);
-	return ret;
-}
-
-static void _toggle_cleanup(Enesim_Renderer *r)
-{
-	Basic_Toggle *thiz;
-
-	thiz = _toggle_get(r);
-	eon_basic_control_button_cleanup(thiz->cb);
-}
-
 static Eon_Theme_Toggle_Descriptor _descriptor = {
 	/* .position_get 	= */ _toggle_position_get,
 	/* .margin_get 		= */ _toggle_margin_get,
 	/* .renderer_get 	= */ _toggle_renderer_get,
 	/* .setup		= */ _toggle_setup,
-	/* .cleanup 		= */ _toggle_cleanup,
-	/* .needs_setup 	= */ _toggle_needs_setup,
 	/* .free 		= */ _toggle_free,
 };
 /*============================================================================*

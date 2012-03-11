@@ -97,8 +97,6 @@ EAPI Enesim_Renderer * eon_theme_frame_new(Eon_Theme_Frame_Descriptor *descripto
 
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
-	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.needs_setup = descriptor->needs_setup;
 	pdescriptor.free = _eon_theme_frame_free;
 
 	r = eon_theme_container_new(&pdescriptor, thiz);

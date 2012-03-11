@@ -127,18 +127,9 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e,
 
 		thiz->generated_r = esvg_parser_load(thiz->file, &_svg_descriptor, thiz);
 	}
+	thiz->needs_setup = EINA_FALSE;
 
 	return EINA_TRUE;
-}
-
-static void _eon_svg_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Svg *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_svg_get(r);
-	thiz->needs_setup = EINA_FALSE;
 }
 
 static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
@@ -177,7 +168,6 @@ static Eon_Element_Descriptor _descriptor = {
 	.preferred_width_get = _eon_svg_preferred_width_get,
 	.preferred_height_get = _eon_svg_preferred_height_get,
 	.setup = _eon_svg_setup,
-	.cleanup = _eon_svg_cleanup,
 	.renderer_get = _eon_svg_renderer_get,
 	.needs_setup = _eon_svg_needs_setup,
 	.initialize = _eon_svg_initialize,

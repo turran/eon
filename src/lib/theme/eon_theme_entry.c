@@ -35,8 +35,6 @@ typedef struct _Eon_Theme_Entry
 	Eon_Theme_Entry_Renderer_Get renderer_get;
 	Eon_Theme_Entry_Margin_Get margin_get;
 	Eon_Theme_Entry_Setup setup;
-	Eon_Theme_Entry_Cleanup cleanup;
-	Eon_Theme_Widget_Needs_Setup needs_setup;
 	Enesim_Renderer_Delete free;
 	/* private */
 	Eina_Bool changed : 1;
@@ -81,34 +79,13 @@ static Eina_Bool _eon_theme_entry_setup(Enesim_Renderer *r, Enesim_Error **error
 	thiz = _eon_theme_entry_get(r);
 	if (thiz->setup)
 		ret = thiz->setup(r, thiz->text, thiz->alignment, error);
+	thiz->changed = EINA_FALSE;
 	return ret;
 }
 
 static const char * _eon_theme_entry_name(Enesim_Renderer *r)
 {
 	return "theme_entry";
-}
-
-static void _eon_theme_entry_cleanup(Enesim_Renderer *r)
-{
-	Eon_Theme_Entry *thiz;
-
-	thiz = _eon_theme_entry_get(r);
-	thiz->changed = EINA_FALSE;
-	if (thiz->cleanup)
-		thiz->cleanup(r);
-}
-
-static Eina_Bool _eon_theme_entry_needs_setup(Enesim_Renderer *r)
-{
-	Eon_Theme_Entry *thiz;
-
-	thiz = _eon_theme_entry_get(r);
-	if (thiz->changed)
-		return EINA_TRUE;
-	if (thiz->needs_setup)
-		return thiz->needs_setup(r);
-	return EINA_FALSE;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -209,15 +186,10 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	thiz->free = descriptor->free;
 	thiz->margin_get = descriptor->margin_get;
 	thiz->setup = descriptor->setup;
-	thiz->cleanup = descriptor->cleanup;
 	thiz->renderer_get = descriptor->renderer_get;
-	thiz->needs_setup = descriptor->needs_setup;
 
 	pdescriptor.renderer_get = _eon_theme_entry_renderer_get;
 	pdescriptor.setup = _eon_theme_entry_setup;
-	pdescriptor.cleanup = _eon_theme_entry_cleanup;
-	pdescriptor.needs_setup = _eon_theme_entry_needs_setup;
-
 	pdescriptor.name = _eon_theme_entry_name;
 	pdescriptor.free = _eon_theme_entry_free;
 

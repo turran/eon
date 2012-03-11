@@ -309,6 +309,7 @@ static Eina_Bool _stack_relayout(Ender_Element *e,
 	else
 		_stack_vertical_arrange(e, thiz, position->x, position->y, size->width, size->height, s, err);
 	/* FIXME */
+	thiz->needs_setup = EINA_FALSE;
 	return EINA_TRUE;
 }
 
@@ -362,22 +363,6 @@ static Eina_Bool _eon_stack_setup(Ender_Element *e,
 	 * if some child preferred/min/max size has changed then call the relayout
 	 */
 	return _stack_relayout(e, thiz, &state->actual_position, &state->actual_size, s, err);
-}
-
-static void _eon_stack_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Stack *thiz;
-	Eon_Stack_Child *ech;
-	Enesim_Renderer *r;
-	Eina_List *l;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_stack_get(r);
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		eon_element_cleanup(ech->ender, s);
-	}
-	thiz->needs_setup = EINA_FALSE;
 }
 
 static double _eon_stack_min_width_get(Ender_Element *e)
@@ -626,7 +611,6 @@ static Eon_Layout_Descriptor _descriptor = {
 	.preferred_width_get = _eon_stack_preferred_width_get,
 	.preferred_height_get = _eon_stack_preferred_height_get,
 	.needs_setup = _eon_stack_needs_setup,
-	.cleanup = _eon_stack_cleanup,
 	.setup = _eon_stack_setup,
 	.free = _eon_stack_free,
 	.name = "stack",

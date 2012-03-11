@@ -43,7 +43,7 @@ static inline Eon_Theme_Layout * _eon_theme_layout_get(Enesim_Renderer *r)
 	return thiz;
 }
 
-static Eina_Bool _eon_theme_layout_name(Enesim_Renderer *r)
+static const char * _eon_theme_layout_name(Enesim_Renderer *r)
 {
 	return "theme_layout";
 }
@@ -79,8 +79,6 @@ EAPI Enesim_Renderer * eon_theme_layout_new(Eon_Theme_Layout_Descriptor *descrip
 
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.setup = descriptor->setup;
-	pdescriptor.cleanup = descriptor->cleanup;
-	pdescriptor.needs_setup = descriptor->needs_setup;
 	pdescriptor.name = _eon_theme_layout_name;
 	pdescriptor.free = _eon_theme_layout_free;
 
@@ -112,7 +110,7 @@ EAPI void * eon_theme_layout_data_get(Enesim_Renderer *r)
  */
 EAPI Eina_Bool eon_is_theme_layout(Enesim_Renderer *r)
 {
-
+	return EINA_TRUE;
 }
 
 EAPI void eon_theme_layout_child_add(Enesim_Renderer *r, Enesim_Renderer *child)

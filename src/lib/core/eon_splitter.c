@@ -483,6 +483,8 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 		printf("impossible to setup the content\n");
 		return EINA_FALSE;
 	}
+	thiz->past = thiz->current;
+	thiz->changed = EINA_FALSE;
 
 	return EINA_TRUE;
 }
@@ -493,21 +495,6 @@ static void _eon_splitter_free(Enesim_Renderer *r)
 
 	thiz = _eon_splitter_get(r);
 	free(thiz);
-}
-
-static void _eon_splitter_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Splitter *thiz;
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	thiz = _eon_splitter_get(r);
-
-	if (thiz->current.second_content)
-		eon_element_cleanup(thiz->current.second_content, s);
-
-	thiz->past = thiz->current;
-	thiz->changed = EINA_FALSE;
 }
 
 static Eina_Bool _eon_splitter_needs_setup(Ender_Element *e)
@@ -545,7 +532,6 @@ static Eon_Container_Descriptor _eon_splitter_container_descriptor = {
 	.initialize = _eon_splitter_initialize,
 	.free = _eon_splitter_free,
 	.setup = _eon_splitter_setup,
-	.cleanup = _eon_splitter_cleanup,
 	.needs_setup = _eon_splitter_needs_setup,
 	.min_width_get = _eon_splitter_min_width_get,
 	.max_width_get = _eon_splitter_max_width_get,
