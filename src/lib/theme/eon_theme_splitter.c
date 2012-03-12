@@ -46,6 +46,7 @@ typedef struct _Eon_Theme_Splitter
 	/* private */
 	Eon_Theme_Splitter_Thickness_Get thickness_get;
 	Eon_Theme_Splitter_Min_Length_Get min_length_get;
+	Eon_Theme_Splitter_Setup setup;
 	Eina_Bool do_needs_setup : 1;
 	void *data;
 	Enesim_Renderer_Delete free;
@@ -64,6 +65,25 @@ static inline Eon_Theme_Splitter * _eon_theme_splitter_get(Enesim_Renderer *r)
 static const char * _eon_theme_splitter_name(Enesim_Renderer *r)
 {
 	return "theme_splitter";
+}
+
+static Eina_Bool _eon_theme_splitter_setup(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error)
+{
+	Eon_Theme_Splitter *thiz;
+
+	thiz = _eon_theme_splitter_get(r);
+	if (thiz->setup)
+	{
+		const Eon_Theme_Splitter_State *sstates[ENESIM_RENDERER_STATES];
+
+		sstates[ENESIM_STATE_CURRENT] = &thiz->current;
+		sstates[ENESIM_STATE_PAST] = &thiz->past;
+		return thiz->setup(r, states, cstates, sstates, error);
+	}
+	return EINA_TRUE;
 }
 
 static void _eon_theme_splitter_free(Enesim_Renderer *r)
@@ -146,8 +166,10 @@ EAPI Enesim_Renderer * eon_theme_splitter_new(Eon_Theme_Splitter_Descriptor *des
 
 	thiz->min_length_get = descriptor->min_length_get;
 	thiz->thickness_get = descriptor->thickness_get;
+	thiz->setup = descriptor->setup;
+
 	pdescriptor.renderer_get = descriptor->renderer_get;
-	pdescriptor.setup = descriptor->setup;
+	pdescriptor.setup = _eon_theme_splitter_setup;
 	pdescriptor.name = _eon_theme_splitter_name;
 	pdescriptor.free = _eon_theme_splitter_free;
 

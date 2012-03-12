@@ -29,6 +29,7 @@ typedef struct _Splitter
 	/* properties */
 	Enesim_Color border_color;
 	/* private */
+	Enesim_Renderer *clipper;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *splitter;
 	Enesim_Renderer *background;
@@ -61,7 +62,7 @@ static Enesim_Renderer * _basic_splitter_renderer_get(Enesim_Renderer *r)
 	Basic_Splitter *thiz;
 
 	thiz = _splitter_get(r);
-	return thiz->compound;
+	return thiz->clipper;
 }
 
 static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r,
@@ -71,44 +72,45 @@ static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r,
 		Enesim_Error **error)
 {
 	Basic_Splitter *thiz;
-	Eon_Orientation orientation;
-	Enesim_Renderer *content;
-	Enesim_Renderer *second_content;
-	double ox, oy;
-	double width, height;
-	double position;
+	const Eon_Theme_Splitter_State *css = sstates[ENESIM_STATE_CURRENT];
+	const Eon_Theme_Splitter_State *pss = sstates[ENESIM_STATE_PAST];
+	const Eon_Theme_Container_State *ccs = cstates[ENESIM_STATE_CURRENT];
+	const Eon_Theme_Container_State *pcs = cstates[ENESIM_STATE_PAST];
+	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
+	double x;
+	double y;
+	double width;
+	double height;
 
 	thiz = _splitter_get(r);
-	/* the origin */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	/* the size */
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-	/* the contents */
-	eon_theme_container_content_get(r, &content);
-	eon_theme_splitter_second_content_get(r, &second_content);
-
+	x = cs->x;
+	y = cs->y;
+	width = cs->width;
+	height = cs->height;
 	/* the separator */
-	eon_theme_splitter_orientation_get(r, &orientation);
-	eon_theme_splitter_position_get(r, &position);
-	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	if (css->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		enesim_renderer_rectangle_size_set(thiz->splitter, 10, height);
-		enesim_renderer_origin_set(thiz->splitter, position, 0);
+		enesim_renderer_origin_set(thiz->splitter, x + css->position, y);
 	}
 	else
 	{
 		enesim_renderer_rectangle_size_set(thiz->splitter, width, 10);
-		enesim_renderer_origin_set(thiz->splitter, 0, position);
+		enesim_renderer_origin_set(thiz->splitter, x, y + css->position);
 	}
-	/* the background */
 	/* the composition */
-	enesim_renderer_compound_layer_clear(thiz->compound);
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
-	enesim_renderer_compound_layer_add(thiz->compound, content);
-	enesim_renderer_compound_layer_add(thiz->compound, second_content);
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->splitter);
-	enesim_renderer_origin_set(thiz->compound, ox, oy);
+	if ((css->second_content != pss->second_content) ||
+			(ccs->content != pcs->content))
+	{
+		enesim_renderer_compound_layer_clear(thiz->compound);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
+		enesim_renderer_compound_layer_add(thiz->compound, ccs->content);
+		enesim_renderer_compound_layer_add(thiz->compound, css->second_content);
+		enesim_renderer_compound_layer_add(thiz->compound, thiz->splitter);
+	}
+	enesim_renderer_origin_set(thiz->clipper, x, y);
+	enesim_renderer_clipper_width_set(thiz->clipper, width);
+	enesim_renderer_clipper_height_set(thiz->clipper, height);
 
 	return EINA_TRUE;
 }
@@ -172,12 +174,19 @@ Enesim_Renderer * eon_basic_splitter_new(void)
 	if (!r) goto compound_err;
 	thiz->compound = r;
 
+	r = enesim_renderer_clipper_new();
+	if (!r) goto clipper_err;
+	enesim_renderer_clipper_content_set(r, thiz->compound);
+	thiz->clipper = r;
+
 	r = eon_theme_splitter_new(&_descriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
 
 renderer_err:
+	enesim_renderer_unref(thiz->clipper);
+clipper_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
 	enesim_renderer_unref(thiz->splitter);
