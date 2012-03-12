@@ -57,8 +57,8 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Error **err)
 
 	thiz = _image_get(r);
 	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
-	enesim_renderer_origin_set(thiz->image, ox, oy);
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	enesim_renderer_color_get(r, &color);
 	enesim_renderer_color_set(thiz->image, color);
 	if (!thiz->src)
@@ -68,8 +68,8 @@ static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Error **err)
 	}
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
-	enesim_renderer_image_x_set(thiz->image, 0);
-	enesim_renderer_image_y_set(thiz->image, 0);
+	enesim_renderer_image_x_set(thiz->image, ox);
+	enesim_renderer_image_y_set(thiz->image, oy);
 	enesim_renderer_image_width_set(thiz->image, width);
 	enesim_renderer_image_height_set(thiz->image, height);
 	enesim_renderer_image_src_set(thiz->image, thiz->src);
