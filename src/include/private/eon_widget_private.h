@@ -25,16 +25,16 @@ typedef struct _Eon_Widget_Descriptor
 
 Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor,
 		void *data);
-void * eon_widget_data_get(Enesim_Renderer *r);
-Ender_Element * eon_widget_theme_element_get(Enesim_Renderer *r);
-Enesim_Renderer * eon_widget_theme_renderer_get(Enesim_Renderer *r);
-Escen_Instance * eon_widget_theme_instance_get(Enesim_Renderer *r);
-Escen_Ender * eon_widget_theme_ender_get(Enesim_Renderer *r);
-void eon_widget_property_clear(Enesim_Renderer *r, const char *name);
-void eon_widget_property_set(Enesim_Renderer *r, const char *name, ...);
-void eon_widget_property_get(Enesim_Renderer *r, const char *name, ...);
-void eon_widget_property_add(Enesim_Renderer *r, const char *name, ...);
-void eon_widget_property_remove(Enesim_Renderer *r, const char *name, ...);
-void eon_widget_state_set(Enesim_Renderer *r, const char *name, Eina_Bool be_finalized);
+void * eon_widget_data_get(Eon_Element *ee);
+Ender_Element * eon_widget_theme_element_get(Eon_Element *ee);
+Enesim_Renderer * eon_widget_theme_renderer_get(Eon_Element *ee);
+Escen_Instance * eon_widget_theme_instance_get(Eon_Element *ee);
+Escen_Ender * eon_widget_theme_ender_get(Eon_Element *ee);
+void eon_widget_property_clear(Eon_Element *ee, const char *name);
+void eon_widget_property_set(Eon_Element *ee, const char *name, ...);
+void eon_widget_property_get(Eon_Element *ee, const char *name, ...);
+void eon_widget_property_add(Eon_Element *ee, const char *name, ...);
+void eon_widget_property_remove(Eon_Element *ee, const char *name, ...);
+void eon_widget_state_set(Eon_Element *ee, const char *name, Eina_Bool be_finalized);
 
 #endif

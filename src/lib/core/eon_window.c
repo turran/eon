@@ -55,15 +55,11 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 		unsigned int width, unsigned int height)
 {
 	Eon_Window *ee;
-	Enesim_Renderer *l;
 	void *data;
 
 	if (!backend) return NULL;
 	if (!layout) return NULL;
-	/* FIXME we should just compare the type name */
-	l = ender_element_object_get(layout);
-	if (!l) return NULL;
-	if (!eon_is_layout(l)) return NULL;
+	if (!eon_is_layout(layout)) return NULL;
 
 	if (!eon_backend_window_new(backend, layout, width, height, &data))
 		return NULL;

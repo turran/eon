@@ -50,22 +50,15 @@ typedef struct _Eon_Layout
 	Eina_Hash *input_states;
 } Eon_Layout;
 
-#define _eon_layout_get(r) \
-	eon_widget_data_get(r); \
-	if (!EINA_MAGIC_CHECK((Eon_Layout *)eon_widget_data_get(r), EON_LAYOUT_MAGIC)) \
-		EINA_MAGIC_FAIL((Eon_Layout *)eon_widget_data_get(r), EON_LAYOUT_MAGIC)
-
-#if 0
-static inline Eon_Layout * _eon_layout_get(Enesim_Renderer *r)
+static inline Eon_Layout * _eon_layout_get(Eon_Element *ee)
 {
 	Eon_Layout *thiz;
 
-	thiz = eon_element_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	EON_LAYOUT_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
 }
-#endif
 
 static Eon_Input_State * _eon_layout_input_state_get(Eon_Layout *thiz, Ender_Element *e, Eon_Input *input)
 {
@@ -87,10 +80,10 @@ static void _eon_layout_mouse_down(Ender_Element *e, const char *event_name, voi
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Down *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_down(eis);
@@ -101,10 +94,10 @@ static void _eon_layout_mouse_up(Ender_Element *e, const char *event_name, void 
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Up *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_up(eis);
@@ -115,10 +108,10 @@ static void _eon_layout_mouse_in(Ender_Element *e, const char *event_name, void 
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_In *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_in(eis);
@@ -129,10 +122,10 @@ static void _eon_layout_mouse_out(Ender_Element *e, const char *event_name, void
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Out *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_out(eis);
@@ -143,14 +136,14 @@ static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, voi
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double ox, oy;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	eon_element_actual_position_get(r, &ox, &oy);
+	eon_element_actual_position_get(ee, &ox, &oy);
 	eon_input_state_feed_mouse_move(eis, ev->x, ev->y, ev->offset_x + ox, ev->offset_y + oy);
 }
 
@@ -159,10 +152,10 @@ static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, vo
 	Eon_Layout *thiz;
 	Eon_Event_Mouse_Wheel *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 
 	eis = _eon_layout_input_state_get(thiz, e, ev->input);
 	/* FIXME pass a mouse wheel? the mouse wheel should be set only on the focus element and an input must
@@ -174,10 +167,10 @@ static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, vo
 static void _eon_layout_initialize(Ender_Element *e)
 {
 	Eon_Layout *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_layout_mouse_move, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], _eon_layout_mouse_in, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], _eon_layout_mouse_out, NULL);
@@ -197,44 +190,42 @@ static Eina_Bool _eon_layout_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Layout *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 	if (thiz->setup)
 		return thiz->setup(e, state, s, err);
 	return EINA_TRUE;
 }
 
-static void _eon_layout_free(Enesim_Renderer *r)
+static void _eon_layout_free(Eon_Element *ee)
 {
 	Eon_Layout *thiz;
 
-	thiz = _eon_layout_get(r);
+	thiz = _eon_layout_get(ee);
 	if (thiz->free)
-		thiz->free(r);
+		thiz->free(ee);
 	free(thiz);
 }
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static void _eon_layout_child_remove(Enesim_Renderer *r, Ender_Element *child)
+static void _eon_layout_child_remove(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Layout *thiz;
 
-	thiz = _eon_layout_get(r);
-	thiz->child_remove(r, child);
+	thiz = _eon_layout_get(ee);
+	thiz->child_remove(ee, child);
 }
 
-static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
+static void _eon_layout_child_add(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Layout *thiz;
 	Ender_Element *curr_parent;
-	Enesim_Renderer *child_r;
 
-	thiz = _eon_layout_get(r);
-	child_r = ender_element_object_get(child);
-	if (!eon_is_element(child_r))
+	thiz = _eon_layout_get(ee);
+	if (!eon_is_element(child))
 		return;
 
 	curr_parent = ender_element_parent_get(child);
@@ -244,28 +235,28 @@ static void _eon_layout_child_add(Enesim_Renderer *r, Ender_Element *child)
 		/* FIXME this is wrong, we should remove from the theme the child_rr */
 		printf("warning, first remove from its old parent\n");
 	}
-	thiz->child_add(r, child);
+	thiz->child_add(ee, child);
 }
 
-static void _eon_layout_child_set(Enesim_Renderer *r, Eina_List *childs)
+static void _eon_layout_child_set(Eon_Element *ee, Eina_List *childs)
 {
 	Eina_List *l;
 	Ender_Element *child;
 
 	EINA_LIST_FOREACH(childs, l, child)
 	{
-		_eon_layout_child_add(r, child);
+		_eon_layout_child_add(ee, child);
 	}
 }
 
 
-static void _eon_layout_child_clear(Enesim_Renderer *r)
+static void _eon_layout_child_clear(Eon_Element *ee)
 {
 	Eon_Layout *thiz;
 
-	thiz = _eon_layout_get(r);
+	thiz = _eon_layout_get(ee);
 
-	thiz->child_clear(r);
+	thiz->child_clear(ee);
 }
 
 /*============================================================================*
@@ -274,10 +265,10 @@ static void _eon_layout_child_clear(Enesim_Renderer *r)
 Eon_Input_State * eon_layout_input_state_new(Ender_Element *e, Eon_Input *input)
 {
 	Eon_Layout *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_layout_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_layout_get(ee);
 	if (thiz->child_at)
 		return eon_input_state_new(input, e, thiz->child_at);
 	return NULL;
@@ -288,7 +279,7 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 {
 	Eon_Layout *thiz;
 	Eon_Widget_Descriptor pdescriptor = { 0 };
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Layout));
 	EINA_MAGIC_SET(thiz, EON_LAYOUT_MAGIC);
@@ -311,21 +302,21 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.setup = _eon_layout_setup;
 	pdescriptor.needs_setup = descriptor->needs_setup;
 
-	r = eon_widget_new(&pdescriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&pdescriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-void * eon_layout_data_get(Enesim_Renderer *r)
+void * eon_layout_data_get(Eon_Element *ee)
 {
 	Eon_Layout *thiz;
 
-	thiz = _eon_layout_get(r);
+	thiz = _eon_layout_get(ee);
 	return thiz->data;
 }
 
@@ -338,12 +329,14 @@ void * eon_layout_data_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
+EAPI Eina_Bool eon_is_layout(Ender_Element *e)
 {
 	Eon_Layout *thiz;
+	Eon_Element *ee;
 
-	if (!eon_is_widget(r)) return EINA_FALSE;
-	thiz = eon_widget_data_get(r);
+	if (!eon_is_widget(e)) return EINA_FALSE;
+	ee = ender_element_object_get(e);
+	thiz = eon_widget_data_get(ee);
 	/* FIXME looks like compiling with flag  > -O0 gives
 	 * a bad behaviour
 	 */
@@ -358,24 +351,24 @@ EAPI Eina_Bool eon_is_layout(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-void eon_layout_obscure_add(Enesim_Renderer *r, Eina_Rectangle *obscure)
+void eon_layout_obscure_add(Eon_Element *ee, Eina_Rectangle *obscure)
 {
 	Eon_Layout *thiz;
 
-	thiz = _eon_layout_get(r);
+	thiz = _eon_layout_get(ee);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r)
+Eina_Bool eon_layout_is_topmost(Ender_Element *e)
 {
 	Ender_Element *ender, *parent;
 	Eina_Bool ret = EINA_FALSE;
 #if 0
-	if (!eon_is_layout(r)) goto end;
-	ender = ender_element_renderer_from(r);
+	if (!eon_is_layout(ee)) goto end;
+	ender = ender_element_renderer_from(ee);
 	if (!ender) goto end;
 	parent = ender_element_parent_get(ender);
 	if (parent) goto end;

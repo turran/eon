@@ -191,7 +191,6 @@ static void _eon_container_mouse_wheel(Ender_Element *e, const char *event_name,
 static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *content)
 {
 	Eon_Container *thiz;
-	Enesim_Renderer *content_r;
 
 	thiz = _eon_container_get(r);
 	if (!thiz) return;
@@ -199,8 +198,7 @@ static void _eon_container_content_set(Enesim_Renderer *r, Ender_Element *conten
 	if (thiz->current.content == content)
 		return;
 
-	content_r = ender_element_object_get(content);
-	if (!eon_is_element(content_r))
+	if (!eon_is_element(content))
 		return;
 
 	/* FIXME the size of the elements of a stack for example is always

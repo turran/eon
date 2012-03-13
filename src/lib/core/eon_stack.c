@@ -193,8 +193,8 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz,
 			const char *name;
 			const char *child_name;
 
-			enesim_renderer_name_get(r, &name);
-			enesim_renderer_name_get(child_r, &child_name);
+			//enesim_renderer_name_get(r, &name);
+			//enesim_renderer_name_get(child_r, &child_name);
 			//printf("H setting child %s %s %g %g %g %g (aw, ah %g %g)\n", name, child_name, last_x, y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
@@ -273,8 +273,8 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz,
 			const char *name;
 			const char *child_name;
 
-			enesim_renderer_name_get(r, &name);
-			enesim_renderer_name_get(child_r, &child_name);
+			//enesim_renderer_name_get(r, &name);
+			//enesim_renderer_name_get(child_r, &child_name);
 			//printf("V setting child %s %s %g %g %g %g (aw,ah %g %g)\n", name, child_name, x, last_y, child_size.width, child_size.height, aw, ah);
 		}
 		eon_element_actual_size_set(child_r, child_size.width, child_size.height);
@@ -526,7 +526,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 
 		/* TODO still need the width and height */
 		rchild = ender_element_object_get(ech->ender);
-		if (eon_is_element(rchild))
+		if (eon_is_element(ech->ender))
 		{
 			eon_element_actual_size_get(rchild, &child_size);
 		}

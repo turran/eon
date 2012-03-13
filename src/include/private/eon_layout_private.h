@@ -1,9 +1,9 @@
 #ifndef _EON_LAYOUT_PRIVATE_H
 #define _EON_LAYOUT_PRIVATE_H
 
-typedef void (*Eon_Layout_Child_Add)(Enesim_Renderer *r, Ender_Element *child);
-typedef void (*Eon_Layout_Child_Remove)(Enesim_Renderer *r, Ender_Element *child);
-typedef void (*Eon_Layout_Child_Clear)(Enesim_Renderer *r);
+typedef void (*Eon_Layout_Child_Add)(Eon_Element *ee, Ender_Element *child);
+typedef void (*Eon_Layout_Child_Remove)(Eon_Element *ee, Ender_Element *child);
+typedef void (*Eon_Layout_Child_Clear)(Eon_Element *ee);
 typedef Ender_Element * (*Eon_Layout_Child_At)(Ender_Element *e, double x, double y);
 
 typedef struct _Eon_Layout_Descriptor
@@ -25,7 +25,7 @@ typedef struct _Eon_Layout_Descriptor
 
 Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data);
-void * eon_layout_data_get(Enesim_Renderer *r);
+void * eon_layout_data_get(Eon_Element *ee);
 void eon_layout_actual_size_get(Ender_Element *e, Eon_Size *size);
 void eon_layout_actual_width_get(Ender_Element *e, double *width);
 void eon_layout_actual_height_get(Ender_Element *e, double *height);

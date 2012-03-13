@@ -26,7 +26,7 @@
  * @{
  */
 
-EAPI Eina_Bool eon_is_widget(Enesim_Renderer *r);
+EAPI Eina_Bool eon_is_widget(Ender_Element *e);
 EAPI void eon_widget_theme_set(Ender_Element *e, const char *file);
 
 /**

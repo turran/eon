@@ -25,10 +25,8 @@
  * @{
  */
 
-Eina_Bool eon_layout_is_topmost(Enesim_Renderer *r);
-Eina_Bool eon_is_layout(Enesim_Renderer *r);
-EAPI Ender_Element * eon_layout_child_get_at_coord(Enesim_Renderer *r, double x, double y);
-EAPI Ender_Element * eon_layout_child_get_at_destination_coord(Enesim_Renderer *r, unsigned int x, unsigned int y);
+EAPI Eina_Bool eon_layout_is_topmost(Ender_Element *e);
+EAPI Eina_Bool eon_is_layout(Ender_Element *e);
 
 EAPI void eon_layout_child_remove(Ender_Element *e, Ender_Element *child);
 EAPI void eon_layout_child_add(Ender_Element *e, Ender_Element *child);
