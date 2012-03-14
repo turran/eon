@@ -40,11 +40,11 @@ typedef struct _Eon_Tab
 	Eina_Bool changed : 1;
 } Eon_Tab;
 
-static inline Eon_Tab * _eon_tab_get(Enesim_Renderer *r)
+static inline Eon_Tab * _eon_tab_get(Eon_Element *ee)
 {
 	Eon_Tab *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 
@@ -58,10 +58,10 @@ static void _eon_tab_mouse_click(Ender_Element *e, const char *event_name, void 
 static void _eon_tab_initialize(Ender_Element *e)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_tab_mouse_click, NULL);
 }
@@ -72,13 +72,13 @@ static Eina_Bool _eon_tab_setup(Ender_Element *e,
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Eina_List *l;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 
 	EINA_LIST_FOREACH(thiz->children, l, ech)
 	{
@@ -93,28 +93,28 @@ static Eina_Bool _eon_tab_setup(Ender_Element *e,
 static Eina_Bool _eon_tab_needs_setup(Ender_Element *e)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 	return thiz->changed;
 }
 
-static void _eon_tab_free(Enesim_Renderer *r)
+static void _eon_tab_free(Eon_Element *ee)
 {
 	Eon_Tab *thiz;
 
-	thiz = _eon_tab_get(r);
+	thiz = _eon_tab_get(ee);
 	free(thiz);
 }
 
 static double _eon_tab_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	return 0;
 }
@@ -122,10 +122,10 @@ static double _eon_tab_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 static double _eon_tab_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	return 0;
 }
@@ -133,10 +133,10 @@ static double _eon_tab_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 static double _eon_tab_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	return 0;
 }
@@ -144,10 +144,10 @@ static double _eon_tab_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r
 static double _eon_tab_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	return 0;
 }
@@ -155,10 +155,10 @@ static double _eon_tab_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r
 static double _eon_tab_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	return 0;
 }
@@ -166,10 +166,10 @@ static double _eon_tab_preferred_width_get(Ender_Element *e, Enesim_Renderer *th
 static double _eon_tab_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_tab_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_tab_get(ee);
 
 	return 0;
 }
@@ -190,32 +190,32 @@ static Eon_Widget_Descriptor _eon_tab_widget_descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_tab_new(void)
+static Eon_Element * _eon_tab_new(void)
 {
 	Eon_Tab *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Tab));
 	if (!thiz) return NULL;
 	/* default values */
 
-	r = eon_widget_new(&_eon_tab_widget_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_eon_tab_widget_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_tab_child_remove(Enesim_Renderer *r, Ender_Element *child)
+static void _eon_tab_child_remove(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;
 	Eina_List *l, *l_next;
 
-	thiz = _eon_tab_get(r);
+	thiz = _eon_tab_get(ee);
 	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, ech)
 	{
 		if (ech->e == child)
@@ -227,12 +227,12 @@ static void _eon_tab_child_remove(Enesim_Renderer *r, Ender_Element *child)
 	}
 }
 
-static void _eon_tab_child_add(Enesim_Renderer *r, Ender_Element *child)
+static void _eon_tab_child_add(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;
 
-	thiz = _eon_tab_get(r);
+	thiz = _eon_tab_get(ee);
 	ech = calloc(1, sizeof(Eon_Tab_Child));
 	ech->e = child;
 
@@ -240,22 +240,22 @@ static void _eon_tab_child_add(Enesim_Renderer *r, Ender_Element *child)
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_tab_child_clear(Enesim_Renderer *r)
+static void _eon_tab_child_clear(Eon_Element *ee)
 {
 	Eon_Tab *thiz;
 
-	thiz = _eon_tab_get(r);
+	thiz = _eon_tab_get(ee);
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_tab_child_content_set(Enesim_Renderer *r, Ender_Element *child,
+static void _eon_tab_child_content_set(Eon_Element *ee, Ender_Element *child,
 		Ender_Element *content)
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;
 	Eina_List *l;
 
-	thiz = _eon_tab_get(r);
+	thiz = _eon_tab_get(ee);
 	EINA_LIST_FOREACH(thiz->children, l, ech)
 	{
 		if (ech->e == child)
@@ -267,14 +267,14 @@ static void _eon_tab_child_content_set(Enesim_Renderer *r, Ender_Element *child,
 	}
 }
 
-static void _eon_tab_child_selected_set(Enesim_Renderer *r, Ender_Element *child,
+static void _eon_tab_child_selected_set(Eon_Element *ee, Ender_Element *child,
 		Eina_Bool selected)
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;
 	Eina_List *l;
 
-	thiz = _eon_tab_get(r);
+	thiz = _eon_tab_get(ee);
 	EINA_LIST_FOREACH(thiz->children, l, ech)
 	{
 		if (ech->e == child)

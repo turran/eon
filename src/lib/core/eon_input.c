@@ -68,7 +68,7 @@ struct _Eon_Input_State
 Ender_Element * _eon_input_state_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
 	double *rel_y)
 {
-	Enesim_Renderer *e_r;
+	Eon_Element *e_e;
 	Ender_Element *e;
 	double ex, ey;
 
@@ -77,8 +77,8 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *eis, double x, dou
 
 	e = eis->element_get(eis->element, x, y);
 	if (!e) return NULL;
-	e_r = ender_element_object_get(e);
-	eon_element_actual_position_get(e_r, &ex, &ey);
+	e_e = ender_element_object_get(e);
+	eon_element_actual_position_get(e_e, &ex, &ey);
 	if (rel_x) *rel_x = x - ex;
 	if (rel_y) *rel_y = y - ey;
 

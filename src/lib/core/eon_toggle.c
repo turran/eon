@@ -30,11 +30,11 @@ typedef struct _Eon_Toggle
 	Ender_Element *e;
 } Eon_Toggle;
 
-static inline Eon_Toggle * _eon_toggle_get(Enesim_Renderer *r)
+static inline Eon_Toggle * _eon_toggle_get(Eon_Element *ee)
 {
 	Eon_Toggle *thiz;
 
-	thiz = eon_button_base_data_get(r);
+	thiz = eon_button_base_data_get(ee);
 	return thiz;
 }
 
@@ -51,10 +51,10 @@ static void _toggle_mouse_click(Ender_Element *e, const char *event_name, void *
 static void _eon_toggle_initialize(Ender_Element *ender)
 {
 	Eon_Toggle *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(ender);
-	thiz = _eon_toggle_get(r);
+	ee = ender_element_object_get(ender);
+	thiz = _eon_toggle_get(ee);
 	thiz->e = ender;
 	/* register every needed callback */
 	ender_event_listener_add(ender, "MouseClick", _toggle_mouse_click, NULL);
@@ -67,33 +67,33 @@ static Eon_Button_Base_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-Enesim_Renderer * _eon_toggle_new(void)
+static Eon_Element * _eon_toggle_new(void)
 {
 	Eon_Toggle *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Toggle));
 	if (!thiz) return NULL;
 
-	r = eon_button_base_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_button_base_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_toggle_active_get(Enesim_Renderer *r, Eina_Bool *active)
+static void _eon_toggle_active_get(Eon_Element *ee, Eina_Bool *active)
 {
 	Eon_Toggle *thiz;
 
-	thiz = _eon_toggle_get(r);
+	thiz = _eon_toggle_get(ee);
 	*active = thiz->active;
 }
 
-static void _eon_toggle_active_set(Enesim_Renderer *r, Eina_Bool active)
+static void _eon_toggle_active_set(Eon_Element *ee, Eina_Bool active)
 {
 	Eon_Toggle *thiz;
 	Eon_Event_Toggled toggle_event;
@@ -101,11 +101,11 @@ static void _eon_toggle_active_set(Enesim_Renderer *r, Eina_Bool active)
 	Escen_State *new_state;
 	Ender_Element *e;
 
-	thiz = _eon_toggle_get(r);
+	thiz = _eon_toggle_get(ee);
 	/* first set the property internally */
 	thiz->active = active;
 	/* now set the state */
-	theme = eon_widget_theme_ender_get(r);
+	theme = eon_widget_theme_ender_get(ee);
 	if (active)
 		new_state = escen_ender_state_get(theme, "active");
 	else
@@ -113,7 +113,7 @@ static void _eon_toggle_active_set(Enesim_Renderer *r, Eina_Bool active)
 	if (new_state)
 	{
 		Escen_Instance *eei;
-		eei = eon_widget_theme_instance_get(r);
+		eei = eon_widget_theme_instance_get(ee);
 		escen_instance_state_set(eei, new_state);
 	}
 	/* trigger the active event */

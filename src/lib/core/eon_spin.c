@@ -40,21 +40,21 @@ typedef struct _Eon_Spin
 	Eina_Hash *input_states;
 } Eon_Spin;
 
-static inline Eon_Spin * _eon_spin_get(Enesim_Renderer *r)
+static inline Eon_Spin * _eon_spin_get(Eon_Element *ee)
 {
 	Eon_Spin *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 
 static void _entry_changed(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Spin *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	/* a change on the entry should be a change on the graphic component right?
 	 * no need to call the setup again ... */
@@ -66,17 +66,17 @@ Ender_Element * _eon_spin_element_get(Ender_Element *e, double x, double y)
 {
 	Eon_Spin *thiz;
 	Ender_Element *at = NULL;
-	Enesim_Renderer *r;
-	Enesim_Renderer *entry_r;
+	Eon_Element *ee;
+	Eon_Element *entry_e;
 	double ax, ay;
 	Eon_Size size;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
-	entry_r = ender_element_object_get(thiz->entry);
-	eon_element_actual_size_get(entry_r, &size);
-	eon_element_actual_position_get(entry_r, &ax, &ay);
+	entry_e = ender_element_object_get(thiz->entry);
+	eon_element_actual_size_get(entry_e, &size);
+	eon_element_actual_position_get(entry_e, &ax, &ay);
 
 	if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 		at = thiz->entry;
@@ -104,10 +104,10 @@ static void _eon_spin_mouse_down(Ender_Element *e, const char *event_name, void 
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_Down *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eis = _eon_spin_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_down(eis);
@@ -118,10 +118,10 @@ static void _eon_spin_mouse_up(Ender_Element *e, const char *event_name, void *e
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_Up *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eis = _eon_spin_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_up(eis);
@@ -132,10 +132,10 @@ static void _eon_spin_mouse_in(Ender_Element *e, const char *event_name, void *e
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_In *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eis = _eon_spin_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_in(eis);
@@ -146,10 +146,10 @@ static void _eon_spin_mouse_out(Ender_Element *e, const char *event_name, void *
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_Out *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eis = _eon_spin_input_state_get(thiz, e, ev->input);
 	eon_input_state_feed_mouse_out(eis);
@@ -160,14 +160,14 @@ static void _eon_spin_mouse_move(Ender_Element *e, const char *event_name, void 
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double ox, oy;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eis = _eon_spin_input_state_get(thiz, e, ev->input);
-	eon_element_actual_position_get(r, &ox, &oy);
+	eon_element_actual_position_get(ee, &ox, &oy);
 	eon_input_state_feed_mouse_move(eis, ev->x, ev->y, ev->offset_x + ox, ev->offset_y + oy);
 }
 
@@ -176,10 +176,10 @@ static void _eon_spin_mouse_wheel(Ender_Element *e, const char *event_name, void
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_Wheel *ev = event_data;
 	Eon_Input_State *eis;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eis = _eon_spin_input_state_get(thiz, e, ev->input);
 	/* FIXME */
@@ -190,19 +190,19 @@ static void _eon_spin_mouse_click(Ender_Element *e, const char *event_name, void
 {
 	Eon_Spin *thiz;
 	Eon_Event_Mouse_Click *ev = event_data;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Eina_Bool inc = EINA_FALSE;
 	Eina_Bool dec = EINA_FALSE;
 	Eon_Position cursor;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 	/* check inside what arrow are we */
 
 	cursor.x = ev->rel_x;
 	cursor.y = ev->rel_y;
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_spin_arrows_is_inside(theme_r, &cursor, &inc, &dec);
 
 	//printf("inc = %d, dec = %d\n", inc, dec);
@@ -231,10 +231,10 @@ static void _eon_spin_mouse_click(Ender_Element *e, const char *event_name, void
 static void _eon_spin_initialize(Ender_Element *e)
 {
 	Eon_Spin *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	/* register every needed callback */
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_spin_mouse_move, NULL);
@@ -251,11 +251,11 @@ static double _eon_spin_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_min_width_get(thiz->entry, &v);
@@ -267,11 +267,11 @@ static double _eon_spin_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_max_width_get(thiz->entry, &v);
@@ -283,11 +283,11 @@ static double _eon_spin_min_height_get(Ender_Element *e, Enesim_Renderer *theme_
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_min_height_get(thiz->entry, &v);
@@ -299,11 +299,11 @@ static double _eon_spin_max_height_get(Ender_Element *e, Enesim_Renderer *theme_
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_max_height_get(thiz->entry, &v);
@@ -315,11 +315,11 @@ static double _eon_spin_preferred_width_get(Ender_Element *e, Enesim_Renderer *t
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_preferred_width_get(thiz->entry, &v);
@@ -331,11 +331,11 @@ static double _eon_spin_preferred_height_get(Ender_Element *e, Enesim_Renderer *
 {
 	Eon_Spin *thiz;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double v;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
 	eon_theme_spin_margin_get(theme_r, &margin);
 	eon_element_preferred_height_get(thiz->entry, &v);
@@ -352,15 +352,15 @@ static Eina_Bool _eon_spin_setup(Ender_Element *e,
 	Eon_Size area;
 	Eon_Size entry_size;
 	Eon_Margin margin;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
+	Eon_Element *entry_e;
 	Enesim_Renderer *theme_r;
-	Enesim_Renderer *entry_r;
 	Enesim_Renderer *entry_rr;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_spin_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_spin_get(ee);
 
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 
 	size = state->actual_size;
 	eon_theme_spin_margin_get(theme_r, &margin);
@@ -368,11 +368,11 @@ static Eina_Bool _eon_spin_setup(Ender_Element *e,
 	area.height = size.height - margin.top - margin.bottom;
 
 	entry_rr = eon_element_renderer_get(thiz->entry);
-	entry_r = ender_element_object_get(thiz->entry);
+	entry_e = ender_element_object_get(thiz->entry);
 	eon_element_real_relative_size_get(thiz->entry, &area, &entry_size);
-	eon_element_actual_size_set(entry_r, entry_size.width, entry_size.height);
+	eon_element_actual_size_set(entry_e, entry_size.width, entry_size.height);
 	/* check the real size and put the input where it should be aligned */
-	eon_element_actual_position_set(entry_r, margin.left, margin.top);
+	eon_element_actual_position_set(entry_e, margin.left, margin.top);
 	eon_element_setup(thiz->entry, s, err);
 
 	/* pass it to the theme */
@@ -399,11 +399,11 @@ static Eon_Widget_Descriptor _eon_spin_widget_descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_spin_new(void)
+static Eon_Element * _eon_spin_new(void)
 {
 	Eon_Spin *thiz;
 	Ender_Element *e;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Spin));
 	if (!thiz) return NULL;
@@ -413,8 +413,8 @@ static Enesim_Renderer * _eon_spin_new(void)
 	eon_entry_alignment_set(e, EON_HORIZONTAL_ALIGNMENT_RIGHT);
 	thiz->entry = e;
 
-	r = eon_widget_new(&_eon_spin_widget_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_eon_spin_widget_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
 	/* default values */
 	eon_entry_text_set(thiz->entry, "0");
@@ -422,7 +422,7 @@ static Enesim_Renderer * _eon_spin_new(void)
 	thiz->min_range = 0;
 	thiz->step_increment = 1;
 
-	return r;
+	return ee;
 
 renderer_err:
 	//ender_element_unref(e);
@@ -431,72 +431,72 @@ entry_err:
 	return NULL;
 }
 
-static void _eon_spin_max_range_set(Enesim_Renderer *r, double max_range)
+static void _eon_spin_max_range_set(Eon_Element *ee, double max_range)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	thiz->max_range = max_range;
 }
 
-static void _eon_spin_max_range_get(Enesim_Renderer *r, double *max_range)
+static void _eon_spin_max_range_get(Eon_Element *ee, double *max_range)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	*max_range = thiz->max_range;
 }
 
-static void _eon_spin_min_range_set(Enesim_Renderer *r, double min_range)
+static void _eon_spin_min_range_set(Eon_Element *ee, double min_range)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	thiz->min_range = min_range;
 }
 
-static void _eon_spin_min_range_get(Enesim_Renderer *r, double *min_range)
+static void _eon_spin_min_range_get(Eon_Element *ee, double *min_range)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	*min_range = thiz->min_range;
 }
 
-static void _eon_spin_step_increment_set(Enesim_Renderer *r, double step_increment)
+static void _eon_spin_step_increment_set(Eon_Element *ee, double step_increment)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	thiz->step_increment = step_increment;
 }
 
-static void _eon_spin_step_increment_get(Enesim_Renderer *r, double *step_increment)
+static void _eon_spin_step_increment_get(Eon_Element *ee, double *step_increment)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	*step_increment = thiz->step_increment;
 }
 
-static void _eon_spin_value_set(Enesim_Renderer *r, double value)
+static void _eon_spin_value_set(Eon_Element *ee, double value)
 {
 	Eon_Spin *thiz;
 	char text[PATH_MAX];
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	/* FIXME check that the number is valid */
@@ -505,11 +505,11 @@ static void _eon_spin_value_set(Enesim_Renderer *r, double value)
 	eon_entry_text_set(thiz->entry, text);
 }
 
-static void _eon_spin_value_get(Enesim_Renderer *r, double *value)
+static void _eon_spin_value_get(Eon_Element *ee, double *value)
 {
 	Eon_Spin *thiz;
 
-	thiz = _eon_spin_get(r);
+	thiz = _eon_spin_get(ee);
 	if (!thiz) return;
 
 	*value = thiz->value;
@@ -537,8 +537,7 @@ EAPI Ender_Element * eon_spin_new(void)
  */
 EAPI void eon_spin_max_range_set(Ender_Element *e, double max_range)
 {
-	ender_element_value_set(e, "max_range", max_range, NULL);
-
+	ender_element_property_value_set(e, EON_SPIN_MAX_RANGE, max_range, NULL);
 }
 
 /**
@@ -547,7 +546,7 @@ EAPI void eon_spin_max_range_set(Ender_Element *e, double max_range)
  */
 EAPI void eon_spin_max_range_get(Ender_Element *e, double *max_range)
 {
-	ender_element_value_get(e, "max_range", max_range, NULL);
+	ender_element_property_value_get(e, EON_SPIN_MAX_RANGE, max_range, NULL);
 
 }
 
@@ -557,7 +556,7 @@ EAPI void eon_spin_max_range_get(Ender_Element *e, double *max_range)
  */
 EAPI void eon_spin_min_range_set(Ender_Element *e, double min_range)
 {
-	ender_element_value_set(e, "min_range", min_range, NULL);
+	ender_element_property_value_set(e, EON_SPIN_MIN_RANGE, min_range, NULL);
 
 }
 
@@ -567,7 +566,7 @@ EAPI void eon_spin_min_range_set(Ender_Element *e, double min_range)
  */
 EAPI void eon_spin_min_range_get(Ender_Element *e, double *min_range)
 {
-	ender_element_value_get(e, "min_range", min_range, NULL);
+	ender_element_property_value_get(e, EON_SPIN_MIN_RANGE, min_range, NULL);
 }
 
 /**
@@ -576,7 +575,7 @@ EAPI void eon_spin_min_range_get(Ender_Element *e, double *min_range)
  */
 EAPI void eon_spin_value_set(Ender_Element *e, double value)
 {
-	ender_element_value_set(e, "value", value, NULL);
+	ender_element_property_value_set(e, EON_SPIN_VALUE, value, NULL);
 }
 
 /**
@@ -585,7 +584,7 @@ EAPI void eon_spin_value_set(Ender_Element *e, double value)
  */
 EAPI void eon_spin_value_get(Ender_Element *e, double *value)
 {
-	ender_element_value_get(e, "value", value, NULL);
+	ender_element_property_value_get(e, EON_SPIN_VALUE, value, NULL);
 }
 
 /**
@@ -594,7 +593,7 @@ EAPI void eon_spin_value_get(Ender_Element *e, double *value)
  */
 EAPI void eon_spin_step_increment_set(Ender_Element *e, double step_increment)
 {
-	ender_element_value_set(e, "step_increment", step_increment, NULL);
+	ender_element_property_value_set(e, EON_SPIN_STEP_INCREMENT, step_increment, NULL);
 }
 
 /**
@@ -603,5 +602,5 @@ EAPI void eon_spin_step_increment_set(Ender_Element *e, double step_increment)
  */
 EAPI void eon_spin_step_increment_get(Ender_Element *e, double *step_increment)
 {
-	ender_element_value_get(e, "step_increment", step_increment, NULL);
+	ender_element_property_value_get(e, EON_SPIN_STEP_INCREMENT, step_increment, NULL);
 }

@@ -38,21 +38,21 @@ typedef struct _Eon_Color
 	Ender_Element *wrapper;
 } Eon_Color;
 
-static inline Eon_Color * _eon_color_get(Enesim_Renderer *r)
+static inline Eon_Color * _eon_color_get(Eon_Element *ee)
 {
 	Eon_Color *thiz;
 
-	thiz = eon_button_base_data_get(r);
+	thiz = eon_button_base_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_color_free(Enesim_Renderer *r)
+static void _eon_color_free(Eon_Element *ee)
 {
 	Eon_Color *thiz;
 
-	thiz = _eon_color_get(r);
+	thiz = _eon_color_get(ee);
 	//ender_element_delete(thiz->wrapper);
 
 	free(thiz);
@@ -61,13 +61,13 @@ static void _eon_color_free(Enesim_Renderer *r)
 static void _eon_color_initialize(Ender_Element *e)
 {
 	Eon_Color *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Ender_Element *content_e;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_color_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_color_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 
 	eon_container_content_set(e, thiz->wrapper);
 	content_e = eon_theme_color_content_element_get(theme_r);
@@ -82,43 +82,43 @@ static Eon_Button_Base_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_color_new(void)
+static Eon_Element * _eon_color_new(void)
 {
 	Eon_Color *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Color));
 	if (!thiz) return NULL;
 
-	r = eon_button_base_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_button_base_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
 	thiz->wrapper = eon_wrapper_new();
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_color_value_set(Enesim_Renderer *r, Enesim_Argb argb)
+static void _eon_color_value_set(Eon_Element *ee, Enesim_Argb argb)
 {
 	Eon_Color *thiz;
 	Enesim_Renderer *theme_r;
 
-	thiz = _eon_color_get(r);
+	thiz = _eon_color_get(ee);
 
 	thiz->argb = argb;
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_color_content_color_set(theme_r, argb);
 }
 
-static void _eon_color_value_get(Enesim_Renderer *r, Enesim_Argb *argb)
+static void _eon_color_value_get(Eon_Element *ee, Enesim_Argb *argb)
 {
 	Eon_Color *thiz;
 
-	thiz = _eon_color_get(r);
+	thiz = _eon_color_get(ee);
 	*argb = thiz->argb;
 }
 /*============================================================================*

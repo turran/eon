@@ -24,21 +24,21 @@ typedef struct _Eon_Button
 {
 } Eon_Button;
 
-static inline Eon_Button * _eon_button_get(Enesim_Renderer *r)
+static inline Eon_Button * _eon_button_get(Eon_Element *ee)
 {
 	Eon_Button *thiz;
 
-	thiz = eon_button_base_data_get(r);
+	thiz = eon_button_base_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_button_free(Enesim_Renderer *r)
+static void _eon_button_free(Eon_Element *ee)
 {
 	Eon_Button *thiz;
 
-	thiz = _eon_button_get(r);
+	thiz = _eon_button_get(ee);
 	free(thiz);
 }
 
@@ -57,18 +57,18 @@ static Eon_Button_Base_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_button_new(void)
+static Eon_Element * _eon_button_new(void)
 {
 	Eon_Button *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Button));
 	if (!thiz) return NULL;
 
-	r = eon_button_base_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_button_base_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);

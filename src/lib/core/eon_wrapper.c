@@ -35,31 +35,31 @@ typedef struct _Eon_Wrapper
 	Enesim_Renderer_Sw_Fill fill;
 } Eon_Wrapper;
 
-static inline Eon_Wrapper * _eon_wrapper_get(Enesim_Renderer *r)
+static inline Eon_Wrapper * _eon_wrapper_get(Eon_Element *ee)
 {
 	Eon_Wrapper *thiz;
 
-	thiz = eon_element_data_get(r);
+	thiz = eon_element_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                       The Eon's element interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_wrapper_free(Enesim_Renderer *r)
+static void _eon_wrapper_free(Eon_Element *ee)
 {
 	Eon_Wrapper *thiz;
 
-	thiz = _eon_wrapper_get(r);
+	thiz = _eon_wrapper_get(ee);
 	free(thiz);
 }
 
 static Eina_Bool _eon_wrapper_needs_setup(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 
 	return thiz->changed;
 }
@@ -67,11 +67,11 @@ static Eina_Bool _eon_wrapper_needs_setup(Ender_Element *e)
 static double _eon_wrapper_preferred_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_Rectangle rect;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 	if (!thiz->wrapped_renderer) return 0;
 
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
@@ -82,11 +82,11 @@ static double _eon_wrapper_preferred_height_get(Ender_Element *e)
 static double _eon_wrapper_preferred_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_Rectangle rect;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 	if (!thiz->wrapped_renderer) return 0;
 
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
@@ -106,11 +106,11 @@ static double _eon_wrapper_min_width_get(Ender_Element *e)
 static double _eon_wrapper_max_width_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_Rectangle rect;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 	if (!thiz->wrapped) return DBL_MAX;
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
@@ -127,11 +127,11 @@ static double _eon_wrapper_min_height_get(Ender_Element *e)
 static double _eon_wrapper_max_height_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_Rectangle rect;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 	if (!thiz->wrapped) return DBL_MAX;
 	enesim_renderer_destination_boundings(thiz->wrapped_renderer, &rect, 0, 0);
 
@@ -145,12 +145,12 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double ox, oy;
 	double aw, ah;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 	if (!thiz->wrapped) return EINA_FALSE;
 
 	ox = state->actual_position.x;
@@ -189,10 +189,10 @@ static Eina_Bool _eon_wrapper_setup(Ender_Element *e,
 static Enesim_Renderer * _eon_wrapper_renderer_get(Ender_Element *e)
 {
 	Eon_Wrapper *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_wrapper_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
 	return thiz->compound;
 }
 
@@ -220,9 +220,10 @@ static Eon_Element_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_wrapper_new(void)
+static Eon_Element * _eon_wrapper_new(void)
 {
 	Eon_Wrapper *thiz;
+	Eon_Element *ee;
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Wrapper));
@@ -242,21 +243,24 @@ static Enesim_Renderer * _eon_wrapper_new(void)
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	thiz->compound = r;
 
-	r = eon_element_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_element_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
+	enesim_renderer_unref(thiz->fallback);
+	enesim_renderer_unref(thiz->clipper);
+	enesim_renderer_unref(thiz->compound);
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_wrapper_wrapped_set(Enesim_Renderer *r, Ender_Element *wrapped)
+static void _eon_wrapper_wrapped_set(Eon_Element *ee, Ender_Element *wrapped)
 {
 	Eon_Wrapper *thiz;
 
-	thiz = _eon_wrapper_get(r);
+	thiz = _eon_wrapper_get(ee);
 	/* FIXME check that the wrapped element does support the origin property */
 	thiz->wrapped = wrapped;
 	thiz->wrapped_renderer = NULL;
@@ -267,11 +271,11 @@ static void _eon_wrapper_wrapped_set(Enesim_Renderer *r, Ender_Element *wrapped)
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_wrapper_wrapped_get(Enesim_Renderer *r, Ender_Element **wrapped)
+static void _eon_wrapper_wrapped_get(Eon_Element *ee, Ender_Element **wrapped)
 {
 	Eon_Wrapper *thiz;
 
-	thiz = _eon_wrapper_get(r);
+	thiz = _eon_wrapper_get(ee);
 	*wrapped = thiz->wrapped;
 }
 /*============================================================================*

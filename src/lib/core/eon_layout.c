@@ -41,7 +41,7 @@ typedef struct _Eon_Layout
 	Eon_Layout_Child_At child_at;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
-	Enesim_Renderer_Delete free;
+	Eon_Element_Free free;
 	Eina_Array *obscure;
 	Eina_Array *damage;
 	unsigned int width;
@@ -274,7 +274,7 @@ Eon_Input_State * eon_layout_input_state_new(Ender_Element *e, Eon_Input *input)
 	return NULL;
 }
 
-Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
+Eon_Element * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Layout *thiz;
@@ -295,6 +295,8 @@ Enesim_Renderer * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 	pdescriptor.initialize = _eon_layout_initialize;
 	pdescriptor.free = _eon_layout_free;
 	pdescriptor.name = descriptor->name;
+	pdescriptor.max_width_get = descriptor->max_width_get;
+	pdescriptor.max_height_get = descriptor->max_height_get;
 	pdescriptor.min_width_get = descriptor->min_width_get;
 	pdescriptor.min_height_get = descriptor->min_height_get;
 	pdescriptor.preferred_width_get = descriptor->preferred_width_get;
@@ -364,9 +366,9 @@ void eon_layout_obscure_add(Eon_Element *ee, Eina_Rectangle *obscure)
  */
 Eina_Bool eon_layout_is_topmost(Ender_Element *e)
 {
-	Ender_Element *ender, *parent;
 	Eina_Bool ret = EINA_FALSE;
 #if 0
+	Ender_Element *ender, *parent;
 	if (!eon_is_layout(ee)) goto end;
 	ender = ender_element_renderer_from(ee);
 	if (!ender) goto end;

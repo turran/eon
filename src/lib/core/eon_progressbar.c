@@ -30,11 +30,11 @@ typedef struct _Eon_Progressbar
 	/* private */
 } Eon_Progressbar;
 
-static inline Eon_Progressbar * _eon_progressbar_get(Enesim_Renderer *r)
+static inline Eon_Progressbar * _eon_progressbar_get(Eon_Element *ee)
 {
 	Eon_Progressbar *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
@@ -112,41 +112,41 @@ static Eon_Widget_Descriptor _eon_progressbar_widget_descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_progressbar_new(void)
+static Eon_Element * _eon_progressbar_new(void)
 {
 	Eon_Progressbar *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Progressbar));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new(&_eon_progressbar_widget_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_eon_progressbar_widget_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_progressbar_progression_get(Enesim_Renderer *r, double *progression)
+static void _eon_progressbar_progression_get(Eon_Element *ee, double *progression)
 {
 	Eon_Progressbar *thiz;
 
-	thiz = _eon_progressbar_get(r);
+	thiz = _eon_progressbar_get(ee);
 	if (!thiz) return;
 
 }
 
-static void _eon_progressbar_progression_set(Enesim_Renderer *r, double progression)
+static void _eon_progressbar_progression_set(Eon_Element *ee, double progression)
 {
 	Eon_Progressbar *thiz;
 
-	thiz = _eon_progressbar_get(r);
+	thiz = _eon_progressbar_get(ee);
 	if (!thiz) return;
 
-	eon_widget_property_set(r, "progression", progression, NULL);
+	eon_widget_property_set(ee, "progression", progression, NULL);
 }
 
 /*============================================================================*

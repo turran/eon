@@ -55,11 +55,11 @@ typedef struct _Eon_Scrollbar
 	double offset_dragging;
 } Eon_Scrollbar;
 
-static inline Eon_Scrollbar * _eon_scrollbar_get(Enesim_Renderer *r)
+static inline Eon_Scrollbar * _eon_scrollbar_get(Eon_Element *ee)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 
@@ -76,16 +76,16 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 	Eon_Scrollbar *thiz;
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Size size;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	double c;
 	double v;
 	double length;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz->thumb_dragging) return;
 
-	eon_element_actual_size_get(r, &size);
+	eon_element_actual_size_get(ee, &size);
 	/* get the absolute position of the event */
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
@@ -106,10 +106,10 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 static void _eon_scrollbar_mouse_drag_stop(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Scrollbar *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
 	thiz->thumb_dragging = EINA_FALSE;
 }
 
@@ -117,13 +117,13 @@ static void _eon_scrollbar_mouse_drag_start(Ender_Element *e, const char *event_
 {
 	Eon_Scrollbar *thiz;
 	Eon_Event_Mouse_Drag_Start *ev = event_data;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Enesim_Rectangle tg;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
 	if (!enesim_rectangle_is_inside(&tg, ev->rel_x, ev->rel_y))
 		return;
@@ -138,13 +138,13 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 {
 	Eon_Scrollbar *thiz;
 	Eon_Event_Mouse_Click *ev = event_data;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Enesim_Rectangle ig, dg, tg;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 
 	eon_theme_scrollbar_decrement_arrow_geometry_get(theme_r, &ig);
 	eon_theme_scrollbar_increment_arrow_geometry_get(theme_r, &dg);
@@ -193,10 +193,10 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 static void _eon_scrollbar_initialize(Ender_Element *e)
 {
 	Eon_Scrollbar *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
 
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_scrollbar_mouse_click, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], _eon_scrollbar_mouse_drag_start, NULL);
@@ -209,16 +209,16 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Scrollbar *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	double percent;
 	double max, min;
 	double thumb_size;
 	double length;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 		length = state->actual_size.width;
@@ -244,18 +244,18 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 static Eina_Bool _eon_scrollbar_needs_setup(Ender_Element *e)
 {
 	Eon_Scrollbar *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollbar_get(ee);
 	return thiz->changed;
 }
 
-static void _eon_scrollbar_free(Enesim_Renderer *r)
+static void _eon_scrollbar_free(Eon_Element *ee)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	free(thiz);
 }
 
@@ -329,10 +329,10 @@ static Eon_Widget_Descriptor _eon_scrollbar_widget_descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_scrollbar_new(void)
+static Eon_Element * _eon_scrollbar_new(void)
 {
 	Eon_Scrollbar *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Scrollbar));
 	if (!thiz) return NULL;
@@ -344,136 +344,136 @@ static Enesim_Renderer * _eon_scrollbar_new(void)
 	thiz->page_increment = 10;
 	thiz->page_size = 10;
 
-	r = eon_widget_new(&_eon_scrollbar_widget_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_eon_scrollbar_widget_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation)
+static void _eon_scrollbar_orientation_set(Eon_Element *ee, Eon_Orientation orientation)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->orientation = orientation;
 	thiz->changed = EINA_TRUE;
 
-	eon_widget_property_set(r, "orientation", orientation, NULL);
+	eon_widget_property_set(ee, "orientation", orientation, NULL);
 }
 
-static void _eon_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation)
+static void _eon_scrollbar_orientation_get(Eon_Element *ee, Eon_Orientation *orientation)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*orientation = thiz->orientation;
 }
 
-static void _eon_scrollbar_max_set(Enesim_Renderer *r, double max)
+static void _eon_scrollbar_max_set(Eon_Element *ee, double max)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->max = max;
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_scrollbar_max_get(Enesim_Renderer *r, double *max)
+static void _eon_scrollbar_max_get(Eon_Element *ee, double *max)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*max = thiz->max;
 }
 
-static void _eon_scrollbar_min_set(Enesim_Renderer *r, double min)
+static void _eon_scrollbar_min_set(Eon_Element *ee, double min)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->min = min;
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_scrollbar_min_get(Enesim_Renderer *r, double *min)
+static void _eon_scrollbar_min_get(Eon_Element *ee, double *min)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*min = thiz->min;
 }
 
-static void _eon_scrollbar_page_increment_set(Enesim_Renderer *r, double page_increment)
+static void _eon_scrollbar_page_increment_set(Eon_Element *ee, double page_increment)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->page_increment = page_increment;
 }
 
-static void _eon_scrollbar_page_increment_get(Enesim_Renderer *r, double *page_increment)
+static void _eon_scrollbar_page_increment_get(Eon_Element *ee, double *page_increment)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*page_increment = thiz->page_increment;
 }
 
-static void _eon_scrollbar_page_size_set(Enesim_Renderer *r, double page_size)
+static void _eon_scrollbar_page_size_set(Eon_Element *ee, double page_size)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 
 	thiz->page_size = page_size;
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_scrollbar_page_size_get(Enesim_Renderer *r, double *page_size)
+static void _eon_scrollbar_page_size_get(Eon_Element *ee, double *page_size)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*page_size = thiz->page_size;
 }
 
-static void _eon_scrollbar_step_increment_set(Enesim_Renderer *r, double step_increment)
+static void _eon_scrollbar_step_increment_set(Eon_Element *ee, double step_increment)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->step_increment = step_increment;
 }
 
-static void _eon_scrollbar_step_increment_get(Enesim_Renderer *r, double *step_increment)
+static void _eon_scrollbar_step_increment_get(Eon_Element *ee, double *step_increment)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*step_increment = thiz->step_increment;
 }
 
-static void _eon_scrollbar_value_set(Enesim_Renderer *r, double value)
+static void _eon_scrollbar_value_set(Eon_Element *ee, double value)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	if (value > thiz->max - thiz->page_size) value = thiz->max - thiz->page_size;
 	if (value < thiz->min) value = thiz->min;
@@ -481,11 +481,11 @@ static void _eon_scrollbar_value_set(Enesim_Renderer *r, double value)
 	thiz->changed = EINA_TRUE;
 }
 
-static void _eon_scrollbar_value_get(Enesim_Renderer *r, double *value)
+static void _eon_scrollbar_value_get(Eon_Element *ee, double *value)
 {
 	Eon_Scrollbar *thiz;
 
-	thiz = _eon_scrollbar_get(r);
+	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	*value = thiz->value;
 }

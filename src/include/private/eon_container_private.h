@@ -30,12 +30,12 @@ typedef struct _Eon_Container_Descriptor
 	Eon_Container_Element_At element_at;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Needs_Setup needs_setup;
-	Enesim_Renderer_Delete free;
+	Eon_Element_Free free;
 	const char *name;
 	Eina_Bool pass_events;
 } Eon_Container_Descriptor;
 
-Enesim_Renderer * eon_container_new(Eon_Container_Descriptor *descriptor, void *data);
-void * eon_container_data_get(Enesim_Renderer *r);
+Eon_Element * eon_container_new(Eon_Container_Descriptor *descriptor, void *data);
+void * eon_container_data_get(Eon_Element *ee);
 
 #endif

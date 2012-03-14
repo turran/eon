@@ -39,30 +39,30 @@ typedef struct _Eon_Entry
 	int num_entries;
 } Eon_Entry;
 
-static inline Eon_Entry * _eon_entry_get(Enesim_Renderer *r)
+static inline Eon_Entry * _eon_entry_get(Eon_Element *ee)
 {
 	Eon_Entry *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 
 static void _eon_entry_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Entry *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
+	ee = ender_element_object_get(e);
 
-	r = ender_element_object_get(e);
-	thiz = _eon_entry_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_entry_get(ee);
 
 	/* FIXME just an example for now, given that the key evenst are now managed yet */
 	{
 		Enesim_Renderer *theme_r;
 		static int offset = 0;
 
-		theme_r = eon_widget_theme_renderer_get(r);
+		theme_r = eon_widget_theme_renderer_get(ee);
 		etex_buffer_string_insert(thiz->buffer, "l>", -1, offset);
 		eon_theme_entry_buffer_needs_setup(theme_r);
 		offset += 2;
@@ -73,10 +73,10 @@ static void _eon_entry_click(Ender_Element *e, const char *event_name, void *eve
 static void _eon_entry_key_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Entry *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_entry_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_entry_get(ee);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -84,11 +84,11 @@ static void _eon_entry_key_down(Ender_Element *e, const char *event_name, void *
 static void _eon_entry_initialize(Ender_Element *e)
 {
 	Eon_Entry *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_entry_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_entry_get(ee);
 
 	/* the events */
 	ender_event_listener_add(e,
@@ -98,7 +98,7 @@ static void _eon_entry_initialize(Ender_Element *e)
 			eon_input_event_names[EON_INPUT_EVENT_KEY_DOWN],
 			_eon_entry_key_down, NULL);
 	/* get the buffer from the theme renderer */
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	thiz->buffer = eon_theme_entry_buffer_get(theme_r);
 }
 
@@ -107,21 +107,21 @@ static Eina_Bool _eon_entry_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Entry *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_entry_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_entry_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 
 	return EINA_TRUE;
 }
 
-static void _eon_entry_free(Enesim_Renderer *r)
+static void _eon_entry_free(Eon_Element *ee)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 	free(thiz);
 }
 
@@ -162,10 +162,10 @@ static Eon_Widget_Descriptor _eon_entry_widget_descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_entry_new(void)
+static Eon_Element * _eon_entry_new(void)
 {
 	Eon_Entry *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Entry));
 	if (!thiz) return NULL;
@@ -173,79 +173,79 @@ static Enesim_Renderer * _eon_entry_new(void)
 	thiz->max_length = 255;
 	thiz->enabled = EINA_TRUE;
 
-	r = eon_widget_new(&_eon_entry_widget_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_eon_entry_widget_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_entry_max_length_set(Enesim_Renderer *r, int max_length)
+static void _eon_entry_max_length_set(Eon_Element *ee, int max_length)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 	thiz->max_length = max_length;
 }
 
-static void _eon_entry_max_length_get(Enesim_Renderer *r, int *max_length)
+static void _eon_entry_max_length_get(Eon_Element *ee, int *max_length)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 	*max_length = thiz->max_length;
 }
 
-static void _eon_entry_alignment_set(Enesim_Renderer *r, Eon_Horizontal_Alignment alignment)
+static void _eon_entry_alignment_set(Eon_Element *ee, Eon_Horizontal_Alignment alignment)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 	thiz->alignment = alignment;
-	eon_widget_property_set(r, "alignment", alignment, NULL);
+	eon_widget_property_set(ee, "alignment", alignment, NULL);
 }
 
-static void _eon_entry_alignment_get(Enesim_Renderer *r, Eon_Horizontal_Alignment *alignment)
+static void _eon_entry_alignment_get(Eon_Element *ee, Eon_Horizontal_Alignment *alignment)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 	*alignment = thiz->alignment;
 }
 
-static void _eon_entry_text_set(Enesim_Renderer *r, char *text)
+static void _eon_entry_text_set(Eon_Element *ee, char *text)
 {
 	Eon_Entry *thiz;
 	Enesim_Renderer *theme_r;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 	etex_buffer_string_set(thiz->buffer, text, -1);
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_entry_buffer_needs_setup(theme_r);
 }
 
-static void _eon_entry_text_get(Enesim_Renderer *r, char **text)
+static void _eon_entry_text_get(Eon_Element *ee, char **text)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 }
 
-static void _eon_entry_enabled_set(Enesim_Renderer *r, Eina_Bool enabled)
+static void _eon_entry_enabled_set(Eon_Element *ee, Eina_Bool enabled)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 }
 
-static void _eon_entry_enabled_get(Enesim_Renderer *r, Eina_Bool enabled)
+static void _eon_entry_enabled_get(Eon_Element *ee, Eina_Bool enabled)
 {
 	Eon_Entry *thiz;
 
-	thiz = _eon_entry_get(r);
+	thiz = _eon_entry_get(ee);
 }
 
 #include "eon_generated_entry.c"

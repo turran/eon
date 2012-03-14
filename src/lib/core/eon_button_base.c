@@ -31,64 +31,64 @@ typedef struct _Eon_Button_Base
 	/* private */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
-	Enesim_Renderer_Delete free;
+	Eon_Element_Free free;
 	void *data;
 } Eon_Button_Base;
 
-static inline Eon_Button_Base * _eon_button_base_get(Enesim_Renderer *r)
+static inline Eon_Button_Base * _eon_button_base_get(Eon_Element *ee)
 {
 	Eon_Button_Base *thiz;
 
-	thiz = eon_container_data_get(r);
+	thiz = eon_container_data_get(ee);
 	return thiz;
 }
 
 static void _button_base_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Button_Base *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 
 	if (!thiz->enabled) return;
-	eon_widget_state_set(r, "mouse_in", EINA_FALSE);
+	eon_widget_state_set(ee, "mouse_in", EINA_FALSE);
 }
 
 static void _button_base_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Button_Base *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 
 	if (!thiz->enabled) return;
-	eon_widget_state_set(r, "mouse_out", EINA_TRUE);
+	eon_widget_state_set(ee, "mouse_out", EINA_TRUE);
 }
 
 static void _button_base_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Button_Base *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 
 	if (!thiz->enabled) return;
-	eon_widget_state_set(r, "mouse_down", EINA_FALSE);
+	eon_widget_state_set(ee, "mouse_down", EINA_FALSE);
 }
 
 static void _button_base_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Button_Base *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 
 	if (!thiz->enabled) return;
-	eon_widget_state_set(r, "mouse_up", EINA_FALSE);
+	eon_widget_state_set(ee, "mouse_up", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -99,10 +99,10 @@ static void _button_base_mouse_up(Ender_Element *e, const char *event_name, void
 static void _eon_button_base_initialize(Ender_Element *e)
 {
 	Eon_Button_Base *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 	ender_event_listener_add(e, "MouseIn", _button_base_mouse_in, NULL);
 	ender_event_listener_add(e, "MouseOut", _button_base_mouse_out, NULL);
 	ender_event_listener_add(e, "MouseDown", _button_base_mouse_down, NULL);
@@ -127,12 +127,12 @@ static double _eon_button_base_min_preferred_width_get(Ender_Element *e, double 
 	Eon_Button_Base *thiz;
 	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_button_base_margin_get(theme_r, &margin);
 
 	return cmv + margin.left + margin.right;
@@ -143,12 +143,12 @@ static double _eon_button_base_min_preferred_height_get(Ender_Element *e, double
 	Eon_Button_Base *thiz;
 	Eon_Margin margin;
 	Enesim_Renderer *theme_r;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_button_base_margin_get(theme_r, &margin);
 
 	return cmv + margin.top + margin.bottom;
@@ -173,20 +173,20 @@ static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
 		Enesim_Surface *s,
 		Enesim_Error **err)
 {
-	Enesim_Renderer *content_r;
+	Eon_Element *content_e;
 	Eon_Margin margin;
 	Eon_Size size;
 	Eon_Position position;
 
-	content_r = ender_element_object_get(content);
+	content_e = ender_element_object_get(content);
 	eon_theme_button_base_margin_get(theme_r, &margin);
 	size.width = aw - margin.left - margin.right;
 	size.height = ah - margin.top - margin.bottom;
 
 	eon_element_real_relative_size_get(content, &size, &size);
-	eon_element_actual_size_set(content_r, size.width, size.height);
+	eon_element_actual_size_set(content_e, size.width, size.height);
 	eon_theme_button_base_position_get(theme_r, &size, &position);
-	eon_element_actual_position_set(content_r, ax + position.x, ay + position.y);
+	eon_element_actual_position_set(content_e, ax + position.x, ay + position.y);
 	if (!eon_element_setup(content, s, err))
 	{
 		printf("impossible to setup the content\n");
@@ -202,16 +202,16 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Button_Base *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_button_base_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_button_base_get(ee);
 	if (cstate->content)
 	{
 		Enesim_Renderer *theme_r;
 		Eina_Bool ret;
 
-		theme_r = eon_widget_theme_renderer_get(r);
+		theme_r = eon_widget_theme_renderer_get(ee);
 		ret =_eon_button_base_content_relayout(cstate->content, theme_r,
 				state->actual_position.x,
 				state->actual_position.y,
@@ -231,61 +231,61 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 	return EINA_TRUE;
 }
 
-static void _eon_button_base_free(Enesim_Renderer *r)
+static void _eon_button_base_free(Eon_Element *ee)
 {
 	Eon_Button_Base *thiz;
 
-	thiz = _eon_button_base_get(r);
+	thiz = _eon_button_base_get(ee);
 	if (thiz->free)
-		thiz->free(r);
+		thiz->free(ee);
 	free(thiz);
 }
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static void _eon_button_base_enabled_set(Enesim_Renderer *r, Eina_Bool enabled)
+static void _eon_button_base_enabled_set(Eon_Element *ee, Eina_Bool enabled)
 {
 	Eon_Button_Base *thiz;
 
-	thiz = _eon_button_base_get(r);
+	thiz = _eon_button_base_get(ee);
 	if (thiz->enabled == enabled) return;
 
 	thiz->enabled = enabled;
 	if (enabled)
 	{
-		eon_widget_state_set(r, "enabled", EINA_FALSE);
+		eon_widget_state_set(ee, "enabled", EINA_FALSE);
 	}
 	else
 	{
-		eon_widget_state_set(r, "disabled", EINA_FALSE);
+		eon_widget_state_set(ee, "disabled", EINA_FALSE);
 
 	}
 }
 
-static void _eon_button_base_enabled_get(Enesim_Renderer *r, Eina_Bool *enabled)
+static void _eon_button_base_enabled_get(Eon_Element *ee, Eina_Bool *enabled)
 {
 	Eon_Button_Base *thiz;
 
-	thiz = _eon_button_base_get(r);
+	thiz = _eon_button_base_get(ee);
 	*enabled = thiz->enabled;
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void * eon_button_base_data_get(Enesim_Renderer *r)
+void * eon_button_base_data_get(Eon_Element *ee)
 {
 	Eon_Button_Base *thiz;
 
-	thiz = _eon_button_base_get(r);
+	thiz = _eon_button_base_get(ee);
 	if (!thiz) return NULL;
 	return thiz->data;
 }
 
-Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *data)
+Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *data)
 {
 	Eon_Button_Base *thiz;
 	Eon_Container_Descriptor pdescriptor = { 0 };
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Button_Base));
 	if (!thiz) return NULL;
@@ -305,10 +305,10 @@ Enesim_Renderer * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, vo
 	pdescriptor.preferred_width_get = _eon_button_base_min_preferred_width_get;
 	pdescriptor.preferred_height_get = _eon_button_base_min_preferred_height_get;
 
-	r = eon_container_new(&pdescriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_container_new(&pdescriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);

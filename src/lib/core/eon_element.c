@@ -63,7 +63,7 @@ struct _Eon_Element
 	Eon_Element_Setup setup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
-	Enesim_Renderer_Delete free;
+	Eon_Element_Free free;
 	Eon_Element_Min_Height_Get min_height_get;
 	Eon_Element_Min_Width_Get min_width_get;
 	Eon_Element_Min_Height_Get max_height_get;

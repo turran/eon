@@ -19,11 +19,11 @@ typedef struct _Eon_Widget_Descriptor
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Needs_Setup needs_setup;
-	Enesim_Renderer_Delete free;
+	Eon_Element_Free free;
 	const char *name;
 } Eon_Widget_Descriptor;
 
-Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor,
+Eon_Element * eon_widget_new(Eon_Widget_Descriptor *descriptor,
 		void *data);
 void * eon_widget_data_get(Eon_Element *ee);
 Ender_Element * eon_widget_theme_element_get(Eon_Element *ee);

@@ -34,42 +34,42 @@ typedef struct _Eon_Image
 	Eina_Bool file_changed;
 } Eon_Image;
 
-static void _eon_image_file_get(Enesim_Renderer *r, const char **file);
+static void _eon_image_file_get(Eon_Element *ee, const char **file);
 
-static inline Eon_Image * _eon_image_get(Enesim_Renderer *r)
+static inline Eon_Image * _eon_image_get(Eon_Element *ee)
 {
 	Eon_Image *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 
 static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
 {
 	Eon_Image *thiz;
-	Enesim_Renderer *r = data;
+	Eon_Element *ee = data;
 
-	thiz = _eon_image_get(r);
+	thiz = _eon_image_get(ee);
 	if (error)
 	{
-		eon_widget_state_set(r, "failed", EINA_FALSE);
+		eon_widget_state_set(ee, "failed", EINA_FALSE);
 		thiz->original_width = -1;
 		thiz->original_height = -1;
 		return;
 	}
 	enesim_surface_size_get(s, &thiz->original_width, &thiz->original_height);
 	/* set the new new surface to the theme associated */
-	eon_widget_property_set(r, "source", s, NULL);
-	eon_widget_state_set(r, "loaded", EINA_FALSE);
+	eon_widget_property_set(ee, "source", s, NULL);
+	eon_widget_state_set(ee, "loaded", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_image_free(Enesim_Renderer *r)
+static void _eon_image_free(Eon_Element *ee)
 {
 	Eon_Image *thiz;
 
-	thiz = _eon_image_get(r);
+	thiz = _eon_image_get(ee);
 	free(thiz);
 }
 
@@ -78,15 +78,15 @@ static Eina_Bool _eon_image_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Image *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_image_get(ee);
 	if (!thiz->file_changed) return EINA_TRUE;
 
-	eon_widget_state_set(r, "loading", EINA_FALSE);
+	eon_widget_state_set(ee, "loading", EINA_FALSE);
 	emage_load_async(thiz->file, NULL, ENESIM_FORMAT_ARGB8888, NULL, _emage_async_cb,
-			r, NULL);
+			ee, NULL);
 	thiz->file_changed = EINA_FALSE;
 
 	return EINA_TRUE;
@@ -140,10 +140,10 @@ static double _eon_image_preferred_width_get(Ender_Element *e, Enesim_Renderer *
 {
 	Eon_Image *thiz;
 	Eon_Size image_size, out;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_image_get(ee);
 
 	if (thiz->original_width < 0 || thiz->original_height < 0)
 		return -1;
@@ -159,10 +159,10 @@ static double _eon_image_preferred_height_get(Ender_Element *e, Enesim_Renderer 
 {
 	Eon_Image *thiz;
 	Eon_Size image_size, out;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_image_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_image_get(ee);
 
 	if (thiz->original_width < 0 || thiz->original_height < 0)
 		return -1;
@@ -188,29 +188,29 @@ static Eon_Widget_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_image_new(void)
+static Eon_Element * _eon_image_new(void)
 {
 	Eon_Image *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Image));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_image_file_set(Enesim_Renderer *r, const char *file)
+static void _eon_image_file_set(Eon_Element *ee, const char *file)
 {
 	Eon_Image *thiz;
 
-	thiz = _eon_image_get(r);
+	thiz = _eon_image_get(ee);
 	if (thiz->file)
 		free(thiz->file);
 	thiz->file = strdup(file);
@@ -219,14 +219,14 @@ static void _eon_image_file_set(Enesim_Renderer *r, const char *file)
 	 * the theme should manage it automatically, like setting an empty
 	 * renderer for it, etc
 	 */
-	eon_widget_property_set(r, "source", NULL, NULL);
+	eon_widget_property_set(ee, "source", NULL, NULL);
 }
 
-static void _eon_image_file_get(Enesim_Renderer *r, const char **file)
+static void _eon_image_file_get(Eon_Element *ee, const char **file)
 {
 	Eon_Image *thiz;
 
-	thiz = _eon_image_get(r);
+	thiz = _eon_image_get(ee);
 	*file = thiz->file;
 }
 /*============================================================================*

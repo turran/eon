@@ -30,11 +30,11 @@ typedef struct _Eon_Frame
 {
 } Eon_Frame;
 
-static inline Eon_Frame * _eon_frame_get(Enesim_Renderer *r)
+static inline Eon_Frame * _eon_frame_get(Eon_Element *ee)
 {
 	Eon_Frame *thiz;
 
-	thiz = eon_container_data_get(r);
+	thiz = eon_container_data_get(ee);
 	return thiz;
 }
 
@@ -48,14 +48,14 @@ static Eina_Bool _eon_frame_content_relayout(Ender_Element *content,
 		Enesim_Error **err)
 {
 	Eon_Margin margin;
-	Enesim_Renderer *content_r;
+	Eon_Element *content_e;
 
-	content_r = ender_element_object_get(content);
+	content_e = ender_element_object_get(content);
 
 	eon_theme_frame_margin_get(theme_r, &margin);
-	eon_element_actual_size_set(content_r, aw - margin.left - margin.right,
+	eon_element_actual_size_set(content_e, aw - margin.left - margin.right,
 			ah - margin.bottom - margin.top);
-	eon_element_actual_position_set(content_r, margin.left, margin.top);
+	eon_element_actual_position_set(content_e, margin.left, margin.top);
 	if (!eon_element_setup(content, s, err))
 	{
 		printf("impossible to setup the content\n");
@@ -66,11 +66,11 @@ static Eina_Bool _eon_frame_content_relayout(Ender_Element *content,
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_frame_free(Enesim_Renderer *r)
+static void _eon_frame_free(Eon_Element *ee)
 {
 	Eon_Frame *thiz;
 
-	thiz = _eon_frame_get(r);
+	thiz = _eon_frame_get(ee);
 	free(thiz);
 }
 
@@ -80,17 +80,17 @@ static Eina_Bool _eon_frame_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Frame *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_Bool ret = EINA_TRUE;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_frame_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_frame_get(ee);
 	/* setup the content */
 	if (cstate->content)
 	{
 		Enesim_Renderer *theme_r;
 
-		theme_r = eon_widget_theme_renderer_get(r);
+		theme_r = eon_widget_theme_renderer_get(ee);
 		ret =_eon_frame_content_relayout(cstate->content, theme_r,
 				state->actual_position.x,
 				state->actual_position.y,
@@ -106,13 +106,13 @@ static Eina_Bool _eon_frame_setup(Ender_Element *e,
 static double _eon_frame_min_max_width_get(Ender_Element *e, double cmv)
 {
 	Eon_Frame *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Eon_Margin margin;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_frame_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_frame_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_frame_margin_get(theme_r, &margin);
 
 	return cmv + margin.left + margin.right;
@@ -121,13 +121,13 @@ static double _eon_frame_min_max_width_get(Ender_Element *e, double cmv)
 static double _eon_frame_min_max_height_get(Ender_Element *e, double cmv)
 {
 	Eon_Frame *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Enesim_Renderer *theme_r;
 	Eon_Margin margin;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_frame_get(r);
-	theme_r = eon_widget_theme_renderer_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_frame_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_frame_margin_get(theme_r, &margin);
 
 	return cmv + margin.top + margin.bottom;
@@ -145,32 +145,32 @@ static Eon_Container_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_frame_new(void)
+static Eon_Element * _eon_frame_new(void)
 {
 	Eon_Frame *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Frame));
 	if (!thiz) return NULL;
 
-	r = eon_container_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_container_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_frame_description_get(Enesim_Renderer *r, const char **description)
+static void _eon_frame_description_get(Eon_Element *ee, const char **description)
 {
-	eon_widget_property_get(r, "description", description, NULL);
+	eon_widget_property_get(ee, "description", description, NULL);
 }
 
-static void _eon_frame_description_set(Enesim_Renderer *r, const char *description)
+static void _eon_frame_description_set(Eon_Element *ee, const char *description)
 {
-	eon_widget_property_set(r, "description", description, NULL);
+	eon_widget_property_set(ee, "description", description, NULL);
 }
 /*============================================================================*
  *                                 Global                                     *

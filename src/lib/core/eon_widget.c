@@ -56,7 +56,7 @@ typedef struct _Eon_Widget
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Needs_Setup needs_setup;
-	Enesim_Renderer_Delete free;
+	Eon_Element_Free free;
 	void *data;
 	Ender_Element *e;
 } Eon_Widget;
@@ -255,7 +255,7 @@ static double _eon_widget_preferred_height_get(Ender_Element *e)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
+Eon_Element * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 {
 	Eon_Widget *thiz;
 	Eon_Element_Descriptor pdescriptor = { 0 };
@@ -265,7 +265,6 @@ Enesim_Renderer * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	Ender_Element *theme_element;
 	Enesim_Renderer *theme_renderer;
 	Eon_Element *ee;
-	Enesim_Color color;
 
 	theme_escen = eon_theme_get();
 	if (!theme_escen) {
@@ -487,6 +486,16 @@ void eon_widget_state_set(Eon_Element *ee, const char *name, Eina_Bool be_finali
 	if (!new_state) return;
 
 	escen_instance_state_set(thiz->theme_instance, new_state);
+}
+
+Escen_State * eon_widget_state_get(Eon_Element *ee, const char *name)
+{
+	Eon_Widget *thiz;
+	Escen_State *state;
+
+	thiz = _eon_widget_get(ee);
+	state = escen_ender_state_get(thiz->theme_ender, name);
+	return state;
 }
 
 Escen_Ender * eon_widget_theme_ender_get(Eon_Element *ee)

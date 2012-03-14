@@ -29,18 +29,18 @@ typedef struct _Eon_Label
 {
 } Eon_Label;
 
-static inline Eon_Label * _eon_label_get(Enesim_Renderer *r)
+static inline Eon_Label * _eon_label_get(Eon_Element *ee)
 {
 	Eon_Label *thiz;
 
-	thiz = eon_widget_data_get(r);
+	thiz = eon_widget_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
  *----------------------------------------------------------------------------*/
 #if 0
-static double _eon_theme_label_min_width_ellipsized_get(Enesim_Renderer *r)
+static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 {
 	Enesim_Rectangle boundings;
 	Eon_Theme_Label *thiz;
@@ -50,12 +50,12 @@ static double _eon_theme_label_min_width_ellipsized_get(Enesim_Renderer *r)
 	int size;
 	double min_width;
 
-	thiz = _eon_theme_label_get(r);
+	thiz = _eon_theme_label_get(ee);
 	if (!thiz->text)
 		thiz->text = etex_span_new();
-	eon_theme_label_font_get(r, &font);
-	eon_theme_label_font_size_get(r, &size);
-	eon_theme_label_text_get(r, &text);
+	eon_theme_label_font_get(ee, &font);
+	eon_theme_label_font_size_get(ee, &size);
+	eon_theme_label_text_get(ee, &text);
 	etex_base_font_name_set(thiz->text, font);
 	etex_base_size_set(thiz->text, size);
 	etex_span_text_set(thiz->text, text);
@@ -143,60 +143,60 @@ static Eon_Widget_Descriptor _eon_label_widget_descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_label_new(void)
+static Eon_Element * _eon_label_new(void)
 {
 	Eon_Label *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Label));
 	if (!thiz) return NULL;
 
-	r = eon_widget_new(&_eon_label_widget_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_widget_new(&_eon_label_widget_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_label_text_set(Enesim_Renderer *r, const char *text)
+static void _eon_label_text_set(Eon_Element *ee, const char *text)
 {
 	Eon_Label *thiz;
 	Enesim_Renderer *theme_r;
 
-	thiz = _eon_label_get(r);
+	thiz = _eon_label_get(ee);
 	if (!thiz) return;
 
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_label_text_set(theme_r, text);
 }
 
-static void _eon_label_text_get(Enesim_Renderer *r, const char **text)
+static void _eon_label_text_get(Eon_Element *ee, const char **text)
 {
 	Eon_Label *thiz;
 	Enesim_Renderer *theme_r;
 
-	thiz = _eon_label_get(r);
+	thiz = _eon_label_get(ee);
 	if (!thiz) return;
 
-	theme_r = eon_widget_theme_renderer_get(r);
+	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_label_text_get(theme_r, text);
 }
 
-static void _eon_label_ellipsize_set(Enesim_Renderer *r, Eina_Bool enable)
+static void _eon_label_ellipsize_set(Eon_Element *ee, Eina_Bool enable)
 {
 	Eon_Label *thiz;
 
-	thiz = _eon_label_get(r);
+	thiz = _eon_label_get(ee);
 }
 
-static void _eon_label_ellipsize_get(Enesim_Renderer *r, Eina_Bool *enabled)
+static void _eon_label_ellipsize_get(Eon_Element *ee, Eina_Bool *enabled)
 {
 	Eon_Label *thiz;
 
-	thiz = _eon_label_get(r);
+	thiz = _eon_label_get(ee);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -275,8 +275,8 @@ EAPI void eon_label_text_direction_set(Ender_Element *e, Etex_Direction directio
 {
 	Eon_Label *thiz;
 
-	thiz = _eon_label_get(r);
-	eon_widget_property_set(r, "direction", direction);
+	thiz = _eon_label_get(ee);
+	eon_widget_property_set(ee, "direction", direction);
 }
 
 /**
@@ -287,7 +287,7 @@ EAPI void eon_label_text_direction_get(Ender_Element *e, Etex_Direction *directi
 {
 	Eon_Label *thiz;
 
-	thiz = _eon_label_get(r);
-	eon_widget_property_get(r, "direction", direction);
+	thiz = _eon_label_get(ee);
+	eon_widget_property_get(ee, "direction", direction);
 }
 #endif

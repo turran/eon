@@ -60,18 +60,18 @@ typedef struct _Eon_Canvas
 	Enesim_Renderer_Sw_Fill fill_func;
 } Eon_Canvas;
 
-static inline Eon_Canvas * _eon_canvas_get(Enesim_Renderer *r)
+static inline Eon_Canvas * _eon_canvas_get(Eon_Element *ee)
 {
 	Eon_Canvas *thiz;
 
-	thiz = eon_layout_data_get(r);
+	thiz = eon_layout_data_get(ee);
 	return thiz;
 }
 
 static Eina_Bool _canvas_child_is_inside(Eon_Canvas_Child *ech, double x, double y)
 {
 	Eon_Size child_size;
-	Enesim_Renderer *rchild;
+	Eon_Element *child_e;
 	double child_x, child_y;
 
 	child_x = x - ech->current.x;
@@ -80,14 +80,11 @@ static Eina_Bool _canvas_child_is_inside(Eon_Canvas_Child *ech, double x, double
 	if (child_y < 0) return EINA_FALSE;
 
 	/* TODO still need the width and height */
-	rchild = ender_element_object_get(ech->ender);
-	eon_element_actual_size_get(rchild, &child_size);
+	child_e = ender_element_object_get(ech->ender);
+	eon_element_actual_size_get(child_e, &child_size);
 	if (child_x <= child_size.width && child_y <= child_size.height)
 	{
-		if (enesim_renderer_is_inside(rchild, child_x, child_y))
-		{
-			return EINA_TRUE;
-		}
+		return EINA_TRUE;
 	}
 	return EINA_FALSE;
 }
@@ -98,11 +95,11 @@ static Ender_Element * _canvas_child_up_at(Ender_Element *e, Ender_Element *rel,
 	Eon_Canvas_Child *ech;
 	Ender_Element *current;
 	Ender_Element *ret = NULL;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_List *l;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_canvas_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_canvas_get(ee);
 	if (!thiz) return NULL;
 	current = NULL;
 
@@ -131,11 +128,11 @@ static Ender_Element * _canvas_child_down_at(Ender_Element *e, Ender_Element *re
 	Eon_Canvas_Child *ech;
 	Ender_Element *current;
 	Ender_Element *ret = NULL;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_List *l;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_canvas_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_canvas_get(ee);
 	if (!thiz) return NULL;
 	current = NULL;
 
@@ -161,11 +158,11 @@ static Ender_Element * _canvas_child_down_at(Ender_Element *e, Ender_Element *re
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
-static void _eon_canvas_free(Enesim_Renderer *r)
+static void _eon_canvas_free(Eon_Element *ee)
 {
 	Eon_Canvas *thiz;
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(ee);
 	free(thiz);
 }
 
@@ -175,29 +172,29 @@ static Eina_Bool _eon_canvas_setup(Ender_Element *e,
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_List *l;
 
-	r = ender_element_object_get(e);
-	eon_widget_property_clear(r, "child");
+	ee = ender_element_object_get(e);
+	eon_widget_property_clear(ee, "child");
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(ee);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
-		Enesim_Renderer *child_r;
+		Eon_Element *child_e;
 		Enesim_Renderer *child_rr;
 
-		child_r = ender_element_object_get(ech->ender);
+		child_e = ender_element_object_get(ech->ender);
 
 		eon_element_real_width_get(ech->ender, &ech->current.width);
 		eon_element_real_height_get(ech->ender, &ech->current.height);
 
-		eon_element_actual_size_set(child_r, ech->current.width, ech->current.height);
-		eon_element_actual_position_set(child_r, ech->current.x, ech->current.y);
+		eon_element_actual_size_set(child_e, ech->current.width, ech->current.height);
+		eon_element_actual_position_set(child_e, ech->current.x, ech->current.y);
 		/* now add the renderer associated with the widget into the theme */
 		eon_element_setup(ech->ender, s, err);
 		child_rr = eon_element_renderer_get(ech->ender);
-		eon_widget_property_add(r, "child", child_rr, NULL);
+		eon_widget_property_add(ee, "child", child_rr, NULL);
 
 		ech->past = ech->current;
 		ech->needs_setup = EINA_FALSE;
@@ -211,13 +208,13 @@ Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 	Eina_List *l;
 	Eina_Bool ret = EINA_FALSE;
 
 
-	r = ender_element_object_get(e);
-	thiz = _eon_canvas_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_canvas_get(ee);
 
 	if (thiz->needs_setup) return EINA_TRUE;
 
@@ -250,25 +247,25 @@ static Ender_Element * _eon_canvas_child_at(Ender_Element *e, double x, double y
 	return child;
 }
 
-static void _eon_canvas_child_add(Enesim_Renderer *r, Ender_Element *child)
+static void _eon_canvas_child_add(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(ee);
 	ech = calloc(1, sizeof(Eon_Canvas_Child));
 	ech->ender = child;
 	thiz->children = eina_list_append(thiz->children, ech);
 	thiz->needs_setup = EINA_TRUE;
 }
 
-static void _eon_canvas_child_remove(Enesim_Renderer *r, Ender_Element *child)
+static void _eon_canvas_child_remove(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
 	Eina_List *l, *l_next;
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(ee);
 	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, ech)
 	{
 		if (ech->ender == child)
@@ -292,31 +289,31 @@ static Eon_Layout_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_canvas_new(void)
+static Eon_Element * _eon_canvas_new(void)
 {
 	Eon_Canvas *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
 	thiz = calloc(1, sizeof(Eon_Canvas));
 	if (!thiz) return NULL;
 
-	r = eon_layout_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	ee = eon_layout_new(&_descriptor, thiz);
+	if (!ee) goto renderer_err;
 
-	return r;
+	return ee;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, double x)
+static void _eon_canvas_child_x_set(Eon_Element *ee, Ender_Element *child, double x)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
 	Eina_List *l;
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(ee);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
 	EINA_LIST_FOREACH (thiz->children, l, ech)
@@ -329,13 +326,13 @@ static void _eon_canvas_child_x_set(Enesim_Renderer *r, Ender_Element *child, do
 	}
 }
 
-static void _eon_canvas_child_y_set(Enesim_Renderer *r, Ender_Element *child, double y)
+static void _eon_canvas_child_y_set(Eon_Element *ee, Ender_Element *child, double y)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
 	Eina_List *l;
 
-	thiz = _eon_canvas_get(r);
+	thiz = _eon_canvas_get(ee);
 	/* get the bounding box, transform to destination coordinates
 	 * check that is inside the pointer, trigger the event */
 	EINA_LIST_FOREACH (thiz->children, l, ech)
