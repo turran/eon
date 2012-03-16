@@ -20,6 +20,7 @@ eon_entry.c \
 eon_frame.c \
 eon_image.c \
 eon_input.c \
+eon_input_proxy.c \
 eon_label.c \
 eon_layout.c \
 eon_main.c \

@@ -51,6 +51,45 @@ typedef struct _Eon_Ecore_SDL_Window
 
 static Eina_Bool _initialized = EINA_FALSE;
 
+/*----------------------------------------------------------------------------*
+ *                       The Eon Input State interface                        *
+ *----------------------------------------------------------------------------*/
+static Ender_Element * _sdl_state_element_get(Ender_Element *e,
+		double x, double y)
+{
+	Eon_Element *ee;
+	Eon_Size size;
+	double px, py;
+
+	ee = ender_element_object_get(e);
+	eon_element_actual_size_get(ee, &size);
+	eon_element_actual_position_get(ee, &px, &py);
+	if (x >= px && x < px + size.width &&
+			y >= py && y < py + size.height)
+		return e;
+	return NULL;
+}
+
+static Ender_Element * _sdl_state_element_next(Ender_Element *e,
+		Ender_Element *current)
+{
+	return NULL;
+}
+
+static Ender_Element * _sdl_state_element_prev(Ender_Element *e,
+		Ender_Element *current)
+{
+	return NULL;
+}
+
+static Eon_Input_State_Descriptor _sdl_input_descriptor = {
+	/* .element_get 	= */ _sdl_state_element_get,
+	/* .element_next 	= */ _sdl_state_element_next,
+	/* .element_prev 	= */ _sdl_state_element_prev
+};
+/*----------------------------------------------------------------------------*
+ *                             Internal functions                             *
+ *----------------------------------------------------------------------------*/
 static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina_Bool past, void *data)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
@@ -357,7 +396,7 @@ static Eina_Bool _sdl_window_new(void *data, Ender_Element *layout, unsigned int
 	thiz->height = height;
 	thiz->input = eon_input_new();
 	thiz->backend = backend;
-	thiz->input_state = eon_layout_input_state_new(layout, thiz->input);
+	thiz->input_state = eon_input_state_new(thiz->input, layout, &_sdl_input_descriptor);
 	_sdl_setup_buffers(thiz);
 
 	_calculate_layout_size(thiz, width, height);

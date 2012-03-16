@@ -35,6 +35,7 @@ static Ender_Property *EON_LAYOUT_CHILD;
 typedef struct _Eon_Layout
 {
 	EINA_MAGIC;
+	/* the interface */
 	Eon_Layout_Child_Add child_add;
 	Eon_Layout_Child_Remove child_remove;
 	Eon_Layout_Child_Clear child_clear;
@@ -42,12 +43,13 @@ typedef struct _Eon_Layout
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Free free;
+	/* internal */
+	Eon_Input_Proxy *proxy;
 	Eina_Array *obscure;
 	Eina_Array *damage;
 	unsigned int width;
 	unsigned int height;
 	void *data;
-	Eina_Hash *input_states;
 } Eon_Layout;
 
 static inline Eon_Layout * _eon_layout_get(Eon_Element *ee)
@@ -59,110 +61,42 @@ static inline Eon_Layout * _eon_layout_get(Eon_Element *ee)
 
 	return thiz;
 }
-
-static Eon_Input_State * _eon_layout_input_state_get(Eon_Layout *thiz, Ender_Element *e, Eon_Input *input)
-{
-	Eon_Input_State *eis;
-
-	if (!thiz->input_states)
-		thiz->input_states = eina_hash_pointer_new(NULL);
-	eis = eina_hash_find(thiz->input_states, (const void *)&input);
-	if (!eis)
-	{
-		eis = eon_layout_input_state_new(e, input);
-		eina_hash_add(thiz->input_states, (const void *)&input, eis);
-	}
-	return eis;
-}
-
-static void _eon_layout_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+/*----------------------------------------------------------------------------*
+ *                       The Eon Input State interface                        *
+ *----------------------------------------------------------------------------*/
+static Ender_Element * _eon_layout_state_element_get(Ender_Element *e,
+		double x, double y)
 {
 	Eon_Layout *thiz;
-	Eon_Event_Mouse_Down *ev = event_data;
-	Eon_Input_State *eis;
 	Eon_Element *ee;
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_layout_get(ee);
-
-	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_down(eis);
+	if (thiz->child_at)
+		return thiz->child_at(e, x, y);
+	return NULL;
 }
 
-static void _eon_layout_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static Ender_Element * _eon_layout_state_element_next(Ender_Element *e,
+		Ender_Element *curr)
 {
-	Eon_Layout *thiz;
-	Eon_Event_Mouse_Up *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_layout_get(ee);
-
-	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_up(eis);
+	return NULL;
 }
 
-static void _eon_layout_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static Ender_Element * _eon_layout_state_element_prev(Ender_Element *e,
+		Ender_Element *curr)
 {
-	Eon_Layout *thiz;
-	Eon_Event_Mouse_In *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_layout_get(ee);
-
-	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_in(eis);
+	return NULL;
 }
 
-static void _eon_layout_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Layout *thiz;
-	Eon_Event_Mouse_Out *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_layout_get(ee);
-
-	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_out(eis);
-}
-
-static void _eon_layout_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Layout *thiz;
-	Eon_Event_Mouse_Move *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-	double ox, oy;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_layout_get(ee);
-
-	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	eon_element_actual_position_get(ee, &ox, &oy);
-	eon_input_state_feed_mouse_move(eis, ev->x, ev->y, ev->offset_x + ox, ev->offset_y + oy);
-}
-
-static void _eon_layout_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Layout *thiz;
-	Eon_Event_Mouse_Wheel *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_layout_get(ee);
-
-	eis = _eon_layout_input_state_get(thiz, e, ev->input);
-	/* FIXME pass a mouse wheel? the mouse wheel should be set only on the focus element and an input must
-	 * have only one focus. i.e the focus is not per input state */
-	eon_input_state_feed_mouse_wheel(eis, 0);
-}
-
+static Eon_Input_State_Descriptor _layout_proxy_descriptor = {
+	/* .element_get 	= */ _eon_layout_state_element_get,
+	/* .element_next 	= */ _eon_layout_state_element_next,
+	/* .element_prev 	= */ _eon_layout_state_element_prev,
+};
+/*----------------------------------------------------------------------------*
+ *                         The Eon Widget interface                           *
+ *----------------------------------------------------------------------------*/
 
 static void _eon_layout_initialize(Ender_Element *e)
 {
@@ -171,15 +105,7 @@ static void _eon_layout_initialize(Ender_Element *e)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_layout_get(ee);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_layout_mouse_move, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], _eon_layout_mouse_in, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], _eon_layout_mouse_out, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN], _eon_layout_mouse_down, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP], _eon_layout_mouse_up, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], _eon_layout_mouse_wheel, NULL);
-	/* we should register all the callbacks so whenever
-	 * something happens on a child layout we propagate
-	 */
+	thiz->proxy = eon_input_proxy_new(e, &_layout_proxy_descriptor);
 	if (thiz->initialize)
 		thiz->initialize(e);
 }
@@ -262,18 +188,6 @@ static void _eon_layout_child_clear(Eon_Element *ee)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Input_State * eon_layout_input_state_new(Ender_Element *e, Eon_Input *input)
-{
-	Eon_Layout *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_layout_get(ee);
-	if (thiz->child_at)
-		return eon_input_state_new(input, e, thiz->child_at);
-	return NULL;
-}
-
 Eon_Element * eon_layout_new(Eon_Layout_Descriptor *descriptor,
 		void *data)
 {
@@ -339,10 +253,6 @@ EAPI Eina_Bool eon_is_layout(Ender_Element *e)
 	if (!eon_is_widget(e)) return EINA_FALSE;
 	ee = ender_element_object_get(e);
 	thiz = eon_widget_data_get(ee);
-	/* FIXME looks like compiling with flag  > -O0 gives
-	 * a bad behaviour
-	 */
-	//printf("ok %08x\n", thiz->__magic);
 	if (!EINA_MAGIC_CHECK(thiz, EON_LAYOUT_MAGIC)) {
 		return EINA_FALSE;
 	}

@@ -37,7 +37,7 @@ struct _Eon_Input
 struct _Eon_Input_State
 {
 	Eon_Input *input;
-	Eon_Input_Element_Get element_get;
+	Eon_Input_State_Descriptor *descriptor;
 	Ender_Element *element;
 	struct
 	{
@@ -75,7 +75,7 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *eis, double x, dou
 	x -= eis->pointer.offset_x;
 	y -= eis->pointer.offset_y;
 
-	e = eis->element_get(eis->element, x, y);
+	e = eis->descriptor->element_get(eis->element, x, y);
 	if (!e) return NULL;
 	e_e = ender_element_object_get(e);
 	eon_element_actual_position_get(e_e, &ex, &ey);
@@ -99,14 +99,16 @@ Eon_Input * eon_input_new(void)
 }
 
 Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
-		Eon_Input_Element_Get element_get)
+		Eon_Input_State_Descriptor *descriptor)
 {
 	Eon_Input_State *is;
+
+	if (!descriptor) return NULL;
 
 	is = calloc(1, sizeof(Eon_Input_State));
 	is->input = input;
 	is->element = element;
-	is->element_get = element_get;
+	is->descriptor = descriptor;
 
 	return is;
 }

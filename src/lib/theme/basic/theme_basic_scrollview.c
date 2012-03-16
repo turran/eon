@@ -68,7 +68,8 @@ static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Error **error)
 	thiz = _scrollview_get(r);
 
 	/* setup common properties */
-	enesim_renderer_origin_get(r, &ox, &oy);
+	eon_theme_widget_x_get(r, &ox);
+	eon_theme_widget_y_get(r, &oy);
 	eon_theme_widget_width_get(r, &width);
 	eon_theme_widget_height_get(r, &height);
 	eon_theme_scrollview_offset_get(r, &offset);

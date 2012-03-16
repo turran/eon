@@ -40,9 +40,9 @@ typedef struct _Eon_Container
 	Eon_Container_Preferred_Width_Get preferred_width_get;
 	Eon_Container_Preferred_Height_Get preferred_height_get;
 	Eon_Container_Element_At element_at;
+	Eon_Input_Proxy *proxy;
 	Eina_Bool pass_events;
 	void *data;
-	Eina_Hash *input_states;
 } Eon_Container;
 
 static inline Eon_Container * _eon_container_get(Eon_Element *ee)
@@ -53,9 +53,10 @@ static inline Eon_Container * _eon_container_get(Eon_Element *ee)
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
- *                              The input wrapper                             *
+ *                       The Eon Input State interface                        *
  *----------------------------------------------------------------------------*/
-Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
+static Ender_Element * _eon_container_state_element_get(Ender_Element *e,
+		double x, double y)
 {
 	Eon_Container *thiz;
 	Ender_Element *at = NULL;
@@ -83,108 +84,23 @@ Ender_Element * _eon_container_element_get(Ender_Element *e, double x, double y)
 	return at;
 }
 
-static Eon_Input_State * _eon_container_input_state_get(Eon_Container *thiz, Ender_Element *e, Eon_Input *input)
+static Ender_Element * _eon_container_state_element_next(Ender_Element *e,
+		Ender_Element *curr)
 {
-	Eon_Input_State *eis;
-
-	if (!thiz->input_states)
-		thiz->input_states = eina_hash_pointer_new(NULL);
-	eis = eina_hash_find(thiz->input_states, (const void *)&input);
-	if (!eis)
-	{
-		eis = eon_input_state_new(input, e, _eon_container_element_get);
-		eina_hash_add(thiz->input_states, (const void *)&input, eis);
-	}
-	return eis;
+	return NULL;
 }
 
-static void _eon_container_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static Ender_Element * _eon_container_state_element_prev(Ender_Element *e,
+		Ender_Element *curr)
 {
-	Eon_Container *thiz;
-	Eon_Event_Mouse_Down *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-
-	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_down(eis);
+	return NULL;
 }
 
-static void _eon_container_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Container *thiz;
-	Eon_Event_Mouse_Up *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-
-	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_up(eis);
-}
-
-static void _eon_container_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Container *thiz;
-	Eon_Event_Mouse_In *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-
-	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_in(eis);
-}
-
-static void _eon_container_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Container *thiz;
-	Eon_Event_Mouse_Out *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-
-	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	eon_input_state_feed_mouse_out(eis);
-}
-
-static void _eon_container_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Container *thiz;
-	Eon_Event_Mouse_Move *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-	double ox, oy;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-
-	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	eon_element_actual_position_get(ee, &ox, &oy);
-	eon_input_state_feed_mouse_move(eis, ev->x, ev->y, ev->offset_x + ox, ev->offset_y + oy);
-}
-
-static void _eon_container_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Container *thiz;
-	Eon_Event_Mouse_Wheel *ev = event_data;
-	Eon_Input_State *eis;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-
-	eis = _eon_container_input_state_get(thiz, e, ev->input);
-	/* FIXME */
-	eon_input_state_feed_mouse_wheel(eis, 0);
-}
-
+static Eon_Input_State_Descriptor _container_proxy_descriptor = {
+	/* .element_get 	= */ _eon_container_state_element_get,
+	/* .element_next 	= */ _eon_container_state_element_next,
+	/* .element_prev 	= */ _eon_container_state_element_prev,
+};
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
@@ -237,12 +153,7 @@ static void _eon_container_initialize(Ender_Element *e)
 	/* we first register our own events */
 	if (thiz->pass_events)
 	{
-		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_container_mouse_move, NULL);
-		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], _eon_container_mouse_in, NULL);
-		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], _eon_container_mouse_out, NULL);
-		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN], _eon_container_mouse_down, NULL);
-		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP], _eon_container_mouse_up, NULL);
-		ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], _eon_container_mouse_wheel, NULL);
+		thiz->proxy = eon_input_proxy_new(e, &_container_proxy_descriptor);
 	}
 
 	if (thiz->initialize)
