@@ -31,6 +31,7 @@ struct _Eon_Input
 {
 	char *name;
 	char *description;
+	Ender_Element *focus;
 	/* FIXME here we should put some device information, like name or type */
 };
 
@@ -65,17 +66,17 @@ struct _Eon_Input_State
 	} keyboard;
 };
 
-Ender_Element * _eon_input_state_element_get(Eon_Input_State *eis, double x, double y, double *rel_x,
+Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, double y, double *rel_x,
 	double *rel_y)
 {
 	Eon_Element *e_e;
 	Ender_Element *e;
 	double ex, ey;
 
-	x -= eis->pointer.offset_x;
-	y -= eis->pointer.offset_y;
+	x -= thiz->pointer.offset_x;
+	y -= thiz->pointer.offset_y;
 
-	e = eis->descriptor->element_get(eis->element, x, y);
+	e = thiz->descriptor->element_get(thiz->element, x, y);
 	if (!e) return NULL;
 	e_e = ender_element_object_get(e);
 	eon_element_actual_position_get(e_e, &ex, &ey);
@@ -116,7 +117,7 @@ Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
 /**
  *
  */
-void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
+void eon_input_state_feed_mouse_move(Eon_Input_State *thiz,
 		double x, double y, double offset_x, double offset_y)
 {
 	Ender_Element *child;
@@ -124,61 +125,61 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 	double rel_x, rel_y;
 
 	/* SDL eon_ecore does not send an in/out event */
-	if (!eis->pointer.inside)
+	if (!thiz->pointer.inside)
 	{
-		eon_input_state_feed_mouse_in(eis);
+		eon_input_state_feed_mouse_in(thiz);
 	}
 
-	px = eis->pointer.x;
-	py = eis->pointer.y;
-	eis->pointer.x = x;
-	eis->pointer.y = y;
-	eis->pointer.offset_x = offset_x;
-	eis->pointer.offset_y = offset_y;
+	px = thiz->pointer.x;
+	py = thiz->pointer.y;
+	thiz->pointer.x = x;
+	thiz->pointer.y = y;
+	thiz->pointer.offset_x = offset_x;
+	thiz->pointer.offset_y = offset_y;
 
-	if (eis->pointer.grabbed)
+	if (thiz->pointer.grabbed)
 	{
 		Eon_Event_Mouse_Move ev;
 		double rel_x, rel_y;
 
 
-		rel_x = eis->pointer.rel_x + (px - eis->pointer.x);
-		rel_y = eis->pointer.rel_y + (py - eis->pointer.y);
+		rel_x = thiz->pointer.rel_x + (px - thiz->pointer.x);
+		rel_y = thiz->pointer.rel_y + (py - thiz->pointer.y);
 		/* we first send the drag start */
-		if (!eis->pointer.dragging)
+		if (!thiz->pointer.dragging)
 		{
 			Eon_Event_Mouse_Drag_Start ev_ds;
 
-			ev_ds.input = eis->input;
+			ev_ds.input = thiz->input;
 			ev_ds.x = x;
 			ev_ds.y = y;
 			ev_ds.rel_x = rel_x;
 			ev_ds.rel_y = rel_y;
-			ender_event_dispatch(eis->pointer.grabbed,
+			ender_event_dispatch(thiz->pointer.grabbed,
 					eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], &ev_ds);
-			eis->pointer.dragging = EINA_TRUE;
+			thiz->pointer.dragging = EINA_TRUE;
 		}
 
-		ev.input = eis->input;
+		ev.input = thiz->input;
 		ev.x = x;
 		ev.y = y;
 		ev.rel_x = rel_x;
 		ev.rel_y = rel_y;
 		ev.offset_x = offset_x;
 		ev.offset_y = offset_y;
-		ender_event_dispatch(eis->pointer.grabbed,
+		ender_event_dispatch(thiz->pointer.grabbed,
 					eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], &ev);
 
 		return;
 	}
-	child = _eon_input_state_element_get(eis, x, y, &rel_x, &rel_y);
-	if (child == eis->pointer.last)
+	child = _eon_input_state_element_get(thiz, x, y, &rel_x, &rel_y);
+	if (child == thiz->pointer.last)
 	{
 		/* send move */
 		if (child)
 		{
 			Eon_Event_Mouse_Move ev;
-			ev.input = eis->input;
+			ev.input = thiz->input;
 			ev.x = x;
 			ev.y = y;
 			ev.rel_x = rel_x;
@@ -192,12 +193,12 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 	else
 	{
 		/* send out event on i->r */
-		if (eis->pointer.last)
+		if (thiz->pointer.last)
 		{
 			Eon_Event_Mouse_Out ev;
 
-			ev.input = eis->input;
-			ender_event_dispatch(eis->pointer.last,
+			ev.input = thiz->input;
+			ender_event_dispatch(thiz->pointer.last,
 					eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], &ev);
 		}
 		/* send in event on r */
@@ -205,147 +206,159 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *eis,
 		{
 			Eon_Event_Mouse_In ev;
 
-			ev.input = eis->input;
+			ev.input = thiz->input;
 			ender_event_dispatch(child,
 					eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], &ev);
 		}
 	}
 	/* update the current inside */
-	eis->pointer.last = child;
+	thiz->pointer.last = child;
 }
 
 /**
  *
  */
-void eon_input_state_feed_mouse_in(Eon_Input_State *eis)
+void eon_input_state_feed_mouse_in(Eon_Input_State *thiz)
 {
 	Eon_Event_Mouse_In ev;
 	Ender_Element *child;
 	double rel_x, rel_y;
 
-	if (eis->pointer.inside)
+	if (thiz->pointer.inside)
 		return;
-	eis->pointer.inside = EINA_TRUE;
-	child = _eon_input_state_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
+	thiz->pointer.inside = EINA_TRUE;
+	child = _eon_input_state_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
-	ev.input = eis->input;
+	ev.input = thiz->input;
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_IN], &ev);
 }
 /**
  *
  */
-void eon_input_state_feed_mouse_out(Eon_Input_State *eis)
+void eon_input_state_feed_mouse_out(Eon_Input_State *thiz)
 {
 	Eon_Event_Mouse_Out ev;
 	Ender_Element *child;
 	double rel_x, rel_y;
 
-	if (!eis->pointer.inside)
+	if (!thiz->pointer.inside)
 		return;
-	eis->pointer.inside = EINA_FALSE;
-	child = _eon_input_state_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
+	thiz->pointer.inside = EINA_FALSE;
+	child = _eon_input_state_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
-	ev.input = eis->input;
+	ev.input = thiz->input;
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], &ev);
 }
 
-void eon_input_state_feed_mouse_down(Eon_Input_State *eis)
+void eon_input_state_feed_mouse_down(Eon_Input_State *thiz)
 {
 	Eon_Event_Mouse_Down ev;
 	Ender_Element *child;
 	double rel_x, rel_y;
 
-	if (!eis->pointer.inside)
+	if (!thiz->pointer.inside)
 		return;
-	child = _eon_input_state_element_get(eis, eis->pointer.x, eis->pointer.y, &rel_x, &rel_y);
+	child = _eon_input_state_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	/* store the coordinates where the mouse buton down was done to
 	 * trigger the click later
 	 */
-	eis->pointer.grabbed = child;
-	eis->pointer.downx = eis->pointer.x;
-	eis->pointer.downy = eis->pointer.y;
-	eis->pointer.rel_x = rel_x;
-	eis->pointer.rel_y = rel_y;
-	ev.input = eis->input;
+	thiz->pointer.grabbed = child;
+	thiz->pointer.downx = thiz->pointer.x;
+	thiz->pointer.downy = thiz->pointer.y;
+	thiz->pointer.rel_x = rel_x;
+	thiz->pointer.rel_y = rel_y;
+	ev.input = thiz->input;
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_DOWN],
 			&ev);
 }
 
-void eon_input_state_feed_mouse_up(Eon_Input_State *eis)
+void eon_input_state_feed_mouse_up(Eon_Input_State *thiz)
 {
 	Eon_Event_Mouse_Up ev;
 	Ender_Element *child;
 
 	/* send the event to the grabbed object */
-	child = eis->pointer.grabbed;
+	child = thiz->pointer.grabbed;
 	if (!child)
 		return;
 
-	ev.input = eis->input;
+	ev.input = thiz->input;
 	ender_event_dispatch(child,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_UP],
 			&ev);
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */
-	if ((fabs(eis->pointer.downx - eis->pointer.x) < DBL_EPSILON) &&
-			(fabs(eis->pointer.downy - eis->pointer.y) < DBL_EPSILON))
+	if ((fabs(thiz->pointer.downx - thiz->pointer.x) < DBL_EPSILON) &&
+			(fabs(thiz->pointer.downy - thiz->pointer.y) < DBL_EPSILON))
 	{
 		Eon_Event_Mouse_Click ev_click;
 
-		ev_click.input = eis->input;
-		ev_click.x = eis->pointer.x;
-		ev_click.y = eis->pointer.y;
-		ev_click.rel_x = eis->pointer.rel_x;
-		ev_click.rel_y = eis->pointer.rel_y;
+		ev_click.input = thiz->input;
+		ev_click.x = thiz->pointer.x;
+		ev_click.y = thiz->pointer.y;
+		ev_click.rel_x = thiz->pointer.rel_x;
+		ev_click.rel_y = thiz->pointer.rel_y;
 		ender_event_dispatch(child,
 				eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
 				&ev_click);
 	}
 	/* send the drag stop */
-	if (eis->pointer.dragging)
+	if (thiz->pointer.dragging)
 	{
 		Eon_Event_Mouse_Drag_Stop ev_ds;
 
-		ev_ds.input = eis->input;
-		ender_event_dispatch(eis->pointer.grabbed,
+		ev_ds.input = thiz->input;
+		ender_event_dispatch(thiz->pointer.grabbed,
 				eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_STOP], &ev_ds);
-		eis->pointer.dragging = EINA_FALSE;
+		thiz->pointer.dragging = EINA_FALSE;
 	}
-	eis->pointer.grabbed = NULL;
+	thiz->pointer.grabbed = NULL;
 }
 
-void eon_input_state_feed_mouse_wheel(Eon_Input_State *eis, int direction)
+void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int direction)
 {
 	Eon_Event_Mouse_Wheel ev;
 	Ender_Element *child;
 
 	/* send the event to the grabbed object */
-	child = eis->pointer.last;
+	child = thiz->pointer.last;
 	if (!child)
 		return;
-	ev.input = eis->input;
-	ender_event_dispatch(eis->pointer.last,
+	ev.input = thiz->input;
+	ender_event_dispatch(thiz->pointer.last,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], &ev);
 }
 
-/* FIXME we still need to define how to handle this */
-void eon_input_state_feed_key_down(Eon_Input_State *eis, const char *key)
+/* FIXME the above code must removed/refactored */
+
+void eon_input_feed_key_down (Eon_Input *thiz, Ender_Element *topmost, const char *key)
 {
+	Ender_Element *dst = topmost;
+
 	printf("key down %s\n", key);
+	if (thiz->focus)
+		dst = thiz->focus;
+	eon_element_feed_key_down (dst, thiz, NULL, key);
 }
 
-void eon_input_state_feed_key_up(Eon_Input_State *eis, const char *key)
+void eon_input_feed_key_up (Eon_Input *thiz, Ender_Element *topmost, const char *key)
 {
+	Ender_Element *dst = topmost;
+
 	printf("key up %s\n", key);
+	if (thiz->focus)
+		dst = thiz->focus;
+	eon_element_feed_key_up (dst, thiz, NULL, key);
 }
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -359,6 +372,8 @@ const char * eon_input_event_names[EON_INPUT_EVENTS] = {
 	"MouseClick",
 	"MouseDragStart",
 	"MouseDragStop",
+	"FocusIn",
+	"FocusOut",
 	"KeyDown",
 	"KeyUp",
 };
@@ -383,4 +398,21 @@ EAPI const char * eon_input_description_get(Eon_Input *i)
 	if (!i) return NULL;
 
 	return i->description;
+}
+
+EAPI void eon_input_focus_set(Eon_Input *thiz, Ender_Element *focus)
+{
+	if (!thiz) return;
+	if (focus == thiz->focus)
+		return;
+	printf("new focus %p %p\n", thiz->focus, focus);
+	if (thiz->focus)
+		ender_event_dispatch(thiz->focus,
+				eon_input_event_names[EON_INPUT_EVENT_FOCUS_OUT], NULL);
+	if (focus)
+	{
+		ender_event_dispatch(focus,
+				eon_input_event_names[EON_INPUT_EVENT_FOCUS_IN], NULL);
+		thiz->focus = focus;
+	}
 }

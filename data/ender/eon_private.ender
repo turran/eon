@@ -13,6 +13,7 @@ namespace "eon" {
 		double "preferred_width";
 		double "preferred_height";
 		bool "visibility";
+		ender "parent";
 	};
 
 	abstract "widget" : "element" {

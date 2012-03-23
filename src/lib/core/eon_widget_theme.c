@@ -30,6 +30,8 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Eon_Widget_Theme Eon_Widget_Theme;
+
 typedef struct _Eon_Widget_Theme
 {
 	/* the theme data */
@@ -37,12 +39,12 @@ typedef struct _Eon_Widget_Theme
 	Escen_Instance *theme_instance;
 	Ender_Element *theme_element;
 	Enesim_Renderer *theme_renderer;
-} Eon_Widget_Theme;
+};
 
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Enesim_Renderer * eon_widget_theme_new(Eon_Widget_Theme_Descriptor *descriptor, void *data)
+Eon_Widget_Theme * eon_widget_theme_new(const char *name)
 {
 	Eon_Widget_Theme *thiz;
 	Escen *theme_escen;
@@ -54,73 +56,39 @@ Enesim_Renderer * eon_widget_theme_new(Eon_Widget_Theme_Descriptor *descriptor, 
 	theme_escen = eon_theme_get();
 	if (!theme_escen) {
 		printf("no theme\n");
-		return NULL;
+		goto err_theme;
 	}
 
-	theme_ender = escen_ender_get(theme_escen, descriptor->name);
-	if (!theme_ender)
-	{
-		printf("no ender %s\n", descriptor->name);
-		return NULL;
-	}
-
-	theme_instance = escen_instance_new(theme_ender);
-	if (!theme_instance)
-	{
-		printf("no instance %s\n", descriptor->name);
-		return NULL;
-	}
-
-	theme_element = escen_instance_ender_get(theme_instance);
-	theme_renderer = ender_element_object_get(theme_element);
-
-	thiz->theme_ender = theme_ender;
-	thiz->theme_instance = theme_instance;
-	thiz->theme_element = theme_element;
-	thiz->theme_renderer = theme_renderer;
-	return r;
-
-renderer_err:
-	free(thiz);
-	return NULL;
-}
-
-static Eina_Bool _eon_widget_theme_theme_setup(Eon_Widget_Theme *thiz, Ender_Element *e, Escen *theme_escen)
-{
-	Escen_Ender *theme_ender;
-	Escen_Instance *theme_instance;
-	Ender_Element *theme_element;
-	Enesim_Renderer *theme_renderer;
-	const char *name;
-
-	/* remove the theme already associated with the element
-	 * and set this, get the correct escen_ender and set
-	 * the current state
-	 */
-	name = ender_element_name_get(e);
 	theme_ender = escen_ender_get(theme_escen, name);
 	if (!theme_ender)
 	{
 		printf("no ender %s\n", name);
-		return EINA_FALSE;
+		goto err_theme;
 	}
 
 	theme_instance = escen_instance_new(theme_ender);
 	if (!theme_instance)
 	{
 		printf("no instance %s\n", name);
-		return EINA_FALSE;
+		goto err_instance;
 	}
 
 	theme_element = escen_instance_ender_get(theme_instance);
 	theme_renderer = ender_element_object_get(theme_element);
 
+	thiz = calloc(1, sizeof(Eon_Widget_Theme));
 	thiz->theme_ender = theme_ender;
 	thiz->theme_instance = theme_instance;
 	thiz->theme_element = theme_element;
 	thiz->theme_renderer = theme_renderer;
 
-	return EINA_TRUE;
+	return thiz;
+
+err_instance:
+	// escen_ender_delete (theme_ender);
+err_ender:
+err_theme:
+	return NULL;
 }
 
 static void _eon_widget_theme_theme_set(Enesim_Renderer *r, const char *file)

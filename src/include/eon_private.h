@@ -55,6 +55,8 @@ Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
 
 #include "private/eon_input_private.h"
+#include "private/eon_keyboard_proxy_private.h"
+#include "private/eon_keyboard_proxy_navigation_private.h"
 #include "private/eon_generated_private.h"
 #include "private/eon_backend_private.h"
 #include "private/eon_ecore_common_private.h"

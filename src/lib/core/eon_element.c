@@ -35,6 +35,7 @@
 #define EON_ELEMENT_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)
 #define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 
+static Ender_Property *EON_ELEMENT_PARENT;
 static Ender_Property *EON_ELEMENT_VISIBILITY;
 static Ender_Property *EON_ELEMENT_WIDTH;
 static Ender_Property *EON_ELEMENT_HEIGHT;
@@ -58,6 +59,8 @@ struct _Eon_Element
 	Eon_Size max_size;
 	Eon_Size size;
 	/* private */
+	Ender_Element *parent;
+	Eon_Keyboard_Proxy *keyboard_proxy;
 	/* function pointers */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
@@ -75,6 +78,7 @@ struct _Eon_Element
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Preferred_Width_Get preferred_width_get;
 	/* misc */
+	Ender_Element *current_focus;
 	Eina_Bool do_needs_setup : 1;
 	const char *name;
 	void *data;
@@ -315,6 +319,21 @@ static void _eon_element_visibility_get(Eon_Element *thiz, double *visible)
 	*visible = thiz->current.visible;
 }
 
+static void _eon_element_parent_get(Eon_Element *thiz, Ender_Element **parent)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+	if (!parent) return;
+	*parent = thiz->parent;
+}
+
+#define _eon_element_parent_set NULL
+#define _eon_element_actual_width_set NULL
+#define _eon_element_actual_height_set NULL
+#define _eon_element_actual_x_set NULL
+#define _eon_element_actual_y_set NULL
+#define _eon_element_preferred_width_set NULL
+#define _eon_element_preferred_height_set NULL
+#include "eon_generated_element.c"
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
  *----------------------------------------------------------------------------*/
@@ -394,6 +413,34 @@ Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **
 void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 {
 	_eon_element_cleanup(e, s);
+}
+
+/* functions to manage the focus/mouse events */
+Ender_Element * eon_element_at(Ender_Element *e, double x, double y)
+{
+	/* check if the element has implemented the element_at interface
+	 * if so, pass it but translated to the new position
+	 */
+}
+
+void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element *from, const char *key)
+{
+	Eon_Element *thiz;
+
+	thiz = ender_element_object_get(e);
+
+	if (!thiz->keyboard_proxy) return;
+	eon_keyboard_proxy_feed_key_down(thiz->keyboard_proxy, e, input, from, key);
+}
+
+void eon_element_feed_key_up(Ender_Element *e, Eon_Input *input, Ender_Element *from, const char *key)
+{
+	Eon_Element *thiz;
+
+	thiz = ender_element_object_get(e);
+
+	if (!thiz->keyboard_proxy) return;
+	eon_keyboard_proxy_feed_key_up(thiz->keyboard_proxy, e, input, from, key);
 }
 
 Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
@@ -622,13 +669,16 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 	return r;
 }
 
-#define _eon_element_actual_width_set NULL
-#define _eon_element_actual_height_set NULL
-#define _eon_element_actual_x_set NULL
-#define _eon_element_actual_y_set NULL
-#define _eon_element_preferred_width_set NULL
-#define _eon_element_preferred_height_set NULL
-#include "eon_generated_element.c"
+Ender_Element * eon_element_ender_get(Eon_Element *thiz)
+{
+	return thiz->e;
+}
+
+Eon_Element * eon_element_parent_get(Eon_Element *thiz)
+{
+	return thiz->parent;
+}
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -806,4 +856,16 @@ EAPI void eon_element_visibility_set(Ender_Element *e, double visibility)
 EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility)
 {
 	ender_element_property_value_get(e, EON_ELEMENT_VISIBILITY, visibility, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_keyboard_proxy_set(Ender_Element *e, Eon_Keyboard_Proxy *keyboard_proxy)
+{
+	Eon_Element *thiz;
+
+	thiz = ender_element_object_get(e);
+	thiz->keyboard_proxy = keyboard_proxy;
 }

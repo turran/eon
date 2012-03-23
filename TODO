@@ -1,3 +1,6 @@
++ Add parent, sibling, etc information on every eon element, we need that for focus handling
++ Add events to the input, the input should trigger events whenever something happens, like a new focus element or a new grabbed element. This input event should be registered
+  on the window? on the input?
 + Now that we are building more widgets we need a way to actually set themes based on its class/child-parent relation, maybe we can create something similar to css?
 + Add a scaler element, the scaler should be an element that can scale renderers or other elements by using a WIP property on enesim called scale which should scale the geometry not the final rendering process, ie. before applying the transformation matrix
 + Change the static const attributes on the different basic theme implementation into properties
