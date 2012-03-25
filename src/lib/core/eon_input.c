@@ -437,3 +437,10 @@ EAPI void eon_input_focus_set(Eon_Input *thiz, Ender_Element *focus)
 		thiz->focus = focus;
 	}
 }
+
+EAPI void eon_input_focus_get(Eon_Input *thiz, Ender_Element **focus)
+{
+	if (!thiz) return;
+	if (focus) *focus = thiz->focus;
+
+}

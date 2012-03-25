@@ -103,8 +103,18 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 		{
 			Ender_Element *got;
 			Ender_Element *parent;
+			Ender_Element *focused;
 
-			got = get(thiz->data, from);
+			eon_input_focus_get(input, &focused);
+			if (!focused)
+			{
+				/* FIXME we should call the tab here */
+				got = get(thiz->data, NULL);
+			}
+			else
+			{
+				got = get(thiz->data, from);
+			}
 			eon_element_parent_get(current, &parent);
 			printf("first got %p %p\n", got, parent);
 			/* FIXME cycle again */
@@ -121,7 +131,10 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 			}
 			else
 			{
-				eon_element_feed_key_down(got, input, current, key);
+				if (!focused)
+					eon_element_feed_key_down(got, input, NULL, key);
+				else
+					eon_element_feed_key_down(got, input, current, key);
 			}
 		}
 	}

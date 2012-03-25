@@ -39,7 +39,7 @@ typedef Enesim_Renderer * (*Eon_Element_Renderer_Get)(Ender_Element *e);
  */
 typedef Eina_Bool (*Eon_Element_Needs_Setup)(Ender_Element *e);
 /**
- * This function gives you back the damaged area of an element between two setup/draw/cleanup combo 
+ * This function gives you back the damaged area of an element between two setup/draw/cleanup combo
  * Whenever we setup an element we usually set some properties on the graphics representation
  * of an element. The simplest case is the size, but the element can decide to change whatever
  * property it wants. Whenever enesim requires the damages of an element we cannot give back
@@ -63,7 +63,7 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Actual_Width_Set actual_width_set;
 	Eon_Element_Actual_Height_Set actual_height_set;
 	Eon_Element_Free free;
-	Eina_Bool is_focusable;
+	Eina_Bool is_focusable; // FIXME make this a callback
 	const char *name;
 } Eon_Element_Descriptor;
 

@@ -59,6 +59,7 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 	}
 	else
 	{
+#if 0
 		/* we are the current focus */
 		if (!from)
 		{
@@ -66,6 +67,7 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 			_navigation_send_key_down(current, input, NULL, key);
 		}
 		else
+#endif
 		{
 			Eina_Bool focusable;
 

@@ -140,6 +140,8 @@ typedef struct _Eon_Event_Toggled
 	Eina_Bool active;
 } Eon_Event_Toggled;
 
+EAPI void eon_input_focus_set(Eon_Input *thiz, Ender_Element *focus);
+EAPI void eon_input_focus_get(Eon_Input *thiz, Ender_Element **focus);
 
 /**
  * @}
