@@ -17,28 +17,15 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-/**
- * @todo
- * Handle focus, it should be one per keyboard input
- * Add flags to the input to know for example if we are using a touch based
- * input or a mouse input, etc. The widget may interact differently on that
- * cases
+/* TODO
+ * in theory we should create a singleton here
  */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-struct _Eon_Input
+struct _Eon_Mouse_Proxy_Basic
 {
-	char *name;
-	char *description;
-	Ender_Element *focus;
-	/* FIXME here we should put some device information, like name or type */
-};
-
-struct _Eon_Input_State
-{
-	Eon_Input *input;
-	Eon_Input_State_Descriptor *descriptor;
+	Eon_Mouse_Proxy_Basic_Descriptor *descriptor;
 	Ender_Element *element;
 	struct
 	{
@@ -59,14 +46,24 @@ struct _Eon_Input_State
 		Ender_Element *grabbed; /* the object where the mouse down happened */
 		Ender_Element *last;
 	} pointer;
-	struct
-	{
-		Ender_Element *focus;
-		Eon_Input_Modifiers mods;
-	} keyboard;
 };
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+Eon_Mouse_Proxy_Basic * eon_mouse_proxy_basic_new(
+		Eon_Mouse_Proxy_Basic_Descriptor *descriptor,
+		void *data)
+{
+	Eon_Mouse_Proxy_Basic *thiz;
 
-Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, double y, double *rel_x,
+	thiz = calloc(1, sizeof(Eon_Mouse_Proxy_Basic));
+	thiz->descriptor = descriptor;
+	thiz->data = data;
+
+	return thiz;
+}
+
+Ender_Element * _eon_mouse_proxy_basic_element_get(Eon_Mouse_Proxy_Basic *thiz, double x, double y, double *rel_x,
 	double *rel_y)
 {
 	Eon_Element *e_e;
@@ -85,28 +82,15 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, do
 
 	return e;
 }
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/**
- * Create a new input
- */
-Eon_Input * eon_input_new(void)
-{
-	Eon_Input *ei;
 
-	ei = calloc(1, sizeof(Eon_Input));
-	return ei;
-}
-
-Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
-		Eon_Input_State_Descriptor *descriptor)
+Eon_Mouse_Proxy_Basic * eon_mouse_proxy_basic_new(Eon_Input *input, Ender_Element *element,
+		Eon_Mouse_Proxy_Basic_Descriptor *descriptor)
 {
-	Eon_Input_State *is;
+	Eon_Mouse_Proxy_Basic *is;
 
 	if (!descriptor) return NULL;
 
-	is = calloc(1, sizeof(Eon_Input_State));
+	is = calloc(1, sizeof(Eon_Mouse_Proxy_Basic));
 	is->input = input;
 	is->element = element;
 	is->descriptor = descriptor;
@@ -117,7 +101,7 @@ Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
 /**
  *
  */
-void eon_input_state_feed_mouse_move(Eon_Input_State *thiz,
+void eon_mouse_proxy_basic_feed_mouse_move(Eon_Mouse_Proxy_Basic *thiz,
 		double x, double y, double offset_x, double offset_y)
 {
 	Ender_Element *child;
@@ -127,7 +111,7 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *thiz,
 	/* SDL eon_ecore does not send an in/out event */
 	if (!thiz->pointer.inside)
 	{
-		eon_input_state_feed_mouse_in(thiz);
+		eon_mouse_proxy_basic_feed_mouse_in(thiz);
 	}
 
 	px = thiz->pointer.x;
@@ -172,7 +156,7 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *thiz,
 
 		return;
 	}
-	child = _eon_input_state_element_get(thiz, x, y, &rel_x, &rel_y);
+	child = _eon_mouse_proxy_basic_element_get(thiz, x, y, &rel_x, &rel_y);
 	if (child == thiz->pointer.last)
 	{
 		/* send move */
@@ -218,7 +202,7 @@ void eon_input_state_feed_mouse_move(Eon_Input_State *thiz,
 /**
  *
  */
-void eon_input_state_feed_mouse_in(Eon_Input_State *thiz)
+void eon_mouse_proxy_basic_feed_mouse_in(Eon_Mouse_Proxy_Basic *thiz)
 {
 	Eon_Event_Mouse_In ev;
 	Ender_Element *child;
@@ -227,7 +211,7 @@ void eon_input_state_feed_mouse_in(Eon_Input_State *thiz)
 	if (thiz->pointer.inside)
 		return;
 	thiz->pointer.inside = EINA_TRUE;
-	child = _eon_input_state_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
+	child = _eon_mouse_proxy_basic_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	ev.input = thiz->input;
@@ -237,7 +221,7 @@ void eon_input_state_feed_mouse_in(Eon_Input_State *thiz)
 /**
  *
  */
-void eon_input_state_feed_mouse_out(Eon_Input_State *thiz)
+void eon_mouse_proxy_basic_feed_mouse_out(Eon_Mouse_Proxy_Basic *thiz)
 {
 	Eon_Event_Mouse_Out ev;
 	Ender_Element *child;
@@ -246,7 +230,7 @@ void eon_input_state_feed_mouse_out(Eon_Input_State *thiz)
 	if (!thiz->pointer.inside)
 		return;
 	thiz->pointer.inside = EINA_FALSE;
-	child = _eon_input_state_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
+	child = _eon_mouse_proxy_basic_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	ev.input = thiz->input;
@@ -254,7 +238,7 @@ void eon_input_state_feed_mouse_out(Eon_Input_State *thiz)
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_OUT], &ev);
 }
 
-void eon_input_state_feed_mouse_down(Eon_Input_State *thiz)
+void eon_mouse_proxy_basic_feed_mouse_down(Eon_Mouse_Proxy_Basic *thiz)
 {
 	Eon_Event_Mouse_Down ev;
 	Ender_Element *child;
@@ -262,7 +246,7 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *thiz)
 
 	if (!thiz->pointer.inside)
 		return;
-	child = _eon_input_state_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
+	child = _eon_mouse_proxy_basic_element_get(thiz, thiz->pointer.x, thiz->pointer.y, &rel_x, &rel_y);
 	if (!child)
 		return;
 	/* store the coordinates where the mouse buton down was done to
@@ -279,7 +263,7 @@ void eon_input_state_feed_mouse_down(Eon_Input_State *thiz)
 			&ev);
 }
 
-void eon_input_state_feed_mouse_up(Eon_Input_State *thiz)
+void eon_mouse_proxy_basic_feed_mouse_up(Eon_Mouse_Proxy_Basic *thiz)
 {
 	Eon_Event_Mouse_Up ev;
 	Ender_Element *child;
@@ -323,7 +307,7 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *thiz)
 	thiz->pointer.grabbed = NULL;
 }
 
-void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int direction)
+void eon_mouse_proxy_basic_feed_mouse_wheel(Eon_Mouse_Proxy_Basic *thiz, int direction)
 {
 	Eon_Event_Mouse_Wheel ev;
 	Ender_Element *child;
@@ -336,104 +320,10 @@ void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int direction)
 	ender_event_dispatch(thiz->pointer.last,
 			eon_input_event_names[EON_INPUT_EVENT_MOUSE_WHEEL], &ev);
 }
-
-/* FIXME the above code must removed/refactored */
-
-void eon_input_feed_key_down(Eon_Input *thiz, Ender_Element *topmost, const char *key)
-{
-	Ender_Element *dst = topmost;
-
-	//printf("key down %s\n", key);
-	if (thiz->focus)
-		dst = thiz->focus;
-	eon_element_feed_key_down (dst, thiz, NULL, key);
-}
-
-void eon_input_feed_key_up (Eon_Input *thiz, Ender_Element *topmost, const char *key)
-{
-	Ender_Element *dst = topmost;
-
-	//printf("key up %s\n", key);
-	if (thiz->focus)
-		dst = thiz->focus;
-	eon_element_feed_key_up (dst, thiz, NULL, key);
-}
-
-Eina_Bool eon_input_navigation_key_get(Eon_Input *thiz,
-		const char *key,
-		Eon_Navigation_Key *nkey)
-{
-	Eina_Bool ret = EINA_TRUE;
-
-	/* FIXME we miss the reverse tab, and so, the modifiers */
-	if (!strcmp(key, "Tab"))
-		*nkey = EON_NAVIGATION_KEY_TAB;
-	else if (!strcmp(key, "Left"))
-		*nkey = EON_NAVIGATION_KEY_LEFT;
-	else if (!strcmp(key, "Right"))
-		*nkey = EON_NAVIGATION_KEY_RIGHT;
-	else if (!strcmp(key, "Up"))
-		*nkey = EON_NAVIGATION_KEY_UP;
-	else if (!strcmp(key, "Down"))
-		*nkey = EON_NAVIGATION_KEY_DOWN;
-	else
-		ret = EINA_FALSE;
-
-	return ret;
-}
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-const char * eon_input_event_names[EON_INPUT_EVENTS] = {
-	"MouseMove",
-	"MouseIn",
-	"MouseOut",
-	"MouseDown",
-	"MouseUp",
-	"MouseWheel",
-	"MouseClick",
-	"MouseDragStart",
-	"MouseDragStop",
-	"FocusIn",
-	"FocusOut",
-	"KeyDown",
-	"KeyUp",
-};
 
-/* FIXME
- * add something like this:
-EAPI void eon_input_flags_get(Eon_Input *i)
-{
-
-}
-*/
-
-EAPI const char * eon_input_name_get(Eon_Input *i)
-{
-	if (!i) return NULL;
-
-	return i->name;
-}
-
-EAPI const char * eon_input_description_get(Eon_Input *i)
-{
-	if (!i) return NULL;
-
-	return i->description;
-}
-
-EAPI void eon_input_focus_set(Eon_Input *thiz, Ender_Element *focus)
-{
-	if (!thiz) return;
-	if (focus == thiz->focus)
-		return;
-	if (thiz->focus)
-		ender_event_dispatch(thiz->focus,
-				eon_input_event_names[EON_INPUT_EVENT_FOCUS_OUT], NULL);
-	if (focus)
-	{
-		ender_event_dispatch(focus,
-				eon_input_event_names[EON_INPUT_EVENT_FOCUS_IN], NULL);
-		thiz->focus = focus;
-	}
-}
