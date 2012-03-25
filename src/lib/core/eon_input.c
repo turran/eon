@@ -343,7 +343,7 @@ void eon_input_feed_key_down (Eon_Input *thiz, Ender_Element *topmost, const cha
 {
 	Ender_Element *dst = topmost;
 
-	printf("key down %s\n", key);
+	//printf("key down %s\n", key);
 	if (thiz->focus)
 		dst = thiz->focus;
 	eon_element_feed_key_down (dst, thiz, NULL, key);
@@ -353,12 +353,34 @@ void eon_input_feed_key_up (Eon_Input *thiz, Ender_Element *topmost, const char 
 {
 	Ender_Element *dst = topmost;
 
-	printf("key up %s\n", key);
+	//printf("key up %s\n", key);
 	if (thiz->focus)
 		dst = thiz->focus;
 	eon_element_feed_key_up (dst, thiz, NULL, key);
 }
 
+Eina_Bool eon_input_navigation_key_get(Eon_Input *thiz,
+		const char *key,
+		Eon_Navigation_Key *nkey)
+{
+	Eina_Bool ret = EINA_TRUE;
+
+	/* FIXME we miss the reverse tab, and so, the modifiers */
+	if (!strcmp(key, "Tab"))
+		*nkey = EON_NAVIGATION_KEY_TAB;
+	else if (!strcmp(key, "Left"))
+		*nkey = EON_NAVIGATION_KEY_LEFT;
+	else if (!strcmp(key, "Right"))
+		*nkey = EON_NAVIGATION_KEY_RIGHT;
+	else if (!strcmp(key, "Up"))
+		*nkey = EON_NAVIGATION_KEY_UP;
+	else if (!strcmp(key, "Down"))
+		*nkey = EON_NAVIGATION_KEY_DOWN;
+	else
+		ret = EINA_FALSE;
+
+	return ret;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -405,7 +427,6 @@ EAPI void eon_input_focus_set(Eon_Input *thiz, Ender_Element *focus)
 	if (!thiz) return;
 	if (focus == thiz->focus)
 		return;
-	printf("new focus %p %p\n", thiz->focus, focus);
 	if (thiz->focus)
 		ender_event_dispatch(thiz->focus,
 				eon_input_event_names[EON_INPUT_EVENT_FOCUS_OUT], NULL);

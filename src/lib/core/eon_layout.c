@@ -45,8 +45,7 @@ typedef struct _Eon_Layout
 	Eon_Element_Free free;
 	/* internal */
 	Eon_Input_Proxy *proxy;
-	Eina_Array *obscure;
-	Eina_Array *damage;
+	Ender_Element *e;
 	unsigned int width;
 	unsigned int height;
 	void *data;
@@ -106,6 +105,7 @@ static void _eon_layout_initialize(Ender_Element *e)
 	ee = ender_element_object_get(e);
 	thiz = _eon_layout_get(ee);
 	thiz->proxy = eon_input_proxy_new(e, &_layout_proxy_descriptor);
+	thiz->e = e;
 	if (thiz->initialize)
 		thiz->initialize(e);
 }
@@ -142,7 +142,10 @@ static void _eon_layout_child_remove(Eon_Element *ee, Ender_Element *child)
 	Eon_Layout *thiz;
 
 	thiz = _eon_layout_get(ee);
-	thiz->child_remove(ee, child);
+	if (!thiz->child_remove(ee, child))
+	{
+		eon_element_parent_set(child, NULL);
+	}
 }
 
 static void _eon_layout_child_add(Eon_Element *ee, Ender_Element *child)
@@ -161,7 +164,10 @@ static void _eon_layout_child_add(Eon_Element *ee, Ender_Element *child)
 		/* FIXME this is wrong, we should remove from the theme the child_rr */
 		printf("warning, first remove from its old parent\n");
 	}
-	thiz->child_add(ee, child);
+	if (thiz->child_add(ee, child))
+	{
+		eon_element_parent_set(child, thiz->e);
+	}
 }
 
 static void _eon_layout_child_set(Eon_Element *ee, Eina_List *childs)
@@ -257,17 +263,6 @@ EAPI Eina_Bool eon_is_layout(Ender_Element *e)
 		return EINA_FALSE;
 	}
 	return EINA_TRUE;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-void eon_layout_obscure_add(Eon_Element *ee, Eina_Rectangle *obscure)
-{
-	Eon_Layout *thiz;
-
-	thiz = _eon_layout_get(ee);
 }
 
 /**

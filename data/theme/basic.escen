@@ -66,7 +66,7 @@ escen {
 	};
 
 	basic_button "button" {
-		default : "mouse_out", "mouse_up" {
+		default : "mouse_out", "mouse_up", "focus_out" {
 			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
@@ -83,6 +83,14 @@ escen {
 		};
 
 		state "mouse_in" {
+			set { fill_color = 0xffcccccc; };
+			set { start_shadow = 0xff557cb8; };
+			set { end_shadow = 0xff557cb8; };
+			set { start_bevel = 0xffffffff; };
+			set { end_bevel = 0xff000000; };
+		};
+
+		state "focus_in" {
 			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0xff557cb8; };
 			set { end_shadow = 0xff557cb8; };

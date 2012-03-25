@@ -71,6 +71,28 @@ static inline Eon_Widget * _eon_widget_get(Eon_Element *ee)
 
 	return thiz;
 }
+
+static void _widget_focus_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Widget *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_widget_get(ee);
+
+	eon_widget_state_set(ee, "focus_in", EINA_FALSE);
+}
+
+static void _widget_focus_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Widget *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_widget_get(ee);
+
+	eon_widget_state_set(ee, "focus_out", EINA_TRUE);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -84,17 +106,21 @@ static void _eon_widget_free(Eon_Element *ee)
 	free(thiz);
 }
 
-static void _eon_widget_initialize(Ender_Element *ender)
+static void _eon_widget_initialize(Ender_Element *e)
 {
 	Eon_Widget *thiz;
 	Eon_Element *ee;
 
-	ee = ender_element_object_get(ender);
+	ee = ender_element_object_get(e);
 	thiz = _eon_widget_get(ee);
-	thiz->e = ender;
+	thiz->e = e;
+
+	ender_event_listener_add(e, "FocusIn", _widget_focus_in, NULL);
+	ender_event_listener_add(e, "FocusOut", _widget_focus_out, NULL);
+
 	/* register every needed callback */
 	if (thiz->initialize)
-		thiz->initialize(ender);
+		thiz->initialize(e);
 }
 
 static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)

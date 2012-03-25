@@ -22,28 +22,6 @@
  *============================================================================*/
 static int _proxy_focus_count = 0;
 
-static Eina_Bool _get_navigation_key(const char *key,
-		Eon_Navigation_Key *nkey)
-{
-	Eina_Bool ret = EINA_TRUE;
-
-	/* FIXME we miss the reverse tab, and so, the modifiers */
-	if (!strcmp(key, "Tab"))
-		*nkey = EON_NAVIGATION_KEY_TAB;
-	else if (!strcmp(key, "Left"))
-		*nkey = EON_NAVIGATION_KEY_LEFT;
-	else if (!strcmp(key, "Right"))
-		*nkey = EON_NAVIGATION_KEY_RIGHT;
-	else if (!strcmp(key, "Up"))
-		*nkey = EON_NAVIGATION_KEY_UP;
-	else if (!strcmp(key, "Down"))
-		*nkey = EON_NAVIGATION_KEY_DOWN;
-	else
-		ret = EINA_FALSE;
-
-	return ret;
-}
-
 static void _navigation_send_key_down(Ender_Element *current,
 		Eon_Input *input,
 		Ender_Element *from,
@@ -63,8 +41,18 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 {
 	Eon_Navigation_Key nkey;
 
-	printf("focus key down current %p from %p %s\n", current, from, key);
-	if (!_get_navigation_key(key, &nkey))
+	/* DEBUG */
+	{
+		const char *cname;
+		const char *fname = NULL;
+
+		eon_element_name_get(current, &cname);
+		if (from)
+			eon_element_name_get(from, &fname);
+		printf("focus key down current '%s' from '%s'\n", cname, fname ? fname : "NONE");
+	}
+
+	if (!eon_input_navigation_key_get(input, key, &nkey))
 	{
 		/* TODO generate the key event */
 		printf("key down event\n");
@@ -96,7 +84,7 @@ static void _eon_keyboard_proxy_focus_key_up(void *data, Ender_Element *current,
 	Eon_Navigation_Key nkey;
 
 	printf("focus key up current %p\n", current);
-	if (!_get_navigation_key(key, &nkey))
+	if (!eon_input_navigation_key_get(input, key, &nkey))
 	{
 	}
 	else

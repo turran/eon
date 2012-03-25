@@ -1,8 +1,8 @@
 #ifndef _EON_LAYOUT_PRIVATE_H
 #define _EON_LAYOUT_PRIVATE_H
 
-typedef void (*Eon_Layout_Child_Add)(Eon_Element *ee, Ender_Element *child);
-typedef void (*Eon_Layout_Child_Remove)(Eon_Element *ee, Ender_Element *child);
+typedef Eina_Bool (*Eon_Layout_Child_Add)(Eon_Element *ee, Ender_Element *child);
+typedef Eina_Bool (*Eon_Layout_Child_Remove)(Eon_Element *ee, Ender_Element *child);
 typedef void (*Eon_Layout_Child_Clear)(Eon_Element *ee);
 typedef Ender_Element * (*Eon_Layout_Child_At)(Ender_Element *e, double x, double y);
 

@@ -102,5 +102,6 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e);
 void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element *from, const char *key);
 void eon_element_feed_key_up(Ender_Element *e, Eon_Input *input, Ender_Element *from, const char *key);
 
+void eon_element_parent_set(Ender_Element *e, Ender_Element *parent);
 
 #endif

@@ -320,7 +320,6 @@ static Ender_Element * _stack_navigation_tab(void *data,
 	Eon_Stack_Child *child;
 	Eina_List *l;
 
-	printf("stack navigation!!! %p\n", current);
 	if (!current)
 	{
 		child = eina_list_data_get(thiz->children);
@@ -586,7 +585,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 	return child;
 }
 
-static void _eon_stack_child_add(Eon_Element *ee, Ender_Element *child)
+static Eina_Bool _eon_stack_child_add(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
@@ -598,9 +597,10 @@ static void _eon_stack_child_add(Eon_Element *ee, Ender_Element *child)
 	thiz->needs_setup = EINA_TRUE;
 
 	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
+	return EINA_TRUE;
 }
 
-static void _eon_stack_child_remove(Eon_Element *ee, Ender_Element *child)
+static Eina_Bool _eon_stack_child_remove(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
@@ -618,7 +618,11 @@ static void _eon_stack_child_remove(Eon_Element *ee, Ender_Element *child)
 		}
 	}
 	if (found)
+	{
 		thiz->needs_setup = EINA_TRUE;
+		return EINA_TRUE;
+	}
+	return EINA_FALSE;
 }
 
 static void _eon_stack_child_clear(Eon_Element *ee)

@@ -36,6 +36,7 @@
 #define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 
 static Ender_Property *EON_ELEMENT_PARENT;
+static Ender_Property *EON_ELEMENT_NAME;
 static Ender_Property *EON_ELEMENT_FOCUSABLE;
 static Ender_Property *EON_ELEMENT_VISIBILITY;
 static Ender_Property *EON_ELEMENT_WIDTH;
@@ -62,7 +63,7 @@ struct _Eon_Element
 	/* private */
 	Ender_Element *parent;
 	Eon_Keyboard_Proxy *keyboard_proxy;
-	/* function pointers */
+	/* descriptor */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
 	Eon_Element_Renderer_Get renderer_get;
@@ -79,10 +80,11 @@ struct _Eon_Element
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Preferred_Width_Get preferred_width_get;
 	Eina_Bool is_focusable;
+	const char *name;
 	/* misc */
 	Ender_Element *current_focus;
 	Eina_Bool do_needs_setup : 1;
-	const char *name;
+	char *user_name;
 	void *data;
 	Ender_Element *e;
 };
@@ -333,6 +335,27 @@ static void _eon_element_focusable_get(Eon_Element *thiz, Eina_Bool *focusable)
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	/* TODO fix this */
 	*focusable = EINA_TRUE;
+}
+
+static void _eon_element_name_set(Eon_Element *thiz, const char *name)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+	if (thiz->user_name)
+	{
+		free(thiz->user_name);
+		thiz->user_name = NULL;
+	}
+	if (name)
+		thiz->user_name= strdup(name);
+}
+
+static void _eon_element_name_get(Eon_Element *thiz, const char **name)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+	if (!thiz->user_name)
+		*name = thiz->name;
+	else
+		*name = thiz->user_name;
 }
 
 #define _eon_element_parent_set NULL
@@ -686,6 +709,18 @@ Ender_Element * eon_element_ender_get(Eon_Element *thiz)
 	return thiz->e;
 }
 
+void eon_element_parent_set(Ender_Element *e, Ender_Element *parent)
+{
+	Eon_Element *thiz;
+
+	thiz = ender_element_object_get(e);
+	if (thiz->parent)
+	{
+		printf("element already has a parent\n");
+	}
+	thiz->parent = parent;
+}
+
 void eon_element_keyboard_proxy_set(Eon_Element *thiz,
 		Eon_Keyboard_Proxy *keyboard_proxy)
 {
@@ -879,6 +914,24 @@ EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility)
 EAPI void eon_element_parent_get(Ender_Element *e, Ender_Element **parent)
 {
 	ender_element_property_value_get(e, EON_ELEMENT_PARENT, parent, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_name_set(Ender_Element *e, Eina_Bool *name)
+{
+	ender_element_property_value_set(e, EON_ELEMENT_NAME, name, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_name_get(Ender_Element *e, const char **name)
+{
+	ender_element_property_value_get(e, EON_ELEMENT_NAME, name, NULL);
 }
 
 /**
