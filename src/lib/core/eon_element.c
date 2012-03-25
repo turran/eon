@@ -35,6 +35,13 @@
 #define EON_ELEMENT_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)
 #define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 
+typedef struct _Eon_Element_Factory
+{
+	int id;
+} Eon_Element_Factory;
+
+static Eina_Hash *_factories = NULL;
+
 static Ender_Property *EON_ELEMENT_PARENT;
 static Ender_Property *EON_ELEMENT_NAME;
 static Ender_Property *EON_ELEMENT_FOCUSABLE;
@@ -370,6 +377,29 @@ static void _eon_element_name_get(Eon_Element *thiz, const char **name)
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
  *----------------------------------------------------------------------------*/
+static void _eon_element_factory_setup(Eon_Element *thiz)
+{
+	Eon_Element_Factory *f;
+	char element_name[PATH_MAX];
+	const char *descriptor_name = NULL;
+
+	if (!_factories)
+		_factories = eina_hash_string_superfast_new(NULL);
+	if (thiz->name)
+		descriptor_name = thiz->name;
+	if (!descriptor_name)
+		descriptor_name = "unknown";
+	f = eina_hash_find(_factories, descriptor_name);
+	if (!f)
+	{
+		f = calloc(1, sizeof(Eon_Element_Factory));
+		eina_hash_add(_factories, descriptor_name, f);
+	}
+	/* assign a new name for it automatically */
+	snprintf(element_name, PATH_MAX, "%s%d", descriptor_name, f->id++);
+	_eon_element_name_set(thiz, element_name);
+}
+
 static void _eon_element_real_width_get(Eon_Element *thiz, double *width)
 {
 	double rw;
@@ -515,7 +545,8 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->is_focusable = descriptor->is_focusable;
 	thiz->name = descriptor->name;
 
-	printf("element of name %s created %p\n", descriptor->name, thiz);
+	_eon_element_factory_setup(thiz);
+	printf("element of name %s created %p\n", thiz->user_name, thiz);
 	return thiz;
 }
 

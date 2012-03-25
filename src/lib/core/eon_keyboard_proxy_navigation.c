@@ -106,9 +106,9 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 
 			got = get(thiz->data, from);
 			eon_element_parent_get(current, &parent);
+			printf("first got %p %p\n", got, parent);
 			/* FIXME cycle again */
 #if 0
-			printf("first got %p %p\n", got, parent);
 			if (!got && !parent && (nkey == EON_NAVIGATION_KEY_TAB || nkey == EON_NAVIGATION_KEY_REVERSE_TAB))
 			{
 				got = get(thiz->data, NULL);

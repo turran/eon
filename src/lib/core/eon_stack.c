@@ -320,6 +320,7 @@ static Ender_Element * _stack_navigation_tab(void *data,
 	Eon_Stack_Child *child;
 	Eina_List *l;
 
+	printf("stack tab %p\n", current);
 	if (!current)
 	{
 		child = eina_list_data_get(thiz->children);
