@@ -23,6 +23,7 @@ eon_input.c \
 eon_input_proxy.c \
 eon_keyboard_proxy.c \
 eon_keyboard_proxy_navigation.c \
+eon_keyboard_proxy_focus.c \
 eon_label.c \
 eon_layout.c \
 eon_main.c \

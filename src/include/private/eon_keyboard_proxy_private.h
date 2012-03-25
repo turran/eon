@@ -1,5 +1,5 @@
-#ifndef EON_KEYBOARD_PROXY_H
-#define EON_KEYBOARD_PROXY_H
+#ifndef EON_KEYBOARD_PROXY_PRIVATE_H
+#define EON_KEYBOARD_PROXY_PRIVATE_H
 
 typedef struct _Eon_Keyboard_Proxy Eon_Keyboard_Proxy;
 typedef void (*Eon_Keyboard_Proxy_Key_Up)(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key);

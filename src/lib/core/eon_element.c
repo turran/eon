@@ -36,6 +36,7 @@
 #define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 
 static Ender_Property *EON_ELEMENT_PARENT;
+static Ender_Property *EON_ELEMENT_FOCUSABLE;
 static Ender_Property *EON_ELEMENT_VISIBILITY;
 static Ender_Property *EON_ELEMENT_WIDTH;
 static Ender_Property *EON_ELEMENT_HEIGHT;
@@ -77,6 +78,7 @@ struct _Eon_Element
 	Eon_Element_Actual_Height_Set actual_height_set;
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Preferred_Width_Get preferred_width_get;
+	Eina_Bool is_focusable;
 	/* misc */
 	Ender_Element *current_focus;
 	Eina_Bool do_needs_setup : 1;
@@ -326,6 +328,13 @@ static void _eon_element_parent_get(Eon_Element *thiz, Ender_Element **parent)
 	*parent = thiz->parent;
 }
 
+static void _eon_element_focusable_get(Eon_Element *thiz, Eina_Bool *focusable)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+	/* TODO fix this */
+	*focusable = EINA_TRUE;
+}
+
 #define _eon_element_parent_set NULL
 #define _eon_element_actual_width_set NULL
 #define _eon_element_actual_height_set NULL
@@ -333,6 +342,7 @@ static void _eon_element_parent_get(Eon_Element *thiz, Ender_Element **parent)
 #define _eon_element_actual_y_set NULL
 #define _eon_element_preferred_width_set NULL
 #define _eon_element_preferred_height_set NULL
+#define _eon_element_focusable_set NULL
 #include "eon_generated_element.c"
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
@@ -478,6 +488,8 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	/* preferred */
 	thiz->preferred_width_get = descriptor->preferred_width_get;
 	thiz->preferred_height_get = descriptor->preferred_height_get;
+	/* other */
+	thiz->is_focusable = descriptor->is_focusable;
 	thiz->name = descriptor->name;
 
 	printf("element of name %s created %p\n", descriptor->name, thiz);
@@ -674,11 +686,13 @@ Ender_Element * eon_element_ender_get(Eon_Element *thiz)
 	return thiz->e;
 }
 
-Eon_Element * eon_element_parent_get(Eon_Element *thiz)
+void eon_element_keyboard_proxy_set(Eon_Element *thiz,
+		Eon_Keyboard_Proxy *keyboard_proxy)
 {
-	return thiz->parent;
+	if (thiz->keyboard_proxy)
+		eon_keyboard_proxy_delete(thiz->keyboard_proxy);
+	thiz->keyboard_proxy = keyboard_proxy;
 }
-
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -862,10 +876,17 @@ EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_element_keyboard_proxy_set(Ender_Element *e, Eon_Keyboard_Proxy *keyboard_proxy)
+EAPI void eon_element_parent_get(Ender_Element *e, Ender_Element **parent)
 {
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-	thiz->keyboard_proxy = keyboard_proxy;
+	ender_element_property_value_get(e, EON_ELEMENT_PARENT, parent, NULL);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_focusable_get(Ender_Element *e, Eina_Bool *focusable)
+{
+	ender_element_property_value_get(e, EON_ELEMENT_FOCUSABLE, focusable, NULL);
+}
+

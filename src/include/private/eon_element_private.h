@@ -63,6 +63,7 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Actual_Width_Set actual_width_set;
 	Eon_Element_Actual_Height_Set actual_height_set;
 	Eon_Element_Free free;
+	Eina_Bool is_focusable;
 	const char *name;
 } Eon_Element_Descriptor;
 

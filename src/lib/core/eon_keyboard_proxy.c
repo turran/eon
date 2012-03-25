@@ -43,7 +43,13 @@ Eon_Keyboard_Proxy * eon_keyboard_proxy_new(
 
 void eon_keyboard_proxy_delete(Eon_Keyboard_Proxy *thiz)
 {
-	
+	Eina_Bool ret = EINA_TRUE;
+
+	if (thiz->descriptor->destroy)
+		ret = thiz->descriptor->destroy(thiz->data);
+
+	if (ret)
+		free(thiz);
 }
 
 void eon_keyboard_proxy_feed_key_up(Eon_Keyboard_Proxy *thiz,
@@ -52,7 +58,10 @@ void eon_keyboard_proxy_feed_key_up(Eon_Keyboard_Proxy *thiz,
 		Ender_Element *from,
 		const char *key)
 {
+	if (!thiz->descriptor->key_up)
+		return;
 
+	thiz->descriptor->key_up(thiz->data, current, input, from, key);
 }
 
 void eon_keyboard_proxy_feed_key_down(Eon_Keyboard_Proxy *thiz,
@@ -61,7 +70,10 @@ void eon_keyboard_proxy_feed_key_down(Eon_Keyboard_Proxy *thiz,
 		Ender_Element *from,
 		const char *key)
 {
+	if (!thiz->descriptor->key_down)
+		return;
 
+	thiz->descriptor->key_down(thiz->data, current, input, from, key);
 }
 /*============================================================================*
  *                                   API                                      *

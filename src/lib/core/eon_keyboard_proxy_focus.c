@@ -20,12 +20,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Keyboard_Proxy_Navigation
-{
-	Eon_Keyboard_Proxy_Navigation_Descriptor *descriptor;
-	void *data;
-} Eon_Keyboard_Proxy_Navigation;
-
+static int _proxy_focus_count = 0;
 
 static Eina_Bool _get_navigation_key(const char *key,
 		Eon_Navigation_Key *nkey)
@@ -64,120 +59,81 @@ static void _navigation_send_key_down(Ender_Element *current,
 	}
 }
 
-static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
+static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
 {
-	Eon_Keyboard_Proxy_Navigation *thiz = data;
 	Eon_Navigation_Key nkey;
 
-	printf("navigation key down current %p\n", current);
+	printf("focus key down current %p from %p %s\n", current, from, key);
 	if (!_get_navigation_key(key, &nkey))
 	{
-		_navigation_send_key_down(current, input, from, key);
+		/* TODO generate the key event */
+		printf("key down event\n");
 	}
 	else
 	{
-		Eon_Keyboard_Proxy_Navigation_Get get = NULL;
-		switch (nkey)
+		/* we are the current focus */
+		if (!from)
 		{
-			case EON_NAVIGATION_KEY_TAB:
-			get = thiz->descriptor->tab;
-			break;
-
-			case EON_NAVIGATION_KEY_REVERSE_TAB:
-			get = thiz->descriptor->reverse_tab;
-			break;
-
-			case EON_NAVIGATION_KEY_LEFT:
-			get = thiz->descriptor->left;
-			break;
-
-			case EON_NAVIGATION_KEY_RIGHT:
-			get = thiz->descriptor->left;
-			break;
-
-			case EON_NAVIGATION_KEY_UP:
-			get = thiz->descriptor->up;
-			break;
-
-			case EON_NAVIGATION_KEY_DOWN:
-			get = thiz->descriptor->up;
-			break;
-
-			default:
-			break;
+			/* send the event to the parent */
+			_navigation_send_key_down(current, input, NULL, key);
 		}
-		/* just pass it */
-		if (!get)
-		{
-			_navigation_send_key_down(current, input, from, key);
-		}
-		/* get the element and send the event there */
 		else
 		{
-			Ender_Element *got;
+			Eina_Bool focusable;
 
-			got = get(thiz->data, from);
-			printf("got %p\n", got);
-			if (!got)
-			{
-				_navigation_send_key_down(current, input, from, key);
-			}
+			eon_element_focusable_get(current, &focusable);
+			printf("focusable %d\n", focusable);
+			if (focusable)
+				eon_input_focus_set(input, current);
 			else
-			{
-				eon_element_feed_key_down(got, input, current, key);
-			}
+				_navigation_send_key_down(current, input, from, key);
 		}
 	}
 }
 
-static void _eon_keyboard_proxy_navigation_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
+static void _eon_keyboard_proxy_focus_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
 {
 	Eon_Navigation_Key nkey;
 
-	printf("navigation key up current %p\n", current);
+	printf("focus key up current %p\n", current);
 	if (!_get_navigation_key(key, &nkey))
 	{
-		Ender_Element *parent;
-
-		/* pass the event to the parent */
-		eon_element_parent_get(current, &parent);
-		if (parent)
-		{
-			eon_element_feed_key_up(parent, input, current, key);
-		}
+	}
+	else
+	{
+		printf("key up event\n");
 	}
 }
 
-static Eina_Bool _eon_keyboard_proxy_navigation_destroy(void *data)
+static Eina_Bool _eon_keyboard_proxy_focus_destroy(void *data)
 {
-	Eon_Keyboard_Proxy_Navigation *thiz = data;
-
-	free(thiz);
-	return EINA_TRUE;
+	_proxy_focus_count--;
+	if (!_proxy_focus_count)
+		return EINA_TRUE;
+	return EINA_FALSE;
 }
 
 static Eon_Keyboard_Proxy_Descriptor _descriptor = {
-	/* .key_up 	= */ _eon_keyboard_proxy_navigation_key_up,
-	/* .key_down 	= */ _eon_keyboard_proxy_navigation_key_down,
-	/* .destroy 	= */ _eon_keyboard_proxy_navigation_destroy,
+	/* .key_up 	= */ _eon_keyboard_proxy_focus_key_up,
+	/* .key_down 	= */ _eon_keyboard_proxy_focus_key_down,
+	/* .destroy 	= */ _eon_keyboard_proxy_focus_destroy,
 };
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Keyboard_Proxy * eon_keyboard_proxy_navigation_new(
-		Eon_Keyboard_Proxy_Navigation_Descriptor *descriptor,
-		void *data)
+Eon_Keyboard_Proxy * eon_keyboard_proxy_focus_new(void)
 {
-	Eon_Keyboard_Proxy_Navigation *thiz;
+	static Eon_Keyboard_Proxy *proxy = NULL;
 
-	thiz = calloc(1, sizeof(Eon_Keyboard_Proxy_Navigation));
-	thiz->descriptor = descriptor;
-	thiz->data = data;
+	if (!proxy)
+	{
+		proxy = eon_keyboard_proxy_new(&_descriptor, NULL);
+	}
+	_proxy_focus_count++;
 
-	return eon_keyboard_proxy_new(&_descriptor, thiz);
+	return proxy;
 }
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-
 

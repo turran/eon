@@ -52,6 +52,8 @@ EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width);
 EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height);
 EAPI void eon_element_visibility_set(Ender_Element *e, double visibility);
 EAPI void eon_element_visibility_get(Ender_Element *e, double *visibility);
+EAPI void eon_element_parent_get(Ender_Element *e, Ender_Element **parent);
+EAPI void eon_element_focusable_get(Ender_Element *e, Eina_Bool *focusable);
 
 /**
  * @}

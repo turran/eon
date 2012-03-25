@@ -310,6 +310,57 @@ static Eina_Bool _stack_relayout(Ender_Element *e,
 	thiz->needs_setup = EINA_FALSE;
 	return EINA_TRUE;
 }
+/*----------------------------------------------------------------------------*
+ *                    The Keyboard Proxy Navigation interface                 *
+ *----------------------------------------------------------------------------*/
+static Ender_Element * _stack_navigation_tab(void *data,
+		Ender_Element *current)
+{
+	Eon_Stack *thiz = data;
+	Eon_Stack_Child *child;
+	Eina_List *l;
+
+	printf("stack navigation!!! %p\n", current);
+	if (!current)
+	{
+		child = eina_list_data_get(thiz->children);
+		return child->ender;
+	}
+	else
+	{
+		/* TODO We need to implement the siblings */
+		EINA_LIST_FOREACH(thiz->children, l, child)
+		{
+			if (child->ender == current)
+			{
+				Eina_List *next;
+
+				l = eina_list_next(l);
+				if (!l) return NULL;
+				child = eina_list_data_get(l);
+				return child->ender;
+			}
+		}
+	}
+}
+
+static Ender_Element * _stack_navigation_reverse_tab(void *data,
+		Ender_Element *current)
+{
+	Eon_Stack *thiz = data;
+
+	printf("TODO\n");
+	return NULL;
+}
+
+static Eon_Keyboard_Proxy_Navigation_Descriptor _stack_navigation_descriptor = {
+	/* .tab 	= */ _stack_navigation_tab,
+	/* .reverse_tab = */ _stack_navigation_reverse_tab,
+	/* .up 		= */ NULL,
+	/* .down 	= */ NULL,
+	/* .left 	= */ NULL,
+	/* .right 	= */ NULL
+};
 
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -606,12 +657,16 @@ static Eon_Element * _eon_stack_new(void)
 {
 	Eon_Stack *thiz;
 	Eon_Element *ee;
+	Eon_Keyboard_Proxy *kp;
 
 	thiz = calloc(1, sizeof(Eon_Stack));
 	if (!thiz) return NULL;
 
 	ee = eon_layout_new(&_descriptor, thiz);
 	if (!ee) goto renderer_err;
+
+	kp = eon_keyboard_proxy_navigation_new(&_stack_navigation_descriptor, thiz);
+	eon_element_keyboard_proxy_set(ee, kp);
 
 	return ee;
 

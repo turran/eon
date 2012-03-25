@@ -286,6 +286,7 @@ Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *
 	Eon_Button_Base *thiz;
 	Eon_Container_Descriptor pdescriptor = { 0 };
 	Eon_Element *ee;
+	Eon_Keyboard_Proxy *kp;
 
 	thiz = calloc(1, sizeof(Eon_Button_Base));
 	if (!thiz) return NULL;
@@ -307,6 +308,9 @@ Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *
 
 	ee = eon_container_new(&pdescriptor, thiz);
 	if (!ee) goto renderer_err;
+
+	kp = eon_keyboard_proxy_focus_new();
+        eon_element_keyboard_proxy_set(ee, kp);
 
 	return ee;
 
