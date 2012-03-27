@@ -22,9 +22,8 @@
  *============================================================================*/
 static int _proxy_focus_count = 0;
 
-static void _navigation_send_key_down(Ender_Element *current,
+static void _navigation_send_key_down_bubble(Ender_Element *current,
 		Eon_Input *input,
-		Ender_Element *from,
 		const char *key)
 {
 	Ender_Element *parent;
@@ -40,6 +39,7 @@ static void _navigation_send_key_down(Ender_Element *current,
 static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
 {
 	Eon_Navigation_Key nkey;
+	Ender_Element *focused;
 
 	/* DEBUG */
 	{
@@ -56,28 +56,26 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 	{
 		/* TODO generate the key event */
 		printf("key down event\n");
+		return;
+	}
+
+	eon_input_focus_get(input, &focused);
+	/* we are the current focus */
+	if (focused == current)
+	{
+		/* send the event to the parent */
+		_navigation_send_key_down_bubble(current, input, key);
 	}
 	else
 	{
-#if 0
-		/* we are the current focus */
-		if (!from)
-		{
-			/* send the event to the parent */
-			_navigation_send_key_down(current, input, NULL, key);
-		}
-		else
-#endif
-		{
-			Eina_Bool focusable;
+		Eina_Bool focusable;
 
-			eon_element_focusable_get(current, &focusable);
-			printf("focusable %d\n", focusable);
-			if (focusable)
-				eon_input_focus_set(input, current);
-			else
-				_navigation_send_key_down(current, input, from, key);
-		}
+		eon_element_focusable_get(current, &focusable);
+		printf("focusable %d\n", focusable);
+		if (focusable)
+			eon_input_focus_set(input, current);
+		else
+			_navigation_send_key_down_bubble(current, input, key);
 	}
 }
 
@@ -126,4 +124,3 @@ Eon_Keyboard_Proxy * eon_keyboard_proxy_focus_new(void)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-

@@ -247,7 +247,7 @@ static Ender_Element * _eon_canvas_child_at(Ender_Element *e, double x, double y
 	return child;
 }
 
-static void _eon_canvas_child_add(Eon_Element *ee, Ender_Element *child)
+static Eina_Bool _eon_canvas_child_add(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
@@ -257,13 +257,15 @@ static void _eon_canvas_child_add(Eon_Element *ee, Ender_Element *child)
 	ech->ender = child;
 	thiz->children = eina_list_append(thiz->children, ech);
 	thiz->needs_setup = EINA_TRUE;
+	return EINA_TRUE;
 }
 
-static void _eon_canvas_child_remove(Eon_Element *ee, Ender_Element *child)
+static Eina_Bool _eon_canvas_child_remove(Eon_Element *ee, Ender_Element *child)
 {
 	Eon_Canvas *thiz;
 	Eon_Canvas_Child *ech;
 	Eina_List *l, *l_next;
+	Eina_Bool found = EINA_FALSE;
 
 	thiz = _eon_canvas_get(ee);
 	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, ech)
@@ -271,10 +273,17 @@ static void _eon_canvas_child_remove(Eon_Element *ee, Ender_Element *child)
 		if (ech->ender == child)
 		{
 			thiz->children = eina_list_remove_list(thiz->children, l);
+			found = EINA_TRUE;
 			break;
 		}
 	}
-	thiz->needs_setup = EINA_TRUE;
+	if (found)
+	{
+		thiz->needs_setup = EINA_TRUE;
+		return EINA_TRUE;
+	}
+
+	return EINA_FALSE;
 }
 
 static Eon_Layout_Descriptor _descriptor = {

@@ -31,12 +31,14 @@
 #define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_WIDGET_MAGIC, ret)
 
 static Ender_Property *EON_WIDGET_THEME;
+static Ender_Property *EON_WIDGET_ENABLE;
 
 typedef struct _Eon_Widget
 {
 	EINA_MAGIC
 	/* properties */
 	char *theme;
+	Eina_Bool enable;
 	/* private */
 	/* the theme data */
 	Escen_Ender *theme_ender;
@@ -70,6 +72,44 @@ static inline Eon_Widget * _eon_widget_get(Eon_Element *ee)
 	EON_WIDGET_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
+}
+
+static Eina_Bool _eon_widget_theme_setup(Eon_Widget *thiz, Ender_Element *e, Escen *theme_escen)
+{
+	Escen_Ender *theme_ender;
+	Escen_Instance *theme_instance;
+	Ender_Element *theme_element;
+	Enesim_Renderer *theme_renderer;
+	const char *name;
+
+	/* remove the theme already associated with the element
+	 * and set this, get the correct escen_ender and set
+	 * the current state
+	 */
+	name = ender_element_name_get(e);
+	theme_ender = escen_ender_get(theme_escen, name);
+	if (!theme_ender)
+	{
+		printf("no ender %s\n", name);
+		return EINA_FALSE;
+	}
+
+	theme_instance = escen_instance_new(theme_ender);
+	if (!theme_instance)
+	{
+		printf("no instance %s\n", name);
+		return EINA_FALSE;
+	}
+
+	theme_element = escen_instance_ender_get(theme_instance);
+	theme_renderer = ender_element_object_get(theme_element);
+
+	thiz->theme_ender = theme_ender;
+	thiz->theme_instance = theme_instance;
+	thiz->theme_element = theme_element;
+	thiz->theme_renderer = theme_renderer;
+
+	return EINA_TRUE;
 }
 
 static void _widget_focus_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -278,6 +318,60 @@ static double _eon_widget_preferred_height_get(Ender_Element *e)
 		v = thiz->preferred_height_get(e, thiz->theme_renderer);
 	return v;
 }
+/*----------------------------------------------------------------------------*
+ *                       The Ender descriptor functions                       *
+ *----------------------------------------------------------------------------*/
+static void _eon_widget_theme_set(Eon_Element *ee, const char *file)
+{
+	Eon_Widget *thiz;
+	Ender_Element *e;
+	Ender_Element *old_element;
+	Escen_Instance *old_instance;
+	Escen *theme_escen;
+
+	thiz = _eon_widget_get(ee);
+	e = thiz->e;
+	theme_escen = eon_theme_get_from_file(file);
+	if (!theme_escen)
+	{
+		printf("no valid file %s\n", file);
+		return;
+	}
+
+	old_element = thiz->theme_element;
+	old_instance = thiz->theme_instance;
+
+	_eon_widget_theme_setup(thiz, e, theme_escen);
+	/* FIXME delete the old instance/element */
+
+	thiz->theme = strdup(file);
+}
+
+static void _eon_widget_theme_get(Eon_Element *ee, const char **file)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(ee);
+	*file = thiz->theme;
+}
+
+static void _eon_widget_enable_set(Eon_Element *ee, Eina_Bool enable)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(ee);
+	thiz->enable = enable;
+}
+
+static void _eon_widget_enable_get(Eon_Element *ee, Eina_Bool *enable)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(ee);
+	*enable = thiz->enable;
+}
+
+#include "eon_generated_widget.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -360,80 +454,6 @@ renderer_err:
 	free(thiz);
 	return NULL;
 }
-
-static Eina_Bool _eon_widget_theme_setup(Eon_Widget *thiz, Ender_Element *e, Escen *theme_escen)
-{
-	Escen_Ender *theme_ender;
-	Escen_Instance *theme_instance;
-	Ender_Element *theme_element;
-	Enesim_Renderer *theme_renderer;
-	const char *name;
-
-	/* remove the theme already associated with the element
-	 * and set this, get the correct escen_ender and set
-	 * the current state
-	 */
-	name = ender_element_name_get(e);
-	theme_ender = escen_ender_get(theme_escen, name);
-	if (!theme_ender)
-	{
-		printf("no ender %s\n", name);
-		return EINA_FALSE;
-	}
-
-	theme_instance = escen_instance_new(theme_ender);
-	if (!theme_instance)
-	{
-		printf("no instance %s\n", name);
-		return EINA_FALSE;
-	}
-
-	theme_element = escen_instance_ender_get(theme_instance);
-	theme_renderer = ender_element_object_get(theme_element);
-
-	thiz->theme_ender = theme_ender;
-	thiz->theme_instance = theme_instance;
-	thiz->theme_element = theme_element;
-	thiz->theme_renderer = theme_renderer;
-
-	return EINA_TRUE;
-}
-
-static void _eon_widget_theme_set(Eon_Element *ee, const char *file)
-{
-	Eon_Widget *thiz;
-	Ender_Element *e;
-	Ender_Element *old_element;
-	Escen_Instance *old_instance;
-	Escen *theme_escen;
-
-	thiz = _eon_widget_get(ee);
-	e = thiz->e;
-	theme_escen = eon_theme_get_from_file(file);
-	if (!theme_escen)
-	{
-		printf("no valid file %s\n", file);
-		return;
-	}
-
-	old_element = thiz->theme_element;
-	old_instance = thiz->theme_instance;
-
-	_eon_widget_theme_setup(thiz, e, theme_escen);
-	/* FIXME delete the old instance/element */
-
-	thiz->theme = strdup(file);
-}
-
-static void _eon_widget_theme_get(Eon_Element *ee, const char **file)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(ee);
-	*file = thiz->theme;
-}
-
-#include "eon_generated_widget.c"
 
 void * eon_widget_data_get(Eon_Element *ee)
 {
@@ -582,3 +602,13 @@ EAPI void eon_widget_theme_set(Ender_Element *e, const char *file)
 {
 	ender_element_property_value_set(e, EON_WIDGET_THEME, file, NULL);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_widget_enable_set(Ender_Element *e, Eina_Bool enable)
+{
+	ender_element_property_value_set(e, EON_WIDGET_ENABLE, enable, NULL);
+}
+

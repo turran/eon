@@ -26,6 +26,7 @@ typedef void (*Eon_Element_Actual_X_Set)(Eon_Element *e, double x);
 typedef void (*Eon_Element_Actual_Y_Set)(Eon_Element *e, double y);
 typedef void (*Eon_Element_Actual_Width_Set)(Eon_Element *e, double width);
 typedef void (*Eon_Element_Actual_Height_Set)(Eon_Element *e, double height);
+typedef Eina_Bool (*Eon_Element_Is_Focusable)(Eon_Element *e);
 /**
  * On eon at the end is not the element itself which is drawn on the screen but the
  * graphics representation of it. This graphics representation is the renderer associated
@@ -62,8 +63,8 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Actual_Y_Set actual_y_set;
 	Eon_Element_Actual_Width_Set actual_width_set;
 	Eon_Element_Actual_Height_Set actual_height_set;
+	Eon_Element_Is_Focusable is_focusable;
 	Eon_Element_Free free;
-	Eina_Bool is_focusable; // FIXME make this a callback
 	const char *name;
 } Eon_Element_Descriptor;
 

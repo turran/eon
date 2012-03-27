@@ -27,9 +27,8 @@ typedef struct _Eon_Keyboard_Proxy_Navigation
 } Eon_Keyboard_Proxy_Navigation;
 
 
-static void _navigation_send_key_down(Ender_Element *current,
+static void _navigation_send_key_down_bubble(Ender_Element *current,
 		Eon_Input *input,
-		Ender_Element *from,
 		const char *key)
 {
 	Ender_Element *parent;
@@ -46,6 +45,7 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 {
 	Eon_Keyboard_Proxy_Navigation *thiz = data;
 	Eon_Navigation_Key nkey;
+	Eon_Keyboard_Proxy_Navigation_Get get = NULL;
 
 	/* DEBUG */
 	{
@@ -59,84 +59,69 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 	}
 	if (!eon_input_navigation_key_get(input, key, &nkey))
 	{
-		_navigation_send_key_down(current, input, from, key);
+		_navigation_send_key_down_bubble(current, input, key);
+		return;
+	}
+
+	switch (nkey)
+	{
+		case EON_NAVIGATION_KEY_TAB:
+		get = thiz->descriptor->tab;
+		break;
+
+		case EON_NAVIGATION_KEY_REVERSE_TAB:
+		get = thiz->descriptor->reverse_tab;
+		break;
+
+		case EON_NAVIGATION_KEY_LEFT:
+		get = thiz->descriptor->left;
+		break;
+
+		case EON_NAVIGATION_KEY_RIGHT:
+		get = thiz->descriptor->left;
+		break;
+
+		case EON_NAVIGATION_KEY_UP:
+		get = thiz->descriptor->up;
+		break;
+
+		case EON_NAVIGATION_KEY_DOWN:
+		get = thiz->descriptor->up;
+		break;
+
+		default:
+		break;
+	}
+	/* just pass it */
+	if (!get)
+	{
+		_navigation_send_key_down_bubble(current, input, key);
 	}
 	else
 	{
-		Eon_Keyboard_Proxy_Navigation_Get get = NULL;
-		switch (nkey)
+		Ender_Element *got;
+
+		got = get(thiz->data, from);
+		/* go up */
+		if (!got)
 		{
-			case EON_NAVIGATION_KEY_TAB:
-			get = thiz->descriptor->tab;
-			break;
-
-			case EON_NAVIGATION_KEY_REVERSE_TAB:
-			get = thiz->descriptor->reverse_tab;
-			break;
-
-			case EON_NAVIGATION_KEY_LEFT:
-			get = thiz->descriptor->left;
-			break;
-
-			case EON_NAVIGATION_KEY_RIGHT:
-			get = thiz->descriptor->left;
-			break;
-
-			case EON_NAVIGATION_KEY_UP:
-			get = thiz->descriptor->up;
-			break;
-
-			case EON_NAVIGATION_KEY_DOWN:
-			get = thiz->descriptor->up;
-			break;
-
-			default:
-			break;
-		}
-		/* just pass it */
-		if (!get)
-		{
-			_navigation_send_key_down(current, input, from, key);
-		}
-		/* get the element and send the event there */
-		else
-		{
-			Ender_Element *got;
 			Ender_Element *parent;
-			Ender_Element *focused;
 
-			eon_input_focus_get(input, &focused);
-			if (!focused)
-			{
-				/* FIXME we should call the tab here */
-				got = get(thiz->data, NULL);
-			}
-			else
-			{
-				got = get(thiz->data, from);
-			}
 			eon_element_parent_get(current, &parent);
-			printf("first got %p %p\n", got, parent);
-			/* FIXME cycle again */
-#if 0
-			if (!got && !parent && (nkey == EON_NAVIGATION_KEY_TAB || nkey == EON_NAVIGATION_KEY_REVERSE_TAB))
+			/* cycle */
+			if (parent)
+				eon_element_feed_key_down(parent, input, current, key);
+			/* cycle again */
+			else if (nkey == EON_NAVIGATION_KEY_TAB || nkey == EON_NAVIGATION_KEY_REVERSE_TAB)
 			{
 				got = get(thiz->data, NULL);
-				printf("inside second got %p\n", got);
-			}
-#endif
-			if (!got)
-			{
-				_navigation_send_key_down(current, input, from, key);
-			}
-			else
-			{
-				if (!focused)
+				if (got)
 					eon_element_feed_key_down(got, input, NULL, key);
-				else
-					eon_element_feed_key_down(got, input, current, key);
 			}
 		}
+		/* go down */
+		else
+			eon_element_feed_key_down(got, input, NULL, key);
 	}
 }
 
@@ -189,5 +174,3 @@ Eon_Keyboard_Proxy * eon_keyboard_proxy_navigation_new(
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-
-

@@ -1,3 +1,5 @@
++ Refactor the widget to make the theme usage configurable
++ Add the "enabled" property on the widgets
 + Add parent, sibling, etc information on every eon element, we need that for focus handling
 + Add events to the input, the input should trigger events whenever something happens, like a new focus element or a new grabbed element. This input event should be registered
   on the window? on the input?

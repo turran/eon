@@ -86,7 +86,7 @@ struct _Eon_Element
 	Eon_Element_Actual_Height_Set actual_height_set;
 	Eon_Element_Preferred_Height_Get preferred_height_get;
 	Eon_Element_Preferred_Width_Get preferred_width_get;
-	Eina_Bool is_focusable;
+	Eon_Element_Is_Focusable is_focusable;
 	const char *name;
 	/* misc */
 	Ender_Element *current_focus;
@@ -340,6 +340,9 @@ static void _eon_element_parent_get(Eon_Element *thiz, Ender_Element **parent)
 static void _eon_element_focusable_get(Eon_Element *thiz, Eina_Bool *focusable)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
+
+	if (thiz->is_focusable)
+		*focusable = thiz->is_focusable(thiz);
 	/* TODO fix this */
 	*focusable = EINA_TRUE;
 }
