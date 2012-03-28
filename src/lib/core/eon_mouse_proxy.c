@@ -52,24 +52,46 @@ void eon_mouse_proxy_delete(Eon_Mouse_Proxy *thiz)
 		free(thiz);
 }
 
-void eon_mouse_proxy_feed_mouse_move(Eon_Mouse_Proxy *thiz,
+void eon_mouse_proxy_feed_move(Eon_Mouse_Proxy *thiz,
+		Ender_Element *e,
+		Eon_Input *input,
 		double x, double y, double offset_x, double offset_y)
 {
-
+	if (!thiz->descriptor->move)
+		return;
+	thiz->descriptor->move(thiz->data, e, input, x, y, offset_x, offset_y);
 }
 
-void eon_mouse_proxy_feed_mouse_down(Eon_Mouse_Proxy *thiz)
+void eon_mouse_proxy_feed_button_down(Eon_Mouse_Proxy *thiz,
+		Ender_Element *e,
+		Eon_Input *input,
+		int button)
 {
+	if (!thiz->descriptor->button_down)
+		return;
+
+	thiz->descriptor->button_down(thiz->data, e, input, button);
 }
 
-void eon_mouse_proxy_feed_mouse_up(Eon_Mouse_Proxy *thiz)
+void eon_mouse_proxy_feed_button_up(Eon_Mouse_Proxy *thiz,
+		Ender_Element *e,
+		Eon_Input *input,
+		int button)
 {
-
+	if (!thiz->descriptor->button_up)
+		return;
+	thiz->descriptor->button_up(thiz->data, e, input, button);
 }
 
-void eon_mouse_proxy_feed_mouse_wheel(Eon_Mouse_Proxy *thiz, int direction)
+void eon_mouse_proxy_feed_wheel(Eon_Mouse_Proxy *thiz,
+		Ender_Element *e,
+		Eon_Input *input,
+		int direction)
 {
+	if (!thiz->descriptor->wheel)
+		return;
 
+	thiz->descriptor->wheel(thiz->data, e, input, direction);
 }
 /*============================================================================*
  *                                   API                                      *

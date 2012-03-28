@@ -59,11 +59,6 @@ struct _Eon_Input_State
 		Ender_Element *grabbed; /* the object where the mouse down happened */
 		Ender_Element *last;
 	} pointer;
-	struct
-	{
-		Ender_Element *focus;
-		Eon_Input_Modifiers mods;
-	} keyboard;
 };
 
 Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, double y, double *rel_x,
@@ -339,45 +334,59 @@ void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int direction)
 
 /* FIXME the above code must removed/refactored */
 
-void eon_input_feed_key_down(Eon_Input *thiz, Ender_Element *topmost, const char *key)
+void eon_input_feed_key_down(Eon_Input *thiz, Ender_Element *topmost, Eon_Keyboard_Key *key)
 {
 	Ender_Element *dst = topmost;
 
-	//printf("key down %s\n", key);
+	printf("key down %s\n", key->name);
 	if (thiz->focus)
 		dst = thiz->focus;
-	eon_element_feed_key_down (dst, thiz, NULL, key);
+	eon_element_feed_key_down(dst, thiz, NULL, key);
 }
 
-void eon_input_feed_key_up (Eon_Input *thiz, Ender_Element *topmost, const char *key)
+void eon_input_feed_key_up (Eon_Input *thiz, Ender_Element *topmost, Eon_Keyboard_Key *key)
 {
 	Ender_Element *dst = topmost;
 
-	//printf("key up %s\n", key);
+	//printf("key up %s\n", key->name);
 	if (thiz->focus)
 		dst = thiz->focus;
-	eon_element_feed_key_up (dst, thiz, NULL, key);
+	eon_element_feed_key_up(dst, thiz, NULL, key);
 }
 
 Eina_Bool eon_input_navigation_key_get(Eon_Input *thiz,
-		const char *key,
+		Eon_Keyboard_Key *key,
 		Eon_Navigation_Key *nkey)
 {
 	Eina_Bool ret = EINA_TRUE;
 
 	/* FIXME we miss the reverse tab, and so, the modifiers */
-	if (!strcmp(key, "Tab"))
-		*nkey = EON_NAVIGATION_KEY_TAB;
-	else if (!strcmp(key, "Left"))
-		*nkey = EON_NAVIGATION_KEY_LEFT;
-	else if (!strcmp(key, "Right"))
-		*nkey = EON_NAVIGATION_KEY_RIGHT;
-	else if (!strcmp(key, "Up"))
-		*nkey = EON_NAVIGATION_KEY_UP;
-	else if (!strcmp(key, "Down"))
-		*nkey = EON_NAVIGATION_KEY_DOWN;
+	if (!key->mods)
+	{
+		if (!strcmp(key->name, "Tab"))
+			*nkey = EON_NAVIGATION_KEY_TAB;
+		else if (!strcmp(key->name, "Left"))
+			*nkey = EON_NAVIGATION_KEY_LEFT;
+		else if (!strcmp(key->name, "Right"))
+			*nkey = EON_NAVIGATION_KEY_RIGHT;
+		else if (!strcmp(key->name, "Up"))
+			*nkey = EON_NAVIGATION_KEY_UP;
+		else if (!strcmp(key->name, "Down"))
+			*nkey = EON_NAVIGATION_KEY_DOWN;
+		else if (!strcmp(key->name, "Return") || !strcmp(key->name, "space"))
+			*nkey = EON_NAVIGATION_KEY_OK;
+		else if (!strcmp(key->name, "Escape"))
+			*nkey = EON_NAVIGATION_KEY_CANCEL;
+		else
+			ret = EINA_FALSE;
+	}
 	else
-		ret = EINA_FALSE;
+	{
+		if (key->mods == EON_INPUT_MOD_LSHIFT)
+			*nkey = EON_NAVIGATION_KEY_REVERSE_TAB;
+		else
+			ret = EINA_FALSE;
+	}
 
 	return ret;
 }

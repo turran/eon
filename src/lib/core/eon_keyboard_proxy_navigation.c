@@ -29,7 +29,7 @@ typedef struct _Eon_Keyboard_Proxy_Navigation
 
 static void _navigation_send_key_down_bubble(Ender_Element *current,
 		Eon_Input *input,
-		const char *key)
+		Eon_Keyboard_Key *key)
 {
 	Ender_Element *parent;
 
@@ -41,7 +41,7 @@ static void _navigation_send_key_down_bubble(Ender_Element *current,
 	}
 }
 
-static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
+static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Keyboard_Proxy_Navigation *thiz = data;
 	Eon_Navigation_Key nkey;
@@ -112,6 +112,7 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 			if (parent)
 				eon_element_feed_key_down(parent, input, current, key);
 			/* cycle again */
+			/* FIXME in case no element is focusable we might reach an endless loop */
 			else if (nkey == EON_NAVIGATION_KEY_TAB || nkey == EON_NAVIGATION_KEY_REVERSE_TAB)
 			{
 				got = get(thiz->data, NULL);
@@ -125,7 +126,7 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 	}
 }
 
-static void _eon_keyboard_proxy_navigation_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
+static void _eon_keyboard_proxy_navigation_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Navigation_Key nkey;
 

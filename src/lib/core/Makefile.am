@@ -28,6 +28,7 @@ eon_label.c \
 eon_layout.c \
 eon_main.c \
 eon_misc.c \
+eon_mouse_proxy.c \
 eon_checkbox.c \
 eon_progressbar.c \
 eon_radio.c \

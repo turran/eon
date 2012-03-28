@@ -31,14 +31,14 @@
 #define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_WIDGET_MAGIC, ret)
 
 static Ender_Property *EON_WIDGET_THEME;
-static Ender_Property *EON_WIDGET_ENABLE;
+static Ender_Property *EON_WIDGET_ENABLED;
 
 typedef struct _Eon_Widget
 {
 	EINA_MAGIC
 	/* properties */
 	char *theme;
-	Eina_Bool enable;
+	Eina_Bool enabled;
 	/* private */
 	/* the theme data */
 	Escen_Ender *theme_ender;
@@ -318,6 +318,15 @@ static double _eon_widget_preferred_height_get(Ender_Element *e)
 		v = thiz->preferred_height_get(e, thiz->theme_renderer);
 	return v;
 }
+
+static Eina_Bool _eon_widget_is_focusable(Eon_Element *ee)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(ee);
+	/* TODO maybe the widget might need to fine tune this? */
+	return thiz->enabled;
+}
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
@@ -355,20 +364,32 @@ static void _eon_widget_theme_get(Eon_Element *ee, const char **file)
 	*file = thiz->theme;
 }
 
-static void _eon_widget_enable_set(Eon_Element *ee, Eina_Bool enable)
+static void _eon_widget_enabled_set(Eon_Element *ee, Eina_Bool enabled)
 {
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(ee);
-	thiz->enable = enable;
+	if (thiz->enabled == enabled)
+		return;
+
+	thiz->enabled = enabled;
+	if (enabled)
+	{
+		eon_widget_state_set(ee, "enabled", EINA_FALSE);
+	}
+	else
+	{
+		eon_widget_state_set(ee, "disabled", EINA_FALSE);
+
+	}
 }
 
-static void _eon_widget_enable_get(Eon_Element *ee, Eina_Bool *enable)
+static void _eon_widget_enabled_get(Eon_Element *ee, Eina_Bool *enabled)
 {
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(ee);
-	*enable = thiz->enable;
+	*enabled = thiz->enabled;
 }
 
 #include "eon_generated_widget.c"
@@ -411,6 +432,10 @@ Eon_Element * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 
 	thiz = calloc(1, sizeof(Eon_Widget));
 	EINA_MAGIC_SET(thiz, EON_WIDGET_MAGIC);
+	/* default values */
+	thiz->enabled = EINA_TRUE;
+
+	/* the interface */
 	thiz->data = data;
 	thiz->free = descriptor->free;
 	thiz->initialize = descriptor->initialize;
@@ -441,6 +466,7 @@ Eon_Element * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	pdescriptor.actual_y_set = _eon_widget_actual_y_set;
 	pdescriptor.actual_width_set = _eon_widget_actual_width_set;
 	pdescriptor.actual_height_set = _eon_widget_actual_height_set;
+	pdescriptor.is_focusable = _eon_widget_is_focusable;
 
 	pdescriptor.free = _eon_widget_free;
 	pdescriptor.name = descriptor->name;
@@ -607,8 +633,8 @@ EAPI void eon_widget_theme_set(Ender_Element *e, const char *file)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_widget_enable_set(Ender_Element *e, Eina_Bool enable)
+EAPI void eon_widget_enabled_set(Ender_Element *e, Eina_Bool enabled)
 {
-	ender_element_property_value_set(e, EON_WIDGET_ENABLE, enable, NULL);
+	ender_element_property_value_set(e, EON_WIDGET_ENABLED, enabled, NULL);
 }
 

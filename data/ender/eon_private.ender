@@ -20,7 +20,7 @@ namespace "eon" {
 
 	abstract "widget" : "element" {
 		string "theme";
-		bool "enable";
+		bool "enabled";
 	};
 
 	abstract "layout" : "widget" {
@@ -45,7 +45,6 @@ namespace "eon" {
 	};
 
 	abstract "button_base" : "container" {
-		bool "enabled";
 	};
 
 	class "button" : "button_base" {

@@ -22,8 +22,6 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static Ender_Property *EON_BUTTON_BASE_ENABLED;
-
 typedef struct _Eon_Button_Base
 {
 	/* properties */
@@ -240,35 +238,6 @@ static void _eon_button_base_free(Eon_Element *ee)
 		thiz->free(ee);
 	free(thiz);
 }
-/*----------------------------------------------------------------------------*
- *                       The Ender descriptor functions                       *
- *----------------------------------------------------------------------------*/
-static void _eon_button_base_enabled_set(Eon_Element *ee, Eina_Bool enabled)
-{
-	Eon_Button_Base *thiz;
-
-	thiz = _eon_button_base_get(ee);
-	if (thiz->enabled == enabled) return;
-
-	thiz->enabled = enabled;
-	if (enabled)
-	{
-		eon_widget_state_set(ee, "enabled", EINA_FALSE);
-	}
-	else
-	{
-		eon_widget_state_set(ee, "disabled", EINA_FALSE);
-
-	}
-}
-
-static void _eon_button_base_enabled_get(Eon_Element *ee, Eina_Bool *enabled)
-{
-	Eon_Button_Base *thiz;
-
-	thiz = _eon_button_base_get(ee);
-	*enabled = thiz->enabled;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -323,21 +292,3 @@ renderer_err:
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_button_base_enabled_set(Ender_Element *e, Eina_Bool enabled)
-{
-	ender_element_property_value_set(e, EON_BUTTON_BASE_ENABLED, enabled, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_button_base_enabled_get(Ender_Element *e, Eina_Bool *enabled)
-{
-	ender_element_property_value_get(e, EON_BUTTON_BASE_ENABLED, enabled, NULL);
-}
-

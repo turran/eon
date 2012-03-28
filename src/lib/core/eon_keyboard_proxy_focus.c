@@ -24,7 +24,7 @@ static int _proxy_focus_count = 0;
 
 static void _navigation_send_key_down_bubble(Ender_Element *current,
 		Eon_Input *input,
-		const char *key)
+		Eon_Keyboard_Key *key)
 {
 	Ender_Element *parent;
 
@@ -36,7 +36,7 @@ static void _navigation_send_key_down_bubble(Ender_Element *current,
 	}
 }
 
-static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
+static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Navigation_Key nkey;
 	Ender_Element *focused;
@@ -79,7 +79,7 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 	}
 }
 
-static void _eon_keyboard_proxy_focus_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, const char *key)
+static void _eon_keyboard_proxy_focus_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Navigation_Key nkey;
 

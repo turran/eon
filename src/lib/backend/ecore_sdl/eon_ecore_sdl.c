@@ -201,9 +201,11 @@ static Eina_Bool _key_down(void *data, int type, void *event)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
+	Eon_Keyboard_Key key;
 
 	//printf("DOWN %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
-	eon_input_feed_key_down(thiz->input, thiz->layout, ev->keyname);
+	key.name = ev->keyname;
+	eon_input_feed_key_down(thiz->input, thiz->layout, &key);
 	return ECORE_CALLBACK_RENEW;
 }
 
@@ -211,9 +213,11 @@ static Eina_Bool _key_up(void *data, int type, void *event)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Event_Key *ev = event;
+	Eon_Keyboard_Key key;
 
 	//printf("UP %s %s %s %s\n", ev->keyname, ev->key, ev->string, ev->compose);
-	eon_input_feed_key_up(thiz->input, thiz->layout, ev->keyname);
+	key.name = ev->keyname;
+	eon_input_feed_key_up(thiz->input, thiz->layout, &key);
 	return ECORE_CALLBACK_RENEW;
 }
 

@@ -341,10 +341,19 @@ static void _eon_element_focusable_get(Eon_Element *thiz, Eina_Bool *focusable)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 
+	if (!focusable) return;
+
+	/* if not visible it can receive focus */
+	if (!thiz->current.visible)
+	{
+		*focusable = EINA_FALSE;
+		return;
+	}
+
 	if (thiz->is_focusable)
 		*focusable = thiz->is_focusable(thiz);
-	/* TODO fix this */
-	*focusable = EINA_TRUE;
+	else
+		*focusable = EINA_FALSE;
 }
 
 static void _eon_element_name_set(Eon_Element *thiz, const char *name)
@@ -482,14 +491,7 @@ void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 }
 
 /* functions to manage the focus/mouse events */
-Ender_Element * eon_element_at(Ender_Element *e, double x, double y)
-{
-	/* check if the element has implemented the element_at interface
-	 * if so, pass it but translated to the new position
-	 */
-}
-
-void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element *from, const char *key)
+void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Element *thiz;
 
@@ -499,7 +501,7 @@ void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element
 	eon_keyboard_proxy_feed_key_down(thiz->keyboard_proxy, e, input, from, key);
 }
 
-void eon_element_feed_key_up(Ender_Element *e, Eon_Input *input, Ender_Element *from, const char *key)
+void eon_element_feed_key_up(Ender_Element *e, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Element *thiz;
 
@@ -519,6 +521,7 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->data = data;
 	thiz->current.actual_size.width = -1;
 	thiz->current.actual_size.height = -1;
+	thiz->current.visible = EINA_TRUE;
 	thiz->max_size.width = thiz->max_size.height = DBL_MAX;
 	thiz->min_size.width = thiz->min_size.height = 0;
 	thiz->size.width = -1;

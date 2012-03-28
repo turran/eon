@@ -56,7 +56,7 @@ void eon_keyboard_proxy_feed_key_up(Eon_Keyboard_Proxy *thiz,
 		Ender_Element *current,
 		Eon_Input *input,
 		Ender_Element *from,
-		const char *key)
+		Eon_Keyboard_Key *key)
 {
 	if (!thiz->descriptor->key_up)
 		return;
@@ -68,7 +68,7 @@ void eon_keyboard_proxy_feed_key_down(Eon_Keyboard_Proxy *thiz,
 		Ender_Element *current,
 		Eon_Input *input,
 		Ender_Element *from,
-		const char *key)
+		Eon_Keyboard_Key *key)
 {
 	if (!thiz->descriptor->key_down)
 		return;
