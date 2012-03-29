@@ -8,6 +8,7 @@ namespace "eon" {
 	class "basic_radio" : "theme_radio" {
 		int "selected";
 		color "color";
+		color "background_color";
 	};
 
 	class "basic_color" : "theme_color" {
@@ -81,7 +82,7 @@ namespace "eon" {
 	};
 
 	class "basic_entry" : "theme_entry" {
-
+		color "border_color";
 	};
 
 	class "basic_spin" : "theme_spin" {

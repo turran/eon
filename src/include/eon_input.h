@@ -53,6 +53,12 @@ typedef enum _Eon_Input_Event_Mask
 	EON_INPUT_EVENT_MASK_KEY_UP 		= (1 << EON_INPUT_EVENT_KEY_UP),
 } Eon_Input_Event_Mask;
 
+typedef struct _Eon_Keyboard_Key
+{
+	const char *name;
+	Eon_Input_Modifiers mods;
+} Eon_Keyboard_Key;
+
 extern const char * eon_input_event_names[EON_INPUT_EVENTS];
 
 /**
@@ -122,11 +128,13 @@ typedef struct _Eon_Event_Mouse_Drag_Stop
 typedef struct _Eon_Event_Key_Down
 {
 	Eon_Input *input;
+	Eon_Keyboard_Key *key;
 } Eon_Event_Key_Down;
 
 typedef struct _Eon_Event_Key_Up
 {
 	Eon_Input *input;
+	Eon_Keyboard_Key *key;
 } Eon_Event_Key_Up;
 
 /* FIXME merge these two */

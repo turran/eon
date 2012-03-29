@@ -28,6 +28,8 @@
 
 EAPI Eina_Bool eon_is_widget(Ender_Element *e);
 EAPI void eon_widget_theme_set(Ender_Element *e, const char *file);
+EAPI void eon_widget_enabled_set(Ender_Element *e, Eina_Bool enabled);
+EAPI void eon_widget_enabled_get(Ender_Element *e, Eina_Bool *enabled);
 
 /**
  * @}

@@ -49,34 +49,27 @@ static inline Eon_Entry * _eon_entry_get(Eon_Element *ee)
 
 static void _eon_entry_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Entry *thiz;
-	Eon_Element *ee;
+	Eon_Event_Mouse_Click *ev = event_data;
 
-	ee = ender_element_object_get(e);
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_entry_get(ee);
-
-	/* FIXME just an example for now, given that the key evenst are now managed yet */
-	{
-		Enesim_Renderer *theme_r;
-		static int offset = 0;
-
-		theme_r = eon_widget_theme_renderer_get(ee);
-		etex_buffer_string_insert(thiz->buffer, "l>", -1, offset);
-		eon_theme_entry_buffer_needs_setup(theme_r);
-		offset += 2;
-		/* inform the position of the cursor */
-	}
+	eon_input_focus_set(ev->input, e);
 }
 
 static void _eon_entry_key_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Entry *thiz;
 	Eon_Element *ee;
+	Eon_Event_Key_Down *ev = event_data;
+	Enesim_Renderer *theme_r;
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_entry_get(ee);
+
+	printf("entry key down! %s\n", ev->key->name);
+	theme_r = eon_widget_theme_renderer_get(ee);
+	/* TODO get the position of the cursor */
+	etex_buffer_string_insert(thiz->buffer, ev->key->name, -1, 0);
+	/* TODO inform the position of the cursor */
+	eon_theme_entry_buffer_needs_setup(theme_r);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -166,6 +159,7 @@ static Eon_Element * _eon_entry_new(void)
 {
 	Eon_Entry *thiz;
 	Eon_Element *ee;
+	Eon_Keyboard_Proxy *kp;
 
 	thiz = calloc(1, sizeof(Eon_Entry));
 	if (!thiz) return NULL;
@@ -175,6 +169,9 @@ static Eon_Element * _eon_entry_new(void)
 
 	ee = eon_widget_new(&_eon_entry_widget_descriptor, thiz);
 	if (!ee) goto renderer_err;
+
+	kp = eon_keyboard_proxy_focus_new();
+        eon_element_keyboard_proxy_set(ee, kp);
 
 	return ee;
 

@@ -217,6 +217,18 @@ EAPI void eon_basic_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void eon_basic_radio_background_color_set(Enesim_Renderer *r, Enesim_Color background_color)
+{
+	Radio *thiz;
+
+	thiz = _radio_get(r);
+	enesim_renderer_background_color_set(thiz->background, background_color);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_basic_radio_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Radio *thiz;

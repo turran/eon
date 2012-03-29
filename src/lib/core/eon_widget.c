@@ -133,6 +133,30 @@ static void _widget_focus_out(Ender_Element *e, const char *event_name, void *ev
 
 	eon_widget_state_set(ee, "focus_out", EINA_TRUE);
 }
+
+static void _widget_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Widget *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_widget_get(ee);
+
+	if (!thiz->enabled) return;
+	eon_widget_state_set(ee, "mouse_in", EINA_FALSE);
+}
+
+static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Widget *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_widget_get(ee);
+
+	if (!thiz->enabled) return;
+	eon_widget_state_set(ee, "mouse_out", EINA_TRUE);
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -157,6 +181,8 @@ static void _eon_widget_initialize(Ender_Element *e)
 
 	ender_event_listener_add(e, "FocusIn", _widget_focus_in, NULL);
 	ender_event_listener_add(e, "FocusOut", _widget_focus_out, NULL);
+	ender_event_listener_add(e, "MouseIn", _widget_mouse_in, NULL);
+	ender_event_listener_add(e, "MouseOut", _widget_mouse_out, NULL);
 
 	/* register every needed callback */
 	if (thiz->initialize)
@@ -636,5 +662,14 @@ EAPI void eon_widget_theme_set(Ender_Element *e, const char *file)
 EAPI void eon_widget_enabled_set(Ender_Element *e, Eina_Bool enabled)
 {
 	ender_element_property_value_set(e, EON_WIDGET_ENABLED, enabled, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_widget_enabled_get(Ender_Element *e, Eina_Bool *enabled)
+{
+	ender_element_property_value_get(e, EON_WIDGET_ENABLED, enabled, NULL);
 }
 

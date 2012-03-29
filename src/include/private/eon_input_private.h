@@ -1,12 +1,6 @@
 #ifndef _EON_INPUT_PRIVATE_H_
 #define _EON_INPUT_PRIVATE_H_
 
-typedef struct _Eon_Keyboard_Key
-{
-	const char *name;
-	Eon_Input_Modifiers mods;
-} Eon_Keyboard_Key;
-
 typedef enum _Eon_Navigation_Key
 {
 	EON_NAVIGATION_KEY_TAB,

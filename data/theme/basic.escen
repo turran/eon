@@ -66,36 +66,34 @@ escen {
 	};
 
 	basic_button "button" {
-		default : "mouse_out", "mouse_up", "focus_out" {
+		default {
 			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
+			set { start_bevel = 0xffffffff; };
+			set { end_bevel = 0xff000000; };
+		};
+
+		state "mouse_up" {
+			set { fill_color = 0xffcccccc; };
 			set { start_bevel = 0xffffffff; };
 			set { end_bevel = 0xff000000; };
 		};
 
 		state "disabled" : "mouse_down" {
 			set { fill_color = 0xffa8a8a8; };
-			set { start_shadow = 0x77000000; };
-			set { end_shadow = 0x22000000; };
 			set { start_bevel = 0xff000000; };
 			set { end_bevel = 0xffffffff; };
 		};
 
-		state "mouse_in" {
-			set { fill_color = 0xffcccccc; };
-			set { start_shadow = 0xff557cb8; };
-			set { end_shadow = 0xff557cb8; };
-			set { start_bevel = 0xffffffff; };
-			set { end_bevel = 0xff000000; };
+		state "focus_out" {
+			set { start_shadow = 0x77000000; };
+			set { end_shadow = 0x22000000; };
 		};
 
 		state "focus_in" {
-			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0xff557cb8; };
 			set { end_shadow = 0xff557cb8; };
-			set { start_bevel = 0xffffffff; };
-			set { end_bevel = 0xff000000; };
 		};
 	};
 
@@ -109,6 +107,7 @@ escen {
 
 	basic_radio "radio" {
 		default {
+			set { background_color = 0xffeeeeee; };
 			set { color = 0xff000000; };
 			set { selected = 0; };
 		};
@@ -128,6 +127,14 @@ escen {
 					type = LINEAR;
 				};
 			};
+		};
+
+		state "focus_out" {
+			set { background_color = 0xffeeeeee; };
+		};
+
+		state "focus_in" {
+			set { background_color = 0xff557cb8; };
 		};
 
 		state "unselected" {
@@ -220,9 +227,13 @@ escen {
 	};
 
 	basic_entry "entry" {
-		default {
+		default : "focus_out" {
 			set { size = 13; };
 			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
+			set { border_color = 0xff555555; };
+		};
+		state "focus_in" {
+			set { border_color = 0xff557cb8; };
 		};
 	};
 

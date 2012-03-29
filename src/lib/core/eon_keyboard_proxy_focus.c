@@ -36,6 +36,20 @@ static void _navigation_send_key_down_bubble(Ender_Element *current,
 	}
 }
 
+static void _navigation_send_key_up_bubble(Ender_Element *current,
+		Eon_Input *input,
+		Eon_Keyboard_Key *key)
+{
+	Ender_Element *parent;
+
+	/* pass the event to the parent */
+	eon_element_parent_get(current, &parent);
+	if (parent)
+	{
+		eon_element_feed_key_up(parent, input, current, key);
+	}
+}
+
 static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Navigation_Key nkey;
@@ -54,8 +68,12 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 
 	if (!eon_input_navigation_key_get(input, key, &nkey))
 	{
-		/* TODO generate the key event */
-		printf("key down event\n");
+		Eon_Event_Key_Down ev;
+		ev.key = key;
+		ev.input = input;
+		ender_event_dispatch(current,
+				eon_input_event_names[EON_INPUT_EVENT_KEY_DOWN],
+				&ev);
 		return;
 	}
 
@@ -84,12 +102,19 @@ static void _eon_keyboard_proxy_focus_key_up(void *data, Ender_Element *current,
 	Eon_Navigation_Key nkey;
 
 	printf("focus key up current %p\n", current);
+
 	if (!eon_input_navigation_key_get(input, key, &nkey))
 	{
+		Eon_Event_Key_Up ev;
+		ev.key = key;
+		ev.input = input;
+		ender_event_dispatch(current,
+				eon_input_event_names[EON_INPUT_EVENT_KEY_UP],
+				&ev);
 	}
 	else
 	{
-		printf("key up event\n");
+		_navigation_send_key_up_bubble(current, input, key);
 	}
 }
 

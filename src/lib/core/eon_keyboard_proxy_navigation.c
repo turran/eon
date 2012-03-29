@@ -23,6 +23,7 @@
 typedef struct _Eon_Keyboard_Proxy_Navigation
 {
 	Eon_Keyboard_Proxy_Navigation_Descriptor *descriptor;
+	int times;
 	void *data;
 } Eon_Keyboard_Proxy_Navigation;
 
@@ -112,12 +113,9 @@ static void _eon_keyboard_proxy_navigation_key_down(void *data, Ender_Element *c
 			if (parent)
 				eon_element_feed_key_down(parent, input, current, key);
 			/* cycle again */
-			/* FIXME in case no element is focusable we might reach an endless loop */
 			else if (nkey == EON_NAVIGATION_KEY_TAB || nkey == EON_NAVIGATION_KEY_REVERSE_TAB)
 			{
-				got = get(thiz->data, NULL);
-				if (got)
-					eon_element_feed_key_down(got, input, NULL, key);
+				eon_input_focus_set(input, NULL);
 			}
 		}
 		/* go down */

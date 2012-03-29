@@ -31,7 +31,11 @@ struct _Eon_Input
 {
 	char *name;
 	char *description;
+	Ender_Element *grabbed;
 	Ender_Element *focus;
+	Eina_Bool composed_keys;
+	/* in case the input does not handle the mods by itself */
+	Eon_Input_Modifiers mods;
 	/* FIXME here we should put some device information, like name or type */
 };
 
@@ -61,6 +65,36 @@ struct _Eon_Input_State
 	} pointer;
 };
 
+static Eina_Bool _unset_composed(Eon_Input_Modifiers *mods, const char *key)
+{
+	Eina_Bool ret = EINA_TRUE;
+
+	/* FIXME implement the other modifiers */
+	if (!strcmp(key, "Shift_L"))
+		*mods &= ~EON_INPUT_MOD_LSHIFT;
+	else if (!strcmp(key, "Shift_R"))
+		*mods &= ~EON_INPUT_MOD_RSHIFT;
+	else
+		ret = EINA_FALSE;
+
+	return ret;
+}
+
+static Eina_Bool _set_composed(Eon_Input_Modifiers *mods, const char *key)
+{
+	Eina_Bool ret = EINA_TRUE;
+
+	/* FIXME implement the other modifiers */
+	if (!strcmp(key, "Shift_L"))
+		*mods |= EON_INPUT_MOD_LSHIFT;
+	else if (!strcmp(key, "Shift_R"))
+		*mods |= EON_INPUT_MOD_RSHIFT;
+	else
+		ret = EINA_FALSE;
+
+	return ret;
+}
+
 Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, double y, double *rel_x,
 	double *rel_y)
 {
@@ -88,10 +122,12 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, do
  */
 Eon_Input * eon_input_new(void)
 {
-	Eon_Input *ei;
+	Eon_Input *thiz;
 
-	ei = calloc(1, sizeof(Eon_Input));
-	return ei;
+	thiz = calloc(1, sizeof(Eon_Input));
+	thiz->composed_keys = EINA_FALSE;
+
+	return thiz;
 }
 
 Eon_Input_State * eon_input_state_new(Eon_Input *input, Ender_Element *element,
@@ -337,21 +373,54 @@ void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int direction)
 void eon_input_feed_key_down(Eon_Input *thiz, Ender_Element *topmost, Eon_Keyboard_Key *key)
 {
 	Ender_Element *dst = topmost;
+	Eon_Keyboard_Key *send_key;
+	Eon_Keyboard_Key new_key;
 
-	printf("key down %s\n", key->name);
 	if (thiz->focus)
 		dst = thiz->focus;
-	eon_element_feed_key_down(dst, thiz, NULL, key);
+	/* first check if the key is a modifier */
+	if (!thiz->composed_keys)
+	{
+ 		if (_set_composed(&thiz->mods, key->name))
+			return;
+
+		new_key.name = key->name;
+		new_key.mods = thiz->mods;
+		send_key = &new_key;
+	}
+	else
+	{
+		send_key = key;
+	}
+
+	printf("key down %s %08x\n", send_key->name, send_key->mods);
+	eon_element_feed_key_down(dst, thiz, NULL, send_key);
 }
 
-void eon_input_feed_key_up (Eon_Input *thiz, Ender_Element *topmost, Eon_Keyboard_Key *key)
+void eon_input_feed_key_up(Eon_Input *thiz, Ender_Element *topmost, Eon_Keyboard_Key *key)
 {
 	Ender_Element *dst = topmost;
+	Eon_Keyboard_Key *send_key;
+	Eon_Keyboard_Key new_key;
 
-	//printf("key up %s\n", key->name);
 	if (thiz->focus)
 		dst = thiz->focus;
-	eon_element_feed_key_up(dst, thiz, NULL, key);
+	if (!thiz->composed_keys)
+	{
+ 		if (_unset_composed(&thiz->mods, key->name))
+			return;
+
+		new_key.name = key->name;
+		new_key.mods = thiz->mods;
+		send_key = &new_key;
+	}
+	else
+	{
+		send_key = key;
+	}
+
+	printf("key up %s %08x\n", send_key->name, send_key->mods);
+	eon_element_feed_key_up(dst, thiz, NULL, send_key);
 }
 
 Eina_Bool eon_input_navigation_key_get(Eon_Input *thiz,
@@ -382,7 +451,7 @@ Eina_Bool eon_input_navigation_key_get(Eon_Input *thiz,
 	}
 	else
 	{
-		if (key->mods == EON_INPUT_MOD_LSHIFT)
+		if (key->mods == EON_INPUT_MOD_LSHIFT && !strcmp(key->name, "Tab"))
 			*nkey = EON_NAVIGATION_KEY_REVERSE_TAB;
 		else
 			ret = EINA_FALSE;
@@ -443,8 +512,8 @@ EAPI void eon_input_focus_set(Eon_Input *thiz, Ender_Element *focus)
 	{
 		ender_event_dispatch(focus,
 				eon_input_event_names[EON_INPUT_EVENT_FOCUS_IN], NULL);
-		thiz->focus = focus;
 	}
+	thiz->focus = focus;
 }
 
 EAPI void eon_input_focus_get(Eon_Input *thiz, Ender_Element **focus)

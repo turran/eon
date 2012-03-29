@@ -24,8 +24,6 @@
  *============================================================================*/
 typedef struct _Eon_Button_Base
 {
-	/* properties */
-	Eina_Bool enabled;
 	/* private */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
@@ -41,51 +39,27 @@ static inline Eon_Button_Base * _eon_button_base_get(Eon_Element *ee)
 	return thiz;
 }
 
-static void _button_base_mouse_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Button_Base *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_button_base_get(ee);
-
-	if (!thiz->enabled) return;
-	eon_widget_state_set(ee, "mouse_in", EINA_FALSE);
-}
-
-static void _button_base_mouse_out(Ender_Element *e, const char *event_name, void *event_data, void *data)
-{
-	Eon_Button_Base *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_button_base_get(ee);
-
-	if (!thiz->enabled) return;
-	eon_widget_state_set(ee, "mouse_out", EINA_TRUE);
-}
-
 static void _button_base_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Button_Base *thiz;
 	Eon_Element *ee;
+	Eina_Bool enabled;
 
 	ee = ender_element_object_get(e);
-	thiz = _eon_button_base_get(ee);
 
-	if (!thiz->enabled) return;
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled) return;
 	eon_widget_state_set(ee, "mouse_down", EINA_FALSE);
 }
 
 static void _button_base_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Button_Base *thiz;
 	Eon_Element *ee;
+	Eina_Bool enabled;
 
 	ee = ender_element_object_get(e);
-	thiz = _eon_button_base_get(ee);
 
-	if (!thiz->enabled) return;
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled) return;
 	eon_widget_state_set(ee, "mouse_up", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
@@ -101,8 +75,6 @@ static void _eon_button_base_initialize(Ender_Element *e)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_button_base_get(ee);
-	ender_event_listener_add(e, "MouseIn", _button_base_mouse_in, NULL);
-	ender_event_listener_add(e, "MouseOut", _button_base_mouse_out, NULL);
 	ender_event_listener_add(e, "MouseDown", _button_base_mouse_down, NULL);
 	ender_event_listener_add(e, "MouseUp", _button_base_mouse_up, NULL);
 	if (thiz->initialize)
@@ -262,7 +234,6 @@ Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *
 	thiz->data = data;
 	thiz->free = descriptor->free;
 	thiz->initialize = descriptor->initialize;
-	thiz->enabled = EINA_TRUE;
 
 	pdescriptor.initialize = _eon_button_base_initialize;
 	pdescriptor.free = _eon_button_base_free;

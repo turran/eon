@@ -324,6 +324,8 @@ static Ender_Element * _stack_navigation_tab(void *data,
 	if (!current)
 	{
 		child = eina_list_data_get(thiz->children);
+		if (!child) return NULL;
+
 		return child->ender;
 	}
 	else
@@ -333,14 +335,13 @@ static Ender_Element * _stack_navigation_tab(void *data,
 		{
 			if (child->ender == current)
 			{
-				Eina_List *next;
-
 				l = eina_list_next(l);
 				if (!l) return NULL;
 				child = eina_list_data_get(l);
 				return child->ender;
 			}
 		}
+		return NULL;
 	}
 }
 
@@ -348,9 +349,33 @@ static Ender_Element * _stack_navigation_reverse_tab(void *data,
 		Ender_Element *current)
 {
 	Eon_Stack *thiz = data;
+	Eon_Stack_Child *child;
+	Eina_List *l;
 
-	printf("TODO\n");
-	return NULL;
+	if (!current)
+	{
+		l = eina_list_last(thiz->children);
+		if (!l) return NULL;
+
+		child = eina_list_data_get(l);
+		return child->ender;
+	}
+	else
+	{
+		/* TODO We need to implement the siblings */
+		EINA_LIST_FOREACH(thiz->children, l, child)
+		{
+			if (child->ender == current)
+			{
+				l = eina_list_prev(l);
+				if (!l) return NULL;
+
+				child = eina_list_data_get(l);
+				return child->ender;
+			}
+		}
+		return NULL;
+	}
 }
 
 static Eon_Keyboard_Proxy_Navigation_Descriptor _stack_navigation_descriptor = {
