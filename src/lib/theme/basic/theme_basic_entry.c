@@ -78,9 +78,12 @@ static Eina_Bool _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
 	//printf("width = %g height = %g\n", width, height);
 	enesim_renderer_rectangle_position_set(thiz->shape, ox, oy);
 	enesim_renderer_rectangle_size_set(thiz->shape, width, height);
-	if (!thiz->text)
+	if (text != thiz->text)
 	{
 		thiz->text = text;
+
+		enesim_renderer_compound_layer_clear(thiz->shape_fill);
+		enesim_renderer_compound_layer_add(thiz->shape_fill, thiz->background);
 		enesim_renderer_compound_layer_add(thiz->shape_fill, text);
 		enesim_renderer_rop_set(text, ENESIM_BLEND);
 		enesim_renderer_color_set(text, 0xff000000);

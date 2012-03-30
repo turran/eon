@@ -41,41 +41,71 @@ static inline Eon_Radio * _eon_radio_get(Eon_Element *ee)
 	return thiz;
 }
 
-static void _radio_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static void _eon_radio_mouse_click(Ender_Element *e,
+		const char *event_name,
+		void *event_data,
+		void *data)
 {
-	Escen_Ender *theme;
-	Escen_State *new_state;
 	Eon_Element *ee;
+	Eina_Bool enabled;
 
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled)
+		return;
 	/* TODO Whenever the mouse is clicked, we should know if by clicking on x, y
 	 * we actually need to change the state of the radio button
 	 */
 	ee = ender_element_object_get(e);
-	theme = eon_widget_theme_ender_get(ee);
-	new_state = escen_ender_state_get(theme, "selected");
-	if (new_state)
-	{
-		Escen_Instance *eei;
-		eei = eon_widget_theme_instance_get(ee);
-		escen_instance_state_set(eei, new_state);
-	}
+	eon_widget_state_set(ee, "selected", EINA_FALSE);
+	eon_radio_selected_set(e, EINA_TRUE);
+	/* TODO trigger the selected event */
+}
+
+static void _eon_radio_key_up(Ender_Element *e,
+		const char *event_name,
+		void *event_data,
+		void *data)
+{
+	Eon_Element *ee;
+	Eon_Event_Key_Up *ev = event_data;
+	Eon_Navigation_Key nkey;
+	Eina_Bool enabled;
+
+	/* check if the key is an enter key */
+	if (!eon_input_navigation_key_get(ev->input, ev->key, &nkey))
+		return;
+
+	if (nkey != EON_NAVIGATION_KEY_OK)
+		return;
+
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled)
+		return;
+
+	ee = ender_element_object_get(e);
+
+	eon_widget_state_set(ee, "selected", EINA_FALSE);
 	eon_radio_selected_set(e, EINA_TRUE);
 	/* TODO trigger the selected event */
 }
 /*----------------------------------------------------------------------------*
  *                     The Eon's button_base interface                          *
  *----------------------------------------------------------------------------*/
-static void _eon_radio_initialize(Ender_Element *ender)
+static void _eon_radio_initialize(Ender_Element *e)
 {
 	Eon_Radio *thiz;
 	Eon_Element *ee;
 
-	ee = ender_element_object_get(ender);
+	ee = ender_element_object_get(e);
 	thiz = _eon_radio_get(ee);
-	thiz->e = ender;
+	thiz->e = e;
 	/* register every needed callback */
-	ender_event_listener_add(ender, "MouseClick", _radio_mouse_click, NULL);
-	
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
+			_eon_radio_mouse_click, NULL);
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_KEY_UP],
+			_eon_radio_key_up, NULL);
 }
 
 static Eon_Button_Base_Descriptor _descriptor = {
@@ -149,7 +179,6 @@ static void _eon_radio_selected_get(Eon_Element *ee, Eina_Bool *selected)
 	*selected = EINA_TRUE;
 	//eon_widget_property_get(ee, "selected", selected, NULL);
 }
-
 
 static void _eon_radio_selected_set(Eon_Element *ee, Eina_Bool selected)
 {

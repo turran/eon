@@ -144,7 +144,7 @@ static void _eon_layout_child_remove(Eon_Element *ee, Ender_Element *child)
 	thiz = _eon_layout_get(ee);
 	if (!thiz->child_remove(ee, child))
 	{
-		eon_element_parent_set(child, NULL);
+		eon_element_parent_set(child, NULL, NULL, NULL);
 	}
 }
 
@@ -166,7 +166,7 @@ static void _eon_layout_child_add(Eon_Element *ee, Ender_Element *child)
 	}
 	if (thiz->child_add(ee, child))
 	{
-		eon_element_parent_set(child, thiz->e);
+		eon_element_parent_set(child, thiz->e, NULL, NULL);
 	}
 }
 

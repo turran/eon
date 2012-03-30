@@ -25,7 +25,6 @@
 static Ender_Property *EON_ENTRY_ALIGNMENT;
 static Ender_Property *EON_ENTRY_MAX_LENGTH;
 static Ender_Property *EON_ENTRY_TEXT;
-static Ender_Property *EON_ENTRY_ENABLED;
 
 typedef struct _Eon_Entry
 {
@@ -295,24 +294,6 @@ EAPI void eon_entry_alignment_set(Ender_Element *e, Eon_Horizontal_Alignment ali
 EAPI void eon_entry_alignment_get(Ender_Element *e, Eon_Horizontal_Alignment *alignment)
 {
 	ender_element_value_get(e, "alignment", alignment, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_entry_enabled_set(Ender_Element *e, Eina_Bool enabled)
-{
-	ender_element_value_set(e, "enabled", enabled, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_entry_enabled_get(Ender_Element *e, Eina_Bool enabled)
-{
-	ender_element_value_get(e, "enabled", enabled, NULL);
 }
 
 /**

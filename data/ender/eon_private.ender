@@ -113,7 +113,6 @@ namespace "eon" {
 		int "alignment";
 		int "max_length";
 		string "text";
-		bool "enabled";
 	};
 
 	class "spin" : "widget" {

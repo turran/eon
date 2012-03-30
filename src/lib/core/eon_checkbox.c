@@ -38,9 +38,37 @@ static inline Eon_Checkbox * _eon_checkbox_get(Eon_Element *ee)
 	return thiz;
 }
 
-static void _checkbox_mouse_click(Ender_Element *e, const char *event_name, void *event_data, void *data)
+static void _eon_checkbox_mouse_click(Ender_Element *e,
+		const char *event_name,
+		void *event_data,
+		void *data)
 {
 	Eina_Bool selected;
+
+	eon_checkbox_selected_get(e, &selected);
+	eon_checkbox_selected_set(e, !selected);
+}
+
+static void _eon_checkbox_key_up(Ender_Element *e,
+		const char *event_name,
+		void *event_data,
+		void *data)
+{
+	Eon_Event_Key_Up *ev = event_data;
+	Eon_Navigation_Key nkey;
+	Eina_Bool enabled;
+	Eina_Bool selected;
+
+	/* check if the key is an enter key */
+	if (!eon_input_navigation_key_get(ev->input, ev->key, &nkey))
+		return;
+
+	if (nkey != EON_NAVIGATION_KEY_OK)
+		return;
+
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled)
+		return;
 
 	eon_checkbox_selected_get(e, &selected);
 	eon_checkbox_selected_set(e, !selected);
@@ -57,7 +85,12 @@ static void _eon_checkbox_initialize(Ender_Element *e)
 	thiz = _eon_checkbox_get(ee);
 	thiz->e = e;
 	/* register every needed callback */
-	ender_event_listener_add(e, "MouseClick", _checkbox_mouse_click, NULL);
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
+			_eon_checkbox_mouse_click, NULL);
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_KEY_UP],
+			_eon_checkbox_key_up, NULL);
 }
 
 static Eon_Button_Base_Descriptor _descriptor = {
@@ -97,25 +130,17 @@ static void _eon_checkbox_selected_set(Eon_Element *ee, Eina_Bool selected)
 {
 	Eon_Checkbox *thiz;
 	Eon_Event_Selected selected_event;
-	Escen_Ender *theme;
-	Escen_State *new_state;
 	Ender_Element *e;
 
 	thiz = _eon_checkbox_get(ee);
 	/* first set the property internally */
 	thiz->selected = selected;
-	/* now set the state */
-	theme = eon_widget_theme_ender_get(ee);
+
 	if (selected)
-		new_state = escen_ender_state_get(theme, "selected");
+		eon_widget_state_set(ee, "selected", EINA_FALSE);
 	else
-		new_state = escen_ender_state_get(theme, "unselected");
-	if (new_state)
-	{
-		Escen_Instance *eei;
-		eei = eon_widget_theme_instance_get(ee);
-		escen_instance_state_set(eei, new_state);
-	}
+		eon_widget_state_set(ee, "unselected", EINA_FALSE);
+
 	/* trigger the selected event */
 	e = thiz->e;
 	selected_event.selected = selected;

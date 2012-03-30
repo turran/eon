@@ -57,6 +57,13 @@ static Ender_Property *EON_ELEMENT_PREFERRED_HEIGHT;
 static Ender_Property *EON_ELEMENT_ACTUAL_WIDTH;
 static Ender_Property *EON_ELEMENT_ACTUAL_HEIGHT;
 
+typedef struct _Eon_Element_Parent_Relation
+{
+	Ender_Element *parent;
+	Eon_Free_Func free_func;
+	void *data;
+} Eon_Element_Parent_Relation;
+
 struct _Eon_Element
 {
 	EINA_MAGIC
@@ -68,26 +75,10 @@ struct _Eon_Element
 	Eon_Size max_size;
 	Eon_Size size;
 	/* private */
-	Ender_Element *parent;
+	Eon_Element_Parent_Relation parent_relation;
 	Eon_Keyboard_Proxy *keyboard_proxy;
 	/* descriptor */
-	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
-	Eon_Element_Renderer_Get renderer_get;
-	Eon_Element_Needs_Setup needs_setup;
-	Eon_Element_Free free;
-	Eon_Element_Min_Height_Get min_height_get;
-	Eon_Element_Min_Width_Get min_width_get;
-	Eon_Element_Min_Height_Get max_height_get;
-	Eon_Element_Min_Width_Get max_width_get;
-	Eon_Element_Actual_X_Set actual_x_set;
-	Eon_Element_Actual_Y_Set actual_y_set;
-	Eon_Element_Actual_Width_Set actual_width_set;
-	Eon_Element_Actual_Height_Set actual_height_set;
-	Eon_Element_Preferred_Height_Get preferred_height_get;
-	Eon_Element_Preferred_Width_Get preferred_width_get;
-	Eon_Element_Is_Focusable is_focusable;
-	const char *name;
+	Eon_Element_Descriptor descriptor;
 	/* misc */
 	Ender_Element *current_focus;
 	Eina_Bool do_needs_setup : 1;
@@ -103,8 +94,8 @@ static double _element_min_width_get(Ender_Element *e)
 
 	thiz = ender_element_object_get(e);
 	if (!thiz) return v;
-	if (thiz->min_width_get)
-		v = thiz->min_width_get(e);
+	if (thiz->descriptor.min_width_get)
+		v = thiz->descriptor.min_width_get(e);
 	return MAX(v, thiz->min_size.width);
 }
 
@@ -115,8 +106,8 @@ static double _element_min_height_get(Ender_Element *e)
 
 	thiz = ender_element_object_get(e);
 	if (!thiz) return v;
-	if (thiz->min_height_get)
-		v = thiz->min_height_get(e);
+	if (thiz->descriptor.min_height_get)
+		v = thiz->descriptor.min_height_get(e);
 	return MAX(v, thiz->min_size.height);
 }
 
@@ -127,8 +118,8 @@ static double _element_max_width_get(Ender_Element *e)
 
 	thiz = ender_element_object_get(e);
 	if (!thiz) return v;
-	if (thiz->max_width_get)
-		v = thiz->max_width_get(e);
+	if (thiz->descriptor.max_width_get)
+		v = thiz->descriptor.max_width_get(e);
 	return MIN(v, thiz->max_size.width);
 }
 
@@ -139,8 +130,8 @@ static double _element_max_height_get(Ender_Element *e)
 
 	thiz = ender_element_object_get(e);
 	if (!thiz) return v;
-	if (thiz->max_height_get)
-		v = thiz->max_height_get(e);
+	if (thiz->descriptor.max_height_get)
+		v = thiz->descriptor.max_height_get(e);
 	return MIN(v, thiz->max_size.height);
 }
 
@@ -150,8 +141,8 @@ static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_
 
 	thiz = ender_element_object_get(e);
 
-	if (thiz->setup)
-		return thiz->setup(e, &thiz->current, s, error);
+	if (thiz->descriptor.setup)
+		return thiz->descriptor.setup(e, &thiz->current, s, error);
 	return EINA_TRUE;
 }
 
@@ -299,8 +290,8 @@ static void _eon_element_preferred_width_get(Eon_Element *thiz, double *width)
 
 	e = thiz->e;
 	*width = -1;
-	if (thiz->preferred_width_get)
-		*width = thiz->preferred_width_get(e);
+	if (thiz->descriptor.preferred_width_get)
+		*width = thiz->descriptor.preferred_width_get(e);
 }
 
 static void _eon_element_preferred_height_get(Eon_Element *thiz, double *height)
@@ -312,8 +303,8 @@ static void _eon_element_preferred_height_get(Eon_Element *thiz, double *height)
 
 	e = thiz->e;
 	*height = -1;
-	if (thiz->preferred_height_get)
-		*height = thiz->preferred_height_get(e);
+	if (thiz->descriptor.preferred_height_get)
+		*height = thiz->descriptor.preferred_height_get(e);
 }
 
 
@@ -334,7 +325,7 @@ static void _eon_element_parent_get(Eon_Element *thiz, Ender_Element **parent)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	if (!parent) return;
-	*parent = thiz->parent;
+	*parent = thiz->parent_relation.parent;
 }
 
 static void _eon_element_focusable_get(Eon_Element *thiz, Eina_Bool *focusable)
@@ -350,8 +341,8 @@ static void _eon_element_focusable_get(Eon_Element *thiz, Eina_Bool *focusable)
 		return;
 	}
 
-	if (thiz->is_focusable)
-		*focusable = thiz->is_focusable(thiz);
+	if (thiz->descriptor.is_focusable)
+		*focusable = thiz->descriptor.is_focusable(thiz);
 	else
 		*focusable = EINA_FALSE;
 }
@@ -372,7 +363,7 @@ static void _eon_element_name_get(Eon_Element *thiz, const char **name)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	if (!thiz->user_name)
-		*name = thiz->name;
+		*name = thiz->descriptor.name;
 	else
 		*name = thiz->user_name;
 }
@@ -397,8 +388,8 @@ static void _eon_element_factory_setup(Eon_Element *thiz)
 
 	if (!_factories)
 		_factories = eina_hash_string_superfast_new(NULL);
-	if (thiz->name)
-		descriptor_name = thiz->name;
+	if (thiz->descriptor.name)
+		descriptor_name = thiz->descriptor.name;
 	if (!descriptor_name)
 		descriptor_name = "unknown";
 	f = eina_hash_find(_factories, descriptor_name);
@@ -426,7 +417,7 @@ static void _eon_element_real_width_get(Eon_Element *thiz, double *width)
 	rw = MIN(set, max);
 	rw = MAX(rw, min);
 
-	//printf("real width %s = %g (%g %g %g)\n", thiz->name, rw, min, set, max);
+	//printf("real width %s = %g (%g %g %g)\n", thiz->descriptor.name, rw, min, set, max);
 	*width = rw;
 }
 
@@ -444,14 +435,14 @@ static void _eon_element_real_height_get(Eon_Element *thiz, double *height)
 	rh = MIN(set, max);
 	rh = MAX(rh, min);
 
-	//printf("real height %s = %g (%g %g %g)\n", thiz->name, rh, min, set, max);
+	//printf("real height %s = %g (%g %g %g)\n", thiz->descriptor.name, rh, min, set, max);
 	*height = rh;
 }
 
 static void _eon_element_free(Eon_Element *thiz)
 {
-	if (thiz->free)
-		thiz->free(thiz);
+	if (thiz->descriptor.free)
+		thiz->descriptor.free(thiz);
 	free(thiz);
 }
 /*============================================================================*
@@ -467,8 +458,8 @@ void eon_element_initialize(Ender_Element *e)
 	/* whenever the theme has changed we should notify
 	 * the change on this element too
 	 */
-	if (thiz->initialize)
-		thiz->initialize(e);
+	if (thiz->descriptor.initialize)
+		thiz->descriptor.initialize(e);
 }
 
 Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
@@ -528,28 +519,28 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->size.height = -1;
 
 	/* Set the function pointers */
-	thiz->initialize = descriptor->initialize;
-	thiz->setup = descriptor->setup;
-	thiz->renderer_get = descriptor->renderer_get;
-	thiz->needs_setup = descriptor->needs_setup;
-	thiz->free = descriptor->free;
+	thiz->descriptor.initialize = descriptor->initialize;
+	thiz->descriptor.setup = descriptor->setup;
+	thiz->descriptor.renderer_get = descriptor->renderer_get;
+	thiz->descriptor.needs_setup = descriptor->needs_setup;
+	thiz->descriptor.free = descriptor->free;
 	/* min */
-	thiz->min_width_get = descriptor->min_width_get;
-	thiz->min_height_get = descriptor->min_height_get;
+	thiz->descriptor.min_width_get = descriptor->min_width_get;
+	thiz->descriptor.min_height_get = descriptor->min_height_get;
 	/* max */
-	thiz->max_width_get = descriptor->max_width_get;
-	thiz->max_height_get = descriptor->max_height_get;
+	thiz->descriptor.max_width_get = descriptor->max_width_get;
+	thiz->descriptor.max_height_get = descriptor->max_height_get;
 	/* actual */
-	thiz->actual_x_set = descriptor->actual_x_set;
-	thiz->actual_y_set = descriptor->actual_y_set;
-	thiz->actual_width_set = descriptor->actual_width_set;
-	thiz->actual_height_set = descriptor->actual_height_set;
+	thiz->descriptor.actual_x_set = descriptor->actual_x_set;
+	thiz->descriptor.actual_y_set = descriptor->actual_y_set;
+	thiz->descriptor.actual_width_set = descriptor->actual_width_set;
+	thiz->descriptor.actual_height_set = descriptor->actual_height_set;
 	/* preferred */
-	thiz->preferred_width_get = descriptor->preferred_width_get;
-	thiz->preferred_height_get = descriptor->preferred_height_get;
+	thiz->descriptor.preferred_width_get = descriptor->preferred_width_get;
+	thiz->descriptor.preferred_height_get = descriptor->preferred_height_get;
 	/* other */
-	thiz->is_focusable = descriptor->is_focusable;
-	thiz->name = descriptor->name;
+	thiz->descriptor.is_focusable = descriptor->is_focusable;
+	thiz->descriptor.name = descriptor->name;
 
 	_eon_element_factory_setup(thiz);
 	printf("element of name %s created %p\n", thiz->user_name, thiz);
@@ -581,24 +572,24 @@ Eina_Bool eon_element_needs_setup(Ender_Element *e)
 	}
 	if (ret) return ret;
 
-	if (thiz->needs_setup)
-		ret = thiz->needs_setup(e);
+	if (thiz->descriptor.needs_setup)
+		ret = thiz->descriptor.needs_setup(e);
 	return ret;
 }
 
 void eon_element_actual_width_set(Eon_Element *thiz, double width)
 {
 	thiz->current.actual_size.width = width;
-	if (thiz->actual_width_set)
-		thiz->actual_width_set(thiz, width);
+	if (thiz->descriptor.actual_width_set)
+		thiz->descriptor.actual_width_set(thiz, width);
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
 void eon_element_actual_height_set(Eon_Element *thiz, double height)
 {
 	thiz->current.actual_size.height = height;
-	if (thiz->actual_height_set)
-		thiz->actual_height_set(thiz, height);
+	if (thiz->descriptor.actual_height_set)
+		thiz->descriptor.actual_height_set(thiz, height);
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
@@ -606,10 +597,10 @@ void eon_element_actual_size_set(Eon_Element *thiz, double width, double height)
 {
 	thiz->current.actual_size.width = width;
 	thiz->current.actual_size.height = height;
-	if (thiz->actual_width_set)
-		thiz->actual_width_set(thiz, width);
-	if (thiz->actual_height_set)
-		thiz->actual_height_set(thiz, height);
+	if (thiz->descriptor.actual_width_set)
+		thiz->descriptor.actual_width_set(thiz, width);
+	if (thiz->descriptor.actual_height_set)
+		thiz->descriptor.actual_height_set(thiz, height);
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
@@ -622,25 +613,25 @@ void eon_element_actual_size_get(Eon_Element *thiz, Eon_Size *size)
 void eon_element_actual_x_set(Eon_Element *thiz, double x)
 {
 	thiz->current.actual_position.x = x;
-	if (thiz->actual_x_set)
-		thiz->actual_x_set(thiz, x);
+	if (thiz->descriptor.actual_x_set)
+		thiz->descriptor.actual_x_set(thiz, x);
 }
 
 void eon_element_actual_y_set(Eon_Element *thiz, double y)
 {
 	thiz->current.actual_position.y = y;
-	if (thiz->actual_y_set)
-		thiz->actual_y_set(thiz, y);
+	if (thiz->descriptor.actual_y_set)
+		thiz->descriptor.actual_y_set(thiz, y);
 }
 
 void eon_element_actual_position_set(Eon_Element *thiz, double x, double y)
 {
 	thiz->current.actual_position.x = x;
 	thiz->current.actual_position.y = y;
-	if (thiz->actual_x_set)
-		thiz->actual_x_set(thiz, x);
-	if (thiz->actual_y_set)
-		thiz->actual_y_set(thiz, y);
+	if (thiz->descriptor.actual_x_set)
+		thiz->descriptor.actual_x_set(thiz, x);
+	if (thiz->descriptor.actual_y_set)
+		thiz->descriptor.actual_y_set(thiz, y);
 }
 
 void eon_element_actual_position_get(Eon_Element *thiz, double *x, double *y)
@@ -656,14 +647,14 @@ void eon_element_actual_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 	thiz->current.actual_size.width = g->width;
 	thiz->current.actual_size.height = g->height;
 
-	if (thiz->actual_x_set)
-		thiz->actual_x_set(thiz, g->x);
-	if (thiz->actual_y_set)
-		thiz->actual_y_set(thiz, g->y);
-	if (thiz->actual_width_set)
-		thiz->actual_width_set(thiz, g->width);
-	if (thiz->actual_height_set)
-		thiz->actual_height_set(thiz, g->height);
+	if (thiz->descriptor.actual_x_set)
+		thiz->descriptor.actual_x_set(thiz, g->x);
+	if (thiz->descriptor.actual_y_set)
+		thiz->descriptor.actual_y_set(thiz, g->y);
+	if (thiz->descriptor.actual_width_set)
+		thiz->descriptor.actual_width_set(thiz, g->width);
+	if (thiz->descriptor.actual_height_set)
+		thiz->descriptor.actual_height_set(thiz, g->height);
 	thiz->do_needs_setup = EINA_TRUE;
 }
 
@@ -685,7 +676,7 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 	rw = MIN(max, set);
 	rw = MAX(rw, min);
 	size->width = rw;
-	//printf("relative width %s = %g (%g %g %g) %g\n", thiz->name, rw, min, set, max, relative->width);
+	//printf("relative width %s = %g (%g %g %g) %g\n", thiz->descriptor.name, rw, min, set, max, relative->width);
 
 	set = thiz->size.height;
 	/* if the user has not set a value we better use the preferred one */
@@ -696,9 +687,9 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 	rh = MIN(max, set);
 	rh = MAX(rh, min);
 	size->height = rh;
-	//printf("relative height %s = %g (%g %g %g) %g\n", thiz->name, rh, min, set, max, relative->height);
+	//printf("relative height %s = %g (%g %g %g) %g\n", thiz->descriptor.name, rh, min, set, max, relative->height);
 
-	//printf("relative size %s = %gx%g\n", thiz->name, size->width, size->height);
+	//printf("relative size %s = %gx%g\n", thiz->descriptor.name, size->width, size->height);
 }
 
 void eon_element_real_size_get(Ender_Element *e, Eon_Size *size)
@@ -732,7 +723,7 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 	Enesim_Renderer *r;
 
 	thiz = ender_element_object_get(e);
-	r =  thiz->renderer_get(e);
+	r =  thiz->descriptor.renderer_get(e);
 	if (!r)
 	{
 		printf("FIXME!!!!!!!! the implementation of %s does not returned a renderer\n", ender_element_name_get(e));
@@ -746,16 +737,21 @@ Ender_Element * eon_element_ender_get(Eon_Element *thiz)
 	return thiz->e;
 }
 
-void eon_element_parent_set(Ender_Element *e, Ender_Element *parent)
+void eon_element_parent_set(Ender_Element *e, Ender_Element *parent, void *data, Eon_Free_Func free_func)
 {
 	Eon_Element *thiz;
 
 	thiz = ender_element_object_get(e);
-	if (thiz->parent)
+	if (thiz->parent_relation.parent)
 	{
+		/* FIXME here we should do more stuff, like trigger
+		 * an event, remove the old data, etc, etc
+		 */
 		printf("element already has a parent\n");
 	}
-	thiz->parent = parent;
+	thiz->parent_relation.parent = parent;
+	thiz->parent_relation.data = data;
+	thiz->parent_relation.free_func = free_func;
 }
 
 void eon_element_keyboard_proxy_set(Eon_Element *thiz,

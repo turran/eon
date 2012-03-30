@@ -31,6 +31,49 @@ static inline Eon_Button * _eon_button_get(Eon_Element *ee)
 	thiz = eon_button_base_data_get(ee);
 	return thiz;
 }
+
+static void _eon_button_key_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Element *ee;
+	Eon_Event_Key_Down *ev = event_data;
+	Eon_Navigation_Key nkey;
+	Eina_Bool enabled;
+
+	/* check if the key is an enter key */
+	if (!eon_input_navigation_key_get(ev->input, ev->key, &nkey))
+		return;
+	if (nkey != EON_NAVIGATION_KEY_OK)
+		return;
+
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled)
+		return;
+
+	ee = ender_element_object_get(e);
+	eon_widget_state_set(ee, "mouse_down", EINA_FALSE);
+}
+
+static void _eon_button_key_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
+{
+	Eon_Element *ee;
+	Eon_Event_Key_Up *ev = event_data;
+	Eon_Navigation_Key nkey;
+	Eina_Bool enabled;
+
+	/* check if the key is an enter key */
+	if (!eon_input_navigation_key_get(ev->input, ev->key, &nkey))
+		return;
+
+	if (nkey != EON_NAVIGATION_KEY_OK)
+		return;
+
+	eon_widget_enabled_get(e, &enabled);
+	if (!enabled)
+		return;
+
+	ee = ender_element_object_get(e);
+	eon_widget_state_set(ee, "mouse_up", EINA_FALSE);
+}
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
  *----------------------------------------------------------------------------*/
@@ -44,9 +87,13 @@ static void _eon_button_free(Eon_Element *ee)
 
 static void _eon_button_initialize(Ender_Element *e)
 {
-	/* register every event needed for a button
-	 * like: mouse_in, mouse_down, mouse_up, mouse_out, etc
-	 */
+	/* the events */
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_KEY_UP],
+			_eon_button_key_up, NULL);
+	ender_event_listener_add(e,
+			eon_input_event_names[EON_INPUT_EVENT_KEY_DOWN],
+			_eon_button_key_down, NULL);
 }
 
 static Eon_Button_Base_Descriptor _descriptor = {

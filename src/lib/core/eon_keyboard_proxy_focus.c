@@ -54,6 +54,7 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 {
 	Eon_Navigation_Key nkey;
 	Ender_Element *focused;
+	Eina_Bool is_navigation;
 
 	/* DEBUG */
 	{
@@ -66,7 +67,8 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 		printf("focus key down current '%s' from '%s'\n", cname, fname ? fname : "NONE");
 	}
 
-	if (!eon_input_navigation_key_get(input, key, &nkey))
+	is_navigation = eon_input_navigation_key_get(input, key, &nkey);
+	if (!is_navigation || nkey == EON_NAVIGATION_KEY_OK)
 	{
 		Eon_Event_Key_Down ev;
 		ev.key = key;
@@ -100,10 +102,12 @@ static void _eon_keyboard_proxy_focus_key_down(void *data, Ender_Element *curren
 static void _eon_keyboard_proxy_focus_key_up(void *data, Ender_Element *current, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
 	Eon_Navigation_Key nkey;
+	Eina_Bool is_navigation;
 
 	printf("focus key up current %p\n", current);
 
-	if (!eon_input_navigation_key_get(input, key, &nkey))
+	is_navigation = eon_input_navigation_key_get(input, key, &nkey);
+	if (!is_navigation || nkey == EON_NAVIGATION_KEY_OK)
 	{
 		Eon_Event_Key_Up ev;
 		ev.key = key;

@@ -169,8 +169,8 @@ static void _stack_horizontal_arrange(Ender_Element *e, Eon_Stack *thiz,
 		if (!thiz->curr.last_expand || ech != last_ech)
 		{
 			eon_element_real_width_get(ech->ender, &child_size.width);
-			if (child_size.width > size.width)
-				child_size.width = size.width;
+			//if (child_size.width > size.width)
+			//	child_size.width = size.width;
 		}
 		if (child_size.height != size.height)
 		{
@@ -248,8 +248,8 @@ static void _stack_vertical_arrange(Ender_Element *e, Eon_Stack *thiz,
 		if (!thiz->curr.last_expand || ech != last_ech)
 		{
 			eon_element_real_height_get(ech->ender, &child_size.height);
-			if (child_size.height > size.height)
-				child_size.height = size.height;
+			//if (child_size.height > size.height)
+			//	child_size.height = size.height;
 		}
 		if (child_size.width != size.width)
 		{
