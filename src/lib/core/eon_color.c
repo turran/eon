@@ -36,6 +36,7 @@ typedef struct _Eon_Color
 	Enesim_Argb argb;
 	/* private */
 	Ender_Element *wrapper;
+	Ender_Element *button;
 } Eon_Color;
 
 static inline Eon_Color * _eon_color_get(Eon_Element *ee)
@@ -90,11 +91,13 @@ static Eon_Element * _eon_color_new(void)
 	thiz = calloc(1, sizeof(Eon_Color));
 	if (!thiz) return NULL;
 
+	thiz->wrapper = eon_wrapper_new();
+	thiz->button = eon_button_new();
+
 	ee = eon_button_base_new(&_descriptor, thiz);
 	if (!ee) goto renderer_err;
 
-	//eon_widget_theme_extend(ee, thiz->button);
-	thiz->wrapper = eon_wrapper_new();
+	eon_widget_theme_extend(ee, thiz->button);
 
 	return ee;
 

@@ -84,22 +84,15 @@ static Enesim_Renderer * _color_renderer_get(Enesim_Renderer *r)
 	return eon_basic_control_button_renderer_get(thiz->cb);
 }
 
-static Eina_Bool _color_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _color_setup(Enesim_Renderer *r,
+		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
+		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
+		Enesim_Error **error)
 {
 	Basic_Color *thiz;
-	Enesim_Renderer *content;
-	double x, y;
-	double width, height;
 
 	thiz = _color_get(r);
-
-	eon_theme_widget_x_get(r, &x);
-	eon_theme_widget_y_get(r, &y);
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-	eon_theme_container_content_get(r, &content);
-	return EINA_FALSE;
-	//return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
+	return eon_basic_control_button_setup(thiz->cb, states, cstates, error);
 }
 
 static void _color_free(Enesim_Renderer *r)

@@ -33,6 +33,14 @@
 static Ender_Property *EON_WIDGET_THEME;
 static Ender_Property *EON_WIDGET_ENABLED;
 
+typedef struct _Eon_Widget_Extend
+{
+	Ender_Element *e;
+	Ender_Property *property;
+	Ender_Element *other;
+	Ender_Property *o_property;
+} Eon_Widget_Extend;
+
 /*
  * This is a wrapper of Escen, a simple interface to interact with the
  * underlying theme system
@@ -170,19 +178,37 @@ static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *ev
  *                        The Theme extension functions                       *
  *----------------------------------------------------------------------------*/
 /* whenever we register the new properties, we register this function dummy */
-static void _eon_widget_extend_passthrough(void *object, void *value)
+static void _eon_widget_extend_accessor(Ender_Element *e, Ender_Property *prop,
+		Ender_Value *v, void *data)
 {
-	/* do nothing? */
-	/* and register a mutation event that will send the properties to the correct theme element? */
+	Eon_Widget_Extend *extend = data;
+
+	/* FIXME use the property directly */
+	ender_element_value_set_simple(extend->other,
+			ender_property_name_get(extend->o_property),
+			v);
 }
 
-static void _eon_widget_extend_mutation(Ender_Element *e,
-		const char *event_name,
-		void *event_data,
-		void *data)
+static void _eon_widget_extend_properties(Ender_Property *prop, void *data)
 {
-	/* pick the data and set it on the correct theme widget */
+	Eon_Widget_Extend *extend = data;
+	Ender_Container *c;
+
+	printf("new property %s\n", ender_property_name_get(prop));
+	extend->o_property = prop;
+	c = ender_property_container_get(prop);
+	/* duplicate theme on thiz */
+	extend->property = ender_element_property_add(extend->e, ender_property_name_get(prop),
+			c,
+			NULL,
+			_eon_widget_extend_accessor,
+			_eon_widget_extend_accessor,
+			_eon_widget_extend_accessor,
+			NULL,
+			EINA_FALSE,
+			extend);
 }
+
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -659,9 +685,11 @@ Escen_Instance * eon_widget_theme_instance_get(Eon_Element *ee)
 
 void eon_widget_theme_extend(Eon_Element *ee, Ender_Element *e)
 {
+	Eon_Widget_Extend *extend;
 	Eon_Widget *thiz;
 	Eon_Widget *other;
 	Eon_Element *other_e;
+	Ender_Descriptor *d;
 
 	if (!eon_is_widget(e))
 		return;
@@ -670,14 +698,14 @@ void eon_widget_theme_extend(Eon_Element *ee, Ender_Element *e)
 	other_e = ender_element_object_get(e);
 	other = _eon_widget_get(other_e);
 
-	/* get the theme instance */
-	/* iterate over the list of properties */
-	/* duplicate them on thiz */
-	/* add the setter function */
-	/* what function to use? the same as the one from rel? */
-	/* a simple one that would just get the data and pass it */
-	/* store them for later removal */
-	//ender_event_listener_add(e, "Mutation", _eon_widget_extend_mutation, NULL);
+	d = ender_element_descriptor_get(other->theme.element);
+	/* iterate over the list of properties to add a new property on theme element */
+	extend = calloc(1, sizeof(Eon_Widget_Extend));
+	extend->e = thiz->theme.element;
+	extend->other = other->theme.element;
+	ender_descriptor_property_list(d, _eon_widget_extend_properties, extend);
+	/* and register a mutation event that will send the properties to the correct theme element */
+	/* TODO store the extend information */
 }
 /*============================================================================*
  *                                   API                                      *
