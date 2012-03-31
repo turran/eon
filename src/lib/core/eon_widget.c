@@ -167,6 +167,23 @@ static void _widget_mouse_out(Ender_Element *e, const char *event_name, void *ev
 	eon_widget_state_set(ee, "mouse_out", EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
+ *                        The Theme extension functions                       *
+ *----------------------------------------------------------------------------*/
+/* whenever we register the new properties, we register this function dummy */
+static void _eon_widget_extend_passthrough(void *object, void *value)
+{
+	/* do nothing? */
+	/* and register a mutation event that will send the properties to the correct theme element? */
+}
+
+static void _eon_widget_extend_mutation(Ender_Element *e,
+		const char *event_name,
+		void *event_data,
+		void *data)
+{
+	/* pick the data and set it on the correct theme widget */
+}
+/*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
 static void _eon_widget_free(Eon_Element *ee)
@@ -660,6 +677,7 @@ void eon_widget_theme_extend(Eon_Element *ee, Ender_Element *e)
 	/* what function to use? the same as the one from rel? */
 	/* a simple one that would just get the data and pass it */
 	/* store them for later removal */
+	//ender_event_listener_add(e, "Mutation", _eon_widget_extend_mutation, NULL);
 }
 /*============================================================================*
  *                                   API                                      *
