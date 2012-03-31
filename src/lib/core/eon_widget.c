@@ -33,6 +33,18 @@
 static Ender_Property *EON_WIDGET_THEME;
 static Ender_Property *EON_WIDGET_ENABLED;
 
+/*
+ * This is a wrapper of Escen, a simple interface to interact with the
+ * underlying theme system
+ */
+typedef struct _Eon_Widget_Theme
+{
+	Escen_Ender *ender;
+	Escen_Instance *instance;
+	Ender_Element *element;
+	Enesim_Renderer *renderer;
+} Eon_Widget_Theme;
+
 typedef struct _Eon_Widget
 {
 	EINA_MAGIC
@@ -433,6 +445,9 @@ Eon_Element * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 	Enesim_Renderer *theme_renderer;
 	Eon_Element *ee;
 
+	if (!descriptor)
+		return NULL;
+
 	theme_escen = eon_theme_get();
 	if (!theme_escen) {
 		printf("no theme\n");
@@ -626,6 +641,28 @@ Escen_Instance * eon_widget_theme_instance_get(Eon_Element *ee)
 
 	thiz = _eon_widget_get(ee);
 	return thiz->theme_instance;
+}
+
+void eon_widget_theme_extend(Eon_Element *ee, Ender_Element *e)
+{
+	Eon_Widget *thiz;
+	Eon_Widget *other;
+	Eon_Element *other_e;
+
+	if (!eon_is_widget(e))
+		return;
+
+	thiz = _eon_widget_get(ee);
+	other_e = ender_element_object_get(e);
+	other = _eon_widget_get(other_e);
+
+	/* get the theme instance */
+	/* iterate over the list of properties */
+	/* duplicate them on thiz */
+	/* add the setter function */
+	/* what function to use? the same as the one from rel? */
+	/* a simple one that would just get the data and pass it */
+	/* store them for later removal */
 }
 /*============================================================================*
  *                                   API                                      *

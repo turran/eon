@@ -230,20 +230,6 @@ static void _eon_entry_text_get(Eon_Element *ee, char **text)
 	thiz = _eon_entry_get(ee);
 }
 
-static void _eon_entry_enabled_set(Eon_Element *ee, Eina_Bool enabled)
-{
-	Eon_Entry *thiz;
-
-	thiz = _eon_entry_get(ee);
-}
-
-static void _eon_entry_enabled_get(Eon_Element *ee, Eina_Bool enabled)
-{
-	Eon_Entry *thiz;
-
-	thiz = _eon_entry_get(ee);
-}
-
 #include "eon_generated_entry.c"
 /*============================================================================*
  *                                 Global                                     *

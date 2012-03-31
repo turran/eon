@@ -93,6 +93,7 @@ static Eon_Element * _eon_color_new(void)
 	ee = eon_button_base_new(&_descriptor, thiz);
 	if (!ee) goto renderer_err;
 
+	//eon_widget_theme_extend(ee, thiz->button);
 	thiz->wrapper = eon_wrapper_new();
 
 	return ee;
