@@ -64,7 +64,7 @@ static void _eon_color_initialize(Ender_Element *e)
 	thiz = _eon_color_get(ee);
 	theme_r = eon_widget_theme_renderer_get(ee);
 
-	eon_container_content_set(e, thiz->wrapper);
+	eon_container_content_set(thiz->button, thiz->wrapper);
 	content_e = eon_theme_color_content_element_get(theme_r);
 	eon_wrapper_wrapped_set(thiz->wrapper, content_e);
 }
@@ -94,10 +94,6 @@ static Eon_Element * _eon_color_new(void)
 	kp = eon_keyboard_proxy_focus_new();
         eon_element_keyboard_proxy_set(ee, kp);
 	return ee;
-
-renderer_err:
-	free(thiz);
-	return NULL;
 }
 
 static void _eon_color_value_set(Eon_Element *ee, Enesim_Argb argb)
