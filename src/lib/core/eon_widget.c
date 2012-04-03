@@ -36,8 +36,10 @@ static Ender_Property *EON_WIDGET_ENABLED;
 typedef struct _Eon_Widget_Extend
 {
 	Ender_Element *e;
+	/* FIXME this should be a list */
 	Ender_Property *property;
 	Ender_Element *other;
+	/* FIXME this should be a list */
 	Ender_Property *o_property;
 } Eon_Widget_Extend;
 
@@ -186,7 +188,7 @@ static void _eon_widget_extend_accessor(Ender_Element *e, Ender_Property *prop,
 	/* FIXME use the property directly */
 	printf("=>>>> setting property %s\n", ender_property_name_get(prop));
 	ender_element_value_set_simple(extend->other,
-			ender_property_name_get(extend->o_property),
+			ender_property_name_get(prop),
 			v);
 }
 
@@ -196,7 +198,6 @@ static void _eon_widget_extend_properties(Ender_Property *prop, void *data)
 	Ender_Container *c;
 
 	printf("new property %s\n", ender_property_name_get(prop));
-	extend->o_property = prop;
 	c = ender_property_container_get(prop);
 	/* duplicate theme on thiz */
 	extend->property = ender_element_property_add(extend->e, ender_property_name_get(prop),

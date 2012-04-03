@@ -201,6 +201,7 @@ EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color
 	Basic_Button *thiz;
 
 	thiz = _button_get(r);
+	printf("setting end shadow!\n");
 	eon_basic_control_button_end_shadow_set(thiz->cb, color);
 }
 
