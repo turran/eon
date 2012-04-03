@@ -184,6 +184,7 @@ static void _eon_widget_extend_accessor(Ender_Element *e, Ender_Property *prop,
 	Eon_Widget_Extend *extend = data;
 
 	/* FIXME use the property directly */
+	printf("=>>>> setting property %s\n", ender_property_name_get(prop));
 	ender_element_value_set_simple(extend->other,
 			ender_property_name_get(extend->o_property),
 			v);

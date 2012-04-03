@@ -50,7 +50,7 @@ static inline Eon_Theme_Color * _eon_theme_color_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Color *thiz;
 
-	thiz = eon_theme_button_base_data_get(r);
+	thiz = eon_theme_compound_data_get(r);
 	EON_THEME_COLOR_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
@@ -103,7 +103,7 @@ EAPI Enesim_Renderer * eon_theme_color_new(Eon_Theme_Color_Descriptor *descripto
 		void *data)
 {
 	Eon_Theme_Color *thiz;
-	Eon_Theme_Button_Base_Descriptor pdescriptor = { 0 };
+	Eon_Theme_Compound_Descriptor pdescriptor = { 0 };
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Color));
@@ -112,15 +112,9 @@ EAPI Enesim_Renderer * eon_theme_color_new(Eon_Theme_Color_Descriptor *descripto
 	thiz->free = descriptor->free;
 	thiz->content_element_get = descriptor->content_element_get;
 	thiz->content_color_set = descriptor->content_color_set;
-
-	pdescriptor.position_get = descriptor->position_get;
-	pdescriptor.margin_get = descriptor->margin_get;
-	pdescriptor.renderer_get = descriptor->renderer_get;
-	pdescriptor.setup = descriptor->setup;
-	pdescriptor.name = _eon_theme_color_name;
 	pdescriptor.free = _eon_theme_color_free;
 
-	r = eon_theme_button_base_new(&pdescriptor, thiz);
+	r = eon_theme_compound_new(&pdescriptor, thiz);
 	if (!r) goto renderer_err;
 
 	return r;
@@ -136,7 +130,6 @@ renderer_err:
  */
 EAPI Eina_Bool eon_is_theme_color(Enesim_Renderer *r)
 {
-	Eon_Theme_Color *thiz;
 	return EINA_TRUE;
 }
 

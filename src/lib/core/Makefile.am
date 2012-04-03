@@ -15,6 +15,7 @@ eon_button.c \
 eon_canvas.c \
 eon_color.c \
 eon_container.c \
+eon_compound.c \
 eon_element.c \
 eon_entry.c \
 eon_frame.c \
@@ -23,6 +24,7 @@ eon_input.c \
 eon_input_proxy.c \
 eon_keyboard_proxy.c \
 eon_keyboard_proxy_navigation.c \
+eon_keyboard_proxy_passthrough.c \
 eon_keyboard_proxy_focus.c \
 eon_label.c \
 eon_layout.c \

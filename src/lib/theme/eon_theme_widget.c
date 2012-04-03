@@ -296,6 +296,12 @@ Eina_Bool eon_theme_widget_informs_setup(Enesim_Renderer *r)
 
 	return EINA_FALSE;
 }
+
+/* FIXME remove the local version and only keep this one */
+Enesim_Renderer * eon_theme_widget_renderer_get(Enesim_Renderer *r)
+{
+	return _eon_theme_widget_renderer_get(r);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

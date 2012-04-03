@@ -60,6 +60,7 @@ static void _register_enders(void *data)
 	eon_wrapper_init();
 	eon_image_init();
 	/* widget inheritance */
+	eon_compound_init();
 	eon_container_init();
 	eon_label_init();
 	eon_scrollbar_init();

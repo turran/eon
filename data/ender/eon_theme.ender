@@ -8,6 +8,9 @@ namespace "eon" {
 		double "y";
 	};
 
+	abstract "theme_compound" : "theme_widget" {
+	};
+
 	abstract "theme_layout" : "theme_widget" {
 		[object] "child";
 	};
@@ -33,9 +36,6 @@ namespace "eon" {
 	};
 
 	abstract "theme_toggle" : "theme_button_base" {
-	};
-
-	abstract "theme_color" : "theme_button_base" {
 	};
 
 	abstract "theme_progressbar" : "theme_widget" {
@@ -90,4 +90,8 @@ namespace "eon" {
 		int "size";
 		int "alignment";
 	};
+
+	abstract "theme_color" : "theme_compound" {
+	};
+
 };

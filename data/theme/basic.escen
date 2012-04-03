@@ -10,7 +10,7 @@ escen {
 	};
 
 	basic_color "color" {
-		default : "mouse_up" {
+		default {
 			set { fill_color = 0xffcccccc; };
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
@@ -18,20 +18,24 @@ escen {
 			set { end_bevel = 0xff000000; };
 		};
 
-		state "mouse_down" {
+		state "mouse_up" {
+			set { fill_color = 0xffcccccc; };
+			set { start_bevel = 0xffffffff; };
+			set { end_bevel = 0xff000000; };
+		};
+
+		state "disabled" : "mouse_down" {
 			set { fill_color = 0xffa8a8a8; };
-			set { start_shadow = 0x77000000; };
-			set { end_shadow = 0x22000000; };
 			set { start_bevel = 0xff000000; };
 			set { end_bevel = 0xffffffff; };
 		};
 
- 		state "mouse_out" {
+		state "focus_out" {
 			set { start_shadow = 0x77000000; };
 			set { end_shadow = 0x22000000; };
 		};
 
-		state "mouse_in" {
+		state "focus_in" {
 			set { start_shadow = 0xff557cb8; };
 			set { end_shadow = 0xff557cb8; };
 		};

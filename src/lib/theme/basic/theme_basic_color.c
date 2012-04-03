@@ -28,7 +28,6 @@ typedef struct _Basic_Color
 	Enesim_Renderer *content_fill;
 	Enesim_Renderer *content_fill_background;
 	Enesim_Renderer *content_fill_color;
-	Eon_Basic_Control_Button *cb;
 } Basic_Color;
 
 static inline Basic_Color * _color_get(Enesim_Renderer *r)
@@ -41,25 +40,6 @@ static inline Basic_Color * _color_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
-static void _color_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
-{
-	Basic_Color *thiz;
-	Enesim_Renderer *content;
-
-	thiz = _color_get(r);
-	eon_theme_container_content_get(r, &content);
-	eon_basic_control_button_margin_get(thiz->cb, content, margin);
-}
-
-static void _color_position_get(Enesim_Renderer *r, Eon_Size *size,
-		Eon_Position *position)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_position_get(thiz->cb, size, position);
-}
-
 static Ender_Element * _color_content_element_get(Enesim_Renderer *r)
 {
 	Basic_Color *thiz;
@@ -76,14 +56,6 @@ static void _color_content_color_set(Enesim_Renderer *r, Enesim_Color color)
 	enesim_renderer_background_color_set(thiz->content_fill_color, color);
 }
 
-static Enesim_Renderer * _color_renderer_get(Enesim_Renderer *r)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	return eon_basic_control_button_renderer_get(thiz->cb);
-}
-
 static Eina_Bool _color_setup(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
@@ -92,7 +64,7 @@ static Eina_Bool _color_setup(Enesim_Renderer *r,
 	Basic_Color *thiz;
 
 	thiz = _color_get(r);
-	return eon_basic_control_button_setup(thiz->cb, states, cstates, error);
+	return EINA_TRUE;
 }
 
 static void _color_free(Enesim_Renderer *r)
@@ -100,16 +72,12 @@ static void _color_free(Enesim_Renderer *r)
 	Basic_Color *thiz;
 
 	thiz = _color_get(r);
-	eon_basic_control_button_free(thiz->cb);
 	free(thiz);
 }
 
 static Eon_Theme_Color_Descriptor _descriptor = {
-	.margin_get = _color_margin_get,
-	.position_get = _color_position_get,
 	.content_element_get = _color_content_element_get,
 	.content_color_set = _color_content_color_set,
-	.renderer_get = _color_renderer_get,
 	.setup = _color_setup,
 	.free = _color_free,
 };
@@ -124,14 +92,10 @@ EAPI Enesim_Renderer * eon_basic_color_new(void)
 {
 	Enesim_Renderer *r;
 	Ender_Element *e;
-	Eon_Basic_Control_Button *cb;
 	Basic_Color *thiz;
 
 	thiz = calloc(1, sizeof(Basic_Color));
 	if (!thiz) return NULL;
-
-	cb = eon_basic_control_button_new();
-	thiz->cb = cb;
 
 	r = enesim_renderer_checker_new();
 	enesim_renderer_checker_width_set(r, 4);
@@ -167,112 +131,4 @@ EAPI Enesim_Renderer * eon_basic_color_new(void)
 renderer_err:
 	free(thiz);
 	return NULL;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_fill_color_set(thiz->cb, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_border_color_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_border_color_set(thiz->cb, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_horizontal_padding_set(Enesim_Renderer *r, double padding)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_horizontal_padding_set(thiz->cb, padding);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_vertical_padding_set(Enesim_Renderer *r, double padding)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_vertical_padding_set(thiz->cb, padding);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_radius_set(Enesim_Renderer *r, double radius)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_radius_set(thiz->cb, radius);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_start_shadow_set(thiz->cb, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_end_shadow_set(thiz->cb, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_start_bevel_set(thiz->cb, color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_color_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
-{
-	Basic_Color *thiz;
-
-	thiz = _color_get(r);
-	eon_basic_control_button_end_bevel_set(thiz->cb, color);
 }

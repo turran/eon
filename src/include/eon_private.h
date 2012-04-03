@@ -42,6 +42,9 @@ extern int eon_log;
 #define EON_ELEMENT_MAGIC 0xe0400001
 #define EON_LAYOUT_MAGIC 0xe0400002
 #define EON_WIDGET_MAGIC 0xe0400003
+/* widget inheritance */
+#define EON_COMPOUND_MAGIC 0xe0400004
+
 /* theme inheritance */
 #define EON_THEME_WIDGET_MAGIC 0xe041001
 
@@ -67,6 +70,7 @@ void eon_theme_shutdown(void);
 #include "private/eon_button_base_private.h"
 #include "private/eon_widget_private.h"
 #include "private/eon_layout_private.h"
+#include "private/eon_compound_private.h"
 
 /* toggle */
 typedef struct _Eon_Toggle_Descriptor

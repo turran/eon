@@ -37,4 +37,6 @@ void eon_widget_property_add(Eon_Element *ee, const char *name, ...);
 void eon_widget_property_remove(Eon_Element *ee, const char *name, ...);
 void eon_widget_state_set(Eon_Element *ee, const char *name, Eina_Bool be_finalized);
 
+void eon_widget_theme_extend(Eon_Element *ee, Ender_Element *e);
+
 #endif

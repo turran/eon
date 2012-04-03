@@ -20,6 +20,7 @@ basic/libtheme_basic.la
 
 libtheme_la_SOURCES = \
 eon_theme_checkbox.c \
+eon_theme_compound.c \
 eon_theme_container.c \
 eon_theme_button.c \
 eon_theme_button_base.c \

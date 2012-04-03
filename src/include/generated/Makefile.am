@@ -2,6 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in config.h.in~ config.h.in
 
 BUILT_SOURCES = \
 eon_generated_canvas.c \
+eon_generated_compound.c \
 eon_generated_element.c \
 eon_generated_entry.c \
 eon_generated_frame.c \

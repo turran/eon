@@ -36,6 +36,7 @@
 
 #include "theme/eon_theme_widget.h"
 #include "theme/eon_theme_container.h"
+#include "theme/eon_theme_compound.h"
 #include "theme/eon_theme_button_base.h"
 #include "theme/eon_theme_radio.h"
 #include "theme/eon_theme_checkbox.h"

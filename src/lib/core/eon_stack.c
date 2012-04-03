@@ -622,7 +622,6 @@ static Eina_Bool _eon_stack_child_add(Eon_Element *ee, Ender_Element *child)
 	thiz->children = eina_list_append(thiz->children, thiz_child);
 	thiz->needs_setup = EINA_TRUE;
 
-	ender_element_value_set(child, "rop", ENESIM_BLEND, NULL);
 	return EINA_TRUE;
 }
 

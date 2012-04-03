@@ -19,12 +19,6 @@
 #include "eon_private.h"
 #include "Eon_Theme.h"
 #include "eon_theme_private.h"
-/* This widget is kind of tricky, not by its complexity but by its nature.
- * Should this be an *instance* of a button or it should *inherit* from a button
- * i.e the "has a", "is a" issue
- * so far we have implemented as an inheritance, but maybe we should do the
- * other way around even if that needs some code duplication
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -43,7 +37,7 @@ static inline Eon_Color * _eon_color_get(Eon_Element *ee)
 {
 	Eon_Color *thiz;
 
-	thiz = eon_button_base_data_get(ee);
+	thiz = eon_compound_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
@@ -75,10 +69,10 @@ static void _eon_color_initialize(Ender_Element *e)
 	eon_wrapper_wrapped_set(thiz->wrapper, content_e);
 }
 
-static Eon_Button_Base_Descriptor _descriptor = {
-	.initialize = _eon_color_initialize,
-	.free = _eon_color_free,
-	.name = "color",
+static Eon_Compound_Descriptor _descriptor = {
+	/* .initialize 	= */ _eon_color_initialize,
+	/* .free 	= */ _eon_color_free,
+	/* .name 	= */ "color",
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -87,6 +81,7 @@ static Eon_Element * _eon_color_new(void)
 {
 	Eon_Color *thiz;
 	Eon_Element *ee;
+	Eon_Keyboard_Proxy *kp;
 
 	thiz = calloc(1, sizeof(Eon_Color));
 	if (!thiz) return NULL;
@@ -94,11 +89,10 @@ static Eon_Element * _eon_color_new(void)
 	thiz->wrapper = eon_wrapper_new();
 	thiz->button = eon_button_new();
 
-	ee = eon_button_base_new(&_descriptor, thiz);
-	if (!ee) goto renderer_err;
+	ee = eon_compound_new(&_descriptor, thiz->button, thiz);
 
-	eon_widget_theme_extend(ee, thiz->button);
-
+	kp = eon_keyboard_proxy_focus_new();
+        eon_element_keyboard_proxy_set(ee, kp);
 	return ee;
 
 renderer_err:
