@@ -794,6 +794,7 @@ static void _eon_stack_homogeneous_get(Eon_Element *ee, Eina_Bool *homogeneous)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_stack_delete NULL
 #define _eon_stack_child_horizontal_alignment_get NULL
 #define _eon_stack_child_vertical_alignment_get NULL
 #include "eon_generated_stack.c"

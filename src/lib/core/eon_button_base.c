@@ -259,6 +259,7 @@ renderer_err:
 	return NULL;
 }
 
+#define _eon_button_base_delete NULL
 #include "eon_generated_button_base.c"
 /*============================================================================*
  *                                   API                                      *

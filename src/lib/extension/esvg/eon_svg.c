@@ -17,7 +17,6 @@
  */
 #include "Eon.h"
 #include "Esvg.h"
-#include "Esvg_Parser.h"
 #include "eon_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -36,17 +35,18 @@ typedef struct _Eon_Svg
 	/* TODO add the event handler */
 } Eon_Svg;
 
-static inline Eon_Svg * _eon_svg_get(Enesim_Renderer *r)
+static inline Eon_Svg * _eon_svg_get(Eon_Element *e)
 {
 	Eon_Svg *thiz;
 
-	thiz = eon_element_data_get(r);
+	thiz = eon_element_data_get(e);
 	return thiz;
 }
 
 /*----------------------------------------------------------------------------*
  *                         The Esvg's parser interface                        *
  *----------------------------------------------------------------------------*/
+#if 0
 static void _eon_svg_href_set(void *data, Enesim_Renderer *r, const char *href)
 {
 	Eon_Svg *thiz = data;
@@ -57,6 +57,7 @@ static void _eon_svg_href_set(void *data, Enesim_Renderer *r, const char *href)
 static Esvg_Parser_Descriptor _svg_descriptor = {
 	/* .href_set = */ _eon_svg_href_set,
 };
+#endif
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -66,10 +67,10 @@ static Esvg_Parser_Descriptor _svg_descriptor = {
 static void _eon_svg_initialize(Ender_Element *e)
 {
 	Eon_Svg *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_svg_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_svg_get(ee);
 	if (!_esvg_init++)
 		esvg_init();
 #if 0
@@ -118,14 +119,14 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Svg *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_svg_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_svg_get(ee);
 	if (thiz->file && !thiz->generated_r)
 	{
 
-		thiz->generated_r = esvg_parser_load(thiz->file, &_svg_descriptor, thiz);
+		thiz->generated_r = esvg_parser_load(thiz->file, NULL, NULL); //&_svg_descriptor, thiz);
 	}
 	thiz->needs_setup = EINA_FALSE;
 
@@ -135,28 +136,28 @@ static Eina_Bool _eon_svg_setup(Ender_Element *e,
 static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
 {
 	Eon_Svg *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_svg_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_svg_get(ee);
 	return thiz->generated_r;
 }
 
 static Eina_Bool _eon_svg_needs_setup(Ender_Element *e)
 {
 	Eon_Svg *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *ee;
 
-	r = ender_element_object_get(e);
-	thiz = _eon_svg_get(r);
+	ee = ender_element_object_get(e);
+	thiz = _eon_svg_get(ee);
 	return thiz->needs_setup;
 }
 
-static void _eon_svg_free(Enesim_Renderer *r)
+static void _eon_svg_free(Eon_Element *e)
 {
 	Eon_Svg *thiz;
 
-	thiz = _eon_svg_get(r);
+	thiz = _eon_svg_get(e);
 	free(thiz);
 }
 
@@ -180,32 +181,33 @@ static Eon_Element_Descriptor _descriptor = {
 static Enesim_Renderer * _eon_svg_new(void)
 {
 	Eon_Svg *thiz;
-	Enesim_Renderer *r;
+	Eon_Element *e;
 
 	thiz = calloc(1, sizeof(Eon_Svg));
 	if (!thiz) return NULL;
 
-	r = eon_element_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	e = eon_element_new(&_descriptor, thiz);
+	if (!e) goto renderer_err;
 
-	return r;
+	return e;
 
 renderer_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_svg_file_set(Enesim_Renderer *r, const char *file)
+static void _eon_svg_file_set(Eon_Element *e, const char *file)
 {
 	Eon_Svg *thiz;
 
-	thiz = _eon_svg_get(r);
+	thiz = _eon_svg_get(e);
 	thiz->file = strdup(file);
 	thiz->needs_setup = EINA_TRUE;
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_svg_delete NULL
 #define _eon_svg_file_get NULL
 #include "eon_generated_svg.c"
 /*============================================================================*

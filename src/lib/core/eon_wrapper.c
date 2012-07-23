@@ -281,6 +281,7 @@ static void _eon_wrapper_wrapped_get(Eon_Element *ee, Ender_Element **wrapped)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_wrapper_delete NULL
 #include "eon_generated_wrapper.c"
 /*============================================================================*
  *                                   API                                      *

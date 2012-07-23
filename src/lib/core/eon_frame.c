@@ -175,6 +175,7 @@ static void _eon_frame_description_set(Eon_Element *ee, const char *description)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_frame_delete NULL
 #include "eon_generated_frame.c"
 /*============================================================================*
  *                                   API                                      *

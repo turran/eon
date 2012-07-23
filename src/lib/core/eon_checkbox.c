@@ -149,6 +149,7 @@ static void _eon_checkbox_selected_set(Eon_Element *ee, Eina_Bool selected)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_checkbox_delete NULL
 #include "eon_generated_checkbox.c"
 /*============================================================================*
  *                                   API                                      *

@@ -230,6 +230,7 @@ static void _eon_entry_text_get(Eon_Element *ee, char **text)
 	thiz = _eon_entry_get(ee);
 }
 
+#define _eon_entry_delete NULL
 #include "eon_generated_entry.c"
 /*============================================================================*
  *                                 Global                                     *

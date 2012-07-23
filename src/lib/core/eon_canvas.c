@@ -356,6 +356,7 @@ static void _eon_canvas_child_y_set(Eon_Element *ee, Ender_Element *child, doubl
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_canvas_delete NULL
 #define _eon_canvas_child_x_get NULL
 #define _eon_canvas_child_y_get NULL
 #include "eon_generated_canvas.c"

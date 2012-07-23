@@ -242,6 +242,7 @@ void * eon_layout_data_get(Eon_Element *ee)
 	return thiz->data;
 }
 
+#define _eon_layout_delete NULL
 #define _eon_layout_child_get NULL
 #include "eon_generated_layout.c"
 /*============================================================================*

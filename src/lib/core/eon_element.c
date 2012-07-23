@@ -368,6 +368,13 @@ static void _eon_element_name_get(Eon_Element *thiz, const char **name)
 		*name = thiz->user_name;
 }
 
+static void _eon_element_delete(Eon_Element *thiz)
+{
+	if (thiz->descriptor.free)
+		thiz->descriptor.free(thiz);
+	free(thiz);
+}
+
 #define _eon_element_parent_set NULL
 #define _eon_element_actual_width_set NULL
 #define _eon_element_actual_height_set NULL
@@ -439,12 +446,6 @@ static void _eon_element_real_height_get(Eon_Element *thiz, double *height)
 	*height = rh;
 }
 
-static void _eon_element_free(Eon_Element *thiz)
-{
-	if (thiz->descriptor.free)
-		thiz->descriptor.free(thiz);
-	free(thiz);
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/

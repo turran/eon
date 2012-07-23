@@ -633,10 +633,11 @@ static void _eon_splitter_position_get(Eon_Element *ee, double *position)
 	*position = thiz->current.position;
 }
 
-#include "eon_generated_splitter.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_splitter_delete NULL
+#include "eon_generated_splitter.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

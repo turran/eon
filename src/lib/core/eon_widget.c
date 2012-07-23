@@ -207,6 +207,7 @@ static void _eon_widget_extend_properties(Ender_Property *prop, void *data)
 			_eon_widget_extend_accessor,
 			_eon_widget_extend_accessor,
 			NULL,
+			NULL,
 			EINA_FALSE,
 			extend);
 }
@@ -472,10 +473,12 @@ static void _eon_widget_enabled_get(Eon_Element *ee, Eina_Bool *enabled)
 	*enabled = thiz->enabled;
 }
 
-#include "eon_generated_widget.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_widget_delete NULL
+#include "eon_generated_widget.c"
+
 Eon_Element * eon_widget_new(Eon_Widget_Descriptor *descriptor, void *data)
 {
 	Eon_Widget *thiz;

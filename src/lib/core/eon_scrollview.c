@@ -471,6 +471,7 @@ static void _eon_scrollview_y_position_get(Eon_Element *ee, double *y)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_scrollview_delete NULL
 #include "eon_generated_scrollview.c"
 /*============================================================================*
  *                                   API                                      *

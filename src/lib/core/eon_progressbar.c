@@ -152,6 +152,7 @@ static void _eon_progressbar_progression_set(Eon_Element *ee, double progression
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_progressbar_delete NULL
 #include "eon_generated_progressbar.c"
 /*============================================================================*
  *                                   API                                      *

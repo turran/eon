@@ -490,10 +490,11 @@ static void _eon_scrollbar_value_get(Eon_Element *ee, double *value)
 	*value = thiz->value;
 }
 
-#include "eon_generated_scrollbar.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#define _eon_scrollbar_delete NULL
+#include "eon_generated_scrollbar.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

@@ -227,6 +227,7 @@ void * eon_compound_data_get(Eon_Element *ee)
 	return thiz->data;
 }
 
+#define _eon_compound_delete NULL
 #include "eon_generated_compound.c"
 /*============================================================================*
  *                                   API                                      *
