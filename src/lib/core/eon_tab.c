@@ -300,7 +300,7 @@ static void _eon_tab_child_selected_set(Eon_Element *ee, Ender_Element *child,
  */
 EAPI Ender_Element * eon_tab_new(void)
 {
-	return ender_element_new_with_namespace("tab", "eon");
+	return EON_ELEMENT_NEW("tab");
 }
 
 /**

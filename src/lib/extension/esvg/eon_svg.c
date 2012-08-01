@@ -219,7 +219,7 @@ static void _eon_svg_file_set(Eon_Element *e, const char *file)
  */
 EAPI Ender_Element * eon_svg_new(void)
 {
-	return ender_element_new_with_namespace("svg", "eon");
+	return esvg_svg_new();
 }
 
 /**

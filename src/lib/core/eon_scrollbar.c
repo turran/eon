@@ -504,7 +504,7 @@ static void _eon_scrollbar_value_get(Eon_Element *ee, double *value)
  */
 EAPI Ender_Element * eon_scrollbar_new(void)
 {
-	return ender_element_new_with_namespace("scrollbar", "eon");
+	return EON_ELEMENT_NEW("scrollbar");
 }
 
 /**

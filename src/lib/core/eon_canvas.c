@@ -369,7 +369,7 @@ static void _eon_canvas_child_y_set(Eon_Element *ee, Ender_Element *child, doubl
  */
 EAPI Ender_Element * eon_canvas_new(void)
 {
-	return ender_element_new_with_namespace("canvas", "eon");
+	return EON_ELEMENT_NEW("canvas");
 }
 
 /**

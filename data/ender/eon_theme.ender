@@ -1,6 +1,6 @@
-using "enesim";
+using "enesim" : 0;
 
-namespace "eon" {
+namespace "eon" : 0 {
 	abstract "theme_widget" : "renderer" {
 		double "width";
 		double "height";

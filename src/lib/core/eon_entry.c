@@ -244,7 +244,7 @@ static void _eon_entry_text_get(Eon_Element *ee, char **text)
  */
 EAPI Ender_Element * eon_entry_new(void)
 {
-	return ender_element_new_with_namespace("entry", "eon");
+	return EON_ELEMENT_NEW("entry");
 }
 
 /**

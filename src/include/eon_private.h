@@ -19,6 +19,8 @@
 #define DBG(...) EINA_LOG_DOM_DBG(eon_log, __VA_ARGS__)
 extern int eon_log;
 
+#define EON_ELEMENT_NEW(name) ender_element_new_namespace_from(name, eon_namespace_get());
+
 /* The magic numbers for easy tracking */
 #define EON_MAGIC_CHECK(d, magic)			\
 	do {						\

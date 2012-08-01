@@ -135,7 +135,7 @@ renderer_err:
  */
 EAPI Ender_Element * eon_button_new(void)
 {
-	return ender_element_new_with_namespace("button", "eon");
+	return EON_ELEMENT_NEW("button");
 }
 
 /**

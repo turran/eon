@@ -243,7 +243,7 @@ static void _eon_image_file_get(Eon_Element *ee, const char **file)
  */
 EAPI Ender_Element * eon_image_new(void)
 {
-	return ender_element_new_with_namespace("image", "eon");
+	return EON_ELEMENT_NEW("image");
 }
 
 /**

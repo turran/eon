@@ -163,7 +163,7 @@ static void _eon_progressbar_progression_set(Eon_Element *ee, double progression
  */
 EAPI Ender_Element * eon_progressbar_new(void)
 {
-	return ender_element_new_with_namespace("progressbar", "eon");
+	return EON_ELEMENT_NEW("progressbar");
 }
 
 /**

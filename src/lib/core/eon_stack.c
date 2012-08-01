@@ -807,7 +807,7 @@ static void _eon_stack_homogeneous_get(Eon_Element *ee, Eina_Bool *homogeneous)
  */
 EAPI Ender_Element * eon_stack_new(void)
 {
-	return ender_element_new_with_namespace("stack", "eon");
+	return EON_ELEMENT_NEW("stack");
 }
 
 /**
@@ -818,7 +818,7 @@ EAPI Ender_Element * eon_hstack_new(void)
 {
 	Ender_Element *e;
 
-	e = ender_element_new_with_namespace("stack", "eon");
+	e = EON_ELEMENT_NEW("stack");
 	eon_stack_direction_set(e, EON_STACK_DIRECTION_HORIZONTAL);
 	return e;
 }
@@ -831,7 +831,7 @@ EAPI Ender_Element * eon_vstack_new(void)
 {
 	Ender_Element *e;
 
-	e = ender_element_new_with_namespace("stack", "eon");
+	e = EON_ELEMENT_NEW("stack");
 	eon_stack_direction_set(e, EON_STACK_DIRECTION_VERTICAL);
 	return e;
 }

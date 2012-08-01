@@ -186,7 +186,7 @@ static void _eon_frame_description_set(Eon_Element *ee, const char *description)
  */
 EAPI Ender_Element * eon_frame_new(void)
 {
-	return ender_element_new_with_namespace("frame", "eon");
+	return EON_ELEMENT_NEW("frame");
 }
 
 /**

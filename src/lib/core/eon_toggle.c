@@ -135,7 +135,7 @@ static void _eon_toggle_active_set(Eon_Element *ee, Eina_Bool active)
  */
 EAPI Ender_Element * eon_toggle_new(void)
 {
-	return ender_element_new_with_namespace("toggle", "eon");
+	return EON_ELEMENT_NEW("toggle");
 }
 
 /**

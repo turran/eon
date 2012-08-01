@@ -292,7 +292,7 @@ static void _eon_wrapper_wrapped_get(Eon_Element *ee, Ender_Element **wrapped)
  */
 EAPI Ender_Element * eon_wrapper_new(void)
 {
-	return ender_element_new_with_namespace("wrapper", "eon");
+	return EON_ELEMENT_NEW("wrapper");
 }
 
 /**

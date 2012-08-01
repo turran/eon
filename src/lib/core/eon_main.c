@@ -95,7 +95,7 @@ Ender_Namespace * eon_namespace_get(void)
 
 	if (!namespace)
 	{
-		namespace = ender_namespace_new("eon");
+		namespace = ender_namespace_new("eon", 0);
 	}
 	return namespace;
 }

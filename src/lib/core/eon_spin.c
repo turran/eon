@@ -529,7 +529,7 @@ static void _eon_spin_value_get(Eon_Element *ee, double *value)
  */
 EAPI Ender_Element * eon_spin_new(void)
 {
-	return ender_element_new_with_namespace("spin", "eon");
+	return EON_ELEMENT_NEW("spin");
 }
 
 /**

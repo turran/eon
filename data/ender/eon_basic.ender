@@ -1,7 +1,7 @@
-using "enesim";
-using "eon.theme";
+using "enesim" : 0;
+using "eon.theme" : 0;
 
-namespace "eon" {
+namespace "eon" : 0 {
 	class "basic_label" : "theme_label" {
 	};
 

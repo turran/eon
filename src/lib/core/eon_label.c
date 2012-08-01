@@ -212,7 +212,7 @@ static void _eon_label_ellipsize_get(Eon_Element *ee, Eina_Bool *enabled)
  */
 EAPI Ender_Element * eon_label_new(void)
 {
-	return ender_element_new("label");
+	return EON_ELEMENT_NEW("label");
 }
 
 /**

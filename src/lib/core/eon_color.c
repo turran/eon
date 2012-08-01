@@ -129,7 +129,7 @@ static void _eon_color_value_get(Eon_Element *ee, Enesim_Argb *argb)
  */
 EAPI Ender_Element * eon_color_new(void)
 {
-	return ender_element_new_with_namespace("color", "eon");
+	return EON_ELEMENT_NEW("color");
 }
 
 /**

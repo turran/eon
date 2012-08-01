@@ -647,7 +647,7 @@ static void _eon_splitter_position_get(Eon_Element *ee, double *position)
  */
 EAPI Ender_Element * eon_splitter_new(void)
 {
-	return ender_element_new_with_namespace("splitter", "eon");
+	return EON_ELEMENT_NEW("splitter");
 }
 
 /**

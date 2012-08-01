@@ -482,7 +482,7 @@ static void _eon_scrollview_y_position_get(Eon_Element *ee, double *y)
  */
 EAPI Ender_Element * eon_scrollview_new(void)
 {
-	return ender_element_new_with_namespace("scrollview", "eon");
+	return EON_ELEMENT_NEW("scrollview");
 }
 
 /**
