@@ -62,6 +62,13 @@ static inline void eon_size_values_get(Eon_Size *thiz, double *w, double *h)
 	if (h) *h = thiz->height;
 }
 
+static inline void eon_geometry_coords_from(Eon_Geometry *g, double x, double y, double w, double h)
+{
+	g->x = x;
+	g->y = y;
+	g->width = w;
+	g->height = h;
+}
 
 /**
  * @{

@@ -104,8 +104,8 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, do
 	double *rel_y)
 {
 	Eon_Element *e_e;
+	Eon_Geometry g;
 	Ender_Element *e;
-	double ex, ey;
 
 	x -= thiz->pointer.offset_x;
 	y -= thiz->pointer.offset_y;
@@ -113,9 +113,9 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, do
 	e = thiz->descriptor->element_get(thiz->element, x, y);
 	if (!e) return NULL;
 	e_e = ender_element_object_get(e);
-	eon_element_actual_position_get(e_e, &ex, &ey);
-	if (rel_x) *rel_x = x - ex;
-	if (rel_y) *rel_y = y - ey;
+	eon_element_geometry_get(e_e, &g);
+	if (rel_x) *rel_x = x - g.x;
+	if (rel_y) *rel_y = y - g.y;
 
 	return e;
 }

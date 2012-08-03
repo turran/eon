@@ -92,12 +92,12 @@ static void _eon_input_proxy_mouse_move(Ender_Element *e, const char *event_name
 	Eon_Event_Mouse_Move *ev = event_data;
 	Eon_Input_State *eis;
 	Eon_Element *ee;
-	double ox, oy;
+	Eon_Geometry g;
 
 	eis = _eon_input_proxy_state_get(thiz, ev->input);
 	ee = ender_element_object_get(thiz->element);
-	eon_element_actual_position_get(ee, &ox, &oy);
-	eon_input_state_feed_mouse_move(eis, ev->x, ev->y, ev->offset_x + ox, ev->offset_y + oy);
+	eon_element_geometry_get(ee, &g);
+	eon_input_state_feed_mouse_move(eis, ev->x, ev->y, ev->offset_x + g.x, ev->offset_y + g.y);
 }
 
 static void _eon_input_proxy_mouse_wheel(Ender_Element *e, const char *event_name, void *event_data, void *data)

@@ -294,7 +294,7 @@ Eina_Bool eon_container_is_topmost(Ender_Element *e)
 	Eina_Bool ret = EINA_FALSE;
 #if 0
 	Ender_Element *ender, *parent;
-	if (!eon_is_layout(ee)) goto end;
+	if (!eon_is_container(ee)) goto end;
 	ender = ender_element_renderer_from(ee);
 	if (!ender) goto end;
 	parent = ender_element_parent_get(ender);

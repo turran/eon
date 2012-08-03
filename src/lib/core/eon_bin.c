@@ -79,14 +79,12 @@ static Ender_Element * _eon_bin_state_element_get(Ender_Element *e,
 	if (!at)
 	{
 		Eon_Element *content_e;
-		double ax, ay;
-		Eon_Size size;
+		Eon_Geometry g;
 
 		content_e = ender_element_object_get(thiz->child);
-		eon_element_actual_size_get(content_e, &size);
-		eon_element_actual_position_get(content_e, &ax, &ay);
+		eon_element_geometry_get(content_e, &g);
 
-		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
+		if ((x >= g.x && x < g.x + g.width) && (y >= g.y && y < g.y + g.height))
 			at = thiz->child;
 	}
 	return at;

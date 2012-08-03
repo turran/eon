@@ -59,7 +59,7 @@ Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
 
 	if (!backend) return NULL;
 	if (!layout) return NULL;
-	if (!eon_is_layout(layout)) return NULL;
+	if (!eon_is_container(layout)) return NULL;
 
 	if (!eon_backend_window_new(backend, layout, width, height, &data))
 		return NULL;

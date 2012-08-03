@@ -90,35 +90,14 @@ static void _eon_svg_initialize(Ender_Element *e)
 #endif
 }
 
-static double _eon_svg_min_width_get(Ender_Element *e)
+static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)
 {
-	return DBL_MAX;
+
 }
 
-static double _eon_svg_min_height_get(Ender_Element *e)
+static void _eon_svg_hints_get(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
 {
-	return DBL_MAX;
-}
-static double _eon_svg_preferred_width_get(Ender_Element *e)
-{
-	/* use the info parser on esvg */
-	return DBL_MAX;
-}
 
-static double _eon_svg_preferred_height_get(Ender_Element *e)
-{
-	/* use the info parser on esvg */
-	return DBL_MAX;
-}
-
-static double _eon_svg_max_width_get(Ender_Element *e)
-{
-	return DBL_MAX;
-}
-
-static double _eon_svg_max_height_get(Ender_Element *e)
-{
-	return DBL_MAX;
 }
 
 static Eina_Bool _eon_svg_setup(Ender_Element *e,
@@ -169,18 +148,15 @@ static void _eon_svg_free(Eon_Element *e)
 }
 
 static Eon_Element_Descriptor _descriptor = {
-	.min_width_get = _eon_svg_min_width_get,
-	.max_width_get = _eon_svg_max_width_get,
-	.min_height_get = _eon_svg_min_height_get,
-	.max_height_get = _eon_svg_max_height_get,
-	.preferred_width_get = _eon_svg_preferred_width_get,
-	.preferred_height_get = _eon_svg_preferred_height_get,
-	.setup = _eon_svg_setup,
-	.renderer_get = _eon_svg_renderer_get,
-	.needs_setup = _eon_svg_needs_setup,
-	.initialize = _eon_svg_initialize,
-	.free = _eon_svg_free,
-	.name = "svg",
+	/* .initialize 		= */ _eon_svg_initialize,
+	/* .setup 		= */ _eon_svg_setup,
+	/* .renderer_get	= */ _eon_svg_renderer_get,
+	/* .needs_setup 	= */ _eon_svg_needs_setup,
+	/* .hints_get 		= */ _eon_svg_hints_get,
+	/* .geometry_set 	= */ _eon_svg_geometry_set,
+	/* .is_focusable	= */ EINA_TRUE,
+	/* .free		= */ _eon_svg_free,
+	/* .name 		= */ "svg",
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *

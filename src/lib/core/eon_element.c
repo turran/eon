@@ -60,8 +60,6 @@ static Ender_Property *EON_ELEMENT_MIN_WIDTH;
 static Ender_Property *EON_ELEMENT_MIN_HEIGHT;
 static Ender_Property *EON_ELEMENT_MAX_WIDTH;
 static Ender_Property *EON_ELEMENT_MAX_HEIGHT;
-static Ender_Property *EON_ELEMENT_PREFERRED_WIDTH;
-static Ender_Property *EON_ELEMENT_PREFERRED_HEIGHT;
 static Ender_Property *EON_ELEMENT_ACTUAL_WIDTH;
 static Ender_Property *EON_ELEMENT_ACTUAL_HEIGHT;
 
@@ -83,6 +81,7 @@ struct _Eon_Element
 	Eon_Size max_size;
 	Eon_Size size;
 	/* private */
+	Eon_Geometry geometry;
 	Eon_Element_Parent_Relation parent_relation;
 	Eon_Keyboard_Proxy *keyboard_proxy;
 	/* descriptor */
@@ -273,33 +272,6 @@ static void _eon_element_max_height_get(Eon_Element *thiz, double *height)
 	*height = MAX(v, min);
 }
 
-static void _eon_element_preferred_width_get(Eon_Element *thiz, double *width)
-{
-	Ender_Element *e;
-
-	EON_ELEMENT_MAGIC_CHECK(thiz);
-	if (!width) return;
-
-	e = thiz->e;
-	*width = -1;
-	if (thiz->descriptor.preferred_width_get)
-		*width = thiz->descriptor.preferred_width_get(e);
-}
-
-static void _eon_element_preferred_height_get(Eon_Element *thiz, double *height)
-{
-	Ender_Element *e;
-
-	EON_ELEMENT_MAGIC_CHECK(thiz);
-	if (!height) return;
-
-	e = thiz->e;
-	*height = -1;
-	if (thiz->descriptor.preferred_height_get)
-		*height = thiz->descriptor.preferred_height_get(e);
-}
-
-
 static void _eon_element_visibility_set(Eon_Element *thiz, double visible)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
@@ -401,7 +373,7 @@ static void _eon_element_factory_setup(Eon_Element *thiz)
 	snprintf(element_name, PATH_MAX, "%s%d", descriptor_name, f->id++);
 	_eon_element_name_set(thiz, element_name);
 }
-
+#if 0
 static void _eon_element_real_width_get(Eon_Element *thiz, double *width)
 {
 	double rw;
@@ -437,7 +409,7 @@ static void _eon_element_real_height_get(Eon_Element *thiz, double *height)
 	//printf("real height %s = %g (%g %g %g)\n", thiz->descriptor.name, rh, min, set, max);
 	*height = rh;
 }
-
+#endif
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -556,6 +528,7 @@ Eina_Bool eon_element_needs_setup(Ender_Element *e)
 	return ret;
 }
 
+#if 0
 void eon_element_actual_width_set(Eon_Element *thiz, double width)
 {
 	thiz->current.actual_size.width = width;
@@ -636,6 +609,7 @@ void eon_element_actual_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 		thiz->descriptor.actual_height_set(thiz, g->height);
 	thiz->do_needs_setup = EINA_TRUE;
 }
+#endif
 
 void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size)
 {
@@ -671,6 +645,7 @@ void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eo
 	//printf("relative size %s = %gx%g\n", thiz->descriptor.name, size->width, size->height);
 }
 
+#if 0
 void eon_element_real_size_get(Ender_Element *e, Eon_Size *size)
 {
 	Eon_Element *thiz;
@@ -695,6 +670,7 @@ void eon_element_real_height_get(Ender_Element *e, double *height)
 	thiz = ender_element_object_get(e);
 	_eon_element_real_height_get(thiz, height);
 }
+#endif
 
 Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 {
@@ -726,7 +702,7 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
 		eon_size_values_set(&imin, 0, 0);
 		eon_size_values_set(&ipreferred, 0, 0);
 		eon_size_values_set(&imin, DBL_MAX, DBL_MAX);
-		thiz->hints_get(thiz, &imin, &imax, &ipreferred);
+		thiz->descriptor.hints_get(thiz, &imin, &imax, &ipreferred);
 
 		min->width = MIN(min->width, imin.width);
 		min->height = MIN(min->height, imin.height);
@@ -736,6 +712,18 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
 
 		*preferred = ipreferred;
 	}
+}
+
+void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
+{
+	if (thiz->descriptor.geometry_set)
+		thiz->descriptor.geometry_set(thiz, g);
+	thiz->geometry = *g;
+}
+
+void eon_element_geometry_get(Eon_Element *thiz, Eon_Geometry *g)
+{
+	*g = thiz->geometry;
 }
 
 Ender_Element * eon_element_ender_get(Eon_Element *thiz)
@@ -892,25 +880,6 @@ EAPI void eon_element_max_width_set(Ender_Element *e, double width)
 	ender_element_property_value_set(e, EON_ELEMENT_MAX_WIDTH, width, NULL);
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_element_preferred_width_get(Ender_Element *e, double *width)
-{
-	*width = -1;
-	ender_element_property_value_get(e, EON_ELEMENT_PREFERRED_WIDTH, width, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_element_preferred_height_get(Ender_Element *e, double *height)
-{
-	*height = -1;
-	ender_element_property_value_get(e, EON_ELEMENT_PREFERRED_HEIGHT, height, NULL);
-}
 /**
  * To be documented
  * FIXME: To be fixed

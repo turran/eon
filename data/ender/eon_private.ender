@@ -11,8 +11,6 @@ namespace "eon" : 0 {
 		double "height";
 		double "actual_width";
 		double "actual_height";
-		double "preferred_width";
-		double "preferred_height";
 		bool "visibility";
 		bool "focusable";
 		ender "parent";

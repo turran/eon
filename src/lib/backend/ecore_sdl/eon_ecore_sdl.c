@@ -66,14 +66,12 @@ static Ender_Element * _sdl_state_element_get(Ender_Element *e,
 		double x, double y)
 {
 	Eon_Element *ee;
-	Eon_Size size;
-	double px, py;
+	Eon_Geometry g;
 
 	ee = ender_element_object_get(e);
-	eon_element_actual_size_get(ee, &size);
-	eon_element_actual_position_get(ee, &px, &py);
-	if (x >= px && x < px + size.width &&
-			y >= py && y < py + size.height)
+	eon_element_geometry_get(ee, &g);
+	if (x >= g.x && x < g.x + g.width &&
+			y >= g.y && y < g.y + g.height)
 		return e;
 	return NULL;
 }
@@ -235,16 +233,17 @@ static Eina_Bool _key_up(void *data, int type, void *event)
  */
 static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int height)
 {
-	Enesim_Renderer *r;
+	Eon_Element *e;
 	Eon_Size window_size;
 	Eon_Size size;
+	Eon_Geometry geometry;
 
 	window_size.width = width;
 	window_size.height = height;
 	eon_element_real_relative_size_get(thiz->layout, &window_size, &size);
-	r = ender_element_object_get(thiz->layout);
-	eon_element_actual_width_set(r, size.width);
-	eon_element_actual_height_set(r, size.height);
+	e = ender_element_object_get(thiz->layout);
+	eon_geometry_coords_from(&geometry, 0, 0, size.width, size.height);
+	eon_element_geometry_set(e, &geometry);
 	//printf("actual size %g %g\n", size.width, size.height);
 }
 

@@ -56,13 +56,21 @@ static void _register_enders(void *data)
 	eon_element_init();
 	/* element inheritance */
 	eon_widget_init();
-	eon_layout_init();
+	eon_container_init();
+	/* widget inheritance */
+	eon_label_init();
+	/* container inheritance */
+	eon_bin_init();
+	/* bin inheritance */
+	eon_button_base_init();
+	/* basic button inheritance */
+	eon_button_init();
+#if 0
 	eon_wrapper_init();
 	eon_image_init();
 	/* widget inheritance */
 	eon_compound_init();
 	eon_container_init();
-	eon_label_init();
 	eon_scrollbar_init();
 	eon_progressbar_init();
 	eon_entry_init();
@@ -71,11 +79,9 @@ static void _register_enders(void *data)
 	eon_canvas_init();
 	eon_stack_init();
 	/* container inheritance */
-	eon_button_base_init();
 	eon_splitter_init();
 	eon_scrollview_init();
 	/* basic button inheritance */
-	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
 	eon_toggle_init();
@@ -83,6 +89,7 @@ static void _register_enders(void *data)
 	eon_frame_init();
 	/* extensions */
 	eon_svg_init();
+#endif
 }
 /*============================================================================*
  *                                 Global                                     *

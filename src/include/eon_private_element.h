@@ -57,21 +57,6 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 void * eon_element_data_get(Eon_Element *e);
 void eon_element_initialize(Ender_Element *ender);
 
-/* TODO the issue here is that this functions need to be exported
- * so the theme developer can set the content position, maybe we should
- * provide some interface for getting the desired x,y of the content
- * from the theme?
- */
-void eon_element_actual_geometry_set(Eon_Element *e, Eon_Geometry *g);
-void eon_element_actual_x_set(Eon_Element *e, double x);
-void eon_element_actual_y_set(Eon_Element *e, double y);
-void eon_element_actual_size_set(Eon_Element *e, double width, double height);
-void eon_element_actual_size_get(Eon_Element *e, Eon_Size *size);
-void eon_element_actual_width_set(Eon_Element *e, double width);
-void eon_element_actual_height_set(Eon_Element *e, double height);
-void eon_element_actual_position_get(Eon_Element *e, double *x, double *y);
-void eon_element_actual_position_set(Eon_Element *e, double x, double y);
-
 void eon_element_real_width_get(Ender_Element *e, double *width);
 void eon_element_real_height_get(Ender_Element *e, double *height);
 void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size);
