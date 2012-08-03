@@ -11,11 +11,11 @@ namespace "eon" : 0 {
 	abstract "theme_compound" : "theme_widget" {
 	};
 
-	abstract "theme_layout" : "theme_widget" {
+	abstract "theme_container" : "theme_widget" {
 		[object] "child";
 	};
 
-	abstract "theme_container" : "theme_widget" {
+	abstract "theme_bin" : "theme_container" {
 		object "content";
 	};
 

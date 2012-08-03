@@ -15,8 +15,15 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+
+#include "eon_private_input.h"
+#include "eon_private_keyboard_proxy.h"
+#include "eon_private_element.h"
 /**
  * @todo
  * - All this "changed" is not completely correct, same thing happens with the force_redraw
@@ -32,6 +39,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_ELEMENT_MAGIC 0xe0400001
 #define EON_ELEMENT_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_ELEMENT_MAGIC)
 #define EON_ELEMENT_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_ELEMENT_MAGIC, ret)
 

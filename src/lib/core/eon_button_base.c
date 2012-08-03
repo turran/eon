@@ -15,10 +15,26 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
-#include "Eon_Theme.h"
-#include "eon_theme_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_bin.h"
+#include "eon_button.h"
+#include "eon_widget.h"
+#include "eon_label.h"
+#include "eon_container.h"
+#include "eon_bin.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_widget.h"
+#include "eon_private_container.h"
+#include "eon_private_bin.h"
+#include "eon_private_button_base.h"
+#include "eon_private_keyboard_proxy.h"
+#include "eon_private_keyboard_proxy_focus.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -35,7 +51,7 @@ static inline Eon_Button_Base * _eon_button_base_get(Eon_Element *ee)
 {
 	Eon_Button_Base *thiz;
 
-	thiz = eon_container_data_get(ee);
+	thiz = eon_bin_data_get(ee);
 	return thiz;
 }
 
@@ -85,7 +101,7 @@ static void _eon_button_base_initialize(Ender_Element *e)
  * can be bigger than its contents maximum size, then we need to add another function
  * beside the margin. Something like what we have before, a position_get or something
  * like that that should receive also the size of the content, this way we can center
- * left-align or whatever the content itself when it the container area is bigger
+ * left-align or whatever the content itself when it the bin area is bigger
  * than the content. Note that, for some cases we might need also to say that the
  * button_base should or should not scale its content if the size of the content
  * is set to -1. Right now we always use the preferred size, but it might not be
@@ -168,7 +184,7 @@ static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
 
 static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		const Eon_Element_State *state,
-		const Eon_Container_State *cstate,
+		const Eon_Bin_State *cstate,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Button_Base *thiz;
@@ -225,7 +241,7 @@ void * eon_button_base_data_get(Eon_Element *ee)
 Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *data)
 {
 	Eon_Button_Base *thiz;
-	Eon_Container_Descriptor pdescriptor = { 0 };
+	Eon_Bin_Descriptor pdescriptor = { 0 };
 	Eon_Element *ee;
 	Eon_Keyboard_Proxy *kp;
 
@@ -246,7 +262,7 @@ Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *
 	pdescriptor.preferred_width_get = _eon_button_base_min_preferred_width_get;
 	pdescriptor.preferred_height_get = _eon_button_base_min_preferred_height_get;
 
-	ee = eon_container_new(&pdescriptor, thiz);
+	ee = eon_bin_new(&pdescriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	kp = eon_keyboard_proxy_focus_new();

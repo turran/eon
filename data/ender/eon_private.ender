@@ -1,6 +1,6 @@
-using "enesim";
+using "enesim" : 0;
 
-namespace "eon" {
+namespace "eon" : 0 {
 	abstract "element" {
 		string "name";
 		double "min_width";
@@ -26,11 +26,14 @@ namespace "eon" {
 	abstract "compound" : "widget" {
 	};
 
-	abstract "layout" : "widget" {
+	abstract "container" : "widget" {
 		[ender] "child";
 	};
 
-	class "stack" : "layout" {
+	abstract "bin" : "container" {
+	};
+
+	class "stack" : "container" {
 		rel int "child_vertical_alignment";
 		rel int "child_horizontal_alignment";
 		int "direction";
@@ -38,16 +41,12 @@ namespace "eon" {
 		bool "homogeneous";
 	};
 
-	class "canvas" : "layout" {
+	class "canvas" : "container" {
 		rel double "child_x";
 		rel double "child_y";
 	};
 
-	abstract "container" : "widget" {
-		ender "content";
-	};
-
-	abstract "button_base" : "container" {
+	abstract "button_base" : "bin" {
 	};
 
 	class "button" : "button_base" {

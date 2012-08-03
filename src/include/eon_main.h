@@ -50,6 +50,19 @@ typedef enum _Eon_Vertical_Alignment
 } Eon_Vertical_Alignment;
 
 
+static inline void eon_size_values_set(Eon_Size *thiz, double w, double h)
+{
+	thiz->width = w;
+	thiz->height = h;
+}
+
+static inline void eon_size_values_get(Eon_Size *thiz, double *w, double *h)
+{
+	if (w) *w = thiz->width;
+	if (h) *h = thiz->height;
+}
+
+
 /**
  * @{
  */

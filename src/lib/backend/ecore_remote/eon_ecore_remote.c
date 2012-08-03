@@ -44,9 +44,19 @@
  * Do some kind of "factory" for the creation of every object? instead of the
  * "classic" foo_type_get()
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_input.h"
+#include "eon_window.h"
+#include "eon_main.h"
+
+#include "eon_private_element.h"
+#include "eon_private_backend.h"
+#include "eon_private_input.h"
+
 #ifdef BUILD_BACKEND_REMOTE
+#include "eon_ecore_remote.h"
+#include <Ecore.h>
 #include <Eix.h>
 #endif
 /*============================================================================*

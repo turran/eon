@@ -15,10 +15,17 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
-#include "Eon_Theme.h"
-#include "eon_theme_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_widget.h"
+#include "eon_label.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_widget.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

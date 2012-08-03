@@ -49,7 +49,7 @@ namespace "eon" : 0 {
 		double "progression";
 	};
 
-	class "basic_layout" : "theme_layout" {
+	class "basic_container" : "theme_container" {
 		color "background_color";
 	};
 

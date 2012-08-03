@@ -26,21 +26,9 @@
 #include "eon_private_keyboard_proxy.h"
 #include "eon_private_element.h"
 #include "eon_private_widget.h"
-/* TODO
- * - Add a notification whenever the theme has changed
- * - A widget should have several default states:
- *  - focus in/focus out/enabled/disabled/etc
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_WIDGET_MAGIC 0xe0400003
-#define EON_WIDGET_MAGIC_CHECK(d) EON_MAGIC_CHECK(d, EON_WIDGET_MAGIC)
-#define EON_WIDGET_MAGIC_CHECK_RETURN(d, ret) EON_MAGIC_CHECK_RETURN(d, EON_WIDGET_MAGIC, ret)
-
-static Ender_Property *EON_WIDGET_THEME;
-static Ender_Property *EON_WIDGET_ENABLED;
-
 typedef struct _Eon_Widget_Extend
 {
 	Ender_Element *e;
@@ -62,44 +50,6 @@ typedef struct _Eon_Widget_Theme
 	Ender_Element *element;
 	Enesim_Renderer *renderer;
 } Eon_Widget_Theme;
-
-typedef struct _Eon_Widget
-{
-	EINA_MAGIC
-	/* properties */
-	char *theme_file;
-	Eina_Bool enabled;
-	/* private */
-	/* the theme data */
-	Eon_Widget_Theme theme;
-	Escen_State *disabled;
-
-	/* interface */
-	Eon_Widget_Min_Width_Get min_width_get;
-	Eon_Widget_Max_Width_Get max_width_get;
-	Eon_Widget_Min_Height_Get min_height_get;
-	Eon_Widget_Max_Height_Get max_height_get;
-	Eon_Widget_Preferred_Width_Get preferred_width_get;
-	Eon_Widget_Preferred_Height_Get preferred_height_get;
-
-	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
-	Eon_Element_Needs_Setup needs_setup;
-	Eon_Element_Free free;
-	void *data;
-	Ender_Element *e;
-} Eon_Widget;
-
-static inline Eon_Widget * _eon_widget_get(Eon_Element *ee)
-{
-	Eon_Widget *thiz;
-
-	if (!ee) return NULL;
-	thiz = eon_element_data_get(ee);
-	EON_WIDGET_MAGIC_CHECK_RETURN(thiz, NULL);
-
-	return thiz;
-}
 
 static Eina_Bool _eon_widget_theme_setup(Eon_Widget *thiz, Ender_Element *e, Escen *theme_escen)
 {
@@ -723,46 +673,4 @@ void eon_widget_theme_extend(Eon_Element *ee, Ender_Element *e)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Eina_Bool eon_is_widget(Ender_Element *e)
-{
-	Eon_Element *ee;
-	Eon_Widget *thiz;
-
-	ee = ender_element_object_get(e);
-	thiz = eon_element_data_get(ee);
-	if (!EINA_MAGIC_CHECK(thiz, EON_WIDGET_MAGIC))
-		return EINA_FALSE;
-	return EINA_TRUE;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_widget_theme_set(Ender_Element *e, const char *file)
-{
-	ender_element_property_value_set(e, EON_WIDGET_THEME, file, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_widget_enabled_set(Ender_Element *e, Eina_Bool enabled)
-{
-	ender_element_property_value_set(e, EON_WIDGET_ENABLED, enabled, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_widget_enabled_get(Ender_Element *e, Eina_Bool *enabled)
-{
-	ender_element_property_value_get(e, EON_WIDGET_ENABLED, enabled, NULL);
-}
 

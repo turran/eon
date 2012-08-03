@@ -25,8 +25,12 @@
  * @{
  */
 
-EAPI void eon_container_content_set(Ender_Element *e, Ender_Element *content);
-EAPI void eon_container_content_get(Ender_Element *e, Ender_Element **content);
+EAPI Eina_Bool eon_container_is_topmost(Ender_Element *e);
+EAPI Eina_Bool eon_is_layout(Ender_Element *e);
+
+EAPI void eon_container_child_remove(Ender_Element *e, Ender_Element *child);
+EAPI void eon_container_child_add(Ender_Element *e, Ender_Element *child);
+EAPI void eon_container_child_clear(Ender_Element *e);
 
 /**
  * @}

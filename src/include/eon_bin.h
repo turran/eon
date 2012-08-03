@@ -16,21 +16,17 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_LAYOUT_H_
-#define _EON_LAYOUT_H_
+#ifndef _EON_BIN_H_
+#define _EON_BIN_H_
 
 /**
- * @defgroup Eon_Layout Layout
+ * @defgroup Eon_Container Container
  * @ingroup Eon_Widget
  * @{
  */
 
-EAPI Eina_Bool eon_layout_is_topmost(Ender_Element *e);
-EAPI Eina_Bool eon_is_layout(Ender_Element *e);
-
-EAPI void eon_layout_child_remove(Ender_Element *e, Ender_Element *child);
-EAPI void eon_layout_child_add(Ender_Element *e, Ender_Element *child);
-EAPI void eon_layout_child_clear(Ender_Element *e);
+EAPI void eon_bin_child_set(Ender_Element *e, Ender_Element *content);
+EAPI void eon_bin_child_get(Ender_Element *e, Ender_Element **content);
 
 /**
  * @}

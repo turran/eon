@@ -9,6 +9,7 @@ Eon_Svg.h
 
 EON_COREHEADERS = \
 eon_main.h \
+eon_bin.h \
 eon_button.h \
 eon_canvas.h \
 eon_checkbox.h \
@@ -20,7 +21,6 @@ eon_frame.h \
 eon_image.h \
 eon_input.h \
 eon_label.h \
-eon_layout.h \
 eon_progressbar.h \
 eon_radio.h \
 eon_scrollbar.h \

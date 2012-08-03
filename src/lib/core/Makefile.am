@@ -8,42 +8,53 @@ AM_CPPFLAGS = \
 
 noinst_LTLIBRARIES = libcore.la
 
-libcore_la_SOURCES = \
-eon_backend.c \
-eon_button_base.c \
+#disabled for now until we do the refactor
+# eon_canvas.c \
+# eon_checkbox.c \
+# eon_color.c \
+# eon_entry.c \
+# eon_frame.c \
+# eon_image.c \
+# eon_progressbar.c \
+# eon_radio.c \
+# eon_spin.c \
+# eon_stack.c \
+# eon_scrollbar.c \
+# eon_splitter.c \
+# eon_scrollview.c \
+# eon_tab.c \
+# eon_toggle.c \
+# eon_wrapper.c
+
+#
+# eon_compound.c \
+#
+
+classes = \
 eon_button.c \
-eon_canvas.c \
-eon_color.c \
+eon_label.c
+
+abstracts = \
+eon_bin.c \
+eon_button_base.c \
 eon_container.c \
-eon_compound.c \
 eon_element.c \
-eon_entry.c \
-eon_frame.c \
-eon_image.c \
+eon_widget.c
+
+libcore_la_SOURCES = $(classes) $(abstracts) \
+eon_backend.c \
 eon_input.c \
 eon_input_proxy.c \
 eon_keyboard_proxy.c \
 eon_keyboard_proxy_navigation.c \
 eon_keyboard_proxy_passthrough.c \
 eon_keyboard_proxy_focus.c \
-eon_label.c \
-eon_layout.c \
+eon_layout_frame.c \
+eon_layout_stack.c \
 eon_main.c \
 eon_misc.c \
 eon_mouse_proxy.c \
-eon_checkbox.c \
-eon_progressbar.c \
-eon_radio.c \
-eon_spin.c \
-eon_stack.c \
-eon_scrollbar.c \
-eon_splitter.c \
-eon_scrollview.c \
-eon_tab.c \
 eon_theme.c \
-eon_toggle.c \
-eon_wrapper.c \
-eon_widget.c \
 eon_window.c
 
 libcore_la_LIBADD =

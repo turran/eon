@@ -41,9 +41,6 @@ extern int eon_log;
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b)) 
 /* element inheritance */
-#define EON_ELEMENT_MAGIC 0xe0400001
-#define EON_LAYOUT_MAGIC 0xe0400002
-#define EON_WIDGET_MAGIC 0xe0400003
 /* widget inheritance */
 #define EON_COMPOUND_MAGIC 0xe0400004
 
@@ -58,27 +55,6 @@ Escen * eon_theme_get(void);
 Escen * eon_theme_get_from_file(const char *file);
 Eina_Bool eon_theme_init(void);
 void eon_theme_shutdown(void);
-
-#include "private/eon_input_private.h"
-#include "private/eon_keyboard_proxy_private.h"
-#include "private/eon_keyboard_proxy_navigation_private.h"
-#include "private/eon_keyboard_proxy_focus_private.h"
-#include "private/eon_mouse_proxy_private.h"
-#include "private/eon_generated_private.h"
-#include "private/eon_backend_private.h"
-#include "private/eon_ecore_common_private.h"
-#include "private/eon_element_private.h"
-#include "private/eon_container_private.h"
-#include "private/eon_button_base_private.h"
-#include "private/eon_widget_private.h"
-#include "private/eon_layout_private.h"
-#include "private/eon_compound_private.h"
-
-/* toggle */
-typedef struct _Eon_Toggle_Descriptor
-{
-
-} Eon_Toggle_Descriptor;
 
 #endif
 

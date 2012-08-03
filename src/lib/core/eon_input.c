@@ -15,8 +15,13 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
 /**
  * @todo
  * Handle focus, it should be one per keyboard input

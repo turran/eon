@@ -15,10 +15,18 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_input.h"
+#include "eon_window.h"
+#include "eon_main.h"
+
+#include "eon_private_element.h"
+#include "eon_private_backend.h"
+#include "eon_private_input.h"
 
 #ifdef BUILD_BACKEND_SDL
+#include "Ecore.h"
 #include "Ecore_Sdl.h"
 #include "Ecore_Input.h"
 #include "SDL.h"

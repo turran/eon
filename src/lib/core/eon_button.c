@@ -15,8 +15,23 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_bin.h"
+#include "eon_button.h"
+#include "eon_widget.h"
+#include "eon_label.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_widget.h"
+#include "eon_private_button_base.h"
+/* A button should be composed of a frame layout. We use the 'bin' interface
+ * to allow only a single child.
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -155,6 +170,6 @@ EAPI Ender_Element * eon_button_new_with_label(const char *text)
 	{
 		return NULL;
 	}
-	eon_container_content_set(e, label);
+	eon_bin_child_set(e, label);
 	return e;
 }
