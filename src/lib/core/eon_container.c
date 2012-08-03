@@ -24,6 +24,7 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
+#include "eon_private_theme.h"
 #include "eon_private_widget.h"
 #include "eon_private_container.h"
 /* TODO Whenever we decide how to add callbacks to eon_elements that must be called
@@ -45,7 +46,7 @@ typedef struct _Eon_Container_Descriptor_Internal
 	Eon_Container_Child_Add child_add;
 	Eon_Container_Child_Remove child_remove;
 	Eon_Container_Child_Clear child_clear;
-	Eon_Container_Child_Foreach child_foreach;
+	//Eon_Container_Child_Foreach child_foreach;
 	Eon_Container_Child_At child_at;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
@@ -85,8 +86,8 @@ static Ender_Element * _eon_container_state_element_get(Ender_Element *e,
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_container_get(ee);
-	if (thiz->child_at)
-		return thiz->child_at(e, x, y);
+	if (thiz->descriptor.child_at)
+		return thiz->descriptor.child_at(e, x, y);
 	return NULL;
 }
 
@@ -120,8 +121,8 @@ static void _eon_container_initialize(Ender_Element *e)
 	thiz = _eon_container_get(ee);
 	thiz->proxy = eon_input_proxy_new(e, &_layout_proxy_descriptor);
 	thiz->e = e;
-	if (thiz->initialize)
-		thiz->initialize(e);
+	if (thiz->descriptor.initialize)
+		thiz->descriptor.initialize(e);
 }
 
 /* FIXME We must delete this one */
@@ -134,8 +135,8 @@ static Eina_Bool _eon_container_setup(Ender_Element *e,
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_container_get(ee);
-	if (thiz->setup)
-		return thiz->setup(e, state, s, err);
+	if (thiz->descriptor.setup)
+		return thiz->descriptor.setup(e, state, s, err);
 	return EINA_TRUE;
 }
 
@@ -144,8 +145,8 @@ static void _eon_container_free(Eon_Element *ee)
 	Eon_Container *thiz;
 
 	thiz = _eon_container_get(ee);
-	if (thiz->free)
-		thiz->free(ee);
+	if (thiz->descriptor.free)
+		thiz->descriptor.free(ee);
 	free(thiz);
 }
 /*----------------------------------------------------------------------------*
@@ -156,7 +157,7 @@ static void _eon_container_child_remove(Eon_Element *ee, Ender_Element *child)
 	Eon_Container *thiz;
 
 	thiz = _eon_container_get(ee);
-	if (thiz->child_remove(ee, child))
+	if (thiz->descriptor.child_remove(ee, child))
 	{
 		eon_element_parent_set(child, NULL, NULL, NULL);
 	}
@@ -178,7 +179,7 @@ static void _eon_container_child_add(Eon_Element *ee, Ender_Element *child)
 		/* FIXME this is wrong, we should remove from the theme the child_rr */
 		printf("warning, first remove from its old parent\n");
 	}
-	if (thiz->child_add(ee, child))
+	if (thiz->descriptor.child_add(ee, child))
 	{
 		eon_element_parent_set(child, thiz->e, NULL, NULL);
 	}
@@ -202,14 +203,14 @@ static void _eon_container_child_clear(Eon_Element *ee)
 
 	thiz = _eon_container_get(ee);
 
-	thiz->child_clear(ee);
+	thiz->descriptor.child_clear(ee);
 }
 
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Element * eon_container_new(Eon_Container_Descriptor *descriptor,
-		void *data)
+Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
+		Eon_Container_Descriptor *descriptor, void *data)
 {
 	Eon_Container *thiz;
 	Eon_Widget_Descriptor pdescriptor = { 0 };
@@ -226,19 +227,16 @@ Eon_Element * eon_container_new(Eon_Container_Descriptor *descriptor,
 	thiz->descriptor.child_at = descriptor->child_at;
 	thiz->descriptor.setup = descriptor->setup;
 
+	/* element interface */
 	pdescriptor.initialize = _eon_container_initialize;
 	pdescriptor.free = _eon_container_free;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.max_width_get = descriptor->max_width_get;
-	pdescriptor.max_height_get = descriptor->max_height_get;
-	pdescriptor.min_width_get = descriptor->min_width_get;
-	pdescriptor.min_height_get = descriptor->min_height_get;
-	pdescriptor.preferred_width_get = descriptor->preferred_width_get;
-	pdescriptor.preferred_height_get = descriptor->preferred_height_get;
 	pdescriptor.setup = _eon_container_setup;
 	pdescriptor.needs_setup = descriptor->needs_setup;
+	/* widget interface */
+	pdescriptor.hints_get = descriptor->hints_get;
 
-	ee = eon_widget_new(&pdescriptor, thiz);
+	ee = eon_widget_new(theme, &pdescriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	return ee;
@@ -256,14 +254,16 @@ void * eon_container_data_get(Eon_Element *ee)
 	return thiz->data;
 }
 
+#if 0
 void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Foreach_Cb cb, void *user_data)
 {
 
 }
+#endif
 
 #define _eon_container_delete NULL
 #define _eon_container_child_get NULL
-#include "eon_generated_layout.c"
+#include "eon_generated_container.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -334,6 +334,7 @@ EAPI void eon_container_child_clear(Ender_Element *e)
 	ender_element_value_clear(e, "child");
 }
 
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -345,3 +346,4 @@ EAPI void eon_container_child_foreach(Ender_Element *e, Eon_Container_Foreach_Cb
 	ee = ender_element_object_get(e);
 	eon_container_internal_child_foreach(ee, cb, user_data);
 }
+#endif

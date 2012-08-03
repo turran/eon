@@ -98,49 +98,33 @@ struct _Eon_Element
 static double _element_min_width_get(Ender_Element *e)
 {
 	Eon_Element *thiz;
-	double v = 0;
 
 	thiz = ender_element_object_get(e);
-	if (!thiz) return v;
-	if (thiz->descriptor.min_width_get)
-		v = thiz->descriptor.min_width_get(e);
-	return MAX(v, thiz->min_size.width);
+	return thiz->min_size.width;
 }
 
 static double _element_min_height_get(Ender_Element *e)
 {
 	Eon_Element *thiz;
-	double v = 0;
 
 	thiz = ender_element_object_get(e);
-	if (!thiz) return v;
-	if (thiz->descriptor.min_height_get)
-		v = thiz->descriptor.min_height_get(e);
-	return MAX(v, thiz->min_size.height);
+	return thiz->min_size.height;
 }
 
 static double _element_max_width_get(Ender_Element *e)
 {
 	Eon_Element *thiz;
-	double v = DBL_MAX;
 
 	thiz = ender_element_object_get(e);
-	if (!thiz) return v;
-	if (thiz->descriptor.max_width_get)
-		v = thiz->descriptor.max_width_get(e);
-	return MIN(v, thiz->max_size.width);
+	return thiz->max_size.width;
 }
 
 static double _element_max_height_get(Ender_Element *e)
 {
 	Eon_Element *thiz;
-	double v = DBL_MAX;
 
 	thiz = ender_element_object_get(e);
-	if (!thiz) return v;
-	if (thiz->descriptor.max_height_get)
-		v = thiz->descriptor.max_height_get(e);
-	return MIN(v, thiz->max_size.height);
+	return thiz->max_size.height;
 }
 
 static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
@@ -532,23 +516,9 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->descriptor.setup = descriptor->setup;
 	thiz->descriptor.renderer_get = descriptor->renderer_get;
 	thiz->descriptor.needs_setup = descriptor->needs_setup;
-	thiz->descriptor.free = descriptor->free;
-	/* min */
-	thiz->descriptor.min_width_get = descriptor->min_width_get;
-	thiz->descriptor.min_height_get = descriptor->min_height_get;
-	/* max */
-	thiz->descriptor.max_width_get = descriptor->max_width_get;
-	thiz->descriptor.max_height_get = descriptor->max_height_get;
-	/* actual */
-	thiz->descriptor.actual_x_set = descriptor->actual_x_set;
-	thiz->descriptor.actual_y_set = descriptor->actual_y_set;
-	thiz->descriptor.actual_width_set = descriptor->actual_width_set;
-	thiz->descriptor.actual_height_set = descriptor->actual_height_set;
-	/* preferred */
-	thiz->descriptor.preferred_width_get = descriptor->preferred_width_get;
-	thiz->descriptor.preferred_height_get = descriptor->preferred_height_get;
-	/* other */
+	thiz->descriptor.hints_get = descriptor->hints_get;
 	thiz->descriptor.is_focusable = descriptor->is_focusable;
+	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.name = descriptor->name;
 
 	_eon_element_factory_setup(thiz);
@@ -739,6 +709,33 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 	}
 
 	return r;
+}
+
+void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+
+	*min = thiz->min_size;
+	*preferred = thiz->min_size;
+	*max = thiz->max_size;
+
+	if (!thiz->descriptor.hints_get)
+	{
+		Eon_Size imin, imax, ipreferred;
+
+		eon_size_values_set(&imin, 0, 0);
+		eon_size_values_set(&ipreferred, 0, 0);
+		eon_size_values_set(&imin, DBL_MAX, DBL_MAX);
+		thiz->hints_get(thiz, &imin, &imax, &ipreferred);
+
+		min->width = MIN(min->width, imin.width);
+		min->height = MIN(min->height, imin.height);
+
+		max->width = MIN(max->width, imax.width);
+		max->height = MIN(max->height, imax.height);
+
+		*preferred = ipreferred;
+	}
 }
 
 Ender_Element * eon_element_ender_get(Eon_Element *thiz)

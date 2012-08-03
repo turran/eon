@@ -8,33 +8,34 @@ typedef Ender_Element * (*Eon_Container_Child_At)(Ender_Element *e, double x, do
 
 typedef struct _Eon_Container_Descriptor
 {
-	Eon_Widget_Min_Width_Get min_width_get;
-	Eon_Widget_Max_Width_Get max_width_get;
-	Eon_Widget_Min_Height_Get min_height_get;
-	Eon_Widget_Max_Height_Get max_height_get;
-	Eon_Widget_Preferred_Width_Get preferred_width_get;
-	Eon_Widget_Preferred_Height_Get preferred_height_get;
+	/* element interface */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
+	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
+	Eon_Element_Geometry_Set geometry_set;
+	Eon_Element_Free free;
+	const char *name;
+	/* widget interface */
+	Eon_Widget_Hints_Get hints_get;
+	/* container interface */
 	Eon_Container_Child_Add child_add;
 	Eon_Container_Child_Remove child_remove;
 	Eon_Container_Child_Clear child_clear;
 	Eon_Container_Child_At child_at;
-	Eon_Element_Free free;
-	const char *name;
 } Eon_Container_Descriptor;
 
-Eon_Element * eon_layout_new(Eon_Container_Descriptor *descriptor,
-		void *data);
-void * eon_layout_data_get(Eon_Element *ee);
-void eon_layout_actual_size_get(Ender_Element *e, Eon_Size *size);
-void eon_layout_actual_width_get(Ender_Element *e, double *width);
-void eon_layout_actual_height_get(Ender_Element *e, double *height);
+Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
+		Eon_Container_Descriptor *descriptor, void *data);
+void * eon_container_data_get(Eon_Element *ee);
 
-void eon_layout_child_real_width_get(Ender_Element *e, Ender_Element *child, double *width);
-void eon_layout_child_real_height_get(Ender_Element *e, Ender_Element *child, double *height);
+void eon_container_actual_size_get(Ender_Element *e, Eon_Size *size);
+void eon_container_actual_width_get(Ender_Element *e, double *width);
+void eon_container_actual_height_get(Ender_Element *e, double *height);
 
-Eon_Input_State * eon_layout_input_state_new(Ender_Element *e, Eon_Input *i);
+void eon_container_child_real_width_get(Ender_Element *e, Ender_Element *child, double *width);
+void eon_container_child_real_height_get(Ender_Element *e, Ender_Element *child, double *height);
+
+Eon_Input_State * eon_container_input_state_new(Ender_Element *e, Eon_Input *i);
 
 #endif

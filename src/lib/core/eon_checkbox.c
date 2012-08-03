@@ -137,9 +137,9 @@ static void _eon_checkbox_selected_set(Eon_Element *ee, Eina_Bool selected)
 	thiz->selected = selected;
 
 	if (selected)
-		eon_widget_state_set(ee, "selected", EINA_FALSE);
+		eon_theme_instance_state_set(ee, "selected", EINA_FALSE);
 	else
-		eon_widget_state_set(ee, "unselected", EINA_FALSE);
+		eon_theme_instance_state_set(ee, "unselected", EINA_FALSE);
 
 	/* trigger the selected event */
 	e = thiz->e;

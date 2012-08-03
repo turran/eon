@@ -25,6 +25,7 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
+#include "eon_private_theme.h"
 #include "eon_private_widget.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -34,6 +35,8 @@ static Ender_Property *EON_LABEL_TEXT;
 
 typedef struct _Eon_Label
 {
+	/* properties */
+	Eina_Bool ellipsize;
 } Eon_Label;
 
 static inline Eon_Label * _eon_label_get(Eon_Element *ee)
@@ -84,68 +87,33 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 }
 #endif
 
-static double _eon_label_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
+static void _eon_label_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
 {
 	Eon_Size size;
 
-	eon_theme_label_size_get(theme_r, &size);
-
-	return size.width;
+	eon_theme_label_size_get(theme->renderer, &size);
+	*min = size;
+	*max = size;
+	*preferred = size;
 }
 
-static double _eon_label_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
+static void _eon_label_free(Eon_Element *e)
 {
-	Eon_Size size;
+	Eon_Label *thiz;
 
-	eon_theme_label_size_get(theme_r, &size);
-
-	return size.width;
-}
-
-static double _eon_label_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Size size;
-
-	eon_theme_label_size_get(theme_r, &size);
-
-	return size.height;
-}
-
-static double _eon_label_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Size size;
-
-	eon_theme_label_size_get(theme_r, &size);
-
-	return size.height;
-}
-
-static double _eon_label_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Size size;
-
-	eon_theme_label_size_get(theme_r, &size);
-
-	return size.width;
-}
-
-static double _eon_label_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Size size;
-
-	eon_theme_label_size_get(theme_r, &size);
-
-	return size.height;
+	thiz = _eon_label_get(e);
+	free(thiz);
 }
 
 static Eon_Widget_Descriptor _eon_label_widget_descriptor = {
-	.name = "label",
-	.min_width_get = _eon_label_min_width_get,
-	.max_width_get = _eon_label_max_width_get,
-	.min_height_get = _eon_label_min_height_get,
-	.max_height_get = _eon_label_max_height_get,
-	.preferred_width_get = _eon_label_preferred_width_get,
-	.preferred_height_get = _eon_label_preferred_height_get,
+	/* .initialize 		= */ NULL,
+	/* .setup 		= */ NULL,
+	/* .needs_setup 	= */ NULL,
+	/* .geometry_set 	= */ NULL,
+	/* .free		= */ _eon_label_free,
+	/* .name 		= */ "label",
+	/* .hints_get 		= */ _eon_label_hints_get,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -154,11 +122,15 @@ static Eon_Element * _eon_label_new(void)
 {
 	Eon_Label *thiz;
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
+
+	theme = eon_theme_instance_new("label");
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Label));
-	if (!thiz) return NULL;
+	thiz->ellipsize = EINA_FALSE;
 
-	ee = eon_widget_new(&_eon_label_widget_descriptor, thiz);
+	ee = eon_widget_new(theme, &_eon_label_widget_descriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	return ee;
@@ -168,28 +140,20 @@ renderer_err:
 	return NULL;
 }
 
-static void _eon_label_text_set(Eon_Element *ee, const char *text)
+static void _eon_label_text_set(Eon_Element *e, const char *text)
 {
-	Eon_Label *thiz;
-	Enesim_Renderer *theme_r;
+	Eon_Theme_Instance *theme;
 
-	thiz = _eon_label_get(ee);
-	if (!thiz) return;
-
-	theme_r = eon_widget_theme_renderer_get(ee);
-	eon_theme_label_text_set(theme_r, text);
+	theme = eon_widget_theme_instance_get(e);
+	eon_theme_label_text_set(theme->renderer, text);
 }
 
-static void _eon_label_text_get(Eon_Element *ee, const char **text)
+static void _eon_label_text_get(Eon_Element *e, const char **text)
 {
-	Eon_Label *thiz;
-	Enesim_Renderer *theme_r;
+	Eon_Theme_Instance *theme;
 
-	thiz = _eon_label_get(ee);
-	if (!thiz) return;
-
-	theme_r = eon_widget_theme_renderer_get(ee);
-	eon_theme_label_text_get(theme_r, text);
+	theme = eon_widget_theme_instance_get(e);
+	eon_theme_label_text_get(theme->renderer, text);
 }
 
 static void _eon_label_ellipsize_set(Eon_Element *ee, Eina_Bool enable)
@@ -197,13 +161,17 @@ static void _eon_label_ellipsize_set(Eon_Element *ee, Eina_Bool enable)
 	Eon_Label *thiz;
 
 	thiz = _eon_label_get(ee);
+	thiz->ellipsize = enable;
 }
 
 static void _eon_label_ellipsize_get(Eon_Element *ee, Eina_Bool *enabled)
 {
 	Eon_Label *thiz;
 
+	if (!enabled) return;
+
 	thiz = _eon_label_get(ee);
+	*enabled = thiz->ellipsize;
 }
 /*============================================================================*
  *                                 Global                                     *

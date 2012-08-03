@@ -27,7 +27,10 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
+#include "eon_private_theme.h"
 #include "eon_private_widget.h"
+#include "eon_private_container.h"
+#include "eon_private_bin.h"
 #include "eon_private_button_base.h"
 /* A button should be composed of a frame layout. We use the 'bin' interface
  * to allow only a single child.
@@ -52,6 +55,7 @@ static void _eon_button_key_down(Ender_Element *e, const char *event_name, void 
 	Eon_Element *ee;
 	Eon_Event_Key_Down *ev = event_data;
 	Eon_Navigation_Key nkey;
+	Eon_Theme_Instance *theme;
 	Eina_Bool enabled;
 
 	/* check if the key is an enter key */
@@ -65,7 +69,8 @@ static void _eon_button_key_down(Ender_Element *e, const char *event_name, void 
 		return;
 
 	ee = ender_element_object_get(e);
-	eon_widget_state_set(ee, "mouse_down", EINA_FALSE);
+	theme = eon_widget_theme_instance_get(ee);
+	eon_theme_instance_state_set(theme, "mouse_down", EINA_FALSE);
 }
 
 static void _eon_button_key_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -73,6 +78,7 @@ static void _eon_button_key_up(Ender_Element *e, const char *event_name, void *e
 	Eon_Element *ee;
 	Eon_Event_Key_Up *ev = event_data;
 	Eon_Navigation_Key nkey;
+	Eon_Theme_Instance *theme;
 	Eina_Bool enabled;
 
 	/* check if the key is an enter key */
@@ -87,7 +93,8 @@ static void _eon_button_key_up(Ender_Element *e, const char *event_name, void *e
 		return;
 
 	ee = ender_element_object_get(e);
-	eon_widget_state_set(ee, "mouse_up", EINA_FALSE);
+	theme = eon_widget_theme_instance_get(ee);
+	eon_theme_instance_state_set(theme, "mouse_up", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's widget interface                          *
@@ -123,11 +130,14 @@ static Eon_Element * _eon_button_new(void)
 {
 	Eon_Button *thiz;
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
+
+	theme = eon_theme_instance_new("button");
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Button));
-	if (!thiz) return NULL;
 
-	ee = eon_button_base_new(&_descriptor, thiz);
+	ee = eon_button_base_new(theme, &_descriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	return ee;

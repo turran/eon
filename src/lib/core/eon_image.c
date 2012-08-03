@@ -52,7 +52,7 @@ static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
 	thiz = _eon_image_get(ee);
 	if (error)
 	{
-		eon_widget_state_set(ee, "failed", EINA_FALSE);
+		eon_theme_instance_state_set(ee, "failed", EINA_FALSE);
 		thiz->original_width = -1;
 		thiz->original_height = -1;
 		return;
@@ -60,7 +60,7 @@ static void _emage_async_cb(Enesim_Surface *s, void *data, int error)
 	enesim_surface_size_get(s, &thiz->original_width, &thiz->original_height);
 	/* set the new new surface to the theme associated */
 	eon_widget_property_set(ee, "source", s, NULL);
-	eon_widget_state_set(ee, "loaded", EINA_FALSE);
+	eon_theme_instance_state_set(ee, "loaded", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -84,7 +84,7 @@ static Eina_Bool _eon_image_setup(Ender_Element *e,
 	thiz = _eon_image_get(ee);
 	if (!thiz->file_changed) return EINA_TRUE;
 
-	eon_widget_state_set(ee, "loading", EINA_FALSE);
+	eon_theme_instance_state_set(ee, "loading", EINA_FALSE);
 	emage_load_async(thiz->file, NULL, ENESIM_FORMAT_ARGB8888, NULL, _emage_async_cb,
 			ee, NULL);
 	thiz->file_changed = EINA_FALSE;

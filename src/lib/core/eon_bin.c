@@ -24,26 +24,21 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
+#include "eon_private_theme.h"
 #include "eon_private_widget.h"
+#include "eon_private_container.h"
 #include "eon_private_bin.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static Ender_Property *EON_BIN_CONTENT;
-
 typedef struct _Eon_Bin_Descriptor_Internal
 {
 	Eon_Element_Initialize initialize;
+	Eon_Element_Setup setup;
 	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Free free;
-	Eon_Bin_Setup setup;
-	Eon_Bin_Min_Width_Get min_width_get;
-	Eon_Bin_Max_Width_Get max_width_get;
-	Eon_Bin_Min_Height_Get min_height_get;
-	Eon_Bin_Max_Height_Get max_height_get;
-	Eon_Bin_Preferred_Width_Get preferred_width_get;
-	Eon_Bin_Preferred_Height_Get preferred_height_get;
-	Eon_Bin_Element_At element_at;
+	Eon_Widget_Hints_Get hints_get;
+	Eon_Container_Child_At child_at;
 } Eon_Bin_Descriptor_Internal;
 
 typedef struct _Eon_Bin
@@ -79,8 +74,8 @@ static Ender_Element * _eon_bin_state_element_get(Ender_Element *e,
 	thiz = _eon_bin_get(ee);
 
 	/* there's a default handler */
-	if (thiz->descriptor.element_at)
-		at = thiz->descriptor.element_at(e, x, y);
+	if (thiz->descriptor.child_at)
+		at = thiz->descriptor.child_at(e, x, y);
 	if (!at)
 	{
 		Eon_Element *content_e;
@@ -109,7 +104,7 @@ static Ender_Element * _eon_bin_state_element_prev(Ender_Element *e,
 	return NULL;
 }
 
-static Eon_Input_State_Descriptor _container_proxy_descriptor = {
+static Eon_Input_State_Descriptor _bin_proxy_descriptor = {
 	/* .element_get 	= */ _eon_bin_state_element_get,
 	/* .element_next 	= */ _eon_bin_state_element_next,
 	/* .element_prev 	= */ _eon_bin_state_element_prev,
@@ -127,7 +122,7 @@ static void _eon_bin_initialize(Ender_Element *e)
 	/* we first register our own events */
 	if (thiz->pass_events)
 	{
-		thiz->proxy = eon_input_proxy_new(e, &_container_proxy_descriptor);
+		thiz->proxy = eon_input_proxy_new(e, &_bin_proxy_descriptor);
 	}
 
 	if (thiz->descriptor.initialize)
@@ -140,124 +135,14 @@ static Eina_Bool _eon_bin_setup(Ender_Element *e,
 {
 	Eon_Bin *thiz;
 	Eon_Element *ee;
-	Enesim_Renderer *content_t;
 	Eina_Bool ret = EINA_TRUE;
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_bin_get(ee);
-	content_t = eon_element_renderer_get(thiz->child);
-	/* TODO only set whenever the content is different */
-	eon_widget_property_set(ee, "content", content_t, NULL);
 	if (thiz->descriptor.setup)
-		ret = thiz->descriptor.setup(e, state, NULL, s, err);
-	/* TODO handle the refcounting */
+		ret = thiz->descriptor.setup(e, state, s, err);
 	thiz->changed = EINA_FALSE;
 	return ret;
-}
-
-static double _eon_bin_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	double v = 0;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->child)
-		eon_element_min_width_get(thiz->child, &v);
-	if (thiz->max_width_get)
-		v = thiz->min_width_get(e, v);
-
-	return v;
-}
-
-static double _eon_bin_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	double v = 0;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->child)
-		eon_element_max_width_get(thiz->child, &v);
-	else
-		return DBL_MAX;
-	if (thiz->max_width_get)
-		v = thiz->max_width_get(e, v);
-
-	return v;
-}
-
-static double _eon_bin_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	double v = 0;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->child)
-		eon_element_min_height_get(thiz->child, &v);
-	if (thiz->max_height_get)
-		v = thiz->min_height_get(e, v);
-
-	return v;
-}
-
-static double _eon_bin_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	double v = 0;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->child)
-		eon_element_max_height_get(thiz->child, &v);
-	else
-		return DBL_MAX;
-	if (thiz->max_height_get)
-		v = thiz->max_height_get(e, v);
-
-	return v;
-}
-
-static double _eon_bin_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	double v = 0;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->child)
-		eon_element_preferred_width_get(thiz->child, &v);
-	if (thiz->preferred_width_get)
-		v = thiz->preferred_width_get(e, v);
-
-	return v;
-}
-
-static double _eon_bin_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	double v = 0;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->child)
-		eon_element_preferred_height_get(thiz->child, &v);
-	if (thiz->preferred_height_get)
-		v = thiz->preferred_height_get(e, v);
-
-	return v;
-}
-
-static void _eon_bin_hints_get(Ender_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
-{
-
 }
 
 static Eina_Bool _eon_bin_needs_setup(Ender_Element *e)
@@ -273,8 +158,8 @@ static Eina_Bool _eon_bin_needs_setup(Ender_Element *e)
 	ret = thiz->changed;
 	if (ret) return ret;
 
-	if (thiz->needs_setup)
-		ret = thiz->needs_setup(e);
+	if (thiz->descriptor.needs_setup)
+		ret = thiz->descriptor.needs_setup(e);
 	if (ret) return ret;
 
 	/* check if the content has changed */
@@ -283,24 +168,28 @@ static Eina_Bool _eon_bin_needs_setup(Ender_Element *e)
 	return ret;
 }
 
-static Eina_Bool _eon_bin_child_add(Eon_Element *ee, Ender_Element *child)
+static Eina_Bool _eon_bin_child_add(Eon_Element *e, Ender_Element *child)
 {
 	Eon_Bin *thiz;
+	Eon_Theme_Instance *theme;
+	Enesim_Renderer *child_r;
 
-	thiz = _eon_bin_get(ee);
+	thiz = _eon_bin_get(e);
 	if (thiz->child)
+	{
+		printf("we already have a child\n");
 		return EINA_FALSE;
+	}
 
+	/* FIXME this should go as part of the container theme */
+	theme = eon_widget_theme_instance_get(e);
+	child_r = eon_element_renderer_get(child);
+	eon_theme_instance_property_set(theme, "content", child_r, NULL);
+	
 	/* FIXME the size of the elements of a stack for example is always
 	 * calculated before calling the setup, so this first time
 	 * an application is run it wont have any valid size
 	 */
-	{
-		Enesim_Renderer *content_t;
-
-		content_t = eon_element_renderer_get(content);
-		eon_widget_property_set(ee, "content", content_t, NULL);
-	}
 	thiz->child = child;
 	thiz->changed = EINA_TRUE;
 	return EINA_TRUE;
@@ -326,8 +215,8 @@ static void _eon_bin_free(Eon_Element *ee)
 	Eon_Bin *thiz;
 
 	thiz = _eon_bin_get(ee);
-	if (thiz->free)
-		thiz->free(ee);
+	if (thiz->descriptor.free)
+		thiz->descriptor.free(ee);
 	free(thiz);
 }
 
@@ -350,7 +239,8 @@ void * eon_bin_data_get(Eon_Element *ee)
 	return thiz->data;
 }
 
-Eon_Element * eon_bin_new(Eon_Bin_Descriptor *descriptor, void *data)
+Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
+		Eon_Bin_Descriptor *descriptor, void *data)
 {
 	Eon_Bin *thiz;
 	Eon_Container_Descriptor pdescriptor = { 0 };
@@ -363,29 +253,19 @@ Eon_Element * eon_bin_new(Eon_Bin_Descriptor *descriptor, void *data)
 	thiz->descriptor.setup = descriptor->setup;
 	thiz->descriptor.needs_setup = descriptor->needs_setup;
 	thiz->descriptor.free = descriptor->free;
-	thiz->descriptor.min_width_get = descriptor->min_width_get;
-	thiz->descriptor.max_width_get = descriptor->max_width_get;
-	thiz->descriptor.min_height_get = descriptor->min_height_get;
-	thiz->descriptor.max_height_get = descriptor->max_height_get;
-	thiz->descriptor.pass_events = descriptor->pass_events;
-	thiz->descriptor.preferred_width_get = descriptor->preferred_width_get;
-	thiz->descriptor.preferred_height_get = descriptor->preferred_height_get;
-	thiz->descriptor.element_at = descriptor->element_at;
+	thiz->descriptor.child_at = descriptor->child_at;
+	thiz->pass_events = descriptor->pass_events;
 
 	pdescriptor.initialize = _eon_bin_initialize;
 	pdescriptor.free = _eon_bin_free;
 	pdescriptor.setup = _eon_bin_setup;
 	pdescriptor.needs_setup = _eon_bin_needs_setup;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.min_width_get = _eon_bin_min_width_get;
-	pdescriptor.max_width_get = _eon_bin_max_width_get;
-	pdescriptor.min_height_get = _eon_bin_min_height_get;
-	pdescriptor.max_height_get = _eon_bin_max_height_get;
-	pdescriptor.preferred_width_get = _eon_bin_preferred_width_get;
-	pdescriptor.preferred_height_get = _eon_bin_preferred_height_get;
+	pdescriptor.hints_get = descriptor->hints_get;
 	pdescriptor.child_add = _eon_bin_child_add;
+	pdescriptor.child_remove = _eon_bin_child_remove;
 
-	ee = eon_container_new(&pdescriptor, thiz);
+	ee = eon_container_new(theme, &pdescriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	return ee;
@@ -418,5 +298,5 @@ EAPI void eon_bin_child_get(Ender_Element *e, Ender_Element **child)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_bin_get(ee);
-	return thiz->child;
+	*child = thiz->child;
 }

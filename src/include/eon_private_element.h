@@ -11,25 +11,13 @@ typedef struct _Eon_Element_State
 	Eina_Bool visible;
 } Eon_Element_State;
 
-/* TODO rename all this max/min/preferred width/height into min/max/preferred size only */
-typedef void (*Eon_Element_Hints_Get)(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred);
-typedef void (*Eon_Element_Geometry_Set)(Eon_Element *e, Eon_Geometry *g);
-
 typedef void (*Eon_Element_Initialize)(Ender_Element *e);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **error);
+typedef void (*Eon_Element_Hints_Get)(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred);
+typedef void (*Eon_Element_Geometry_Set)(Eon_Element *e, Eon_Geometry *g);
 typedef void (*Eon_Element_Free)(Eon_Element *e);
-typedef double (*Eon_Element_Min_Width_Get)(Ender_Element *e);
-typedef double (*Eon_Element_Max_Width_Get)(Ender_Element *e);
-typedef double (*Eon_Element_Min_Height_Get)(Ender_Element *e);
-typedef double (*Eon_Element_Max_Height_Get)(Ender_Element *e);
-typedef double (*Eon_Element_Preferred_Height_Get)(Ender_Element *e);
-typedef double (*Eon_Element_Preferred_Width_Get)(Ender_Element *e);
-typedef void (*Eon_Element_Actual_X_Set)(Eon_Element *e, double x);
-typedef void (*Eon_Element_Actual_Y_Set)(Eon_Element *e, double y);
-typedef void (*Eon_Element_Actual_Width_Set)(Eon_Element *e, double width);
-typedef void (*Eon_Element_Actual_Height_Set)(Eon_Element *e, double height);
 typedef Eina_Bool (*Eon_Element_Is_Focusable)(Eon_Element *e);
 /**
  * On eon at the end is not the element itself which is drawn on the screen but the
@@ -57,20 +45,8 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Setup setup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
-
 	Eon_Element_Hints_Get hints_get;
 	Eon_Element_Geometry_Set geometry_set;
-
-	Eon_Element_Min_Width_Get min_width_get;
-	Eon_Element_Max_Width_Get max_width_get;
-	Eon_Element_Min_Height_Get min_height_get;
-	Eon_Element_Max_Height_Get max_height_get;
-	Eon_Element_Preferred_Width_Get preferred_width_get;
-	Eon_Element_Preferred_Height_Get preferred_height_get;
-	Eon_Element_Actual_X_Set actual_x_set;
-	Eon_Element_Actual_Y_Set actual_y_set;
-	Eon_Element_Actual_Width_Set actual_width_set;
-	Eon_Element_Actual_Height_Set actual_height_set;
 	Eon_Element_Is_Focusable is_focusable;
 	Eon_Element_Free free;
 	const char *name;

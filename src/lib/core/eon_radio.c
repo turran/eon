@@ -56,7 +56,7 @@ static void _eon_radio_mouse_click(Ender_Element *e,
 	 * we actually need to change the state of the radio button
 	 */
 	ee = ender_element_object_get(e);
-	eon_widget_state_set(ee, "selected", EINA_FALSE);
+	eon_theme_instance_state_set(ee, "selected", EINA_FALSE);
 	eon_radio_selected_set(e, EINA_TRUE);
 	/* TODO trigger the selected event */
 }
@@ -84,7 +84,7 @@ static void _eon_radio_key_up(Ender_Element *e,
 
 	ee = ender_element_object_get(e);
 
-	eon_widget_state_set(ee, "selected", EINA_FALSE);
+	eon_theme_instance_state_set(ee, "selected", EINA_FALSE);
 	eon_radio_selected_set(e, EINA_TRUE);
 	/* TODO trigger the selected event */
 }

@@ -29,6 +29,7 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
+#include "eon_private_theme.h"
 #include "eon_private_widget.h"
 #include "eon_private_container.h"
 #include "eon_private_bin.h"
@@ -58,25 +59,29 @@ static inline Eon_Button_Base * _eon_button_base_get(Eon_Element *ee)
 static void _button_base_mouse_down(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
 	Eina_Bool enabled;
 
 	ee = ender_element_object_get(e);
 
 	eon_widget_enabled_get(e, &enabled);
 	if (!enabled) return;
-	eon_widget_state_set(ee, "mouse_down", EINA_FALSE);
+	theme = eon_widget_theme_instance_get(ee);
+	eon_theme_instance_state_set(theme, "mouse_down", EINA_FALSE);
 }
 
 static void _button_base_mouse_up(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
 	Eina_Bool enabled;
 
 	ee = ender_element_object_get(e);
 
 	eon_widget_enabled_get(e, &enabled);
 	if (!enabled) return;
-	eon_widget_state_set(ee, "mouse_up", EINA_FALSE);
+	theme = eon_widget_theme_instance_get(ee);
+	eon_theme_instance_state_set(theme, "mouse_up", EINA_FALSE);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
@@ -97,6 +102,7 @@ static void _eon_button_base_initialize(Ender_Element *e)
 		thiz->initialize(e);
 }
 
+#if 0
 /* TODO if we allow that the button base elements (radio, checkbox, button, whatever)
  * can be bigger than its contents maximum size, then we need to add another function
  * beside the margin. Something like what we have before, a position_get or something
@@ -140,16 +146,6 @@ static double _eon_button_base_min_preferred_height_get(Ender_Element *e, double
 	return cmv + margin.top + margin.bottom;
 }
 
-static double _eon_button_base_max_width_get(Ender_Element *e, double cmv)
-{
-	return DBL_MAX;
-}
-
-static double _eon_button_base_max_height_get(Ender_Element *e, double cmv)
-{
-	return DBL_MAX;
-}
-
 static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
 		Enesim_Renderer *theme_r,
 		double ax,
@@ -181,10 +177,10 @@ static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
 
 	return EINA_TRUE;
 }
+#endif
 
 static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		const Eon_Element_State *state,
-		const Eon_Bin_State *cstate,
 		Enesim_Surface *s, Enesim_Error **err)
 {
 	Eon_Button_Base *thiz;
@@ -192,6 +188,7 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_button_base_get(ee);
+#if 0
 	if (cstate->content)
 	{
 		Enesim_Renderer *theme_r;
@@ -211,6 +208,7 @@ static Eina_Bool _eon_button_base_setup(Ender_Element *e,
 		}
 
 	}
+#endif
 	if (thiz->setup)
 		return thiz->setup(e, state, s, err);
 
@@ -238,7 +236,8 @@ void * eon_button_base_data_get(Eon_Element *ee)
 	return thiz->data;
 }
 
-Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *data)
+Eon_Element * eon_button_base_new(Eon_Theme_Instance *theme,
+		Eon_Button_Base_Descriptor *descriptor, void *data)
 {
 	Eon_Button_Base *thiz;
 	Eon_Bin_Descriptor pdescriptor = { 0 };
@@ -252,17 +251,16 @@ Eon_Element * eon_button_base_new(Eon_Button_Base_Descriptor *descriptor, void *
 	thiz->initialize = descriptor->initialize;
 
 	pdescriptor.initialize = _eon_button_base_initialize;
-	pdescriptor.free = _eon_button_base_free;
 	pdescriptor.setup = _eon_button_base_setup;
+	pdescriptor.geometry_set = descriptor->geometry_set;
+	pdescriptor.needs_setup = descriptor->needs_setup;
+	pdescriptor.free = _eon_button_base_free;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.min_width_get = _eon_button_base_min_preferred_width_get;
-	pdescriptor.max_width_get = _eon_button_base_max_width_get;
-	pdescriptor.min_height_get = _eon_button_base_min_preferred_height_get;
-	pdescriptor.max_height_get = _eon_button_base_max_height_get;
-	pdescriptor.preferred_width_get = _eon_button_base_min_preferred_width_get;
-	pdescriptor.preferred_height_get = _eon_button_base_min_preferred_height_get;
+	pdescriptor.hints_get = descriptor->hints_get;
+	pdescriptor.child_at = descriptor->child_at;
+	pdescriptor.pass_events = descriptor->pass_events;
 
-	ee = eon_bin_new(&pdescriptor, thiz);
+	ee = eon_bin_new(theme, &pdescriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	kp = eon_keyboard_proxy_focus_new();
