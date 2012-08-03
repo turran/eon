@@ -1,8 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 check_PROGRAMS = \
-eon_test_loader \
-eon_test_button \
+eon_test_button01 \
+eon_test_button02 \
 eon_test_button_image \
 eon_test_canvas \
 eon_test_checkbox \
@@ -11,6 +11,7 @@ eon_test_entry \
 eon_test_image \
 eon_test_frame \
 eon_test_label \
+eon_test_loader \
 eon_test_progressbar \
 eon_test_radio \
 eon_test_scrollview \
@@ -25,10 +26,15 @@ eon_test_loader_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_loader_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_loader_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
-eon_test_button_SOURCES = eon_test_button.c
-eon_test_button_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
-eon_test_button_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
-eon_test_button_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+eon_test_button01_SOURCES = eon_test_button01.c
+eon_test_button01_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_button01_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_button01_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_button02_SOURCES = eon_test_button02.c
+eon_test_button02_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_button02_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_button02_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_toggle_SOURCES = eon_test_toggle.c
 eon_test_toggle_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

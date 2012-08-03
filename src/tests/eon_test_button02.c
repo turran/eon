@@ -1,4 +1,5 @@
 #include "Eon.h"
+#include "eon_test_main.h"
 
 static void _add_label(Ender_Element *button, int index)
 {
@@ -11,46 +12,33 @@ static void _add_label(Ender_Element *button, int index)
 	eon_container_content_set(button, label);
 }
 
-int main(int argc, char **argv)
+Ender_Element * eon_test_button(int argc, char **argv)
 {
-	Eon_Window *win;
-	Ender_Element *layout;
-	Eon_Backend *backend;
+	Ender_Element *container;
 	Ender_Element *button;
 	int i;
 
-	eon_init();
-	ecore_init();
-
-	//backend = eon_ecore_remote_new();
-	backend = eon_ecore_sdl_new();
-
-	layout = eon_stack_new();
-
-	win = eon_window_new(backend, layout, 320, 240);
-	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
-
+	container = eon_stack_new();
+	eon_stack_direction_set(container, EON_STACK_DIRECTION_VERTICAL);
 	/* normal button */
 	/* something more than a label */
 	/* disabled button */
 	button = eon_button_new_with_label("Disabled");
 	eon_widget_enabled_set(button, EINA_FALSE);
-	eon_layout_child_add(layout, button);
+	eon_container_child_add(container, button);
 
 	button = eon_button_new_with_label("Button 01");
-	eon_layout_child_add(layout, button);
+	eon_container_child_add(container, button);
 
 	for (i = 0; i < 5; i++)
 	{
 
 		button = eon_button_new();
 		_add_label(button, i);
-		eon_layout_child_add(layout, button);
+		eon_container_child_add(container, button);
 	}
 
-	ecore_main_loop_begin();
-	ecore_shutdown();
-	eon_shutdown();
-
-	return 0;
+	return container;
 }
+
+EXAMPLE(button)
