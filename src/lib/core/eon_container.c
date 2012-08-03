@@ -202,7 +202,7 @@ static void _eon_container_child_clear(Eon_Element *ee)
 	Eon_Container *thiz;
 
 	thiz = _eon_container_get(ee);
-
+	/* FIXME implement this! */
 	thiz->descriptor.child_clear(ee);
 }
 

@@ -57,7 +57,7 @@ static inline Eon_Bin * _eon_bin_get(Eon_Element *ee)
 {
 	Eon_Bin *thiz;
 
-	thiz = eon_widget_data_get(ee);
+	thiz = eon_container_data_get(ee);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
