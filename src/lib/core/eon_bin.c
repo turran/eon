@@ -208,6 +208,14 @@ static Eina_Bool _eon_bin_child_remove(Eon_Element *ee, Ender_Element *child)
 	return EINA_TRUE;
 }
 
+static void _eon_bin_child_foreach(Eon_Element *ee, Eon_Container_Child_Foreach_Cb cb, void *user_data)
+{
+	Eon_Bin *thiz;
+
+	thiz = _eon_bin_get(ee);
+	cb(ee, thiz->child, user_data);
+}
+
 static void _eon_bin_free(Eon_Element *ee)
 {
 	Eon_Bin *thiz;
@@ -262,6 +270,7 @@ Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
 	pdescriptor.hints_get = descriptor->hints_get;
 	pdescriptor.child_add = _eon_bin_child_add;
 	pdescriptor.child_remove = _eon_bin_child_remove;
+	pdescriptor.child_foreach = _eon_bin_child_foreach;
 
 	ee = eon_container_new(theme, &pdescriptor, thiz);
 	if (!ee) goto renderer_err;

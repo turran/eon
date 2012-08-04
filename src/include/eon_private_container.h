@@ -1,9 +1,11 @@
 #ifndef _EON_CONTAINER_PRIVATE_H
 #define _EON_CONTAINER_PRIVATE_H
 
+typedef Eina_Bool (*Eon_Container_Child_Foreach_Cb)(Eon_Element *e, Ender_Element *child, void *data);
+
 typedef Eina_Bool (*Eon_Container_Child_Add)(Eon_Element *ee, Ender_Element *child);
 typedef Eina_Bool (*Eon_Container_Child_Remove)(Eon_Element *ee, Ender_Element *child);
-typedef void (*Eon_Container_Child_Clear)(Eon_Element *ee);
+typedef void (*Eon_Container_Child_Foreach)(Eon_Element *ee, Eon_Container_Child_Foreach_Cb cb, void *data);
 typedef Ender_Element * (*Eon_Container_Child_At)(Ender_Element *e, double x, double y);
 
 typedef struct _Eon_Container_Descriptor
@@ -21,13 +23,15 @@ typedef struct _Eon_Container_Descriptor
 	/* container interface */
 	Eon_Container_Child_Add child_add;
 	Eon_Container_Child_Remove child_remove;
-	Eon_Container_Child_Clear child_clear;
+	Eon_Container_Child_Foreach child_foreach;
 	Eon_Container_Child_At child_at;
 } Eon_Container_Descriptor;
 
 Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 		Eon_Container_Descriptor *descriptor, void *data);
 void * eon_container_data_get(Eon_Element *ee);
+
+void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Child_Foreach_Cb cb, void *user_data);
 
 void eon_container_actual_size_get(Ender_Element *e, Eon_Size *size);
 void eon_container_actual_width_get(Ender_Element *e, double *width);

@@ -45,8 +45,7 @@ typedef struct _Eon_Container_Descriptor_Internal
 {
 	Eon_Container_Child_Add child_add;
 	Eon_Container_Child_Remove child_remove;
-	Eon_Container_Child_Clear child_clear;
-	//Eon_Container_Child_Foreach child_foreach;
+	Eon_Container_Child_Foreach child_foreach;
 	Eon_Container_Child_At child_at;
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
@@ -66,6 +65,8 @@ typedef struct _Eon_Container
 	void *data;
 } Eon_Container;
 
+static void _eon_container_child_remove(Eon_Element *ee, Ender_Element *child);
+
 static inline Eon_Container * _eon_container_get(Eon_Element *ee)
 {
 	Eon_Container *thiz;
@@ -75,6 +76,13 @@ static inline Eon_Container * _eon_container_get(Eon_Element *ee)
 
 	return thiz;
 }
+	
+static Eina_Bool _child_clear_cb(Eon_Element *e, Ender_Element *child, void *data)
+{
+	_eon_container_child_remove(e, child);
+	return EINA_TRUE;
+}
+
 /*----------------------------------------------------------------------------*
  *                       The Eon Input State interface                        *
  *----------------------------------------------------------------------------*/
@@ -197,13 +205,9 @@ static void _eon_container_child_set(Eon_Element *ee, Eina_List *childs)
 }
 
 
-static void _eon_container_child_clear(Eon_Element *ee)
+static void _eon_container_child_clear(Eon_Element *e)
 {
-	Eon_Container *thiz;
-
-	thiz = _eon_container_get(ee);
-	/* FIXME implement this! */
-	thiz->descriptor.child_clear(ee);
+	eon_container_internal_child_foreach(e, _child_clear_cb, NULL);
 }
 
 /*============================================================================*
@@ -223,7 +227,7 @@ Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.child_add = descriptor->child_add;
 	thiz->descriptor.child_remove = descriptor->child_remove;
-	thiz->descriptor.child_clear = descriptor->child_clear;
+	thiz->descriptor.child_foreach = descriptor->child_foreach;
 	thiz->descriptor.child_at = descriptor->child_at;
 	thiz->descriptor.setup = descriptor->setup;
 
@@ -254,12 +258,10 @@ void * eon_container_data_get(Eon_Element *ee)
 	return thiz->data;
 }
 
-#if 0
-void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Foreach_Cb cb, void *user_data)
+void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Child_Foreach_Cb cb, void *user_data)
 {
 
 }
-#endif
 
 #define _eon_container_delete NULL
 #define _eon_container_child_get NULL
@@ -334,16 +336,14 @@ EAPI void eon_container_child_clear(Ender_Element *e)
 	ender_element_value_clear(e, "child");
 }
 
-#if 0
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_container_child_foreach(Ender_Element *e, Eon_Container_Foreach_Cb cb, void *user_data)
+EAPI void eon_container_child_foreach(Ender_Element *e, Eon_Container_Child_Foreach_Cb cb, void *user_data)
 {
 	Eon_Element *ee;
 
 	ee = ender_element_object_get(e);
 	eon_container_internal_child_foreach(ee, cb, user_data);
 }
-#endif
