@@ -53,6 +53,7 @@ static void _register_enders(void *data)
 	/* register the dependency */
 	ender_loader_load("enesim");
 	/* core */
+	eon_types_init();
 	eon_element_init();
 	/* element inheritance */
 	eon_widget_init();
@@ -106,6 +107,8 @@ Ender_Namespace * eon_namespace_get(void)
 	}
 	return namespace;
 }
+
+#include "eon_generated_types.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

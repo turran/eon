@@ -21,6 +21,8 @@ int main(int argc, char **argv)
 
 	e = eon_color_new();
 	eon_layout_child_add(layout, e);
+	e = eon_color_new();
+	eon_layout_child_add(layout, e);
 
 	ecore_main_loop_begin();
 	ecore_shutdown();

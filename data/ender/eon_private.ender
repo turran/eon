@@ -1,6 +1,13 @@
 using "enesim" : 0;
 
 namespace "eon" : 0 {
+	struct "rectangle" {
+		double "x";
+		double "y";
+		double "w";
+		double "h";
+	};
+
 	abstract "element" {
 		string "name";
 		double "min_width";
