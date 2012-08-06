@@ -1,11 +1,20 @@
-#ifndef _EON_BASIC_PRIVATE_H_
-#define _EON_BASIC_PRIVATE_H_
+#ifndef _THEME_BASIC_H_
+#define _THEME_BASIC_H_
 
 #include <float.h>
 
 /* The button control */
 typedef struct _Eon_Basic_Control_Button Eon_Basic_Control_Button;
 Eon_Basic_Control_Button * eon_basic_control_button_new(void);
+void eon_basic_control_button_renderer_content_set(Eon_Basic_Control_Button *thiz, Enesim_Renderer *content);
+void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
+		double x);
+void eon_basic_control_button_y_set(Eon_Basic_Control_Button *thiz,
+		double y);
+void eon_basic_control_button_width_set(Eon_Basic_Control_Button *thiz,
+		double width);
+void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
+		double height);
 void eon_basic_control_button_fill_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color);
 void eon_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color);
 void eon_basic_control_button_horizontal_padding_set(Eon_Basic_Control_Button *thiz, double padding);
@@ -19,13 +28,10 @@ void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
 		Enesim_Renderer *content, Eon_Margin *margin);
 void eon_basic_control_button_position_get(Eon_Basic_Control_Button *thiz, Eon_Size *size,
 		Eon_Position *position);
-Eina_Bool eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz,
-		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error);
 void eon_basic_control_button_free(Eon_Basic_Control_Button *thiz);
 Enesim_Renderer * eon_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz);
 
+/* the arrow control */
 typedef struct _Eon_Basic_Control_Arrow Eon_Basic_Control_Arrow;
 typedef enum _Eon_Basic_Control_Arrow_Direction
 {

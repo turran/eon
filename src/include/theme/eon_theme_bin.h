@@ -16,20 +16,36 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_BUTTON_H_
-#define _EON_THEME_BUTTON_H_
+#ifndef _EON_THEME_BIN_H_
+#define _EON_THEME_BIN_H_
 
 /**
  * @{
  */
 
-EAPI Eon_Theme_Widget * eon_theme_button_new(Eon_Theme_Bin_Descriptor *descriptor,
-		void *data);
-EAPI void * eon_theme_button_data_get(Eon_Theme_Widget *t);
+typedef void (*Eon_Theme_Bin_Child_Set)(Eon_Theme_Widget *t, Enesim_Renderer *cihld);
+
+typedef struct _Eon_Theme_Bin_Descriptor
+{
+	/* widget descriptor */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
+	Eon_Theme_Widget_X_Set x_set;
+	Eon_Theme_Widget_Y_Set y_set;
+	Eon_Theme_Widget_Width_Set width_set;
+	Eon_Theme_Widget_Height_Set height_set;
+	Eon_Theme_Widget_Free free;
+	/* bin descriptor */
+	Eon_Theme_Bin_Child_Set child_set;
+} Eon_Theme_Bin_Descriptor;
+
+/* private */
+EAPI Eon_Theme_Widget * eon_theme_bin_new(Eon_Theme_Bin_Descriptor *descriptor, void *data);
+EAPI void * eon_theme_bin_data_get(Eon_Theme_Widget *t);
+
+EAPI void eon_theme_bin_child_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
 
 /**
  * @}
  */
 #endif
-
 

@@ -6,17 +6,18 @@ namespace "eon" : 0 {
 		double "height";
 		double "x";
 		double "y";
+		object "renderer";
 	};
 
-	abstract "theme_compound" : "theme_widget" {
+	abstract "theme_bin" : "theme_widget" {
+		object "child";
+	};
+
+	abstract "theme_button" : "theme_bin" {
 	};
 
 	abstract "theme_container" : "theme_widget" {
 		[object] "child";
-	};
-
-	abstract "theme_bin" : "theme_container" {
-		object "content";
 	};
 
 	abstract "theme_spin" : "theme_widget" {
@@ -26,8 +27,6 @@ namespace "eon" : 0 {
 	abstract "theme_button_base" : "theme_container" {
 	};
 
-	abstract "theme_button" : "theme_button_base" {
-	};
 
 	abstract "theme_radio" : "theme_button_base" {
 	};

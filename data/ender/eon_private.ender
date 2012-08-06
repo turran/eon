@@ -1,11 +1,18 @@
 using "enesim" : 0;
 
 namespace "eon" : 0 {
-	struct "rectangle" {
+	struct "geometry" {
 		double "x";
 		double "y";
 		double "w";
 		double "h";
+	};
+
+	struct "area" {
+		double "left";
+		double "top";
+		double "right";
+		double "bottom";
 	};
 
 	abstract "element" {

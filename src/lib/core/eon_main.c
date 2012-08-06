@@ -29,6 +29,8 @@
  *============================================================================*/
 static int _init_count = 0;
 
+void eon_types_init(void);
+
 #if 0
 /* for later */
 static void _destructor_callback(Ender_Element *e, void *data)

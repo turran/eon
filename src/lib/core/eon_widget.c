@@ -49,6 +49,7 @@ typedef struct _Eon_Widget_Descriptor_Internal
 	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Free free;
 	Eon_Element_Geometry_Set geometry_set;
+	Eon_Widget_Hints_Get hints_get;
 } Eon_Widget_Descriptor_Internal;
 
 typedef struct _Eon_Widget
@@ -171,6 +172,17 @@ static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
 	return ret;
 }
 
+static void _eon_widget_hints_get(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(e);
+	if (thiz->descriptor.hints_get)
+	{
+		thiz->descriptor.hints_get(e, thiz->theme, min, max, preferred);
+	}
+}
+
 static Eina_Bool _eon_widget_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **err)
@@ -203,7 +215,10 @@ static void _eon_widget_geometry_set(Eon_Element *e, Eon_Geometry *g)
 	Eon_Widget *thiz;
 
 	thiz = _eon_widget_get(e);
-	ender_element_value_set(thiz->theme->element, "geometry", g, NULL);
+	eon_theme_instance_property_set(thiz->theme, "x", g->x, NULL);
+	eon_theme_instance_property_set(thiz->theme, "y", g->y, NULL);
+	eon_theme_instance_property_set(thiz->theme, "width", g->width, NULL);
+	eon_theme_instance_property_set(thiz->theme, "height", g->height, NULL);
 	if (thiz->descriptor.geometry_set)
 		thiz->descriptor.geometry_set(e, g);
 }
@@ -278,11 +293,13 @@ Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 	thiz->descriptor.setup = descriptor->setup;
 	thiz->descriptor.needs_setup = descriptor->needs_setup;
 	thiz->descriptor.geometry_set = descriptor->geometry_set;
+	thiz->descriptor.hints_get = descriptor->hints_get;
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.setup = _eon_widget_setup;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
 	pdescriptor.needs_setup = _eon_widget_needs_setup;
+	pdescriptor.hints_get = _eon_widget_hints_get;
 	pdescriptor.geometry_set = _eon_widget_geometry_set;
 	pdescriptor.is_focusable = _eon_widget_is_focusable;
 	pdescriptor.free = _eon_widget_free;

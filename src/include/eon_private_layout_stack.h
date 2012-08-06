@@ -6,8 +6,8 @@ typedef Eon_Horizontal_Alignment (*Eon_Layout_Stack_Child_Horizontal_Alignment_G
 
 typedef struct _Eon_Layout_Stack_Descriptor
 {
-	Eon_Layout_Stack_Child_Vertical_Alignment_Get vertical_alignment_get;
-	Eon_Layout_Stack_Child_Horizontal_Alignment_Get horizontal_alignment_get;
+	Eon_Layout_Stack_Child_Vertical_Alignment_Get child_vertical_alignment_get;
+	Eon_Layout_Stack_Child_Horizontal_Alignment_Get child_horizontal_alignment_get;
 	Eon_Layout_Child_Foreach child_foreach;
 	Eon_Layout_Child_Hints_Get child_hints_get;
 	Eon_Layout_Child_Geometry_Set child_geometry_set;

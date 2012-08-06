@@ -237,6 +237,7 @@ Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 	pdescriptor.name = descriptor->name;
 	pdescriptor.setup = _eon_container_setup;
 	pdescriptor.needs_setup = descriptor->needs_setup;
+	pdescriptor.geometry_set = descriptor->geometry_set;
 	/* widget interface */
 	pdescriptor.hints_get = descriptor->hints_get;
 

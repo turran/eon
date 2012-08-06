@@ -130,6 +130,7 @@ Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, cons
 	Escen_Ender *theme_ender;
 	Escen_Instance *theme_instance;
 	Ender_Element *theme_element;
+	void *theme_object;
 	Enesim_Renderer *theme_renderer;
 
 	theme_ender = escen_ender_get(file->escen, name);
@@ -139,7 +140,7 @@ Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, cons
 		return NULL;
 	}
 
-	theme_instance = escen_instance_new(theme_ender);
+	theme_instance = escen_instance_new(theme_ender, EINA_FALSE);
 	if (!theme_instance)
 	{
 		printf("no instance '%s'\n", name);
@@ -147,7 +148,8 @@ Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, cons
 	}
 
 	theme_element = escen_instance_ender_get(theme_instance);
-	theme_renderer = ender_element_object_get(theme_element);
+	theme_object = ender_element_object_get(theme_element);
+	theme_renderer = eon_theme_widget_renderer_get(theme_object);
 
 	thiz = calloc(1, sizeof(Eon_Theme_Instance));
 	thiz->ender = theme_ender;

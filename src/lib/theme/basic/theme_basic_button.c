@@ -16,81 +16,96 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "Eon_Theme.h"
-#include "Eon_Basic.h"
-#include "eon_basic_private.h"
+
+#include "eon_theme_widget.h"
+#include "eon_theme_bin.h"
+#include "eon_theme_button.h"
+
+#include "theme_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Basic_Button
+typedef struct _Eon_Basic_Button
 {
 	Eon_Basic_Control_Button *cb;
-} Basic_Button;
+} Eon_Basic_Button;
 
-static inline Basic_Button * _button_get(Enesim_Renderer *r)
+static inline Eon_Basic_Button * _button_get(Eon_Theme_Widget *t)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = eon_theme_button_data_get(r);
+	thiz = eon_theme_button_data_get(t);
 	return thiz;
 }
 
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
-static void _button_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
+static Enesim_Renderer * _basic_button_renderer_get(Eon_Theme_Widget *t)
 {
-	Basic_Button *thiz;
-	Enesim_Renderer *content;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
-	eon_theme_container_content_get(r, &content);
-	eon_basic_control_button_margin_get(thiz->cb, content, margin);
-}
-
-static void _button_position_get(Enesim_Renderer *r, Eon_Size *size,
-		Eon_Position *position)
-{
-	Basic_Button *thiz;
-
-	thiz = _button_get(r);
-	eon_basic_control_button_position_get(thiz->cb, size, position);
-}
-
-static Enesim_Renderer * _button_renderer_get(Enesim_Renderer *r)
-{
-	Basic_Button *thiz;
-
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	return eon_basic_control_button_renderer_get(thiz->cb);
 }
 
-static Eina_Bool _button_setup(Enesim_Renderer *r,
-		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
+static void _basic_button_x_set(Eon_Theme_Widget *t, double x)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
-	return eon_basic_control_button_setup(thiz->cb, states, cstates, error);
+	thiz = _button_get(t);
+	eon_basic_control_button_x_set(thiz->cb, x);
 }
 
-static void _button_free(Enesim_Renderer *r)
+static void _basic_button_y_set(Eon_Theme_Widget *t, double y)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
+	eon_basic_control_button_y_set(thiz->cb, y);
+}
+
+static void _basic_button_width_set(Eon_Theme_Widget *t, double width)
+{
+	Eon_Basic_Button *thiz;
+
+	thiz = _button_get(t);
+	eon_basic_control_button_width_set(thiz->cb, width);
+}
+
+static void _basic_button_height_set(Eon_Theme_Widget *t, double height)
+{
+	Eon_Basic_Button *thiz;
+
+	thiz = _button_get(t);
+	eon_basic_control_button_height_set(thiz->cb, height);
+}
+
+static void _basic_button_free(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Button *thiz;
+
+	thiz = _button_get(t);
 	eon_basic_control_button_free(thiz->cb);
 	free(thiz);
 }
+	
+static void _basic_button_child_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Basic_Button *thiz;
 
-static Eon_Theme_Button_Descriptor _descriptor = {
-	/* .position_get 	= */ _button_position_get,
-	/* .margin_get 		= */ _button_margin_get,
-	/* .renderer_get 	= */ _button_renderer_get,
-	/* .setup		= */ _button_setup,
-	/* .free 		= */ _button_free,
+	thiz = _button_get(t);
+	eon_basic_control_button_renderer_content_set(thiz->cb, r);
+}
+
+static Eon_Theme_Bin_Descriptor _descriptor = {
+	/* .renderer_get 	= */ _basic_button_renderer_get,
+	/* .y_set 		= */ _basic_button_y_set,
+	/* .x_set 		= */ _basic_button_x_set,
+	/* .width_set 		= */ _basic_button_width_set,
+	/* .height_set 		= */ _basic_button_height_set,
+	/* .free 		= */ _basic_button_free,
+	/* .child_set 		= */ _basic_button_child_set,
 };
 /*============================================================================*
  *                                   API                                      *
@@ -99,23 +114,23 @@ static Eon_Theme_Button_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_button_new(void)
+EAPI Eon_Theme_Widget * eon_basic_button_new(void)
 {
-	Enesim_Renderer *r;
+	Eon_Theme_Widget *t;
 	Eon_Basic_Control_Button *cb;
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = calloc(1, sizeof(Basic_Button));
+	thiz = calloc(1, sizeof(Eon_Basic_Button));
 	if (!thiz) return NULL;
 
 	cb = eon_basic_control_button_new();
 	thiz->cb = cb;
 
-	r = eon_theme_button_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
-	return r;
+	t = eon_theme_button_new(&_descriptor, thiz);
+	if (!t) goto base_err;
+	return t;
 
-renderer_err:
+base_err:
 	free(thiz);
 	return NULL;
 }
@@ -124,11 +139,11 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_button_fill_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_fill_color_set(thiz->cb, color);
 }
 
@@ -136,11 +151,11 @@ EAPI void eon_basic_button_fill_color_set(Enesim_Renderer *r, Enesim_Color color
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_button_border_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_border_color_set(thiz->cb, color);
 }
 
@@ -148,11 +163,11 @@ EAPI void eon_basic_button_border_color_set(Enesim_Renderer *r, Enesim_Color col
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double padding)
+EAPI void eon_basic_button_horizontal_padding_set(Eon_Theme_Widget *t, double padding)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_horizontal_padding_set(thiz->cb, padding);
 }
 
@@ -160,11 +175,11 @@ EAPI void eon_basic_button_horizontal_padding_set(Enesim_Renderer *r, double pad
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double padding)
+EAPI void eon_basic_button_vertical_padding_set(Eon_Theme_Widget *t, double padding)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_vertical_padding_set(thiz->cb, padding);
 }
 
@@ -172,11 +187,11 @@ EAPI void eon_basic_button_vertical_padding_set(Enesim_Renderer *r, double paddi
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
+EAPI void eon_basic_button_radius_set(Eon_Theme_Widget *t, double radius)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_radius_set(thiz->cb, radius);
 }
 
@@ -184,11 +199,11 @@ EAPI void eon_basic_button_radius_set(Enesim_Renderer *r, double radius)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_button_start_shadow_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_start_shadow_set(thiz->cb, color);
 }
 
@@ -196,11 +211,11 @@ EAPI void eon_basic_button_start_shadow_set(Enesim_Renderer *r, Enesim_Color col
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_button_end_shadow_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	printf("setting end shadow!\n");
 	eon_basic_control_button_end_shadow_set(thiz->cb, color);
 }
@@ -209,11 +224,11 @@ EAPI void eon_basic_button_end_shadow_set(Enesim_Renderer *r, Enesim_Color color
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_button_start_bevel_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_start_bevel_set(thiz->cb, color);
 }
 
@@ -221,10 +236,10 @@ EAPI void eon_basic_button_start_bevel_set(Enesim_Renderer *r, Enesim_Color colo
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_button_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_button_end_bevel_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Basic_Button *thiz;
+	Eon_Basic_Button *thiz;
 
-	thiz = _button_get(r);
+	thiz = _button_get(t);
 	eon_basic_control_button_end_bevel_set(thiz->cb, color);
 }

@@ -23,7 +23,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Radio
+typedef struct _Eon_Basic_Radio
 {
 	/* properties */
 	Eina_Bool selected;
@@ -34,20 +34,20 @@ typedef struct _Radio
 	Enesim_Renderer *outter_circle;
 	Enesim_Renderer *inner_circle;
 	Enesim_Renderer *shape;
-} Radio;
+} Eon_Basic_Radio;
 
 const static int radio_to_content_padding = 10;
 const static int circle_radius = 8;
 
-static inline Radio * _radio_get(Enesim_Renderer *r)
+static inline Eon_Basic_Radio * _radio_get(Enesim_Renderer *r)
 {
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 
 	thiz = eon_theme_radio_data_get(r);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
- *                          The Radio theme interface                         *
+ *                          The Eon_Basic_Radio theme interface                         *
  *----------------------------------------------------------------------------*/
 static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
@@ -58,7 +58,7 @@ static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 }
 static Enesim_Renderer * _radio_renderer_get(Enesim_Renderer *r)
 {
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 
 	thiz = _radio_get(r);
 	return thiz->shape;
@@ -69,7 +69,7 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r,
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
 		Enesim_Error **error)
 {
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 	const Eon_Theme_Container_State *ccs = cstates[ENESIM_STATE_CURRENT];
 	const Eon_Theme_Container_State *pcs = cstates[ENESIM_STATE_PAST];
 	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
@@ -111,7 +111,7 @@ static Eina_Bool _radio_setup(Enesim_Renderer *r,
 
 static void _radio_free(Enesim_Renderer *r)
 {
-	Radio *rad;
+	Eon_Basic_Radio *rad;
 
 	rad = _radio_get(r);
 	if (rad->compound)
@@ -135,9 +135,9 @@ static Eon_Theme_Radio_Descriptor _descriptor = {
 EAPI Enesim_Renderer * eon_basic_radio_new(void)
 {
 	Enesim_Renderer *r;
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 
-	thiz = calloc(1, sizeof(Radio));
+	thiz = calloc(1, sizeof(Eon_Basic_Radio));
 	if (!thiz) return NULL;
 
 	r = enesim_renderer_background_new();
@@ -199,7 +199,7 @@ background_err:
  */
 EAPI void eon_basic_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
 {
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 
 	thiz = _radio_get(r);
 	thiz->selected = selected;
@@ -219,7 +219,7 @@ EAPI void eon_basic_radio_selected_set(Enesim_Renderer *r, Eina_Bool selected)
  */
 EAPI void eon_basic_radio_background_color_set(Enesim_Renderer *r, Enesim_Color background_color)
 {
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 
 	thiz = _radio_get(r);
 	enesim_renderer_background_color_set(thiz->background, background_color);
@@ -231,7 +231,7 @@ EAPI void eon_basic_radio_background_color_set(Enesim_Renderer *r, Enesim_Color 
  */
 EAPI void eon_basic_radio_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
-	Radio *thiz;
+	Eon_Basic_Radio *thiz;
 
 	thiz = _radio_get(r);
 	enesim_renderer_shape_stroke_color_set(thiz->outter_circle, color);

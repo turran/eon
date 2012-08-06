@@ -45,7 +45,6 @@ extern int eon_log;
 #define EON_COMPOUND_MAGIC 0xe0400004
 
 /* theme inheritance */
-#define EON_THEME_WIDGET_MAGIC 0xe041001
 
 /* main */
 Ender_Namespace * eon_namespace_get(void);

@@ -20,5 +20,6 @@ typedef struct _Eon_Bin_Descriptor
 
 Eon_Element * eon_bin_new(Eon_Theme_Instance *theme, Eon_Bin_Descriptor *descriptor, void *data);
 void * eon_bin_data_get(Eon_Element *ee);
+Ender_Element * eon_bin_internal_child_get(Eon_Element *e);
 
 #endif

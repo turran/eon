@@ -16,10 +16,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "eon_private.h"
-#include "Eon_Theme.h"
-#include "eon_theme_private.h"
 
+#include "eon_theme_widget.h"
+#include "eon_theme_label.h"
 /**
  * @todo
  * Fix the min_width, max_width and max_height, we should not use the
@@ -28,108 +27,55 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Eon_Theme_Label_Descriptor_Internal
+{
+	Eon_Theme_Widget_Free free;
+	Eon_Theme_Label_Text_Set text_set;
+	Eon_Theme_Label_Text_Get text_get;
+	Eon_Theme_Label_Font_Size_Get font_size_get;
+	Eon_Theme_Label_Font_Size_Set font_size_set;
+	Eon_Theme_Label_Font_Get font_get;
+	Eon_Theme_Label_Font_Set font_set;
+} Eon_Theme_Label_Descriptor_Internal;
+
 typedef struct _Eon_Theme_Label
 {
-	/* the label interface */
-	Eon_Theme_Label_Setup setup;
-	Eon_Theme_Label_Renderer_Get renderer_get;
-	Enesim_Renderer_Delete free;
+	Eon_Theme_Label_Descriptor_Internal descriptor;
 	/* private */
-	Eina_Bool informs_setup : 1;
-	/* data needed for our own callbacks */
-	Enesim_Renderer *text;
 	void *data;
 } Eon_Theme_Label;
 
-static inline Eon_Theme_Label * _eon_theme_label_get(Enesim_Renderer *r)
+static inline Eon_Theme_Label * _eon_theme_label_get(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = eon_theme_widget_data_get(r);
+	thiz = eon_theme_widget_data_get(t);
 	return thiz;
 }
 
-static const char * _eon_theme_label_name(Enesim_Renderer *r)
-{
-	return "theme_label";
-}
-
-static Enesim_Renderer * _eon_theme_label_renderer_get(Enesim_Renderer *r)
+static void _eon_theme_label_free(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = _eon_theme_label_get(r);
-
-	if (thiz->renderer_get)
-		return thiz->renderer_get(r, thiz->text);
-	return thiz->text;
-}
-
-static Eina_Bool _eon_theme_label_setup(Enesim_Renderer *r,
-		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		Enesim_Error **err)
-{
-	Eon_Theme_Label *thiz;
-	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
-	Enesim_Color color;
-	Eina_Bool ret = EINA_TRUE;
-
-	thiz = _eon_theme_label_get(r);
-	enesim_renderer_origin_set(thiz->text, cs->x, cs->y);
-	enesim_renderer_color_get(r, &color);
-	enesim_renderer_color_set(thiz->text, color);
-	if (thiz->setup)
-	{
-		ret = thiz->setup(r, thiz->text, err);
-	}
-	thiz->informs_setup = EINA_FALSE;
-	return ret;
-}
-
-static void _eon_theme_label_free(Enesim_Renderer *r)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	if (thiz->free) thiz->free(r);
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.free)
+		thiz->descriptor.free(t);
 	free(thiz);
-}
-
-static Eina_Bool _eon_theme_informs_setup(Enesim_Renderer *r)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	return thiz->informs_setup;
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_label_text_get(Enesim_Renderer *r, const char **str)
+void eon_theme_label_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 {
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	etex_span_text_get(thiz->text, str);
-}
-
-void eon_theme_label_text_set(Enesim_Renderer *r, const char *str)
-{
-	Eon_Theme_Label *thiz;
-
-	thiz = _eon_theme_label_get(r);
-	etex_span_text_set(thiz->text, str);
-}
-
-void eon_theme_label_size_get(Enesim_Renderer *r, Eon_Size *size)
-{
+#if 0
 	Eon_Theme_Label *thiz;
 	Enesim_Rectangle boundings;
 
-	thiz = _eon_theme_label_get(r);
+	thiz = _eon_theme_label_get(t);
 	enesim_renderer_boundings(thiz->text, &boundings);
 	size->width = boundings.w;
 	size->height = boundings.h;
+#endif
 }
 /*============================================================================*
  *                                   API                                      *
@@ -138,31 +84,36 @@ void eon_theme_label_size_get(Enesim_Renderer *r, Eon_Size *size)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_theme_label_new(Eon_Theme_Label_Descriptor *descriptor, void *data)
+EAPI Eon_Theme_Widget * eon_theme_label_new(Eon_Theme_Label_Descriptor *descriptor, void *data)
 {
 	Eon_Theme_Label *thiz;
 	Eon_Theme_Widget_Descriptor pdescriptor = { 0 };
-	Enesim_Renderer *r;
+	Eon_Theme_Widget *t;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Label));
 	thiz->data = data;
-	thiz->text = etex_span_new();
 	/* the label interface */
-	thiz->free = descriptor->free;
-	thiz->renderer_get = descriptor->renderer_get;
-	thiz->setup = descriptor->setup;
+	thiz->descriptor.text_set = descriptor->text_set;
+	thiz->descriptor.text_get = descriptor->text_get;
+	thiz->descriptor.font_size_get = descriptor->font_size_get;
+	thiz->descriptor.font_size_set = descriptor->font_size_set;
+	thiz->descriptor.font_get = descriptor->font_get;
+	thiz->descriptor.font_set = descriptor->font_set;
+	thiz->descriptor.free = descriptor->free;
 	/* set default values */
 
 	/* now the needed enesim functions */
-	pdescriptor.renderer_get = _eon_theme_label_renderer_get;
-	pdescriptor.setup = _eon_theme_label_setup;
-	pdescriptor.name = _eon_theme_label_name;
+	pdescriptor.renderer_get = descriptor->renderer_get;
+	pdescriptor.x_set = descriptor->x_set;
+	pdescriptor.y_set = descriptor->y_set;
+	pdescriptor.width_set = descriptor->width_set;
+	pdescriptor.height_set = descriptor->height_set;
 	pdescriptor.free = _eon_theme_label_free;
 
-	r = eon_theme_widget_new(&pdescriptor, thiz);
-	if (!r) goto renderer_err;
+	t = eon_theme_widget_new(&pdescriptor, thiz);
+	if (!t) goto renderer_err;
 
-	return r;
+	return t;
 
 renderer_err:
 	free(thiz);
@@ -173,7 +124,7 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool eon_is_theme_label(Enesim_Renderer *r)
+EAPI Eina_Bool eon_is_theme_label(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Label *thiz;
 	return EINA_TRUE;
@@ -183,11 +134,11 @@ EAPI Eina_Bool eon_is_theme_label(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void * eon_theme_label_data_get(Enesim_Renderer *r)
+EAPI void * eon_theme_label_data_get(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = _eon_theme_label_get(r);
+	thiz = _eon_theme_label_get(t);
 	return thiz->data;
 }
 
@@ -195,50 +146,68 @@ EAPI void * eon_theme_label_data_get(Enesim_Renderer *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_label_font_get(Enesim_Renderer *r, const char **str)
+EAPI void eon_theme_label_font_get(Eon_Theme_Widget *t, const char **str)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = _eon_theme_label_get(r);
-	etex_base_font_name_get(thiz->text, str);
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.font_get)
+		thiz->descriptor.font_get(t, str);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_label_font_set(Enesim_Renderer *r, const char *str)
+EAPI void eon_theme_label_font_set(Eon_Theme_Widget *t, const char *str)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = _eon_theme_label_get(r);
-	etex_base_font_name_set(thiz->text, str);
-	thiz->informs_setup = EINA_TRUE;
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.font_set)
+		thiz->descriptor.font_set(t, str);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_label_font_size_get(Enesim_Renderer *r, int *size)
+EAPI void eon_theme_label_font_size_get(Eon_Theme_Widget *t, int *size)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = _eon_theme_label_get(r);
-	etex_base_size_get(thiz->text, size);
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.font_size_get)
+		thiz->descriptor.font_size_get(t, size);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_label_font_size_set(Enesim_Renderer *r, int size)
+EAPI void eon_theme_label_font_size_set(Eon_Theme_Widget *t, int size)
 {
 	Eon_Theme_Label *thiz;
 
-	thiz = _eon_theme_label_get(r);
-	etex_base_size_set(thiz->text, size);
-	thiz->informs_setup = EINA_TRUE;
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.font_size_set)
+		thiz->descriptor.font_size_set(t, size);
 }
 
+EAPI void eon_theme_label_text_get(Eon_Theme_Widget *t, const char **str)
+{
+	Eon_Theme_Label *thiz;
 
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.text_get)
+		thiz->descriptor.text_get(t, str);
+}
+
+EAPI void eon_theme_label_text_set(Eon_Theme_Widget *t, const char *str)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.text_set)
+		thiz->descriptor.text_set(t, str);
+}

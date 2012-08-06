@@ -76,6 +76,7 @@ escen {
 			set { end_shadow = 0x22000000; };
 			set { start_bevel = 0xffffffff; };
 			set { end_bevel = 0xff000000; };
+			set { padding = { 10, 10, 10, 10 }; };
 		};
 
 		state "mouse_up" {

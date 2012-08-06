@@ -489,6 +489,7 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->descriptor.renderer_get = descriptor->renderer_get;
 	thiz->descriptor.needs_setup = descriptor->needs_setup;
 	thiz->descriptor.hints_get = descriptor->hints_get;
+	thiz->descriptor.geometry_set = descriptor->geometry_set;
 	thiz->descriptor.is_focusable = descriptor->is_focusable;
 	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.name = descriptor->name;
@@ -695,13 +696,14 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
 	*preferred = thiz->min_size;
 	*max = thiz->max_size;
 
-	if (!thiz->descriptor.hints_get)
+	if (thiz->descriptor.hints_get)
 	{
 		Eon_Size imin, imax, ipreferred;
 
 		eon_size_values_set(&imin, 0, 0);
 		eon_size_values_set(&ipreferred, 0, 0);
-		eon_size_values_set(&imin, DBL_MAX, DBL_MAX);
+		eon_size_values_set(&imax, DBL_MAX, DBL_MAX);
+
 		thiz->descriptor.hints_get(thiz, &imin, &imax, &ipreferred);
 
 		min->width = MIN(min->width, imin.width);
@@ -716,6 +718,7 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
 
 void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 {
+	printf("element setting geometry\n");
 	if (thiz->descriptor.geometry_set)
 		thiz->descriptor.geometry_set(thiz, g);
 	thiz->geometry = *g;
@@ -724,6 +727,15 @@ void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 void eon_element_geometry_get(Eon_Element *thiz, Eon_Geometry *g)
 {
 	*g = thiz->geometry;
+}
+
+void eon_element_inform_change(Eon_Element *thiz)
+{
+	/* TODO now that eon should just be an arranger
+	 * of objects based on the hints/geometry
+	 * this function should inform upward the setup()
+	 * process: get_hints -> geometry_set
+	 */
 }
 
 Ender_Element * eon_element_ender_get(Eon_Element *thiz)

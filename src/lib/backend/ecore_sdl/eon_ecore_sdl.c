@@ -96,7 +96,7 @@ static Eon_Input_State_Descriptor _sdl_input_descriptor = {
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, Eina_Rectangle *area, Eina_Bool past, void *data)
+static Eina_Bool _sdl_damages_get(Enesim_Renderer *r, const Eina_Rectangle *area, Eina_Bool past, void *data)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	const char *name;
@@ -234,24 +234,29 @@ static Eina_Bool _key_up(void *data, int type, void *event)
 static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int height)
 {
 	Eon_Element *e;
-	Eon_Size window_size;
-	Eon_Size size;
+	Eon_Size min, max, preferred;
 	Eon_Geometry geometry;
 
-	window_size.width = width;
-	window_size.height = height;
-	eon_element_real_relative_size_get(thiz->layout, &window_size, &size);
 	e = ender_element_object_get(thiz->layout);
-	eon_geometry_coords_from(&geometry, 0, 0, size.width, size.height);
+	eon_element_hints_get(e, &min, &max, &preferred);
+	if (width < min.width)
+		width = min.width;
+	if (width > max.width)
+		width = max.width;
+	if (height < min.height)
+		height = min.height;
+	if (height > max.height)
+		height = max.height;
+
+	eon_geometry_coords_from(&geometry, 0, 0, width, height);
 	eon_element_geometry_set(e, &geometry);
-	//printf("actual size %g %g\n", size.width, size.height);
+	printf("setting geometry %d %d\n", width, height);
 }
 
 static Eina_Bool _resize(void *data, int type, void *event)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	Ecore_Sdl_Event_Video_Resize *ev = event;
-
 
 	_calculate_layout_size(thiz, ev->w, ev->h);
 	if (ev->w != thiz->width || ev->h != thiz->height)
@@ -315,7 +320,8 @@ static Eina_Bool _idler_cb(void *data)
 	 * be too much
 	 */
 #if 1
-	eon_element_setup(thiz->layout, thiz->surface, &error);
+	//eon_element_setup(thiz->layout, thiz->surface, &error);
+	//eon_element_geometry_set(e, &geometry);
 #else
 	if (eon_element_needs_setup(thiz->layout))
 	{
@@ -393,13 +399,13 @@ static Eina_Bool _sdl_window_new(void *data, Ender_Element *layout, unsigned int
 	 * more than one eon_ecore
 	 */
 	if (_initialized) return EINA_FALSE;
+	if (!layout) return EINA_FALSE;
 
 	eon_ecore_common_init();
 	ecore_sdl_init(NULL);
 	SDL_Init(SDL_INIT_VIDEO);
 
 	backend = data;
-
 	thiz = calloc(1, sizeof(Eon_Ecore_SDL_Window));
 	thiz->layout = layout;
 	thiz->tiler = eina_tiler_new(width, height);

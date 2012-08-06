@@ -263,11 +263,14 @@ Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
 	thiz->pass_events = descriptor->pass_events;
 
 	pdescriptor.initialize = _eon_bin_initialize;
-	pdescriptor.free = _eon_bin_free;
 	pdescriptor.setup = _eon_bin_setup;
 	pdescriptor.needs_setup = _eon_bin_needs_setup;
+	pdescriptor.geometry_set = descriptor->geometry_set;
+	pdescriptor.free = _eon_bin_free;
 	pdescriptor.name = descriptor->name;
+
 	pdescriptor.hints_get = descriptor->hints_get;
+
 	pdescriptor.child_add = _eon_bin_child_add;
 	pdescriptor.child_remove = _eon_bin_child_remove;
 	pdescriptor.child_foreach = _eon_bin_child_foreach;
@@ -280,6 +283,14 @@ Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
 renderer_err:
 	free(thiz);
 	return NULL;
+}
+
+Ender_Element * eon_bin_internal_child_get(Eon_Element *e)
+{
+	Eon_Bin *thiz;
+
+	thiz = _eon_bin_get(e);
+	return thiz->child;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -298,12 +309,13 @@ EAPI void eon_bin_child_set(Ender_Element *e, Ender_Element *child)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_bin_child_get(Ender_Element *e, Ender_Element **child)
+EAPI void eon_bin_child_get(Ender_Element *ee, Ender_Element **child)
 {
 	Eon_Bin *thiz;
-	Eon_Element *ee;
+	Eon_Element *e;
 
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	*child = thiz->child;
+	if (!child) return;
+
+	e = ender_element_object_get(ee);
+	*child = eon_bin_internal_child_get(e);
 }
