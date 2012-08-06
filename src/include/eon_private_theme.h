@@ -23,6 +23,7 @@ typedef struct _Eon_Theme_Instance
 	Escen_Ender *ender;
 	Escen_Instance *instance;
 	Ender_Element *element;
+	void *object;
 	Enesim_Renderer *renderer;
 } Eon_Theme_Instance;
 

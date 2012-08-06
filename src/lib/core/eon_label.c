@@ -145,7 +145,7 @@ static void _eon_label_text_set(Eon_Element *e, const char *text)
 	Eon_Theme_Instance *theme;
 
 	theme = eon_widget_theme_instance_get(e);
-	eon_theme_label_text_set(theme->renderer, text);
+	eon_theme_label_text_set(theme->object, text);
 }
 
 static void _eon_label_text_get(Eon_Element *e, const char **text)
@@ -153,7 +153,7 @@ static void _eon_label_text_get(Eon_Element *e, const char **text)
 	Eon_Theme_Instance *theme;
 
 	theme = eon_widget_theme_instance_get(e);
-	eon_theme_label_text_get(theme->renderer, text);
+	eon_theme_label_text_get(theme->object, text);
 }
 
 static void _eon_label_ellipsize_set(Eon_Element *ee, Eina_Bool enable)

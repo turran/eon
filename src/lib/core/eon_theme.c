@@ -152,6 +152,7 @@ Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, cons
 	theme_renderer = eon_theme_widget_renderer_get(theme_object);
 
 	thiz = calloc(1, sizeof(Eon_Theme_Instance));
+	thiz->object = theme_object;
 	thiz->ender = theme_ender;
 	thiz->instance = theme_instance;
 	thiz->element = theme_element;

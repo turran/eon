@@ -43,7 +43,11 @@ struct _Eon_Basic_Control_Button
 	Enesim_Renderer *shape;
 	Enesim_Renderer *proxy;
 	Enesim_Renderer *proxy_default;
-	Eina_Bool changed : 1;
+	/* last properties set */
+	double x;
+	double y;
+	double width;
+	double height;
 };
 
 static const double _border_weight = 2.0;
@@ -55,58 +59,13 @@ static void _button_propagate(Eon_Basic_Control_Button *thiz,
 {
 	Enesim_Renderer *r;
 	Enesim_Matrix m;
-	Enesim_Renderer_Gradient_Stop stop;
 	double x = current->x;
 	double y = current->y;
 	double width = current->width;
 	double height = current->height;
 
-	if (geometry_changed)
-	{
-		/* setup the background fill */
-		r = thiz->background_fill;
-		m.xx = 0; m.xy = 0; m.xz = 0;
-		m.yx = 0; m.yy = 1.0/height; m.yz = 0;
-		m.zx = 0; m.zy = 0; m.zz = 1;
-		enesim_renderer_transformation_set(r, &m);
-		enesim_renderer_origin_set(r, x, y);
-
-		/* setup the background */
-		r = thiz->shape;
-		enesim_renderer_rectangle_width_set(r, width);
-		enesim_renderer_rectangle_height_set(r, height);
-		enesim_renderer_rectangle_position_set(r, x, y);
-	}
-
 	if (geometry_changed || thiz->changed)
 	{
-		/* setup the inner button fill */
-		r = thiz->inner_button_fill;
-		enesim_renderer_origin_set(r, x, y);
-		enesim_renderer_gradient_linear_x0_set(r, 0);
-		enesim_renderer_gradient_linear_y0_set(r, 0);
-		enesim_renderer_gradient_linear_x1_set(r, 0);
-		enesim_renderer_gradient_linear_y1_set(r, height - (thiz->radius - 1));
-		/* the gradient stops */
-		enesim_renderer_gradient_stop_clear(r);
-		stop.argb = thiz->start_bevel;
-		stop.pos = 0;
-		enesim_renderer_gradient_stop_add(r, &stop);
-		stop.argb = thiz->fill_color;
-		stop.pos = (2.0 + 3) /(height - thiz->vertical_padding);
-		enesim_renderer_gradient_stop_add(r, &stop);
-		stop.argb = thiz->fill_color;
-		stop.pos = 1 - stop.pos;
-		enesim_renderer_gradient_stop_add(r, &stop);
-		stop.argb = thiz->end_bevel;
-		stop.pos = 1;
-		enesim_renderer_gradient_stop_add(r, &stop);
-		/* setup the inner button */
-		r = thiz->inner_button;
-		enesim_renderer_rectangle_width_set(r, width - (thiz->horizontal_padding * 2));
-		enesim_renderer_rectangle_height_set(r, height - (thiz->vertical_padding * 2));
-		enesim_renderer_rectangle_position_set(r, x + thiz->horizontal_padding, y + thiz->vertical_padding);
-
 		thiz->changed = EINA_FALSE;
 	}
 }
@@ -132,6 +91,20 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	thiz->fill_color = 0xffcccccc;
 	thiz->start_bevel = 0xfffffff;
 	thiz->end_bevel = 0xff000000;
+
+	/* FIXME the proxy is for now, until we fix enesim to make
+	 * a renderer "active"
+	 */
+	r = enesim_renderer_background_new();
+	if (!r) goto proxy_default_err;
+	enesim_renderer_rop_set(r, ENESIM_FILL);
+	enesim_renderer_color_set(r, 0xffffffff);
+	thiz->proxy_default = r;
+
+	r = enesim_renderer_proxy_new();
+	if (!r) goto content_proxy_err;
+	enesim_renderer_proxy_proxied_set(r, thiz->proxy_default);
+	thiz->proxy = r;
 
 	r = enesim_renderer_stripes_new();
 	if (!r) goto background_fill_err;
@@ -161,6 +134,7 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	if (!r) goto compound_err;
 	enesim_renderer_compound_layer_add(r, thiz->background_fill);
 	enesim_renderer_compound_layer_add(r, thiz->inner_button);
+	//enesim_renderer_compound_layer_add(r, thiz->proxy);
 	thiz->compound = r;
 
 	r = enesim_renderer_rectangle_new();
@@ -182,6 +156,10 @@ inner_button_err:
 inner_button_fill_err:
 	enesim_renderer_unref(thiz->background_fill);
 background_fill_err:
+	enesim_renderer_unref(thiz->proxy);
+proxy_default_err:
+	enesim_renderer_unref(thiz->proxy_default);
+content_proxy_err:
 	free(thiz);
 	return NULL;
 }
@@ -189,7 +167,6 @@ background_fill_err:
 void eon_basic_control_button_fill_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->fill_color = color;
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
@@ -199,25 +176,21 @@ void eon_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, E
 
 	r = thiz->inner_button;
 	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_horizontal_padding_set(Eon_Basic_Control_Button *thiz, double padding)
 {
 	thiz->horizontal_padding = padding;
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_vertical_padding_set(Eon_Basic_Control_Button *thiz, double padding)
 {
 	thiz->vertical_padding = padding;
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_radius_set(Eon_Basic_Control_Button *thiz, double radius)
 {
 	thiz->radius = radius;
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_start_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
@@ -227,7 +200,6 @@ void eon_basic_control_button_start_shadow_set(Eon_Basic_Control_Button *thiz, E
 	thiz->start_shadow = color;
 	r = thiz->background_fill;
 	enesim_renderer_stripes_odd_color_set(r, thiz->start_shadow);
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
@@ -237,19 +209,16 @@ void eon_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Ene
 	thiz->end_shadow = color;
 	r = thiz->background_fill;
 	enesim_renderer_stripes_even_color_set(r, thiz->end_shadow);
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_start_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->start_bevel = color;
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->end_bevel = color;
-	thiz->changed = EINA_TRUE;
 }
 
 void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
@@ -272,73 +241,53 @@ void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
 	}
 }
 
-#if 0
-Eina_Bool eon_basic_control_button_setup(Eon_Basic_Control_Button *thiz,
-		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
-{
-	Eina_Bool geometry_changed = EINA_FALSE;
-	const Eon_Theme_Container_State *ccs = cstates[ENESIM_STATE_CURRENT];
-	const Eon_Theme_Container_State *pcs = cstates[ENESIM_STATE_PAST];
-	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
-	const Eon_Theme_Widget_State *ps = states[ENESIM_STATE_PAST];
-
-	/* add the compound layers */
-	if (ccs->content != pcs->content)
-	{
-		if (pcs->content)
-		{
-			enesim_renderer_compound_layer_remove(thiz->compound, pcs->content);
-		}
-		if (ccs->content)
-		{
-			enesim_renderer_compound_layer_add(thiz->compound, ccs->content);
-		}
-	}
-	if ((cs->x != ps->x) ||
-			(cs->y != ps->y) ||
-			(cs->width != ps->width) ||
-			(cs->height != ps->height))
-	{
-		geometry_changed = EINA_TRUE;
-	}
-	_button_propagate(thiz, cs, geometry_changed);
-
-	return EINA_TRUE;
-}
-#endif
-
 void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
 		double x)
 {
+	enesim_renderer_x_origin_set(thiz->background_fill, x);
 	enesim_renderer_gradient_linear_x0_set(thiz->inner_button_fill, x);
 	enesim_renderer_gradient_linear_x1_set(thiz->inner_button_fill, x);
+	enesim_renderer_rectangle_x_set(thiz->inner_button, x + thiz->horizontal_padding);
+	enesim_renderer_rectangle_x_set(thiz->shape, x);
 }
 
 void eon_basic_control_button_y_set(Eon_Basic_Control_Button *thiz,
 		double y)
 {
+	enesim_renderer_y_origin_set(thiz->background_fill, y);
 	enesim_renderer_gradient_linear_y0_set(thiz->inner_button_fill, y);
+	enesim_renderer_rectangle_y_set(thiz->inner_button, y + thiz->vertical_padding);
+	enesim_renderer_rectangle_x_set(thiz->shape, y);
 }
 
 void eon_basic_control_button_width_set(Eon_Basic_Control_Button *thiz,
 		double width)
 {
-
+	enesim_renderer_rectangle_width_set(thiz->inner_button, width - (thiz->horizontal_padding * 2));
+	enesim_renderer_rectangle_width_set(thiz->shape, width);
 }
 
 void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
 		double height)
 {
-	enesim_renderer_gradient_linear_y1_set(thiz->inner_button_fill, height - (thiz->radius - 1));
-#if 0
+	Enesim_Matrix m;
+	Enesim_Renderer_Gradient_Stop stop;
+	Enesim_Renderer *r;
+
+	r = thiz->background_fill;
+	m.xx = 0; m.xy = 0; m.xz = 0;
+	m.yx = 0; m.yy = 1.0/height; m.yz = 0;
+	m.zx = 0; m.zy = 0; m.zz = 1;
+	enesim_renderer_transformation_set(r, &m);
+	/* the gradient stops */
+	r = thiz->inner_button_fill;
+	enesim_renderer_gradient_linear_y1_set(r, height - (thiz->radius - 1));
 	enesim_renderer_gradient_stop_clear(r);
 	stop.argb = thiz->start_bevel;
 	stop.pos = 0;
 	enesim_renderer_gradient_stop_add(r, &stop);
 	stop.argb = thiz->fill_color;
-	stop.pos = (2.0 + 3) /(height - thiz->vertical_padding);
+	stop.pos = (2.0 + 3) / (height - thiz->vertical_padding);
 	enesim_renderer_gradient_stop_add(r, &stop);
 	stop.argb = thiz->fill_color;
 	stop.pos = 1 - stop.pos;
@@ -346,12 +295,17 @@ void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
 	stop.argb = thiz->end_bevel;
 	stop.pos = 1;
 	enesim_renderer_gradient_stop_add(r, &stop);
-#endif
+
+	r = thiz->inner_button;
+	enesim_renderer_rectangle_height_set(r, height - (thiz->vertical_padding * 2));
+	r = thiz->shape;
+	enesim_renderer_rectangle_height_set(r, height);
 }
 
 void eon_basic_control_button_renderer_content_set(Eon_Basic_Control_Button *thiz,
 		Enesim_Renderer *content)
 {
+	printf("setting content!\n");
 	enesim_renderer_proxy_proxied_set(thiz->proxy, content);
 	if (!content)
 		enesim_renderer_proxy_proxied_set(thiz->proxy, thiz->proxy_default);

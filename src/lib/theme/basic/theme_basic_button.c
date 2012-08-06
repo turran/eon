@@ -37,7 +37,6 @@ static inline Eon_Basic_Button * _button_get(Eon_Theme_Widget *t)
 	thiz = eon_theme_button_data_get(t);
 	return thiz;
 }
-
 /*----------------------------------------------------------------------------*
  *                         The Button theme interface                         *
  *----------------------------------------------------------------------------*/
@@ -216,7 +215,6 @@ EAPI void eon_basic_button_end_shadow_set(Eon_Theme_Widget *t, Enesim_Color colo
 	Eon_Basic_Button *thiz;
 
 	thiz = _button_get(t);
-	printf("setting end shadow!\n");
 	eon_basic_control_button_end_shadow_set(thiz->cb, color);
 }
 

@@ -186,7 +186,6 @@ static void _eon_button_initialize(Ender_Element *e)
 
 static void _eon_button_geometry_set(Eon_Element *e, Eon_Geometry *g)
 {
-	printf("button geometry set %g %g %g %g\n", g->x, g->y, g->width, g->height);
 	eon_layout_geometry_set(&eon_layout_frame, &_main_layout, e, g);
 }
 
@@ -201,7 +200,6 @@ static void _eon_button_free(Eon_Element *e)
 static void _eon_button_hints_get(Eon_Element *e, Eon_Theme_Instance *theme, Eon_Size *min, Eon_Size *max,
 		Eon_Size *preferred)
 {
-	printf("button hints get\n");
 	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, min, max, preferred);
 }
 
