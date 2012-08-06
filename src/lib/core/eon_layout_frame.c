@@ -28,17 +28,48 @@ typedef struct _Eon_Layout_Frame_Geometry_Set_Data
 
 typedef struct _Eon_Layout_Frame_Hints_Get_Data
 {
-
+	Eon_Size *min;
+	Eon_Size *max;
+	Eon_Size *preferred;
+	Eon_Layout_Frame_Descriptor *d;
 } Eon_Layout_Frame_Hints_Get_Data;
 
 static void _geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Frame_Geometry_Set_Data *data = user_data;
+	/* TODO when setting the geometry we need to take into
+	 * account the previously generated min/max/preferred
+	 * per child
+	 */
 }
 
 static void _hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Frame_Hints_Get_Data *data = user_data;
+	Eon_Size cmin, cmax, cpreferred;
+	Eon_Margin cmargin;
+	double h;
+	double v;
+
+	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	data->d->child_padding_get(ref, child, &cmargin);
+
+	h = cmargin.left + cmargin.right;
+	v = cmargin.top + cmargin.bottom;
+
+	cmin.width += h;
+	cmin.height += v;
+	cmax.width += h;
+	cmax.height += v;
+	cpreferred.width += h;
+	cpreferred.height += v;
+
+	data->min->width = MIN(data->min->width, cmin.width);
+	data->min->height = MIN(data->min->height, cmin.height);
+	data->max->width = MIN(data->max->width, cmax.width);
+	data->max->height = MIN(data->max->height, cmax.height);
+	data->preferred->width = MIN(data->preferred->width, cpreferred.width);
+	data->preferred->height = MIN(data->preferred->height, cpreferred.height);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's layout interface                          *
@@ -53,11 +84,15 @@ static void _eon_layout_frame_geometry_set(void *descriptor, void *ref,
 }
 
 static void _eon_layout_frame_hints_get(void *descriptor, void *ref,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preffered)
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
 {
 	Eon_Layout_Frame_Hints_Get_Data data;
 	Eon_Layout_Frame_Descriptor *d = descriptor;
 
+	data.d = d;
+	data.min = min;
+	data.max = max;
+	data.preferred = preferred;
 	d->child_foreach(ref, _hints_get_cb, &data);
 }
 /*============================================================================*

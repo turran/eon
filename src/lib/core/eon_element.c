@@ -688,6 +688,10 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 	return r;
 }
 
+/* this function should be called before setting a geometry. When we set a geometry
+ * we need to take into account the last time the min/max/preferred sizes
+ * where calculated
+ */
 void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
@@ -716,6 +720,9 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
 	}
 }
 
+/* this should be called always after the hints_get and also pass the last
+ * size hints
+ */
 void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 {
 	printf("element setting geometry\n");
