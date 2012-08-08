@@ -143,7 +143,6 @@ EAPI void eon_theme_image_surface_set(Eon_Theme_Widget *t, Enesim_Surface *surfa
 	Eon_Theme_Image *thiz;
 
 	thiz = _eon_theme_image_get(t);
-	printf("theme setting surface\n");
 	if (thiz->descriptor.surface_set)
 		thiz->descriptor.surface_set(t, surface);
 }

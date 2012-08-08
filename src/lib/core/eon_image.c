@@ -253,7 +253,7 @@ static Eon_Element * _eon_image_new(void)
 	Eon_Element *ee;
 	Eon_Theme_Instance *theme;
 
-	theme = eon_theme_instance_new("label", EINA_TRUE);
+	theme = eon_theme_instance_new("image", EINA_TRUE);
 	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Image));

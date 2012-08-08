@@ -94,7 +94,6 @@ static void _basic_image_surface_set(Eon_Theme_Widget *t, Enesim_Surface *src)
 	Eon_Basic_Image *thiz;
 
 	thiz = _image_get(t);
-	printf("setting image surface!! %p\n", src);
 	if (thiz->src)
 	{
 		enesim_surface_unref(thiz->src);
@@ -136,7 +135,7 @@ EAPI Eon_Theme_Widget * eon_basic_image_new(void)
 
 	r = enesim_renderer_image_new();
 	if (!r) goto image_err;
-	enesim_renderer_rop_set(thiz->image, ENESIM_BLEND);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	thiz->image = r;
 
 	t = eon_theme_image_new(&_descriptor, thiz);
