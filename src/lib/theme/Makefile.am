@@ -26,7 +26,6 @@ basic/libtheme_basic.la
 #eon_theme_color.c \
 #eon_theme_entry.c \
 #eon_theme_frame.c \
-#eon_theme_image.c \
 #eon_theme_layout.c \
 #eon_theme_progressbar.c \
 #eon_theme_radio.c \
@@ -41,6 +40,7 @@ libtheme_la_SOURCES = \
 eon_theme_bin.c \
 eon_theme_container.c \
 eon_theme_button.c \
+eon_theme_image.c \
 eon_theme_label.c \
 eon_theme_widget.c
 

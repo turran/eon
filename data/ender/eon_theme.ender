@@ -59,7 +59,7 @@ namespace "eon" : 0 {
 	};
 
 	abstract "theme_image" : "theme_widget" {
-		surface "source";
+		surface "surface";
 		double "min_width";
 		double "max_width";
 		double "min_height";

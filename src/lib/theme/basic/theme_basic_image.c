@@ -16,93 +16,108 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "Eon_Theme.h"
-#include "Eon_Basic.h"
-#include "eon_basic_private.h"
+
+#include "eon_theme_widget.h"
+#include "eon_theme_image.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Image
+typedef struct _Eon_Basic_Image
 {
 	/* properties */
 	/* private */
 	Enesim_Surface *src;
 	Enesim_Renderer *image;
-} Image;
+} Eon_Basic_Image;
 
-static inline Image * _image_get(Enesim_Renderer *r)
+static inline Eon_Basic_Image * _image_get(Eon_Theme_Widget *t)
 {
-	Image *thiz;
+	Eon_Basic_Image *thiz;
 
-	thiz = eon_theme_image_data_get(r);
+	thiz = eon_theme_image_data_get(t);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
- *                         The Image theme interface                         *
+ *                         The Eon_Basic_Image theme interface                 *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _image_renderer_get(Enesim_Renderer *r)
+static Enesim_Renderer * _basic_image_renderer_get(Eon_Theme_Widget *t)
 {
-	Image *thiz;
+	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(r);
+	thiz = _image_get(t);
 	return thiz->image;
 }
 
-static Eina_Bool _image_setup(Enesim_Renderer *r, Enesim_Error **err)
+static void _basic_image_x_set(Eon_Theme_Widget *t, double x)
 {
-	Image *thiz;
-	double ox, oy;
-	double width, height;
-	Enesim_Color color;
+	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(r);
-	/* setup common properties */
-	eon_theme_widget_x_get(r, &ox);
-	eon_theme_widget_y_get(r, &oy);
-	enesim_renderer_color_get(r, &color);
-	enesim_renderer_color_set(thiz->image, color);
-	if (!thiz->src)
-	{
-		printf("empty image\n");
-		return EINA_FALSE;
-	}
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-	enesim_renderer_image_x_set(thiz->image, ox);
-	enesim_renderer_image_y_set(thiz->image, oy);
-	enesim_renderer_image_width_set(thiz->image, width);
-	enesim_renderer_image_height_set(thiz->image, height);
-	enesim_renderer_image_src_set(thiz->image, thiz->src);
-
-	return EINA_TRUE;
+	thiz = _image_get(t);
+	enesim_renderer_image_x_set(thiz->image, x);
 }
 
-static void _image_free(Enesim_Renderer *r)
+static void _basic_image_y_set(Eon_Theme_Widget *t, double y)
 {
-	Image *thiz;
+	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(r);
+	thiz = _image_get(t);
+	enesim_renderer_image_y_set(thiz->image, y);
+}
+
+static void _basic_image_width_set(Eon_Theme_Widget *t, double width)
+{
+	Eon_Basic_Image *thiz;
+
+	thiz = _image_get(t);
+	enesim_renderer_image_width_set(thiz->image, width);
+}
+
+static void _basic_image_height_set(Eon_Theme_Widget *t, double height)
+{
+	Eon_Basic_Image *thiz;
+
+	thiz = _image_get(t);
+	enesim_renderer_image_height_set(thiz->image, height);
+}
+
+static void _basic_image_free(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Image *thiz;
+
+	thiz = _image_get(t);
 	enesim_renderer_unref(thiz->image);
 	free(thiz);
 }
 
-static void _image_source_set(Enesim_Renderer *r, Enesim_Surface *src)
+static void _basic_image_surface_set(Eon_Theme_Widget *t, Enesim_Surface *src)
 {
-	Image *thiz;
+	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(r);
+	thiz = _image_get(t);
+	printf("setting image surface!! %p\n", src);
 	if (thiz->src)
+	{
 		enesim_surface_unref(thiz->src);
-	thiz->src = src;
-	if (thiz->src)
-		thiz->src = enesim_surface_ref(thiz->src);
+		thiz->src = NULL;
+	}
+	if (src)
+	{
+		thiz->src = enesim_surface_ref(src);
+		enesim_renderer_image_src_set(thiz->image, src);
+	}
 }
 
 static Eon_Theme_Image_Descriptor _descriptor = {
-	.renderer_get = _image_renderer_get,
-	.setup = _image_setup,
-	.free = _image_free,
-	.source_set = _image_source_set,
+	/* .renderer_get 	= */ _basic_image_renderer_get,
+	/* .x_set 		= */ _basic_image_x_set,
+	/* .y_set 		= */ _basic_image_y_set,
+	/* .width_set 		= */ _basic_image_width_set,
+	/* .height_set		= */ _basic_image_height_set,
+	/* .free		= */ _basic_image_free,
+	/* .max_size_get 	= */ NULL,
+	/* .min_size_get 	= */ NULL,
+	/* .preferred_size_get 	= */ NULL,
+	/* .surface_set 	= */ _basic_image_surface_set,
 };
 /*============================================================================*
  *                                   API                                      *
@@ -111,24 +126,25 @@ static Eon_Theme_Image_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_image_new(void)
+EAPI Eon_Theme_Widget * eon_basic_image_new(void)
 {
+	Eon_Basic_Image *thiz;
+	Eon_Theme_Widget *t;
 	Enesim_Renderer *r;
-	Image *thiz;
 
-	thiz = calloc(1, sizeof(Image));
-	if (!thiz) return NULL;
+	thiz = calloc(1, sizeof(Eon_Basic_Image));
 
 	r = enesim_renderer_image_new();
 	if (!r) goto image_err;
+	enesim_renderer_rop_set(thiz->image, ENESIM_BLEND);
 	thiz->image = r;
 
-	r = eon_theme_image_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	t = eon_theme_image_new(&_descriptor, thiz);
+	if (!t) goto base_err;
 
-	return r;
+	return t;
 
-renderer_err:
+base_err:
 	enesim_renderer_unref(thiz->image);
 image_err:
 	free(thiz);

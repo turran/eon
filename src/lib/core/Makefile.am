@@ -14,7 +14,6 @@ noinst_LTLIBRARIES = libcore.la
 # eon_color.c \
 # eon_entry.c \
 # eon_frame.c \
-# eon_image.c \
 # eon_progressbar.c \
 # eon_radio.c \
 # eon_spin.c \
@@ -31,6 +30,7 @@ noinst_LTLIBRARIES = libcore.la
 
 classes = \
 eon_button.c \
+eon_image.c \
 eon_label.c \
 eon_stack.c
 

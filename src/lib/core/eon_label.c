@@ -106,7 +106,7 @@ static void _eon_label_free(Eon_Element *e)
 	free(thiz);
 }
 
-static Eon_Widget_Descriptor _eon_label_widget_descriptor = {
+static Eon_Widget_Descriptor _eon_label_descriptor = {
 	/* .initialize 		= */ NULL,
 	/* .setup 		= */ NULL,
 	/* .needs_setup 	= */ NULL,
@@ -130,7 +130,7 @@ static Eon_Element * _eon_label_new(void)
 	thiz = calloc(1, sizeof(Eon_Label));
 	thiz->ellipsize = EINA_FALSE;
 
-	ee = eon_widget_new(theme, &_eon_label_widget_descriptor, thiz);
+	ee = eon_widget_new(theme, &_eon_label_descriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	return ee;

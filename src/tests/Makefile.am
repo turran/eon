@@ -1,25 +1,27 @@
 MAINTAINERCLEANFILES = Makefile.in
 
+# old programs
+# eon_test_button_image \
+# eon_test_canvas \
+# eon_test_checkbox \
+# eon_test_color \
+# eon_test_entry \
+# eon_test_frame \
+# eon_test_label \
+# eon_test_loader \
+# eon_test_progressbar \
+# eon_test_radio \
+# eon_test_scrollview \
+# eon_test_scrollbar \
+# eon_test_splitter \
+# eon_test_spin \
+# eon_test_toggle \
+# eon_test_wrapper
+
 check_PROGRAMS = \
 eon_test_button01 \
 eon_test_button02 \
-eon_test_button_image \
-eon_test_canvas \
-eon_test_checkbox \
-eon_test_color \
-eon_test_entry \
-eon_test_image \
-eon_test_frame \
-eon_test_label \
-eon_test_loader \
-eon_test_progressbar \
-eon_test_radio \
-eon_test_scrollview \
-eon_test_scrollbar \
-eon_test_splitter \
-eon_test_spin \
-eon_test_toggle \
-eon_test_wrapper
+eon_test_image
 
 eon_test_loader_SOURCES = eon_test_loader.c
 eon_test_loader_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

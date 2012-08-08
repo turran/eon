@@ -161,11 +161,14 @@ static Eon_Theme_Label_Descriptor _descriptor = {
  */
 EAPI Eon_Theme_Widget * eon_basic_label_new(void)
 {
-	Eon_Theme_Widget *t;
 	Eon_Basic_Label *thiz;
+	Eon_Theme_Widget *t;
+	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Basic_Label));
-	if (!thiz) return NULL;
+
+	r = etex_span_new();
+	if (!r) goto span_err;
 	thiz->text = etex_span_new();
 	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
 
@@ -175,6 +178,8 @@ EAPI Eon_Theme_Widget * eon_basic_label_new(void)
 	return t;
 
 base_err:
+	enesim_renderer_unref(thiz->text);
+span_err:
 	free(thiz);
 	return NULL;
 }

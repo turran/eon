@@ -14,6 +14,7 @@
 		/* backend = eon_ecore_remote_new(); */			\
 		backend = eon_ecore_sdl_new();				\
 		container = eon_test_##name(argc, argv);		\
+		if (!container) return -1;				\
 		win = eon_window_new(backend, container, 320, 240);	\
 		ecore_main_loop_begin();				\
 		ecore_shutdown();					\

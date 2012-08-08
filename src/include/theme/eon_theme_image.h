@@ -22,32 +22,34 @@
 /**
  * @{
  */
-typedef void (*Eon_Theme_Image_Source_Set)(Enesim_Renderer *r, Enesim_Surface *src);
-typedef void (*Eon_Theme_Image_Min_Size_Get)(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
-typedef void (*Eon_Theme_Image_Max_Size_Get)(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
-typedef void (*Eon_Theme_Image_Preferred_Size_Get)(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
+typedef void (*Eon_Theme_Image_Surface_Set)(Eon_Theme_Widget *t, Enesim_Surface *s);
+typedef void (*Eon_Theme_Image_Min_Size_Get)(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
+typedef void (*Eon_Theme_Image_Max_Size_Get)(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
+typedef void (*Eon_Theme_Image_Preferred_Size_Get)(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
 
 typedef struct _Eon_Theme_Image_Descriptor
 {
 	/* element needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
+	Eon_Theme_Widget_X_Set x_set;
+	Eon_Theme_Widget_Y_Set y_set;
+	Eon_Theme_Widget_Width_Set width_set;
+	Eon_Theme_Widget_Height_Set height_set;
+	Eon_Theme_Widget_Free free;
+	/* image needed functions */
 	Eon_Theme_Image_Max_Size_Get max_size_get;
 	Eon_Theme_Image_Min_Size_Get min_size_get;
 	Eon_Theme_Image_Preferred_Size_Get preferred_size_get;
-	Eon_Theme_Image_Source_Set source_set;
-	/* renderer needed functions */
-	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Widget_Setup setup;
-	Enesim_Renderer_Delete free;
+	Eon_Theme_Image_Surface_Set surface_set;
 } Eon_Theme_Image_Descriptor;
 
-EAPI Enesim_Renderer * eon_theme_image_new(Eon_Theme_Image_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_image_new(Eon_Theme_Image_Descriptor *descriptor,
 		void *data);
-EAPI Eina_Bool eon_is_theme_image(Enesim_Renderer *r);
-EAPI void * eon_theme_image_data_get(Enesim_Renderer *r);
+EAPI void * eon_theme_image_data_get(Eon_Theme_Widget *t);
 
-EAPI void eon_theme_image_max_size_get(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
-EAPI void eon_theme_image_min_size_get(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
-EAPI void eon_theme_image_preferred_size_get(Enesim_Renderer *r, Eon_Size *image_size, Eon_Size *out);
+EAPI void eon_theme_image_max_size_get(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
+EAPI void eon_theme_image_min_size_get(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
+EAPI void eon_theme_image_preferred_size_get(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
 
 /**
  * @}
