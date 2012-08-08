@@ -18,6 +18,7 @@
 #include "Eon.h"
 
 #include "eon_theme_widget.h"
+#include "eon_theme_container.h"
 #include "eon_theme_bin.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -26,6 +27,7 @@ typedef struct _Eon_Theme_Bin_Descriptor_Internal
 {
 	Eon_Theme_Widget_Free free;
 	Eon_Theme_Bin_Child_Set child_set;
+	Eon_Theme_Bin_Child_Get child_get;
 } Eon_Theme_Bin_Descriptor_Internal;
 
 typedef struct _Eon_Theme_Bin
@@ -38,7 +40,7 @@ static inline Eon_Theme_Bin * _eon_theme_bin_get(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Bin *thiz;
 
-	thiz = eon_theme_widget_data_get(t);
+	thiz = eon_theme_container_data_get(t);
 	return thiz;
 }
 
@@ -51,27 +53,54 @@ static void _eon_theme_bin_free(Eon_Theme_Widget *t)
 		thiz->descriptor.free(t);
 	free(thiz);
 }
+
+static void _eon_theme_bin_child_add(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Bin *thiz;
+	Enesim_Renderer *child = NULL;
+
+	thiz = _eon_theme_bin_get(t);
+	if (thiz->descriptor.child_get)
+		thiz->descriptor.child_get(t, &child);
+	if (!child && thiz->descriptor.child_set)
+		thiz->descriptor.child_set(t, r);
+}
+
+static void _eon_theme_bin_child_remove(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Bin *thiz;
+	Enesim_Renderer *child = NULL;
+
+	thiz = _eon_theme_bin_get(t);
+	if (!child && thiz->descriptor.child_set)
+		thiz->descriptor.child_set(t, NULL);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 EAPI Eon_Theme_Widget * eon_theme_bin_new(Eon_Theme_Bin_Descriptor *descriptor, void *data)
 {
 	Eon_Theme_Bin *thiz;
-	Eon_Theme_Widget_Descriptor pdescriptor;
+	Eon_Theme_Container_Descriptor pdescriptor;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Bin));
 	thiz->descriptor.free = descriptor->free;
+	thiz->descriptor.child_get = descriptor->child_get;
 	thiz->descriptor.child_set = descriptor->child_set;
 	thiz->data = data;
 
+	/* widget descriptor */
 	pdescriptor.renderer_get = descriptor->renderer_get;
 	pdescriptor.x_set = descriptor->x_set;
 	pdescriptor.y_set = descriptor->y_set;
 	pdescriptor.width_set = descriptor->width_set;
 	pdescriptor.height_set = descriptor->height_set;
 	pdescriptor.free = _eon_theme_bin_free;
+	/* container descriptor */
+	pdescriptor.child_add = _eon_theme_bin_child_add;
+	pdescriptor.child_remove = _eon_theme_bin_child_remove;
 
-	return eon_theme_widget_new(&pdescriptor, thiz);
+	return eon_theme_container_new(&pdescriptor, thiz);
 }
 
 EAPI void * eon_theme_bin_data_get(Eon_Theme_Widget *t)
@@ -84,11 +113,3 @@ EAPI void * eon_theme_bin_data_get(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI void eon_theme_bin_child_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
-{
-	Eon_Theme_Bin *thiz;
-
-	thiz = _eon_theme_bin_get(t);
-	if (thiz->descriptor.child_set)
-		thiz->descriptor.child_set(t, r);
-}

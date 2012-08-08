@@ -64,6 +64,7 @@ static void _register_enders(void *data)
 	eon_label_init();
 	/* container inheritance */
 	eon_bin_init();
+	eon_stack_init();
 	/* bin inheritance */
 	eon_button_base_init();
 	/* basic button inheritance */
@@ -80,7 +81,6 @@ static void _register_enders(void *data)
 	eon_spin_init();
 	/* layout inheritance */
 	eon_canvas_init();
-	eon_stack_init();
 	/* container inheritance */
 	eon_splitter_init();
 	eon_scrollview_init();

@@ -16,28 +16,39 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_CONTAINER_H_
-#define _EON_THEME_CONTAINER_H_
+#ifndef _EON_THEME_LAYOUT_H_
+#define _EON_THEME_LAYOUT_H_
 
 /**
  * @{
  */
-typedef struct _Eon_Theme_Container_State
+
+typedef void (*Eon_Theme_Container_Child_Add)(Eon_Theme_Widget *r,  Enesim_Renderer *child);
+typedef void (*Eon_Theme_Container_Child_Remove)(Eon_Theme_Widget *r, Enesim_Renderer *child);
+
+typedef struct _Eon_Theme_Container_Descriptor
 {
-	Enesim_Renderer *content;
-} Eon_Theme_Container_State;
+	/* widget needed functions */
+	Eon_Theme_Widget_Renderer_Get renderer_get;
+	Eon_Theme_Widget_X_Set x_set;
+	Eon_Theme_Widget_Y_Set y_set;
+	Eon_Theme_Widget_Width_Set width_set;
+	Eon_Theme_Widget_Height_Set height_set;
+	Eon_Theme_Widget_Free free;
+	/* container needed functions */
+	Eon_Theme_Container_Child_Add child_add;
+	Eon_Theme_Container_Child_Remove child_remove;
+} Eon_Theme_Container_Descriptor;
 
-typedef Eina_Bool (*Eon_Theme_Container_Setup)(Enesim_Renderer *r,
-		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error);
-
-EAPI void eon_theme_container_content_set(Enesim_Renderer *r, Enesim_Renderer *content);
-EAPI void eon_theme_container_content_get(Enesim_Renderer *r, Enesim_Renderer **content);
+EAPI Eon_Theme_Widget * eon_theme_container_new(Eon_Theme_Container_Descriptor *descriptor,
+		void *data);
+EAPI Eina_Bool eon_is_theme_layout(Eon_Theme_Widget *r);
+EAPI void * eon_theme_container_data_get(Eon_Theme_Widget *r);
+EAPI void eon_theme_container_child_add(Eon_Theme_Widget *r, Enesim_Renderer *child);
+EAPI void eon_theme_container_child_remove(Eon_Theme_Widget *r, Enesim_Renderer *child);
 
 /**
  * @}
  */
 
 #endif
-

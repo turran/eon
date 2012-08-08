@@ -45,7 +45,8 @@ typedef void (*Eon_Theme_Widget_Free)(Eon_Theme_Widget *t);
  * as the content, the buttons needs to do it's own setup again given that
  * size (preferred, min, max, whatever) might have changed
  */
-typedef Eina_Bool (*Eon_Theme_Widget_Informs_Setup)(Enesim_Renderer *r);
+#define EON_THEME_WIDGET_SIZE_CHANGED_CB(c) ((Eon_Theme_Widget_Size_Changed_Cb)(c))
+typedef void (*Eon_Theme_Widget_Size_Changed_Cb)(void *data);
 
 typedef struct _Eon_Theme_Widget_Descriptor
 {
@@ -59,7 +60,19 @@ typedef struct _Eon_Theme_Widget_Descriptor
 
 Eon_Theme_Widget * eon_theme_widget_new(Eon_Theme_Widget_Descriptor *descriptor, void *data);
 void * eon_theme_widget_data_get(Eon_Theme_Widget *t);
-void eon_theme_widget_informs_setup_set(Eon_Theme_Widget *t, Eon_Theme_Widget_Informs_Setup setup);
+
+EAPI void eon_theme_widget_x_set(Eon_Theme_Widget *thiz, double x);
+EAPI void eon_theme_widget_x_get(Eon_Theme_Widget *thiz, double *x);
+EAPI void eon_theme_widget_y_set(Eon_Theme_Widget *thiz, double y);
+EAPI void eon_theme_widget_y_get(Eon_Theme_Widget *thiz, double *y);
+EAPI void eon_theme_widget_renderer_get(Eon_Theme_Widget *t, Enesim_Renderer **r);
+EAPI void eon_theme_widget_width_set(Eon_Theme_Widget *thiz, double width);
+EAPI void eon_theme_widget_width_get(Eon_Theme_Widget *thiz, double *width);
+EAPI void eon_theme_widget_height_set(Eon_Theme_Widget *thiz, double height);
+EAPI void eon_theme_widget_height_get(Eon_Theme_Widget *thiz, double *height);
+EAPI void eon_theme_widget_renderer_get(Eon_Theme_Widget *thiz, Enesim_Renderer **r);
+EAPI void eon_theme_widget_size_changed(Eon_Theme_Widget *thiz);
+EAPI void eon_theme_widget_size_changed_cb_set(Eon_Theme_Widget *thiz, Eon_Theme_Widget_Size_Changed_Cb cb, void *data);
 
 /**
  * @}

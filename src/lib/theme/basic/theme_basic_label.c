@@ -78,22 +78,6 @@ static void _basic_label_text_set(Eon_Theme_Widget *t, const char *str)
 	etex_span_text_set(thiz->text, str);
 }
 
-static void _basic_label_font_get(Eon_Theme_Widget *t, const char **str)
-{
-	Eon_Basic_Label *thiz;
-
-	thiz = _label_get(t);
-	etex_base_font_name_get(thiz->text, str);
-}
-
-static void _basic_label_font_set(Eon_Theme_Widget *t, const char *str)
-{
-	Eon_Basic_Label *thiz;
-
-	thiz = _label_get(t);
-	etex_base_font_name_set(thiz->text, str);
-}
-
 static void _basic_label_font_size_get(Eon_Theme_Widget *t, int *size)
 {
 	Eon_Basic_Label *thiz;
@@ -119,6 +103,39 @@ static void _basic_label_free(Eon_Theme_Widget *t)
 	free(thiz);
 }
 
+static void _basic_label_font_get(Eon_Theme_Widget *t, const char **str)
+{
+	Eon_Basic_Label *thiz;
+
+	thiz = _label_get(t);
+	etex_base_font_name_get(thiz->text, str);
+}
+
+static void _basic_label_font_set(Eon_Theme_Widget *t, const char *str)
+{
+	Eon_Basic_Label *thiz;
+
+	thiz = _label_get(t);
+	etex_base_font_name_set(thiz->text, str);
+}
+
+static void _basic_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color)
+{
+	Eon_Basic_Label *thiz;
+
+	thiz = _label_get(t);
+	enesim_renderer_color_get(thiz->text, color);
+}
+
+static void _basic_label_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+{
+	Eon_Basic_Label *thiz;
+
+	thiz = _label_get(t);
+	enesim_renderer_color_set(thiz->text, color);
+}
+
+
 static Eon_Theme_Label_Descriptor _descriptor = {
 	/* .renderer_get 	= */ _basic_label_renderer_get,
 	/* .x_set 		= */ _basic_label_x_set,
@@ -132,6 +149,8 @@ static Eon_Theme_Label_Descriptor _descriptor = {
 	/* .font_size_set	= */ _basic_label_font_size_set,
 	/* .font_get 		= */ _basic_label_font_get,
 	/* .font_set 		= */ _basic_label_font_set,
+	/* .color_get 		= */ _basic_label_color_get,
+	/* .color_set 		= */ _basic_label_color_set,
 };
 /*============================================================================*
  *                                   API                                      *
@@ -148,6 +167,7 @@ EAPI Eon_Theme_Widget * eon_basic_label_new(void)
 	thiz = calloc(1, sizeof(Eon_Basic_Label));
 	if (!thiz) return NULL;
 	thiz->text = etex_span_new();
+	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
 
 	t = eon_theme_label_new(&_descriptor, thiz);
 	if (!t) goto base_err;

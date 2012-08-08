@@ -9,7 +9,7 @@ static void _add_label(Ender_Element *button, int index)
 	label = eon_label_new();
 	sprintf(str, "My Button %d", index);
 	eon_label_text_set(label, str);
-	eon_container_content_set(button, label);
+	eon_bin_child_set(button, label);
 }
 
 Ender_Element * eon_test_button(int argc, char **argv)

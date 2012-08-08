@@ -23,7 +23,8 @@
  * @{
  */
 
-typedef void (*Eon_Theme_Bin_Child_Set)(Eon_Theme_Widget *t, Enesim_Renderer *cihld);
+typedef void (*Eon_Theme_Bin_Child_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
+typedef void (*Eon_Theme_Bin_Child_Get)(Eon_Theme_Widget *t, Enesim_Renderer **child);
 
 typedef struct _Eon_Theme_Bin_Descriptor
 {
@@ -36,13 +37,12 @@ typedef struct _Eon_Theme_Bin_Descriptor
 	Eon_Theme_Widget_Free free;
 	/* bin descriptor */
 	Eon_Theme_Bin_Child_Set child_set;
+	Eon_Theme_Bin_Child_Get child_get;
 } Eon_Theme_Bin_Descriptor;
 
 /* private */
 EAPI Eon_Theme_Widget * eon_theme_bin_new(Eon_Theme_Bin_Descriptor *descriptor, void *data);
 EAPI void * eon_theme_bin_data_get(Eon_Theme_Widget *t);
-
-EAPI void eon_theme_bin_child_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
 
 /**
  * @}

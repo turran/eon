@@ -13,7 +13,6 @@ typedef struct _Eon_Container_Descriptor
 	/* element interface */
 	Eon_Element_Initialize initialize;
 	Eon_Element_Setup setup;
-	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Geometry_Set geometry_set;
 	Eon_Element_Free free;

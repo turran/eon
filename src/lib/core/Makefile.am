@@ -18,7 +18,6 @@ noinst_LTLIBRARIES = libcore.la
 # eon_progressbar.c \
 # eon_radio.c \
 # eon_spin.c \
-# eon_stack.c \
 # eon_scrollbar.c \
 # eon_splitter.c \
 # eon_scrollview.c \
@@ -32,7 +31,8 @@ noinst_LTLIBRARIES = libcore.la
 
 classes = \
 eon_button.c \
-eon_label.c
+eon_label.c \
+eon_stack.c
 
 abstracts = \
 eon_bin.c \

@@ -7,6 +7,7 @@
 typedef struct _Eon_Basic_Control_Button Eon_Basic_Control_Button;
 Eon_Basic_Control_Button * eon_basic_control_button_new(void);
 void eon_basic_control_button_renderer_content_set(Eon_Basic_Control_Button *thiz, Enesim_Renderer *content);
+void eon_basic_control_button_renderer_content_get(Eon_Basic_Control_Button *thiz, Enesim_Renderer **content);
 void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
 		double x);
 void eon_basic_control_button_y_set(Eon_Basic_Control_Button *thiz,

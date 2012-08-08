@@ -167,6 +167,13 @@ static void _eon_container_child_remove(Eon_Element *ee, Ender_Element *child)
 	thiz = _eon_container_get(ee);
 	if (thiz->descriptor.child_remove(ee, child))
 	{
+		Eon_Theme_Instance *theme;
+		Enesim_Renderer *child_r;
+
+		/* remove it from the theme */
+		theme = eon_widget_theme_instance_get(ee);
+		child_r = eon_element_renderer_get(child);
+		eon_theme_instance_property_remove(theme, "child", child_r, NULL);
 		eon_element_parent_set(child, NULL, NULL, NULL);
 	}
 }
@@ -189,6 +196,13 @@ static void _eon_container_child_add(Eon_Element *ee, Ender_Element *child)
 	}
 	if (thiz->descriptor.child_add(ee, child))
 	{
+		Eon_Theme_Instance *theme;
+		Enesim_Renderer *child_r;
+
+		/* add it to the theme */
+		theme = eon_widget_theme_instance_get(ee);
+		child_r = eon_element_renderer_get(child);
+		eon_theme_instance_property_add(theme, "child", child_r, NULL);
 		eon_element_parent_set(child, thiz->e, NULL, NULL);
 	}
 }

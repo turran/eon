@@ -97,14 +97,23 @@ static void _basic_button_child_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
 	eon_basic_control_button_renderer_content_set(thiz->cb, r);
 }
 
+static void _basic_button_child_get(Eon_Theme_Widget *t, Enesim_Renderer **r)
+{
+	Eon_Basic_Button *thiz;
+
+	thiz = _button_get(t);
+	eon_basic_control_button_renderer_content_get(thiz->cb, r);
+}
+
 static Eon_Theme_Bin_Descriptor _descriptor = {
 	/* .renderer_get 	= */ _basic_button_renderer_get,
-	/* .y_set 		= */ _basic_button_y_set,
 	/* .x_set 		= */ _basic_button_x_set,
+	/* .y_set 		= */ _basic_button_y_set,
 	/* .width_set 		= */ _basic_button_width_set,
 	/* .height_set 		= */ _basic_button_height_set,
 	/* .free 		= */ _basic_button_free,
 	/* .child_set 		= */ _basic_button_child_set,
+	/* .child_get 		= */ _basic_button_child_get,
 };
 /*============================================================================*
  *                                   API                                      *

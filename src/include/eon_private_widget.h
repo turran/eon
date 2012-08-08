@@ -2,7 +2,7 @@
 #define _EON_WIDGET_PRIVATE_H
 
 typedef void (*Eon_Widget_Hints_Get)(Eon_Element *e, Eon_Theme_Instance *theme,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preferred);
+		Eon_Hints *hints);
 
 typedef struct _Eon_Widget_Descriptor
 {

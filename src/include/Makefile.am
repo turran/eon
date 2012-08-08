@@ -44,7 +44,6 @@ theme/eon_theme_container.h \
 theme/eon_theme_entry.h \
 theme/eon_theme_frame.h \
 theme/eon_theme_image.h \
-theme/eon_theme_layout.h \
 theme/eon_theme_radio.h \
 theme/eon_theme_checkbox.h \
 theme/eon_theme_widget.h \

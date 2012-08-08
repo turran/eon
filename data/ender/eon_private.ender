@@ -28,6 +28,8 @@ namespace "eon" : 0 {
 		bool "visibility";
 		bool "focusable";
 		ender "parent";
+		int "vertical_alignment";
+		int "horizontal_alignment";
 	};
 
 	abstract "widget" : "element" {

@@ -15,8 +15,26 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_widget.h"
+#include "eon_bin.h"
+#include "eon_stack.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_theme.h"
+#include "eon_private_widget.h"
+#include "eon_private_container.h"
+
+#include "eon_private_keyboard_proxy.h"
+#include "eon_private_keyboard_proxy_navigation.h"
+
+#include "eon_private_layout.h"
+#include "eon_private_layout_stack.h"
 /**
  * @todo Remove the last_expand property and add a weight property per child
  */
@@ -50,6 +68,7 @@ typedef struct _Eon_Stack_State
 typedef struct _Eon_Stack
 {
 	Eina_List *children;
+	int children_count;
 	Eina_Bool needs_setup : 1;
 	Eon_Stack_State old, curr;
 	Enesim_Renderer_Sw_Fill fill_func;
@@ -67,10 +86,11 @@ static inline Eon_Stack * _eon_stack_get(Eon_Element *ee)
 {
 	Eon_Stack *thiz;
 
-	thiz = eon_layout_data_get(ee);
+	thiz = eon_container_data_get(ee);
 	return thiz;
 }
 
+#if 0
 static double _stack_vertical_min_width(Eon_Stack *thiz)
 {
 	Eon_Stack_Child *ech;
@@ -310,6 +330,7 @@ static Eina_Bool _stack_relayout(Ender_Element *e,
 	thiz->needs_setup = EINA_FALSE;
 	return EINA_TRUE;
 }
+#endif
 /*----------------------------------------------------------------------------*
  *                    The Keyboard Proxy Navigation interface                 *
  *----------------------------------------------------------------------------*/
@@ -386,7 +407,68 @@ static Eon_Keyboard_Proxy_Navigation_Descriptor _stack_navigation_descriptor = {
 	/* .left 	= */ NULL,
 	/* .right 	= */ NULL
 };
+/*----------------------------------------------------------------------------*
+ *                       The Eon's layout descriptors                         *
+ *----------------------------------------------------------------------------*/
+static void _stack_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+	Eon_Stack_Child *child_thiz = child;
+	Eon_Element *e;
 
+	e = ender_element_object_get(child_thiz->ender);
+	eon_element_geometry_set(e, g);
+}
+
+static void _stack_layout_child_count_set(void *ref, int count)
+{
+	Eon_Stack *thiz = ref;
+	thiz->children_count = count;
+}
+
+static int _stack_layout_child_count_get(void *ref)
+{
+	Eon_Stack *thiz = ref;
+	return thiz->children_count;
+}
+
+static void _stack_layout_child_hints_get(void *ref, void *child,
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	Eon_Stack_Child *child_thiz = child;
+	Eon_Element *e;
+
+	e = ender_element_object_get(child_thiz->ender);
+	eon_element_hints_get(e, min, max, preferred);
+}
+
+static void _stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	Eon_Stack *thiz = ref;
+	Eon_Stack_Child *thiz_child;
+	Eina_List *l;
+
+	EINA_LIST_FOREACH(thiz->children, l, thiz_child)
+	{
+		cb(ref, thiz_child, data);
+	}
+}
+
+static Eon_Orientation _stack_layout_orientation_get(void *ref)
+{
+	Eon_Stack *thiz = ref;
+	return thiz->curr.direction;
+}
+
+static Eon_Layout_Stack_Descriptor _stack_layout = {
+	/* .orientation_get 	= */ _stack_layout_orientation_get,
+	/* .child_count_get 	= */ _stack_layout_child_count_get,
+	/* .child_count_set 	= */ _stack_layout_child_count_set,
+	/* .child_foreach 	= */ _stack_layout_child_foreach,
+	/* .child_hints_get 	= */ _stack_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _stack_layout_child_geometry_set,
+};
 /*----------------------------------------------------------------------------*
  *                         The Eon's element interface                        *
  *----------------------------------------------------------------------------*/
@@ -398,6 +480,7 @@ static void _eon_stack_free(Eon_Element *ee)
 	free(thiz);
 }
 
+#if 0
 static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
 {
 	Eon_Stack *thiz;
@@ -559,6 +642,7 @@ static double _eon_stack_preferred_height_get(Ender_Element *e, Enesim_Renderer 
 
 	return preferred_height;
 }
+#endif
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -600,7 +684,7 @@ static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
 
 		/* TODO still need the width and height */
 		child_e = ender_element_object_get(ech->ender);
-		eon_element_actual_size_get(child_e, &child_size);
+		//eon_element_actual_size_get(child_e, &child_size);
 		if (child_x <= child_size.width && child_y <= child_size.height)
 		{
 			child = ech->ender;
@@ -650,34 +734,48 @@ static Eina_Bool _eon_stack_child_remove(Eon_Element *ee, Ender_Element *child)
 	return EINA_FALSE;
 }
 
-static void _eon_stack_child_clear(Eon_Element *ee)
+static void _eon_stack_child_foreach(Eon_Element *ee, Eon_Container_Child_Foreach_Cb cb, void *user_data)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *thiz_child;
-	Eina_List *l, *l_next;
+	Eina_List *l;
 
 	thiz = _eon_stack_get(ee);
-	EINA_LIST_FOREACH_SAFE(thiz->children, l, l_next, thiz_child)
+	EINA_LIST_FOREACH(thiz->children, l, thiz_child)
 	{
-		thiz->children = eina_list_remove_list(thiz->children, l);
+		cb(ee, thiz_child->ender, user_data);
 	}
-	eon_widget_property_clear(ee, "child");
-	thiz->needs_setup = EINA_TRUE;
 }
 
-static Eon_Layout_Descriptor _descriptor = {
-	.child_add = _eon_stack_child_add,
-	.child_clear = _eon_stack_child_clear,
-	.child_remove = _eon_stack_child_remove,
-	.child_at = _eon_stack_child_at,
-	.min_width_get = _eon_stack_min_width_get,
-	.min_height_get = _eon_stack_min_height_get,
-	.preferred_width_get = _eon_stack_preferred_width_get,
-	.preferred_height_get = _eon_stack_preferred_height_get,
-	.needs_setup = _eon_stack_needs_setup,
-	.setup = _eon_stack_setup,
-	.free = _eon_stack_free,
-	.name = "stack",
+static void _eon_stack_geometry_set(Eon_Element *e, Eon_Geometry *g)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(e);
+	eon_layout_geometry_set(&eon_layout_stack, &_stack_layout, thiz, g);
+}
+
+static void _eon_stack_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Hints *hints)
+{
+	Eon_Stack *thiz;
+
+	thiz = _eon_stack_get(e);
+	eon_layout_hints_get(&eon_layout_stack, &_stack_layout, thiz, &hints->min, &hints->max, &hints->preferred);
+}
+
+static Eon_Container_Descriptor _descriptor = {
+	/* .initialize 		= */ NULL,
+	/* .setup 		= */ NULL,
+	/* .needs_setup 	= */ NULL,
+	/* .geometry_set 	= */ _eon_stack_geometry_set,
+	/* .free	 	= */ _eon_stack_free,
+	/* .name 		= */ "stack",
+	/* .hints_get	 	= */ _eon_stack_hints_get,
+	/* .child_add 		= */ _eon_stack_child_add,
+	/* .child_remove 	= */ _eon_stack_child_remove,
+	/* .child_foreach 	= */ _eon_stack_child_foreach,
+	/* .child_at 		= */ _eon_stack_child_at,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -687,19 +785,23 @@ static Eon_Element * _eon_stack_new(void)
 	Eon_Stack *thiz;
 	Eon_Element *ee;
 	Eon_Keyboard_Proxy *kp;
+	Eon_Theme_Instance *theme;
+
+	theme = eon_theme_instance_new("stack", EINA_TRUE);
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Stack));
 	if (!thiz) return NULL;
 
-	ee = eon_layout_new(&_descriptor, thiz);
-	if (!ee) goto renderer_err;
+	ee = eon_container_new(theme, &_descriptor, thiz);
+	if (!ee) goto base_err;
 
 	kp = eon_keyboard_proxy_navigation_new(&_stack_navigation_descriptor, thiz);
 	eon_element_keyboard_proxy_set(ee, kp);
 
 	return ee;
 
-renderer_err:
+base_err:
 	free(thiz);
 	return NULL;
 }

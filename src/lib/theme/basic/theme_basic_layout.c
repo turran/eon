@@ -16,9 +16,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "Eon_Theme.h"
-#include "Eon_Basic.h"
-#include "eon_basic_private.h"
+
+#include "eon_theme_widget.h"
+#include "eon_theme_container.h"
+
+#include "theme_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -29,78 +31,77 @@ typedef struct _Theme_Basic_Layout
 	Enesim_Renderer *compound;
 } Theme_Basic_Layout;
 
-static inline Theme_Basic_Layout * _layout_get(Enesim_Renderer *r)
+static inline Theme_Basic_Layout * _layout_get(Eon_Theme_Widget *t)
 {
 	Theme_Basic_Layout *thiz;
 
-	thiz = eon_theme_layout_data_get(r);
+	thiz = eon_theme_container_data_get(t);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                      The Eon's layout theme interface                      *
  *----------------------------------------------------------------------------*/
-static void _layout_child_add(Enesim_Renderer *r, Enesim_Renderer *rchild)
+static void _layout_child_add(Eon_Theme_Widget *t, Enesim_Renderer *rchild)
 {
 	Theme_Basic_Layout *thiz;
-	thiz = _layout_get(r);
+	thiz = _layout_get(t);
 
 	enesim_renderer_compound_layer_add(thiz->compound, rchild);
 }
 
-static void _layout_child_remove(Enesim_Renderer *r, Enesim_Renderer *rchild)
+static void _layout_child_remove(Eon_Theme_Widget *t, Enesim_Renderer *rchild)
 {
 	Theme_Basic_Layout *thiz;
 
-	thiz = _layout_get(r);
+	thiz = _layout_get(t);
 	enesim_renderer_compound_layer_remove(thiz->compound, rchild);
 }
 
-static void _layout_child_clear(Enesim_Renderer *r)
+static Enesim_Renderer * _layout_renderer_get(Eon_Theme_Widget *t)
 {
 	Theme_Basic_Layout *thiz;
 
-	thiz = _layout_get(r);
-	enesim_renderer_compound_layer_clear(thiz->compound);
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
-}
-
-static Enesim_Renderer * _layout_renderer_get(Enesim_Renderer *r)
-{
-	Theme_Basic_Layout *thiz;
-
-	thiz = _layout_get(r);
+	thiz = _layout_get(t);
 	return thiz->clipper;
 }
 
-
-static Eina_Bool _layout_setup(Enesim_Renderer *r, Enesim_Error **error)
+static void _layout_x_set(Eon_Theme_Widget *t, double x)
 {
 	Theme_Basic_Layout *thiz;
-	double ox;
-	double oy;
-	double width;
-	double height;
 
-	thiz = _layout_get(r);
-
-	/* setup common properties */
-	eon_theme_widget_x_get(r, &ox);
-	eon_theme_widget_y_get(r, &oy);
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-
-	enesim_renderer_origin_set(thiz->clipper, ox, oy);
-	enesim_renderer_clipper_width_set(thiz->clipper, width);
-	enesim_renderer_clipper_height_set(thiz->clipper, height);
-
-	return EINA_TRUE;
+	thiz = _layout_get(t);
+	enesim_renderer_x_origin_set(thiz->clipper, x);
 }
 
-static void _layout_free(Enesim_Renderer *r)
+static void _layout_y_set(Eon_Theme_Widget *t, double y)
 {
 	Theme_Basic_Layout *thiz;
 
-	thiz = _layout_get(r);
+	thiz = _layout_get(t);
+	enesim_renderer_y_origin_set(thiz->clipper, y);
+}
+
+static void _layout_width_set(Eon_Theme_Widget *t, double width)
+{
+	Theme_Basic_Layout *thiz;
+
+	thiz = _layout_get(t);
+	enesim_renderer_clipper_width_set(thiz->clipper, width);
+}
+
+static void _layout_height_set(Eon_Theme_Widget *t, double height)
+{
+	Theme_Basic_Layout *thiz;
+
+	thiz = _layout_get(t);
+	enesim_renderer_clipper_height_set(thiz->clipper, height);
+}
+
+static void _layout_free(Eon_Theme_Widget *t)
+{
+	Theme_Basic_Layout *thiz;
+
+	thiz = _layout_get(t);
 	if (thiz->clipper)
 		enesim_renderer_unref(thiz->clipper);
 	if (thiz->background)
@@ -110,13 +111,15 @@ static void _layout_free(Enesim_Renderer *r)
 	free(thiz);
 }
 
-static Eon_Theme_Layout_Descriptor _descriptor = {
-	.child_add = _layout_child_add,
-	.child_remove = _layout_child_remove,
-	.child_clear = _layout_child_clear,
-	.renderer_get = _layout_renderer_get,
-	.setup = _layout_setup,
-	.free = _layout_free,
+static Eon_Theme_Container_Descriptor _descriptor = {
+	/* .renderer_get 	= */ _layout_renderer_get,
+	/* .x_set 		= */ _layout_x_set,
+	/* .y_set		= */ _layout_y_set,
+	/* .width_set 		= */ _layout_width_set,
+	/* .height_set 		= */ _layout_height_set,
+	/* .free 		= */ _layout_free,
+	/* .child_add 		= */ _layout_child_add,
+	/* .child_remove 	= */ _layout_child_remove,
 };
 /*============================================================================*
  *                                   API                                      *
@@ -125,10 +128,11 @@ static Eon_Theme_Layout_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_layout_new(void)
+EAPI Eon_Theme_Widget * eon_basic_layout_new(void)
 {
-	Enesim_Renderer *r;
+	Eon_Theme_Widget *t;
 	Theme_Basic_Layout *thiz;
+	Enesim_Renderer *r;
 #if 0
 	const int color[] = { 0xffffffff, 0xff00ff00, 0x88008888 };
 	static int i = 0;
@@ -158,12 +162,12 @@ EAPI Enesim_Renderer * eon_basic_layout_new(void)
 	thiz->clipper = r;
 
 
-	r = eon_theme_layout_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	t = eon_theme_container_new(&_descriptor, thiz);
+	if (!t) goto base_err;
 
-	return r;
+	return t;
 
-renderer_err:
+base_err:
 	enesim_renderer_unref(thiz->clipper);
 clipper_err:
 	enesim_renderer_unref(thiz->compound);
@@ -174,10 +178,10 @@ background_err:
 	return NULL;
 }
 
-EAPI void eon_basic_layout_background_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_basic_layout_background_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Theme_Basic_Layout *thiz;
 
-	thiz = _layout_get(r);
+	thiz = _layout_get(t);
 	enesim_renderer_background_color_set(thiz->background, color);
 }

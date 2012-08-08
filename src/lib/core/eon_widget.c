@@ -27,6 +27,8 @@
 #include "eon_private_element.h"
 #include "eon_private_theme.h"
 #include "eon_private_widget.h"
+
+#include "theme/eon_theme_widget.h"
 /* TODO
  * - Add a notification whenever the theme has changed
  * - A widget should have several default states:
@@ -76,6 +78,11 @@ static inline Eon_Widget * _eon_widget_get(Eon_Element *ee)
 	EON_WIDGET_MAGIC_CHECK_RETURN(thiz, NULL);
 
 	return thiz;
+}
+
+static void _eon_widget_theme_changed(Ender_Element *e)
+{
+	printf("the theme changed!!!\n");
 }
 
 static void _widget_focus_in(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -153,6 +160,18 @@ static void _eon_widget_initialize(Ender_Element *e)
 		thiz->descriptor.initialize(e);
 }
 
+static void _eon_widget_hints_get(Eon_Element *e, Eon_Hints *hints)
+{
+	Eon_Widget *thiz;
+
+	thiz = _eon_widget_get(e);
+	if (thiz->descriptor.hints_get)
+	{
+		thiz->descriptor.hints_get(e, thiz->theme, hints);
+	}
+}
+
+#if 0
 static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
 {
 	Eon_Widget *thiz;
@@ -172,17 +191,6 @@ static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
 	return ret;
 }
 
-static void _eon_widget_hints_get(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
-{
-	Eon_Widget *thiz;
-
-	thiz = _eon_widget_get(e);
-	if (thiz->descriptor.hints_get)
-	{
-		thiz->descriptor.hints_get(e, thiz->theme, min, max, preferred);
-	}
-}
-
 static Eina_Bool _eon_widget_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **err)
@@ -199,6 +207,7 @@ static Eina_Bool _eon_widget_setup(Ender_Element *e,
 
 	return EINA_TRUE;
 }
+#endif
 
 static Enesim_Renderer * _eon_widget_renderer_get(Ender_Element *ender)
 {
@@ -285,7 +294,6 @@ Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 	/* default values */
 	thiz->enabled = EINA_TRUE;
 	thiz->theme = theme;
-
 	/* the interface */
 	thiz->data = data;
 	thiz->descriptor.free = descriptor->free;
@@ -296,9 +304,9 @@ Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 	thiz->descriptor.hints_get = descriptor->hints_get;
 
 	pdescriptor.initialize = _eon_widget_initialize;
-	pdescriptor.setup = _eon_widget_setup;
+	pdescriptor.setup = NULL;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
-	pdescriptor.needs_setup = _eon_widget_needs_setup;
+	pdescriptor.needs_setup = NULL;
 	pdescriptor.hints_get = _eon_widget_hints_get;
 	pdescriptor.geometry_set = _eon_widget_geometry_set;
 	pdescriptor.is_focusable = _eon_widget_is_focusable;
@@ -306,11 +314,16 @@ Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 	pdescriptor.name = descriptor->name;
 
 	ee = eon_element_new(&pdescriptor, thiz);
-	if (!ee) goto renderer_err;
+	if (!ee) goto base_err;
+
+	/* set the theme notification callback */
+	eon_theme_widget_size_changed_cb_set(thiz->theme->object,
+		EON_THEME_WIDGET_SIZE_CHANGED_CB(_eon_widget_theme_changed),
+		ee);
 
 	return ee;
 
-renderer_err:
+base_err:
 	free(thiz);
 	return NULL;
 }

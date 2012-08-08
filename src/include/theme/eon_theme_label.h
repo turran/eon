@@ -29,6 +29,8 @@ typedef void (*Eon_Theme_Label_Font_Set)(Eon_Theme_Widget *t, const char *str);
 typedef void (*Eon_Theme_Label_Font_Get)(Eon_Theme_Widget *t, const char **str);
 typedef void (*Eon_Theme_Label_Font_Size_Set)(Eon_Theme_Widget *t, int str);
 typedef void (*Eon_Theme_Label_Font_Size_Get)(Eon_Theme_Widget *t, int *str);
+typedef void (*Eon_Theme_Label_Color_Get)(Eon_Theme_Widget *t, Enesim_Color *color);
+typedef void (*Eon_Theme_Label_Color_Set)(Eon_Theme_Widget *t, Enesim_Color color);
 
 typedef struct _Eon_Theme_Label_Descriptor
 {
@@ -46,6 +48,8 @@ typedef struct _Eon_Theme_Label_Descriptor
 	Eon_Theme_Label_Font_Size_Set font_size_set;
 	Eon_Theme_Label_Font_Get font_get;
 	Eon_Theme_Label_Font_Set font_set;
+	Eon_Theme_Label_Color_Get color_get;
+	Eon_Theme_Label_Color_Set color_set;
 } Eon_Theme_Label_Descriptor;
 
 EAPI Eon_Theme_Widget * eon_theme_label_new(Eon_Theme_Label_Descriptor *descriptor,
@@ -58,6 +62,8 @@ EAPI void eon_theme_label_font_size_set(Eon_Theme_Widget *t, int size);
 EAPI void eon_theme_label_font_size_get(Eon_Theme_Widget *t, int *size);
 EAPI void eon_theme_label_text_set(Eon_Theme_Widget *t, const char *text);
 EAPI void eon_theme_label_text_get(Eon_Theme_Widget *t, const char **text);
+EAPI void eon_theme_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color);
+EAPI void eon_theme_label_color_set(Eon_Theme_Widget *t, Enesim_Color color);
 
 /**
  * @}

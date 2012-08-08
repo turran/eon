@@ -62,6 +62,8 @@ static Ender_Property *EON_ELEMENT_MAX_WIDTH;
 static Ender_Property *EON_ELEMENT_MAX_HEIGHT;
 static Ender_Property *EON_ELEMENT_ACTUAL_WIDTH;
 static Ender_Property *EON_ELEMENT_ACTUAL_HEIGHT;
+static Ender_Property *EON_ELEMENT_HORIZONTAL_ALIGNMENT;
+static Ender_Property *EON_ELEMENT_VERTICAL_ALIGNMENT;
 
 typedef struct _Eon_Element_Parent_Relation
 {
@@ -74,6 +76,9 @@ struct _Eon_Element
 {
 	EINA_MAGIC
 	/* properties */
+	Eon_Vertical_Alignment vertical_alignment;
+	Eon_Horizontal_Alignment horizontal_alignment;
+
 	Eon_Element_State current;
 	Eon_Element_State past;
 	/* TODO */
@@ -82,6 +87,8 @@ struct _Eon_Element
 	Eon_Size size;
 	/* private */
 	Eon_Geometry geometry;
+	Eon_Hints last_hints;
+
 	Eon_Element_Parent_Relation parent_relation;
 	Eon_Keyboard_Proxy *keyboard_proxy;
 	/* descriptor */
@@ -332,6 +339,18 @@ static void _eon_element_name_get(Eon_Element *thiz, const char **name)
 		*name = thiz->user_name;
 }
 
+static void _eon_element_horizontal_alignment_set(Eon_Element *thiz, Eon_Horizontal_Alignment alignement)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+	thiz->horizontal_alignment = alignement;
+}
+
+static void _eon_element_vertical_alignment_set(Eon_Element *thiz, Eon_Vertical_Alignment alignement)
+{
+	EON_ELEMENT_MAGIC_CHECK(thiz);
+	thiz->vertical_alignment = alignement;
+}
+
 static void _eon_element_delete(Eon_Element *thiz)
 {
 	if (thiz->descriptor.free)
@@ -347,6 +366,8 @@ static void _eon_element_delete(Eon_Element *thiz)
 #define _eon_element_preferred_width_set NULL
 #define _eon_element_preferred_height_set NULL
 #define _eon_element_focusable_set NULL
+#define _eon_element_vertical_alignment_get NULL
+#define _eon_element_horizontal_alignment_get NULL
 #include "eon_generated_element.c"
 /*----------------------------------------------------------------------------*
  *                             Internal functions                             *
@@ -482,6 +503,8 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->min_size.width = thiz->min_size.height = 0;
 	thiz->size.width = -1;
 	thiz->size.height = -1;
+	thiz->horizontal_alignment = EON_HORIZONTAL_ALIGNMENT_CENTER;
+	thiz->vertical_alignment = EON_VERTICAL_ALIGNMENT_CENTER;
 
 	/* Set the function pointers */
 	thiz->descriptor.initialize = descriptor->initialize;
@@ -694,30 +717,36 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
  */
 void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
 {
+	Eon_Hints hints;
 	EON_ELEMENT_MAGIC_CHECK(thiz);
-
-	*min = thiz->min_size;
-	*preferred = thiz->min_size;
-	*max = thiz->max_size;
+	
+	hints.min = thiz->min_size;
+	hints.max = thiz->max_size;
+	hints.preferred.width = -1;
+	hints.preferred.height = -1;
 
 	if (thiz->descriptor.hints_get)
 	{
-		Eon_Size imin, imax, ipreferred;
+		Eon_Hints ihints;
 
-		eon_size_values_set(&imin, 0, 0);
-		eon_size_values_set(&ipreferred, 0, 0);
-		eon_size_values_set(&imax, DBL_MAX, DBL_MAX);
+		eon_size_values_set(&ihints.min, 0, 0);
+		eon_size_values_set(&ihints.preferred, -1, -1);
+		eon_size_values_set(&ihints.max, DBL_MAX, DBL_MAX);
 
-		thiz->descriptor.hints_get(thiz, &imin, &imax, &ipreferred);
+		thiz->descriptor.hints_get(thiz, &ihints);
 
-		min->width = MIN(min->width, imin.width);
-		min->height = MIN(min->height, imin.height);
+		hints.min.width = MAX(hints.min.width, ihints.min.width);
+		hints.min.height = MAX(hints.min.height, ihints.min.height);
 
-		max->width = MIN(max->width, imax.width);
-		max->height = MIN(max->height, imax.height);
+		hints.max.width = MIN(hints.max.width, ihints.max.width);
+		hints.max.height = MIN(hints.max.height, ihints.max.height);
 
-		*preferred = ipreferred;
+		hints.preferred = ihints.preferred;
 	}
+	thiz->last_hints = hints;
+	*min = hints.min;
+	*max = hints.max;
+	*preferred = hints.preferred;
 }
 
 /* this should be called always after the hints_get and also pass the last
@@ -725,10 +754,60 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
  */
 void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 {
-	printf("element setting geometry\n");
+	Eon_Geometry rg = *g;
+
+	printf("1 '%s' element setting geometry %g %g %g %g\n", thiz->descriptor.name, rg.x, rg.y, rg.width, rg.height);
+
+	/* check the geometry against the last hints */
+	if (rg.width > thiz->last_hints.max.width)
+	{
+		double w = thiz->last_hints.preferred.width;
+		double x = rg.x;
+
+		if (w < 0) w = thiz->last_hints.max.width;
+		switch (thiz->horizontal_alignment)
+		{
+			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+			x = rg.width - w;
+			break;
+
+			case EON_HORIZONTAL_ALIGNMENT_CENTER:
+			x = (rg.width / 2) - (w / 2);
+			break;
+
+			default:
+			break;
+		}
+		rg.x += x;
+		rg.width = w;
+	}
+	if (rg.height > thiz->last_hints.max.height)
+	{
+		double h = thiz->last_hints.preferred.height;
+		double y = rg.y;
+
+		if (h < 0) h = thiz->last_hints.max.height;
+		switch (thiz->horizontal_alignment)
+		{
+			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+			y = rg.height - h;
+			break;
+
+			case EON_HORIZONTAL_ALIGNMENT_CENTER:
+			y = (rg.height / 2) - (h / 2);
+			break;
+
+			default:
+			break;
+		}
+		rg.y += y;
+		rg.height = h;
+	}
+	printf("2 '%s' element setting geometry %g %g %g %g\n", thiz->descriptor.name, rg.x, rg.y, rg.width, rg.height);
+
 	if (thiz->descriptor.geometry_set)
-		thiz->descriptor.geometry_set(thiz, g);
-	thiz->geometry = *g;
+		thiz->descriptor.geometry_set(thiz, &rg);
+	thiz->geometry = rg;
 }
 
 void eon_element_geometry_get(Eon_Element *thiz, Eon_Geometry *g)
@@ -970,3 +1049,22 @@ EAPI void eon_element_focusable_get(Ender_Element *e, Eina_Bool *focusable)
 	ender_element_property_value_get(e, EON_ELEMENT_FOCUSABLE, focusable, NULL);
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_horizontal_alignment_set(Ender_Element *e,
+		Eon_Horizontal_Alignment alignment)
+{
+	ender_element_property_value_set(e, EON_ELEMENT_HORIZONTAL_ALIGNMENT, alignment, NULL);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_element_vertical_alignment_set(Ender_Element *e,
+		Eon_Vertical_Alignment alignment)
+{
+	ender_element_property_value_set(e, EON_ELEMENT_VERTICAL_ALIGNMENT, alignment, NULL);
+}

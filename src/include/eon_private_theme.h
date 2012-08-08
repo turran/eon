@@ -27,8 +27,8 @@ typedef struct _Eon_Theme_Instance
 	Enesim_Renderer *renderer;
 } Eon_Theme_Instance;
 
-Eon_Theme_Instance * eon_theme_instance_new(const char *name);
-Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, const char *name);
+Eon_Theme_Instance * eon_theme_instance_new(const char *name, Eina_Bool def);
+Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, const char *name, Eina_Bool def);
 void eon_theme_instance_property_set(Eon_Theme_Instance *thiz, const char *name, ...);
 void eon_theme_instance_property_get(Eon_Theme_Instance *thiz, const char *name, ...);
 void eon_theme_instance_property_add(Eon_Theme_Instance *thiz, const char *name, ...);

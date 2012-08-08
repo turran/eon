@@ -18,6 +18,8 @@
 #include "eon_private_main.h"
 
 #include "eon_private_theme.h"
+
+#include "theme/eon_theme_widget.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -119,12 +121,12 @@ Eon_Theme_File * eon_theme_file_get_from_file(const char *file)
 
 	return thiz;
 }
-Eon_Theme_Instance * eon_theme_instance_new(const char *name)
+Eon_Theme_Instance * eon_theme_instance_new(const char *name, Eina_Bool def)
 {
-	return eon_theme_instance_new_from_file(_theme, name);
+	return eon_theme_instance_new_from_file(_theme, name, def);
 }
 
-Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, const char *name)
+Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, const char *name, Eina_Bool def)
 {
 	Eon_Theme_Instance *thiz;
 	Escen_Ender *theme_ender;
@@ -140,7 +142,7 @@ Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, cons
 		return NULL;
 	}
 
-	theme_instance = escen_instance_new(theme_ender, EINA_FALSE);
+	theme_instance = escen_instance_new(theme_ender, def);
 	if (!theme_instance)
 	{
 		printf("no instance '%s'\n", name);
@@ -149,7 +151,7 @@ Eon_Theme_Instance * eon_theme_instance_new_from_file(Eon_Theme_File *file, cons
 
 	theme_element = escen_instance_ender_get(theme_instance);
 	theme_object = ender_element_object_get(theme_element);
-	theme_renderer = eon_theme_widget_renderer_get(theme_object);
+	eon_theme_widget_renderer_get(theme_object, &theme_renderer);
 
 	thiz = calloc(1, sizeof(Eon_Theme_Instance));
 	thiz->object = theme_object;

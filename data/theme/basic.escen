@@ -1,7 +1,48 @@
 escen {
+	basic_label "label" {
+		default {
+			set { color = 0xff888888; };
+			set { font_size = 13; };
+			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
+		};
+	};
+
+	basic_button "button" {
+		default {
+			set { fill_color = 0xffcccccc; };
+			set { start_shadow = 0x77000000; };
+			set { end_shadow = 0x22000000; };
+			set { start_bevel = 0xffffffff; };
+			set { end_bevel = 0xff000000; };
+			set { padding = { 10, 10, 10, 10 }; };
+		};
+
+		state "mouse_up" {
+			set { fill_color = 0xffcccccc; };
+			set { start_bevel = 0xffffffff; };
+			set { end_bevel = 0xff000000; };
+		};
+
+		state "disabled" : "mouse_down" {
+			set { fill_color = 0xffa8a8a8; };
+			set { start_bevel = 0xff000000; };
+			set { end_bevel = 0xffffffff; };
+		};
+
+		state "focus_out" {
+			set { start_shadow = 0x77000000; };
+			set { end_shadow = 0x22000000; };
+		};
+
+		state "focus_in" {
+			set { start_shadow = 0xff557cb8; };
+			set { end_shadow = 0xff557cb8; };
+		};
+	};
+
 	basic_layout "stack" {
 		default {
-			set { color = 0xffffffff; };
+			set { background_color = 0xffffff00; };
 		};
 	};
 
@@ -66,47 +107,6 @@ escen {
 		state "mouse_in" {
 			set { start_shadow = 0xff557cb8; };
 			set { end_shadow = 0xff557cb8; };
-		};
-	};
-
-	basic_button "button" {
-		default {
-			set { fill_color = 0xffcccccc; };
-			set { start_shadow = 0x77000000; };
-			set { end_shadow = 0x22000000; };
-			set { start_bevel = 0xffffffff; };
-			set { end_bevel = 0xff000000; };
-			set { padding = { 10, 10, 10, 10 }; };
-		};
-
-		state "mouse_up" {
-			set { fill_color = 0xffcccccc; };
-			set { start_bevel = 0xffffffff; };
-			set { end_bevel = 0xff000000; };
-		};
-
-		state "disabled" : "mouse_down" {
-			set { fill_color = 0xffa8a8a8; };
-			set { start_bevel = 0xff000000; };
-			set { end_bevel = 0xffffffff; };
-		};
-
-		state "focus_out" {
-			set { start_shadow = 0x77000000; };
-			set { end_shadow = 0x22000000; };
-		};
-
-		state "focus_in" {
-			set { start_shadow = 0xff557cb8; };
-			set { end_shadow = 0xff557cb8; };
-		};
-	};
-
-	basic_label "label" {
-		default {
-			set { color = 0xff888888; };
-			set { font_size = 13; };
-			set { font = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"; };
 		};
 	};
 

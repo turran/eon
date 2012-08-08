@@ -179,11 +179,6 @@ static Eina_Bool _eon_bin_child_add(Eon_Element *e, Ender_Element *child)
 		return EINA_FALSE;
 	}
 
-	/* FIXME this should go as part of the container theme */
-	theme = eon_widget_theme_instance_get(e);
-	child_r = eon_element_renderer_get(child);
-	eon_theme_instance_property_set(theme, "content", child_r, NULL);
-	
 	/* FIXME the size of the elements of a stack for example is always
 	 * calculated before calling the setup, so this first time
 	 * an application is run it wont have any valid size

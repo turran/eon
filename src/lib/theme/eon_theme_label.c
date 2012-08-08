@@ -36,6 +36,8 @@ typedef struct _Eon_Theme_Label_Descriptor_Internal
 	Eon_Theme_Label_Font_Size_Set font_size_set;
 	Eon_Theme_Label_Font_Get font_get;
 	Eon_Theme_Label_Font_Set font_set;
+	Eon_Theme_Label_Color_Set color_set;
+	Eon_Theme_Label_Color_Get color_get;
 } Eon_Theme_Label_Descriptor_Internal;
 
 typedef struct _Eon_Theme_Label
@@ -67,15 +69,14 @@ static void _eon_theme_label_free(Eon_Theme_Widget *t)
  *============================================================================*/
 void eon_theme_label_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 {
-#if 0
-	Eon_Theme_Label *thiz;
 	Enesim_Rectangle boundings;
+	Enesim_Renderer *r;
 
-	thiz = _eon_theme_label_get(t);
-	enesim_renderer_boundings(thiz->text, &boundings);
+	eon_theme_widget_renderer_get(t, &r);
+	if (!r) return;
+	enesim_renderer_boundings(r, &boundings);
 	size->width = boundings.w;
 	size->height = boundings.h;
-#endif
 }
 /*============================================================================*
  *                                   API                                      *
@@ -92,15 +93,17 @@ EAPI Eon_Theme_Widget * eon_theme_label_new(Eon_Theme_Label_Descriptor *descript
 
 	thiz = calloc(1, sizeof(Eon_Theme_Label));
 	thiz->data = data;
+
 	/* the label interface */
+	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.text_set = descriptor->text_set;
 	thiz->descriptor.text_get = descriptor->text_get;
 	thiz->descriptor.font_size_get = descriptor->font_size_get;
 	thiz->descriptor.font_size_set = descriptor->font_size_set;
 	thiz->descriptor.font_get = descriptor->font_get;
 	thiz->descriptor.font_set = descriptor->font_set;
-	thiz->descriptor.free = descriptor->free;
-	/* set default values */
+	thiz->descriptor.color_get = descriptor->color_get;
+	thiz->descriptor.color_set = descriptor->color_set;
 
 	/* now the needed enesim functions */
 	pdescriptor.renderer_get = descriptor->renderer_get;
@@ -210,4 +213,22 @@ EAPI void eon_theme_label_text_set(Eon_Theme_Widget *t, const char *str)
 	thiz = _eon_theme_label_get(t);
 	if (thiz->descriptor.text_set)
 		thiz->descriptor.text_set(t, str);
+}
+
+EAPI void eon_theme_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.color_get)
+		thiz->descriptor.color_get(t, color);
+}
+
+EAPI void eon_theme_label_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+{
+	Eon_Theme_Label *thiz;
+
+	thiz = _eon_theme_label_get(t);
+	if (thiz->descriptor.color_set)
+		thiz->descriptor.color_set(t, color);
 }

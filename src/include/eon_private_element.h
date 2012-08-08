@@ -11,11 +11,18 @@ typedef struct _Eon_Element_State
 	Eina_Bool visible;
 } Eon_Element_State;
 
+typedef struct _Eon_Hints
+{
+	Eon_Size min;
+	Eon_Size max;
+	Eon_Size preferred;
+} Eon_Hints;
+
 typedef void (*Eon_Element_Initialize)(Ender_Element *e);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **error);
-typedef void (*Eon_Element_Hints_Get)(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred);
+typedef void (*Eon_Hints_Get)(Eon_Element *e, Eon_Hints *hints);
 typedef void (*Eon_Element_Geometry_Set)(Eon_Element *e, Eon_Geometry *g);
 typedef void (*Eon_Element_Free)(Eon_Element *e);
 typedef Eina_Bool (*Eon_Element_Is_Focusable)(Eon_Element *e);
@@ -45,7 +52,7 @@ typedef struct _Eon_Element_Descriptor
 	Eon_Element_Setup setup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
-	Eon_Element_Hints_Get hints_get;
+	Eon_Hints_Get hints_get;
 	Eon_Element_Geometry_Set geometry_set;
 	Eon_Element_Is_Focusable is_focusable;
 	Eon_Element_Free free;
@@ -55,8 +62,12 @@ typedef struct _Eon_Element_Descriptor
 Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 		void *data);
 void * eon_element_data_get(Eon_Element *e);
-void eon_element_initialize(Ender_Element *ender);
 
+/* new ones */
+void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_Size *preferred);
+void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g);
+
+void eon_element_initialize(Ender_Element *ender);
 void eon_element_real_width_get(Ender_Element *e, double *width);
 void eon_element_real_height_get(Ender_Element *e, double *height);
 void eon_element_real_relative_size_get(Ender_Element *e, Eon_Size *relative, Eon_Size *size);

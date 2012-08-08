@@ -23,24 +23,36 @@
  *============================================================================*/
 typedef struct _Eon_Layout_Frame_Geometry_Set_Data
 {
-
+	Eon_Layout_Frame_Descriptor *d;
+	Eon_Geometry *g;
 } Eon_Layout_Frame_Geometry_Set_Data;
 
 typedef struct _Eon_Layout_Frame_Hints_Get_Data
 {
+	Eon_Layout_Frame_Descriptor *d;
 	Eon_Size *min;
 	Eon_Size *max;
 	Eon_Size *preferred;
-	Eon_Layout_Frame_Descriptor *d;
 } Eon_Layout_Frame_Hints_Get_Data;
 
+/* TODO when setting the geometry we need to take into
+ * account the previously generated min/max/preferred
+ * per child
+ */
 static void _geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Frame_Geometry_Set_Data *data = user_data;
-	/* TODO when setting the geometry we need to take into
-	 * account the previously generated min/max/preferred
-	 * per child
-	 */
+	Eon_Margin cmargin;
+	Eon_Geometry cg;
+
+	data->d->child_padding_get(ref, child, &cmargin);
+	cg = *data->g;
+	cg.x += cmargin.left;
+	cg.width -= cmargin.right + cmargin.left;
+	cg.y += cmargin.top;
+	cg.height -= cmargin.top + cmargin.bottom;
+	printf("frame: setting geometry %g %g %g %g\n", cg.x, cg.y, cg.width, cg.height);
+	data->d->child_geometry_set(ref, child, &cg);
 }
 
 static void _hints_get_cb(void *ref, void *child, void *user_data)
@@ -54,22 +66,35 @@ static void _hints_get_cb(void *ref, void *child, void *user_data)
 	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
 	data->d->child_padding_get(ref, child, &cmargin);
 
+	//printf("child max %g %g %g %g\n", cmax.width, cmax.height, cmin.width, cmin.height);
+
 	h = cmargin.left + cmargin.right;
 	v = cmargin.top + cmargin.bottom;
 
-	cmin.width += h;
-	cmin.height += v;
-	cmax.width += h;
-	cmax.height += v;
-	cpreferred.width += h;
-	cpreferred.height += v;
+	if (cmin.width < DBL_MAX)
+		cmin.width += h;
+	if (cmin.height < DBL_MAX)
+		cmin.height += v;
+	if (cmax.width < DBL_MAX)
+		cmax.width += h;
+	if (cmax.height < DBL_MAX)
+		cmax.height += v;
+	if (cmax.width < DBL_MAX && cmax.width > 0)
+		cpreferred.width += h;
+	if (cmax.height < DBL_MAX && cmax.height > 0)
+		cpreferred.height += v;
 
-	data->min->width = MIN(data->min->width, cmin.width);
-	data->min->height = MIN(data->min->height, cmin.height);
+	/* the min size is the max of every child min size */
+	data->min->width = MAX(data->min->width, cmin.width);
+	data->min->height = MAX(data->min->height, cmin.height);
+	/* the max size is the min of every child max size */
 	data->max->width = MIN(data->max->width, cmax.width);
 	data->max->height = MIN(data->max->height, cmax.height);
-	data->preferred->width = MIN(data->preferred->width, cpreferred.width);
-	data->preferred->height = MIN(data->preferred->height, cpreferred.height);
+	/* the preferred size is the max of every child preferred size */
+	data->preferred->width = MAX(data->preferred->width, cpreferred.width);
+	data->preferred->height = MAX(data->preferred->height, cpreferred.height);
+
+	//printf("max %g %g min %g %g\n", data->max->width, data->max->height, data->min->width, data->min->height);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's layout interface                          *
@@ -80,6 +105,8 @@ static void _eon_layout_frame_geometry_set(void *descriptor, void *ref,
 	Eon_Layout_Frame_Geometry_Set_Data data;
 	Eon_Layout_Frame_Descriptor *d = descriptor;
 
+	data.d = d;
+	data.g = g;
 	d->child_foreach(ref, _geometry_set_cb, &data);
 }
 

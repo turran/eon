@@ -5,13 +5,8 @@ namespace "eon" : 0 {
 	class "basic_label" : "theme_label" {
 	};
 
-	class "basic_radio" : "theme_radio" {
-		int "selected";
-		color "color";
+	class "basic_layout" : "theme_container" {
 		color "background_color";
-	};
-
-	class "basic_color" : "theme_color" {
 	};
 
 	class "basic_button" : "theme_button" {
@@ -25,6 +20,16 @@ namespace "eon" : 0 {
 		double "vertical_padding";
 		double "radius";
 	};
+
+	class "basic_radio" : "theme_radio" {
+		int "selected";
+		color "color";
+		color "background_color";
+	};
+
+	class "basic_color" : "theme_color" {
+	};
+
 
 	class "basic_toggle" : "theme_toggle" {
 		color "fill_color";

@@ -35,7 +35,6 @@
 
 #include "eon_private_layout.h"
 #include "eon_private_layout_frame.h"
-#include "eon_private_layout_stack.h"
 /* A button should be composed of a frame layout. We use the 'bin' interface
  * to allow only a single child.
  */
@@ -91,7 +90,6 @@ static void _main_layout_child_geometry_set(void *ref, void *child,
 		Eon_Geometry *g)
 {
 	Eon_Element *e = child;
-	printf("setting child geometry\n");
 	eon_element_geometry_set(e, g);
 }
 
@@ -197,10 +195,12 @@ static void _eon_button_free(Eon_Element *e)
 	free(thiz);
 }
 
-static void _eon_button_hints_get(Eon_Element *e, Eon_Theme_Instance *theme, Eon_Size *min, Eon_Size *max,
-		Eon_Size *preferred)
+static void _eon_button_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Hints *hints)
 {
-	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, min, max, preferred);
+	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, &hints->min, &hints->max, &hints->preferred);
+	hints->max.width = DBL_MAX;
+	hints->max.height = DBL_MAX;
 }
 
 static Eon_Button_Base_Descriptor _descriptor = {
@@ -228,7 +228,7 @@ static Eon_Element * _eon_button_new(void)
 	ec = ender_container_find("area");
 	if (!ec) return NULL;
 
-	theme = eon_theme_instance_new("button");
+	theme = eon_theme_instance_new("button", EINA_FALSE);
 	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Button));

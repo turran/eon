@@ -39,6 +39,7 @@ basic/libtheme_basic.la
 
 libtheme_la_SOURCES = \
 eon_theme_bin.c \
+eon_theme_container.c \
 eon_theme_button.c \
 eon_theme_label.c \
 eon_theme_widget.c

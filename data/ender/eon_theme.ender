@@ -1,7 +1,5 @@
-using "enesim" : 0;
-
 namespace "eon" : 0 {
-	abstract "theme_widget" : "renderer" {
+	abstract "theme_widget" {
 		double "width";
 		double "height";
 		double "x";
@@ -9,15 +7,14 @@ namespace "eon" : 0 {
 		object "renderer";
 	};
 
-	abstract "theme_bin" : "theme_widget" {
-		object "child";
+	abstract "theme_container" : "theme_widget" {
+		[object] "child";
+	};
+
+	abstract "theme_bin" : "theme_container" {
 	};
 
 	abstract "theme_button" : "theme_bin" {
-	};
-
-	abstract "theme_container" : "theme_widget" {
-		[object] "child";
 	};
 
 	abstract "theme_spin" : "theme_widget" {
@@ -47,6 +44,7 @@ namespace "eon" : 0 {
 	};
 
 	abstract "theme_label" : "theme_widget" {
+		color "color";
 		string "font";
 		int "font_size";
 	};

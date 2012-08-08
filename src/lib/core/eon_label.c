@@ -88,14 +88,14 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 #endif
 
 static void _eon_label_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+		Eon_Hints *hints)
 {
 	Eon_Size size;
 
-	eon_theme_label_size_get(theme->renderer, &size);
-	*min = size;
-	*max = size;
-	*preferred = size;
+	eon_theme_label_size_get(theme->object, &size);
+	hints->min = size;
+	hints->max = size;
+	hints->preferred = size;
 }
 
 static void _eon_label_free(Eon_Element *e)
@@ -124,7 +124,7 @@ static Eon_Element * _eon_label_new(void)
 	Eon_Element *ee;
 	Eon_Theme_Instance *theme;
 
-	theme = eon_theme_instance_new("label");
+	theme = eon_theme_instance_new("label", EINA_TRUE);
 	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Label));

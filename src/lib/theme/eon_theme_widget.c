@@ -39,7 +39,8 @@ struct _Eon_Theme_Widget
 	double y;
 	double width;
 	double height;
-	Eon_Theme_Widget_Informs_Setup informs_setup;
+	Eon_Theme_Widget_Size_Changed_Cb size_changed;
+	void *size_changed_data;
 	/* private */
 	Eon_Theme_Widget_Descriptor descriptor;
 	void *data;
@@ -80,6 +81,48 @@ void * eon_theme_widget_data_get(Eon_Theme_Widget *thiz)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_x_set(Eon_Theme_Widget *thiz, double x)
+{
+	thiz->x = x;
+	if (thiz->descriptor.x_set)
+		thiz->descriptor.x_set(thiz, x);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_x_get(Eon_Theme_Widget *thiz, double *x)
+{
+	if (!x) return;
+	*x = thiz->x;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_y_set(Eon_Theme_Widget *thiz, double y)
+{
+	thiz->y = y;
+	if (thiz->descriptor.y_set)
+		thiz->descriptor.y_set(thiz, y);
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_y_get(Eon_Theme_Widget *thiz, double *y)
+{
+	if (!y) return;
+	*y = thiz->y;
+}
+
 /**
  * To be documented
  * FIXME: To be fixed
@@ -126,58 +169,32 @@ EAPI void eon_theme_widget_height_get(Eon_Theme_Widget *thiz, double *height)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_theme_widget_x_set(Eon_Theme_Widget *thiz, double x)
+EAPI void eon_theme_widget_renderer_get(Eon_Theme_Widget *thiz, Enesim_Renderer **r)
 {
-	thiz->x = x;
-	if (thiz->descriptor.x_set)
-		thiz->descriptor.x_set(thiz, x);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_x_get(Eon_Theme_Widget *thiz, double *x)
-{
-	if (!x) return;
-	*x = thiz->x;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_y_set(Eon_Theme_Widget *thiz, double y)
-{
-	thiz->y = y;
-	if (thiz->descriptor.y_set)
-		thiz->descriptor.y_set(thiz, y);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_widget_y_get(Eon_Theme_Widget *thiz, double *y)
-{
-	if (!y) return;
-	*y = thiz->y;
-}
-
-/* FIXME remove the local version and only keep this one */
-EAPI Enesim_Renderer * eon_theme_widget_renderer_get(Eon_Theme_Widget *thiz)
-{
+	if (!r) return;
 	if (thiz->descriptor.renderer_get)
-		return thiz->descriptor.renderer_get(thiz);
-	return NULL;
+		*r = thiz->descriptor.renderer_get(thiz);
+	else
+		*r = NULL;
 }
 
-/* FIXME */
-EAPI Eina_Bool eon_theme_widget_informs_setup(Eon_Theme_Widget *thiz)
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_size_changed(Eon_Theme_Widget *thiz)
 {
-	if (thiz->informs_setup)
-		return thiz->informs_setup(thiz);
+	if (thiz->size_changed)
+		return thiz->size_changed(thiz->size_changed_data);
+}
 
-	return EINA_FALSE;
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_size_changed_cb_set(Eon_Theme_Widget *thiz, Eon_Theme_Widget_Size_Changed_Cb cb, void *data)
+{
+	thiz->size_changed = cb;
+	thiz->size_changed_data = data;
 }
 
