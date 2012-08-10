@@ -22,7 +22,9 @@
 /**
  * @{
  */
+
 typedef void (*Eon_Theme_Image_Surface_Set)(Eon_Theme_Widget *t, Enesim_Surface *s);
+
 typedef void (*Eon_Theme_Image_Min_Size_Get)(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
 typedef void (*Eon_Theme_Image_Max_Size_Get)(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);
 typedef void (*Eon_Theme_Image_Preferred_Size_Get)(Eon_Theme_Widget *t, Eon_Size *image_size, Eon_Size *out);

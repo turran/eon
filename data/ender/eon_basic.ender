@@ -62,7 +62,8 @@ namespace "eon" : 0 {
 	};
 
 	class "basic_image" : "theme_image" {
-
+		color "color";
+		int "status";
 	};
 
 	class "basic_frame" : "theme_frame" {

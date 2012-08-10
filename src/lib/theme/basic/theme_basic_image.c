@@ -22,15 +22,30 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef enum _Eon_Basic_Image_State
+{
+	EON_BASIC_IMAGE_STATE_LOADING,
+	EON_BASIC_IMAGE_STATE_LOADED,
+	EON_BASIC_IMAGE_STATE_FAILED,
+} Eon_Basic_Image_State;
+
 typedef struct _Eon_Basic_Image
 {
 	/* properties */
 	/* private */
+	Enesim_Surface *old_src;
 	Enesim_Surface *src;
+	/* TODO we should have two surfaces, to handle the states correctly
+	 * for example when in 'loading' we might want to blink the previous
+	 * image. when 'loaded', just display, and on 'failed' put
+	 * something else ...
+	 */
 	Enesim_Renderer *image;
+	Enesim_Renderer *transition;
+	Enesim_Renderer *proxy;
 } Eon_Basic_Image;
 
-static inline Eon_Basic_Image * _image_get(Eon_Theme_Widget *t)
+static inline Eon_Basic_Image * _basic_image_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Image *thiz;
 
@@ -44,7 +59,7 @@ static Enesim_Renderer * _basic_image_renderer_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	return thiz->image;
 }
 
@@ -52,7 +67,7 @@ static void _basic_image_x_set(Eon_Theme_Widget *t, double x)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	enesim_renderer_image_x_set(thiz->image, x);
 }
 
@@ -60,7 +75,7 @@ static void _basic_image_y_set(Eon_Theme_Widget *t, double y)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	enesim_renderer_image_y_set(thiz->image, y);
 }
 
@@ -68,7 +83,7 @@ static void _basic_image_width_set(Eon_Theme_Widget *t, double width)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	enesim_renderer_image_width_set(thiz->image, width);
 }
 
@@ -76,7 +91,7 @@ static void _basic_image_height_set(Eon_Theme_Widget *t, double height)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	enesim_renderer_image_height_set(thiz->image, height);
 }
 
@@ -84,7 +99,7 @@ static void _basic_image_free(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	enesim_renderer_unref(thiz->image);
 	free(thiz);
 }
@@ -93,7 +108,7 @@ static void _basic_image_surface_set(Eon_Theme_Widget *t, Enesim_Surface *src)
 {
 	Eon_Basic_Image *thiz;
 
-	thiz = _image_get(t);
+	thiz = _basic_image_get(t);
 	if (thiz->src)
 	{
 		enesim_surface_unref(thiz->src);
@@ -149,3 +164,38 @@ image_err:
 	free(thiz);
 	return NULL;
 }
+
+EAPI void eon_basic_image_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+{
+	Eon_Basic_Image *thiz;
+
+	thiz = _basic_image_get(t);
+	enesim_renderer_color_set(thiz->image, color);
+}
+
+EAPI void eon_basic_image_status_set(Eon_Theme_Widget *t, Eon_Basic_Image_State state)
+{
+	Eon_Basic_Image *thiz;
+
+	/* when the state is loaded, we should inform enesim that the surface has changed the contents */
+	/* when the state is failed, we should display something, like a pattern or something? */
+	thiz = _basic_image_get(t);
+	switch (state)
+	{
+		case EON_BASIC_IMAGE_STATE_LOADING:
+		case EON_BASIC_IMAGE_STATE_FAILED:
+		break;
+
+		case EON_BASIC_IMAGE_STATE_LOADED:
+		{
+			Eina_Rectangle area;
+
+			area.x = area.y = 0;
+			enesim_surface_size_get(thiz->src, &area.w, &area.h);
+			enesim_renderer_image_damage_add(thiz->image, &area);
+		}
+		break;
+	}
+}
+
+

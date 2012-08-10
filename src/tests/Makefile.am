@@ -1,7 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 # old programs
-# eon_test_button_image \
 # eon_test_canvas \
 # eon_test_checkbox \
 # eon_test_color \
@@ -21,6 +20,7 @@ MAINTAINERCLEANFILES = Makefile.in
 check_PROGRAMS = \
 eon_test_button01 \
 eon_test_button02 \
+eon_test_button_image \
 eon_test_image
 
 eon_test_loader_SOURCES = eon_test_loader.c
