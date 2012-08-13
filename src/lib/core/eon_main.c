@@ -60,8 +60,9 @@ static void _register_enders(void *data)
 	eon_element_init();
 	/* element inheritance */
 	eon_widget_init();
-	eon_container_init();
+	eon_wrapper_init();
 	/* widget inheritance */
+	eon_container_init();
 	eon_image_init();
 	eon_label_init();
 	/* container inheritance */
@@ -73,7 +74,6 @@ static void _register_enders(void *data)
 	eon_button_init();
 	eon_radio_init();
 #if 0
-	eon_wrapper_init();
 	/* widget inheritance */
 	eon_compound_init();
 	eon_container_init();

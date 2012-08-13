@@ -21,8 +21,6 @@ noinst_LTLIBRARIES = libcore.la
 # eon_scrollview.c \
 # eon_tab.c \
 # eon_toggle.c \
-# eon_wrapper.c
-
 #
 # eon_compound.c \
 #
@@ -32,7 +30,8 @@ eon_button.c \
 eon_image.c \
 eon_label.c \
 eon_radio.c \
-eon_stack.c
+eon_stack.c \
+eon_wrapper.c
 
 abstracts = \
 eon_bin.c \

@@ -15,8 +15,14 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -203,19 +209,26 @@ static void _eon_wrapper_initialize(Ender_Element *ender)
 	 */
 }
 
+static void _eon_wrapper_geometry_set(Eon_Element *e, Eon_Geometry *g)
+{
+
+}
+
+static void _eon_wrapper_hints_get(Eon_Element *e, Eon_Hints *hints)
+{
+
+}
+
 static Eon_Element_Descriptor _descriptor = {
-	.min_width_get = _eon_wrapper_min_width_get,
-	.max_width_get = _eon_wrapper_max_width_get,
-	.min_height_get = _eon_wrapper_min_height_get,
-	.max_height_get = _eon_wrapper_max_height_get,
-	.preferred_width_get = _eon_wrapper_preferred_width_get,
-	.preferred_height_get = _eon_wrapper_preferred_height_get,
-	.setup = _eon_wrapper_setup,
-	.renderer_get = _eon_wrapper_renderer_get,
-	.needs_setup = _eon_wrapper_needs_setup,
-	.initialize = _eon_wrapper_initialize,
-	.free = _eon_wrapper_free,
-	.name = "wrapper",
+	/* .initialize 		= */ _eon_wrapper_initialize,
+	/* .setup 		= */ NULL,
+	/* .renderer_get 	= */ _eon_wrapper_renderer_get,
+	/* .needs_setup 	= */ NULL,
+	/* .hints_get 		= */ NULL,
+	/* .geometry_set 	= */ _eon_wrapper_geometry_set,
+	/* .is_focusable	= */ NULL,
+	/* .free 		= */ _eon_wrapper_free,
+	/* .name 		= */ "wrapper",
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -301,7 +314,7 @@ EAPI Ender_Element * eon_wrapper_new(void)
  */
 EAPI void eon_wrapper_wrapped_set(Ender_Element *e, Ender_Element *wrapped)
 {
-	ender_element_value_set(e, "wrapped", wrapped, NULL);
+	ender_element_property_value_set(e, EON_WRAPPER_WRAPPED, wrapped, NULL);
 }
 
 /**
@@ -310,5 +323,11 @@ EAPI void eon_wrapper_wrapped_set(Ender_Element *e, Ender_Element *wrapped)
  */
 EAPI void eon_wrapper_wrapped_get(Ender_Element *e, Ender_Element **wrapped)
 {
-	ender_element_value_get(e, "wrapped", wrapped, NULL);
+	Eon_Wrapper *thiz;
+	Eon_Element *ee;
+
+	if (!wrapped) return;
+	ee = ender_element_object_get(e);
+	thiz = _eon_wrapper_get(ee);
+	*wrapped = thiz->wrapped;
 }
