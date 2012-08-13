@@ -747,6 +747,7 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_
 	*min = hints.min;
 	*max = hints.max;
 	*preferred = hints.preferred;
+	printf("'%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name, min->width, min->height, max->width, max->height, preferred->width, preferred->height);
 }
 
 /* this should be called always after the hints_get and also pass the last

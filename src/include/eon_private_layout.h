@@ -19,6 +19,13 @@ typedef struct _Eon_Layout
 	Eon_Layout_Hints_Get hints_get;
 } Eon_Layout;
 
+/* useful struct in case you want to add layouts into other layouts */
+typedef struct _Eon_Layout_Child_Data
+{
+	Eon_Layout *layout;
+	void *descriptor;
+} Eon_Layout_Child_Data;
+
 static inline void eon_layout_geometry_set(Eon_Layout *thiz, void *descriptor, void *data, Eon_Geometry *g)
 {
 	thiz->geometry_set(descriptor, data, g);

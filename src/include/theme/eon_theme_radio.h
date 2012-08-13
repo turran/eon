@@ -22,23 +22,10 @@
 /**
  * @{
  */
-typedef void (*Eon_Theme_Radio_Selected_Set)(Enesim_Renderer *r, Eina_Bool selected);
 
-typedef struct _Eon_Theme_Radio_Descriptor
-{
-	/* container needed functions */
-	Eon_Theme_Button_Base_Position_Get position_get;
-	Eon_Theme_Button_Base_Margin_Get margin_get;
-	/* renderer needed functions */
-	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Container_Setup setup;
-	Enesim_Renderer_Delete free;
-} Eon_Theme_Radio_Descriptor;
-
-EAPI void * eon_theme_radio_data_get(Enesim_Renderer *r);
-EAPI Eina_Bool eon_is_theme_radio(Enesim_Renderer *r);
-EAPI Enesim_Renderer * eon_theme_radio_new(Eon_Theme_Radio_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_radio_new(Eon_Theme_Bin_Descriptor *descriptor,
 		void *data);
+EAPI void * eon_theme_radio_data_get(Eon_Theme_Widget *t);
 
 /**
  * @}

@@ -94,13 +94,16 @@ static void _hints_get_cb(void *ref, void *child, void *user_data)
 	data->preferred->width = MAX(data->preferred->width, cpreferred.width);
 	data->preferred->height = MAX(data->preferred->height, cpreferred.height);
 
-	//printf("max %g %g min %g %g\n", data->max->width, data->max->height, data->min->width, data->min->height);
+	printf("frame: min %g %g max %g %g preferred %g %g\n",
+		data->min->width, data->min->height,
+		data->max->width, data->max->height,
+		data->preferred->width, data->preferred->height);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's layout interface                          *
  *----------------------------------------------------------------------------*/
 static void _eon_layout_frame_geometry_set(void *descriptor, void *ref,
-		Enesim_Rectangle *g)
+		Eon_Geometry *g)
 {
 	Eon_Layout_Frame_Geometry_Set_Data data;
 	Eon_Layout_Frame_Descriptor *d = descriptor;

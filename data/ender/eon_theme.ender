@@ -17,15 +17,14 @@ namespace "eon" : 0 {
 	abstract "theme_button" : "theme_bin" {
 	};
 
+	abstract "theme_radio" : "theme_bin" {
+	};
+
 	abstract "theme_spin" : "theme_widget" {
 
 	};
 
 	abstract "theme_button_base" : "theme_container" {
-	};
-
-
-	abstract "theme_radio" : "theme_button_base" {
 	};
 
 	abstract "theme_checkbox" : "theme_button_base" {

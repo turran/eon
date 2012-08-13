@@ -32,7 +32,6 @@ static void _add_image(Ender_Element *button, const char *file)
 
 	image = eon_image_new();
 	eon_image_file_set(image, file);
-	//eon_image_file_set(image, file);
 	eon_container_child_add(button, image);
 #if 0
 	eon_element_preferred_width_get(image, &w);
@@ -56,6 +55,7 @@ Ender_Element * eon_test_button_image(int argc, char **argv)
 
 	container = eon_stack_new();
 	eon_stack_direction_set(container, EON_DIRECTION_VERTICAL);
+	eon_stack_homogeneous_set(container, EINA_TRUE);
 	while (argc > 1)
 	{
 		Ender_Element *button;

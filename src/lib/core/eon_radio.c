@@ -15,8 +15,31 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_widget.h"
+#include "eon_bin.h"
+#include "eon_radio.h"
+#include "eon_label.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_theme.h"
+#include "eon_private_widget.h"
+#include "eon_private_container.h"
+#include "eon_private_bin.h"
+#include "eon_private_button_base.h"
+
+#include "eon_private_layout.h"
+#include "eon_private_layout_stack.h"
+#include "eon_private_layout_frame.h"
+/* The radio should be composed of a stack layout.
+ * Inside the stack there should be two frame layouts, one for the
+ * radio control and another for the bin contents
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -26,8 +49,11 @@ static Ender_Property *EON_RADIO_SELECTED;
 typedef struct _Eon_Radio
 {
 	/* properties */
+	Eina_Bool selected;
 	char *group_name;
 	/* private */
+	/* layout */
+	double min_length;
 	Ender_Element *e;
 } Eon_Radio;
 
@@ -40,7 +66,211 @@ static inline Eon_Radio * _eon_radio_get(Eon_Element *ee)
 	thiz = eon_button_base_data_get(ee);
 	return thiz;
 }
+/*----------------------------------------------------------------------------*
+ *                             The radio layout                               *
+ *----------------------------------------------------------------------------*/
+static void _radio_layout_child_padding_get(void *ref, void *child,
+		Eon_Margin *margin)
+{
+	margin->left = margin->top = margin->right = margin->bottom = 10;
+	/* TODO
+	*margin = thiz->padding;
+	*/
+}
 
+static void _radio_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+}
+
+static void _radio_layout_child_hints_get(void *ref, void *child,
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	min->width = min->height = 16;
+	max->width = max->height = 16;
+	preferred->width = preferred->height = 16;
+}
+
+static void _radio_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	cb(ref, NULL, data);
+}
+
+static Eon_Layout_Frame_Descriptor _radio_layout = {
+	/* .child_padding_get 	= */ _radio_layout_child_padding_get,
+	/* .child_foreach 	= */ _radio_layout_child_foreach,
+	/* .child_hints_get 	= */ _radio_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _radio_layout_child_geometry_set,
+};
+/*----------------------------------------------------------------------------*
+ *                           The bin child layout                             *
+ *----------------------------------------------------------------------------*/
+static void _child_layout_child_padding_get(void *ref, void *child,
+		Eon_Margin *margin)
+{
+	margin->left = margin->top = margin->right = margin->bottom = 10;
+	/* TODO
+	*margin = thiz->padding;
+	*/
+}
+
+static void _child_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+	Eon_Element *e = child;
+	eon_element_geometry_set(e, g);
+}
+
+static void _child_layout_child_hints_get(void *ref, void *child,
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	Eon_Element *e = child;
+	eon_element_hints_get(e, min, max, preferred);
+}
+
+static void _child_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	Eon_Element *e = ref;
+	Ender_Element *child;
+
+	child = eon_bin_internal_child_get(e);
+	if (!child) return;
+
+	e = ender_element_object_get(child);
+	cb(ref, e, data);
+}
+
+static Eon_Layout_Frame_Descriptor _child_layout = {
+	/* .child_padding_get 	= */ _child_layout_child_padding_get,
+	/* .child_foreach 	= */ _child_layout_child_foreach,
+	/* .child_hints_get 	= */ _child_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _child_layout_child_geometry_set,
+};
+/*----------------------------------------------------------------------------*
+ *                     The main stack layout descriptors                      *
+ *----------------------------------------------------------------------------*/
+static void _radio_stack_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+	Eon_Layout_Child_Data *lchild = child;
+	eon_layout_geometry_set(lchild->layout, lchild->descriptor, ref, g);
+}
+
+static void _radio_stack_layout_child_hints_get(void *ref, void *child,
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	Eon_Layout_Child_Data *lchild = child;
+	eon_layout_hints_get(lchild->layout, lchild->descriptor, ref, min, max, preferred);
+}
+
+static void _radio_stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	Eon_Layout_Child_Data lchild;
+
+	/* the only children of this main stack are the two frames */
+	lchild.layout = &eon_layout_frame;
+	lchild.descriptor = &_child_layout;
+	cb(ref, &lchild, data);
+
+	lchild.layout = &eon_layout_frame;
+	lchild.descriptor = &_radio_layout;
+	cb(ref, &lchild, data);
+}
+
+static Eina_Bool _radio_stack_layout_is_homogeneous(void *ref)
+{
+	return EINA_FALSE;
+}
+
+static Eon_Direction _radio_stack_layout_direction_get(void *ref)
+{
+	return EON_DIRECTION_HORIZONTAL;
+}
+
+static void _radio_stack_layout_min_length_get(void *ref, double *min)
+{
+	Eon_Element *e = ref;
+	Eon_Radio *thiz;
+
+	thiz = _eon_radio_get(e);
+	*min = thiz->min_length;
+}
+
+static void _radio_stack_layout_min_length_set(void *ref, double min)
+{
+	Eon_Element *e = ref;
+	Eon_Radio *thiz;
+
+	thiz = _eon_radio_get(e);
+	thiz->min_length = min;
+}
+
+static int _radio_stack_layout_child_gravity_get(void *ref, void *child)
+{
+	Eon_Layout_Child_Data *lchild = child;
+	
+
+	/* the child frame always has priority */
+	if (lchild->descriptor == &_child_layout)
+		return 1;
+	else
+		return 0;
+}
+
+static Eon_Layout_Stack_Descriptor _stack_layout = {
+	/* .is_homogeneous 	= */ _radio_stack_layout_is_homogeneous,
+	/* .direction_get 	= */ _radio_stack_layout_direction_get,
+	/* .min_length_get 	= */ _radio_stack_layout_min_length_get,
+	/* .min_length_get 	= */ _radio_stack_layout_min_length_set,
+	/* .child_gravity_get 	= */ _radio_stack_layout_child_gravity_get,
+	/* .child_count_get 	= */ NULL,
+	/* .child_count_set 	= */ NULL,
+	/* .child_foreach 	= */ _radio_stack_layout_child_foreach,
+	/* .child_hints_get 	= */ _radio_stack_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _radio_stack_layout_child_geometry_set,
+};
+/*----------------------------------------------------------------------------*
+ *                     The main frame layout descriptors                      *
+ *----------------------------------------------------------------------------*/
+static void _main_layout_child_padding_get(void *ref, void *child,
+		Eon_Margin *margin)
+{
+	margin->left = margin->top = margin->right = margin->bottom = 10;
+	/* TODO
+	*margin = thiz->padding;
+	*/
+}
+
+static void _main_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+	eon_layout_geometry_set(&eon_layout_stack, &_stack_layout, ref, g);
+}
+
+static void _main_layout_child_hints_get(void *ref, void *child,
+		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+{
+	eon_layout_hints_get(&eon_layout_stack, &_stack_layout, ref, min, max, preferred);
+}
+
+static void _main_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	cb(ref, NULL, data);
+}
+
+static Eon_Layout_Frame_Descriptor _main_layout = {
+	/* .child_padding_get 	= */ _main_layout_child_padding_get,
+	/* .child_foreach 	= */ _main_layout_child_foreach,
+	/* .child_hints_get 	= */ _main_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _main_layout_child_geometry_set,
+};
+/*----------------------------------------------------------------------------*
+ *                                Event handlers                              *
+ *----------------------------------------------------------------------------*/
 static void _eon_radio_mouse_click(Ender_Element *e,
 		const char *event_name,
 		void *event_data,
@@ -48,15 +278,19 @@ static void _eon_radio_mouse_click(Ender_Element *e,
 {
 	Eon_Element *ee;
 	Eina_Bool enabled;
+	Eon_Theme_Instance *theme;
 
 	eon_widget_enabled_get(e, &enabled);
 	if (!enabled)
 		return;
+
+	ee = ender_element_object_get(e);
+	theme = eon_widget_theme_instance_get(ee);
+
 	/* TODO Whenever the mouse is clicked, we should know if by clicking on x, y
 	 * we actually need to change the state of the radio button
 	 */
-	ee = ender_element_object_get(e);
-	eon_theme_instance_state_set(ee, "selected", EINA_FALSE);
+	eon_theme_instance_state_set(theme, "selected", EINA_FALSE);
 	eon_radio_selected_set(e, EINA_TRUE);
 	/* TODO trigger the selected event */
 }
@@ -69,6 +303,7 @@ static void _eon_radio_key_up(Ender_Element *e,
 	Eon_Element *ee;
 	Eon_Event_Key_Up *ev = event_data;
 	Eon_Navigation_Key nkey;
+	Eon_Theme_Instance *theme;
 	Eina_Bool enabled;
 
 	/* check if the key is an enter key */
@@ -83,8 +318,9 @@ static void _eon_radio_key_up(Ender_Element *e,
 		return;
 
 	ee = ender_element_object_get(e);
+	theme = eon_widget_theme_instance_get(ee);
 
-	eon_theme_instance_state_set(ee, "selected", EINA_FALSE);
+	eon_theme_instance_state_set(theme, "selected", EINA_FALSE);
 	eon_radio_selected_set(e, EINA_TRUE);
 	/* TODO trigger the selected event */
 }
@@ -108,9 +344,37 @@ static void _eon_radio_initialize(Ender_Element *e)
 			_eon_radio_key_up, NULL);
 }
 
+static void _eon_radio_geometry_set(Eon_Element *e, Eon_Geometry *g)
+{
+	eon_layout_geometry_set(&eon_layout_frame, &_main_layout, e, g);
+}
+
+static void _eon_radio_free(Eon_Element *e)
+{
+	Eon_Radio *thiz;
+
+	thiz = _eon_radio_get(e);
+	free(thiz);
+}
+
+static void _eon_radio_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Hints *hints)
+{
+	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, &hints->min, &hints->max, &hints->preferred);
+	hints->max.width = DBL_MAX;
+	hints->max.height = DBL_MAX;
+}
+
 static Eon_Button_Base_Descriptor _descriptor = {
-	.initialize = _eon_radio_initialize,
-	.name = "radio",
+	/* .initialize 		= */ _eon_radio_initialize,
+	/* .setup 		= */ NULL,
+	/* .needs_setup 	= */ NULL,
+	/* .geometry_set 	= */ _eon_radio_geometry_set,
+	/* .free		= */ _eon_radio_free,
+	/* .name 		= */ "radio",
+	/* .hints_get 		= */ _eon_radio_hints_get,
+	/* .child_at 		= */ NULL,
+	/* .pass_events		= */ EINA_FALSE,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -119,16 +383,20 @@ static Eon_Element * _eon_radio_new(void)
 {
 	Eon_Radio *thiz;
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
+
+	theme = eon_theme_instance_new("radio", EINA_TRUE);
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Radio));
 	if (!thiz) return NULL;
 
-	ee = eon_button_base_new(&_descriptor, thiz);
-	if (!ee) goto renderer_err;
+	ee = eon_button_base_new(theme, &_descriptor, thiz);
+	if (!ee) goto base_err;
 
 	return ee;
 
-renderer_err:
+base_err:
 	free(thiz);
 	return NULL;
 }
@@ -140,7 +408,6 @@ static void _eon_radio_group_name_set(Eon_Element *ee, const char *group)
 	Eina_List *l;
 
 	thiz = _eon_radio_get(ee);
-	if (!thiz) return;
 
 	if (!_groups)
 	{
@@ -169,25 +436,26 @@ static void _eon_radio_group_name_get(Eon_Element *ee, const char **group)
 	Eon_Radio *thiz;
 
 	thiz = _eon_radio_get(ee);
-	if (!thiz) return;
-
 	*group = thiz->group_name;
 }
 
 static void _eon_radio_selected_get(Eon_Element *ee, Eina_Bool *selected)
 {
-	*selected = EINA_TRUE;
-	//eon_widget_property_get(ee, "selected", selected, NULL);
+	Eon_Radio *thiz;
+
+	thiz = _eon_radio_get(ee);
+	*selected = thiz->selected;
 }
 
 static void _eon_radio_selected_set(Eon_Element *ee, Eina_Bool selected)
 {
 	Eon_Radio *thiz;
+	Eon_Theme_Instance *theme;
 
 	thiz = _eon_radio_get(ee);
-	if (!thiz) return;
+	if (thiz->selected == selected) return;
 
-	eon_widget_property_set(ee, "selected", selected, NULL);
+	theme = eon_widget_theme_instance_get(ee);
 	if (selected)
 	{
 		Eon_Element *other_radio;
@@ -242,9 +510,32 @@ EAPI Ender_Element * eon_radio_new(void)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI Ender_Element * eon_radio_new_with_label(const char *text)
+{
+	Ender_Element *e;
+	Ender_Element *label;
+
+	e = eon_radio_new();
+	if (!e) return NULL;
+
+	label = eon_label_new_with_text(text);
+	if (!label)
+	{
+		return NULL;
+	}
+	eon_bin_child_set(e, label);
+	eon_element_vertical_alignment_set(label, EON_VERTICAL_ALIGNMENT_CENTER);
+	eon_element_horizontal_alignment_set(label, EON_HORIZONTAL_ALIGNMENT_RIGHT);
+	return e;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_radio_group_name_set(Ender_Element *e, const char *group)
 {
-	ender_element_value_set(e, "group_name", group, NULL);
+	ender_element_property_value_set(e, EON_RADIO_GROUP_NAME, group, NULL);
 }
 
 /**
@@ -253,7 +544,13 @@ EAPI void eon_radio_group_name_set(Ender_Element *e, const char *group)
  */
 EAPI void eon_radio_group_name_get(Ender_Element *e, const char **group)
 {
-	ender_element_value_get(e, "group_name", group, NULL);
+	Eon_Radio *thiz;
+	Eon_Element *ee;
+
+	if (!group) return;
+	ee = ender_element_object_get(e);
+	thiz = _eon_radio_get(ee);
+	*group = thiz->group_name;
 }
 
 /**
@@ -262,7 +559,7 @@ EAPI void eon_radio_group_name_get(Ender_Element *e, const char **group)
  */
 EAPI void eon_radio_selected_set(Ender_Element *e, Eina_Bool selected)
 {
-	ender_element_value_set(e, "selected", selected, NULL);
+	ender_element_property_value_set(e, EON_RADIO_SELECTED, selected, NULL);
 }
 
 /**
@@ -271,6 +568,12 @@ EAPI void eon_radio_selected_set(Ender_Element *e, Eina_Bool selected)
  */
 EAPI void eon_radio_selected_get(Ender_Element *e, Eina_Bool *selected)
 {
-	ender_element_value_get(e, "selected", selected, NULL);
+	Eon_Radio *thiz;
+	Eon_Element *ee;
+
+	if (!selected) return;
+	ee = ender_element_object_get(e);
+	thiz = _eon_radio_get(ee);
+	*selected = thiz->selected;
 }
 

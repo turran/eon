@@ -26,6 +26,7 @@
  */
 
 EAPI Ender_Element * eon_radio_new(void);
+EAPI Ender_Element * eon_radio_new_with_label(const char *text);
 EAPI void eon_radio_group_name_set(Ender_Element *e, const char *group);
 EAPI void eon_radio_group_name_get(Ender_Element *e, const char **group);
 EAPI void eon_radio_selected_set(Ender_Element *e, Eina_Bool selected);

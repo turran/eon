@@ -52,6 +52,11 @@ EAPI void eon_element_parent_get(Ender_Element *e, Ender_Element **parent);
 EAPI void eon_element_focusable_get(Ender_Element *e, Eina_Bool *focusable);
 EAPI void eon_element_name_get(Ender_Element *e, const char **name);
 
+EAPI void eon_element_horizontal_alignment_set(Ender_Element *e,
+		Eon_Horizontal_Alignment alignment);
+EAPI void eon_element_vertical_alignment_set(Ender_Element *e,
+		Eon_Vertical_Alignment alignment);
+
 /**
  * @}
  */

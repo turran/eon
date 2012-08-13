@@ -71,6 +71,7 @@ static void _register_enders(void *data)
 	eon_button_base_init();
 	/* basic button inheritance */
 	eon_button_init();
+	eon_radio_init();
 #if 0
 	eon_wrapper_init();
 	/* widget inheritance */
@@ -86,7 +87,6 @@ static void _register_enders(void *data)
 	eon_splitter_init();
 	eon_scrollview_init();
 	/* basic button inheritance */
-	eon_radio_init();
 	eon_checkbox_init();
 	eon_toggle_init();
 	eon_color_init();

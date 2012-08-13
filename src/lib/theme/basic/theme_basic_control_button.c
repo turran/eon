@@ -71,7 +71,7 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	thiz->end_bevel = 0xff000000;
 	thiz->border_weight = 2.0;
 
-	/* FIXME the proxy is for now, until we fix enesim to make
+	/* FIXME the proxy default is for now, until we fix enesim to make
 	 * a renderer "active"
 	 */
 	r = enesim_renderer_background_new();
@@ -137,9 +137,9 @@ inner_button_fill_err:
 	enesim_renderer_unref(thiz->background_fill);
 background_fill_err:
 	enesim_renderer_unref(thiz->proxy);
-proxy_default_err:
-	enesim_renderer_unref(thiz->proxy_default);
 content_proxy_err:
+	enesim_renderer_unref(thiz->proxy_default);
+proxy_default_err:
 	free(thiz);
 	return NULL;
 }

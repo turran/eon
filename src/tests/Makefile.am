@@ -9,7 +9,6 @@ MAINTAINERCLEANFILES = Makefile.in
 # eon_test_label \
 # eon_test_loader \
 # eon_test_progressbar \
-# eon_test_radio \
 # eon_test_scrollview \
 # eon_test_scrollbar \
 # eon_test_splitter \
@@ -20,8 +19,10 @@ MAINTAINERCLEANFILES = Makefile.in
 check_PROGRAMS = \
 eon_test_button01 \
 eon_test_button02 \
+eon_test_button03 \
 eon_test_button_image \
-eon_test_image
+eon_test_image \
+eon_test_radio
 
 eon_test_loader_SOURCES = eon_test_loader.c
 eon_test_loader_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
@@ -37,6 +38,11 @@ eon_test_button02_SOURCES = eon_test_button02.c
 eon_test_button02_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_button02_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_button02_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_button03_SOURCES = eon_test_button03.c
+eon_test_button03_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_button03_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_button03_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_toggle_SOURCES = eon_test_toggle.c
 eon_test_toggle_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
