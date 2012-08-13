@@ -17,6 +17,7 @@ Ender_Element * eon_test_image(int argc, char **argv)
 	}
 
 	container = eon_stack_new();
+	eon_stack_homogeneous_set(container, EINA_TRUE);
 	image = eon_image_new();
 	eon_image_file_set(image, argv[1]);
 	eon_container_child_add(container, image);
