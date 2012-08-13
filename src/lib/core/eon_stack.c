@@ -41,11 +41,9 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static Ender_Property *EON_STACK_CHILD_VERTICAL_ALIGNMENT;
-static Ender_Property *EON_STACK_CHILD_HORIZONTAL_ALIGNMENT;
 static Ender_Property *EON_STACK_DIRECTION;
-static Ender_Property *EON_STACK_LAST_EXPAND;
 static Ender_Property *EON_STACK_HOMOGENEOUS;
+static Ender_Property *EON_STACK_CHILD_GRAVITY;
 
 typedef struct _Eon_Stack_Child
 {
@@ -54,15 +52,13 @@ typedef struct _Eon_Stack_Child
 	double old_y;
 	double curr_x;
 	double curr_y;
-	Eon_Horizontal_Alignment halign;
-	Eon_Vertical_Alignment valign;
+	int gravity;
 } Eon_Stack_Child;
 
 typedef struct _Eon_Stack_State
 {
-	Eon_Stack_Direction direction;
+	Eon_Direction direction;
 	Eina_Bool homogeneous;
-	Eina_Bool last_expand;
 } Eon_Stack_State;
 
 typedef struct _Eon_Stack
@@ -455,14 +451,35 @@ static void _stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb c
 	}
 }
 
-static Eon_Orientation _stack_layout_orientation_get(void *ref)
+static Eina_Bool _stack_layout_is_homogeneous(void *ref)
+{
+	Eon_Stack *thiz = ref;
+	return thiz->curr.homogeneous;
+}
+
+static Eon_Direction _stack_layout_direction_get(void *ref)
 {
 	Eon_Stack *thiz = ref;
 	return thiz->curr.direction;
 }
 
+static void _stack_layout_min_size_get(void *ref, Eon_Size *min)
+{
+	Eon_Stack *thiz = ref;
+
+}
+
+static void _stack_layout_min_size_set(void *ref, Eon_Size *min)
+{
+	Eon_Stack *thiz = ref;
+
+}
+
 static Eon_Layout_Stack_Descriptor _stack_layout = {
-	/* .orientation_get 	= */ _stack_layout_orientation_get,
+	/* .is_homogenneous 	= */ _stack_layout_is_homogeneous,
+	/* .direction_get 	= */ _stack_layout_direction_get,
+	/* .min_size_get 	= */ _stack_layout_min_size_get,
+	/* .min_size_get 	= */ _stack_layout_min_size_set,
 	/* .child_count_get 	= */ _stack_layout_child_count_get,
 	/* .child_count_set 	= */ _stack_layout_child_count_set,
 	/* .child_foreach 	= */ _stack_layout_child_foreach,
@@ -532,7 +549,7 @@ static double _eon_stack_min_width_get(Ender_Element *e, Enesim_Renderer *theme_
 	thiz = _eon_stack_get(ee);
 	if (!thiz) return 0;
 
-	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
+	if (thiz->curr.direction == EON_DIRECTION_HORIZONTAL)
 		min_width = _stack_horizontal_min_width(thiz);
 	else
 		min_width = _stack_vertical_min_width(thiz);
@@ -550,7 +567,7 @@ static double _eon_stack_min_height_get(Ender_Element *e, Enesim_Renderer *theme
 	thiz = _eon_stack_get(ee);
 	if (!thiz) return 0;
 
-	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
+	if (thiz->curr.direction == EON_DIRECTION_HORIZONTAL)
 		min_height = _stack_horizontal_min_height(thiz);
 	else
 		min_height = _stack_vertical_min_height(thiz);
@@ -568,7 +585,7 @@ static double _eon_stack_preferred_width_get(Ender_Element *e, Enesim_Renderer *
 	thiz = _eon_stack_get(ee);
 	if (!thiz) return preferred_width;
 
-	if (thiz->curr.direction == EON_STACK_DIRECTION_HORIZONTAL)
+	if (thiz->curr.direction == EON_DIRECTION_HORIZONTAL)
 	{
 		Eon_Stack_Child *ech;
 		Eina_List *l;
@@ -610,7 +627,7 @@ static double _eon_stack_preferred_height_get(Ender_Element *e, Enesim_Renderer 
 	thiz = _eon_stack_get(ee);
 	if (!thiz) return preferred_height;
 
-	if (thiz->curr.direction == EON_STACK_DIRECTION_VERTICAL)
+	if (thiz->curr.direction == EON_DIRECTION_VERTICAL)
 	{
 		Eon_Stack_Child *ech;
 		Eina_List *l;
@@ -806,7 +823,7 @@ base_err:
 	return NULL;
 }
 
-static void _eon_stack_direction_set(Eon_Element *ee, Eon_Stack_Direction direction)
+static void _eon_stack_direction_set(Eon_Element *ee, Eon_Direction direction)
 {
 	Eon_Stack *thiz;
 
@@ -815,7 +832,7 @@ static void _eon_stack_direction_set(Eon_Element *ee, Eon_Stack_Direction direct
 	thiz->needs_setup = EINA_TRUE;
 }
 
-static void _eon_stack_direction_get(Eon_Element *ee, Eon_Stack_Direction *direction)
+static void _eon_stack_direction_get(Eon_Element *ee, Eon_Direction *direction)
 {
 	Eon_Stack *thiz;
 
@@ -824,8 +841,8 @@ static void _eon_stack_direction_get(Eon_Element *ee, Eon_Stack_Direction *direc
 
 }
 
-static void _eon_stack_child_horizontal_alignment_set(Eon_Element *ee, Ender_Element *child,
-		Eon_Horizontal_Alignment alignment)
+static void _eon_stack_child_gravity_set(Eon_Element *ee, Ender_Element *child,
+		int gravity)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
@@ -836,45 +853,10 @@ static void _eon_stack_child_horizontal_alignment_set(Eon_Element *ee, Ender_Ele
 	{
 		if (ech->ender == child)
 		{
-			ech->halign = alignment;
+			ech->gravity = gravity;
 			thiz->needs_setup = EINA_TRUE;
 		}
 	}
-}
-
-static void _eon_stack_child_vertical_alignment_set(Eon_Element *ee, Ender_Element *child,
-		Eon_Vertical_Alignment alignment)
-{
-	Eon_Stack *thiz;
-	Eon_Stack_Child *ech;
-	Eina_List *l;
-
-	thiz = _eon_stack_get(ee);
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		if (ech->ender == child)
-		{
-			ech->valign = alignment;
-			thiz->needs_setup = EINA_TRUE;
-		}
-	}
-}
-
-static void _eon_stack_last_expand_set(Eon_Element *ee, Eina_Bool last_expand)
-{
-	Eon_Stack *thiz;
-
-	thiz = _eon_stack_get(ee);
-	thiz->curr.last_expand = last_expand;
-	thiz->needs_setup = EINA_TRUE;
-}
-
-static void _eon_stack_last_expand_get(Eon_Element *ee, Eina_Bool *last_expand)
-{
-	Eon_Stack *thiz;
-
-	thiz = _eon_stack_get(ee);
-	*last_expand = thiz->curr.last_expand;
 }
 
 static void _eon_stack_homogeneous_set(Eon_Element *ee, Eina_Bool homogeneous)
@@ -897,8 +879,7 @@ static void _eon_stack_homogeneous_get(Eon_Element *ee, Eina_Bool *homogeneous)
  *                                 Global                                     *
  *============================================================================*/
 #define _eon_stack_delete NULL
-#define _eon_stack_child_horizontal_alignment_get NULL
-#define _eon_stack_child_vertical_alignment_get NULL
+#define _eon_stack_child_gravity_get NULL
 #include "eon_generated_stack.c"
 /*============================================================================*
  *                                   API                                      *
@@ -921,7 +902,7 @@ EAPI Ender_Element * eon_hstack_new(void)
 	Ender_Element *e;
 
 	e = EON_ELEMENT_NEW("stack");
-	eon_stack_direction_set(e, EON_STACK_DIRECTION_HORIZONTAL);
+	eon_stack_direction_set(e, EON_DIRECTION_HORIZONTAL);
 	return e;
 }
 
@@ -934,7 +915,7 @@ EAPI Ender_Element * eon_vstack_new(void)
 	Ender_Element *e;
 
 	e = EON_ELEMENT_NEW("stack");
-	eon_stack_direction_set(e, EON_STACK_DIRECTION_VERTICAL);
+	eon_stack_direction_set(e, EON_DIRECTION_VERTICAL);
 	return e;
 }
 
@@ -942,7 +923,7 @@ EAPI Ender_Element * eon_vstack_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Stack_Direction direction)
+EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Direction direction)
 {
 	ender_element_value_set(e, "direction", direction, NULL);
 }
@@ -951,47 +932,9 @@ EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Stack_Direction directio
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_direction_get(Ender_Element *e, Eon_Stack_Direction *direction)
+EAPI void eon_stack_direction_get(Ender_Element *e, Eon_Direction *direction)
 {
 	ender_element_value_get(e, "direction", direction, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_stack_child_horizontal_alignment_set(Ender_Element *e, Ender_Element *child,
-		Eon_Horizontal_Alignment alignment)
-{
-	ender_element_value_set(child, "child_horizontal_alignment", alignment, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_stack_child_vertical_alignment_set(Ender_Element *e, Ender_Element *child,
-		Eon_Vertical_Alignment alignment)
-{
-	ender_element_value_set(child, "child_vertical_alignment", alignment, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_stack_last_expand_set(Ender_Element *e, Eina_Bool expand)
-{
-	ender_element_value_set(e, "last_expand", expand, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_stack_last_expand_get(Ender_Element *e, Eina_Bool *expand)
-{
-	ender_element_value_get(e, "last_expand", expand, NULL);
 }
 
 /**
@@ -1012,15 +955,13 @@ EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous)
 	ender_element_value_get(e, "homogeneous", homogeneous, NULL);
 }
 
-#if 0
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_child_weight_set(Ender_Element *e, Ender_Element *child,
-		int weight)
+EAPI void eon_stack_child_gravity_set(Ender_Element *e, Ender_Element *child,
+		int gravity)
 {
-	ender_element_value_set(child, "weight", weight, NULL);
+	ender_element_value_set(child, "gravity", gravity, NULL);
 }
-#endif
 

@@ -29,11 +29,11 @@ typedef struct _Eon_Geometry
 	double height;
 } Eon_Geometry;
 
-typedef enum _Eon_Orientation
+typedef enum _Eon_Direction
 {
-	EON_ORIENTATION_HORIZONTAL,
-	EON_ORIENTATION_VERTICAL,
-} Eon_Orientation;
+	EON_DIRECTION_HORIZONTAL,
+	EON_DIRECTION_VERTICAL,
+} Eon_Direction;
 
 typedef enum _Eon_Horizontal_Alignment
 {

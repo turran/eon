@@ -43,6 +43,9 @@ typedef struct _Eon_Basic_Image
 	Enesim_Renderer *image;
 	Enesim_Renderer *transition;
 	Enesim_Renderer *proxy;
+	/* in case there is no image set, use this one */
+	Enesim_Renderer *rectangle;
+	Enesim_Renderer *background;
 } Eon_Basic_Image;
 
 static inline Eon_Basic_Image * _basic_image_get(Eon_Theme_Widget *t)
@@ -60,7 +63,7 @@ static Enesim_Renderer * _basic_image_renderer_get(Eon_Theme_Widget *t)
 	Eon_Basic_Image *thiz;
 
 	thiz = _basic_image_get(t);
-	return thiz->image;
+	return thiz->proxy;
 }
 
 static void _basic_image_x_set(Eon_Theme_Widget *t, double x)
@@ -69,6 +72,8 @@ static void _basic_image_x_set(Eon_Theme_Widget *t, double x)
 
 	thiz = _basic_image_get(t);
 	enesim_renderer_image_x_set(thiz->image, x);
+	enesim_renderer_rectangle_x_set(thiz->rectangle, x);
+	enesim_renderer_x_origin_set(thiz->background, x);
 }
 
 static void _basic_image_y_set(Eon_Theme_Widget *t, double y)
@@ -77,6 +82,8 @@ static void _basic_image_y_set(Eon_Theme_Widget *t, double y)
 
 	thiz = _basic_image_get(t);
 	enesim_renderer_image_y_set(thiz->image, y);
+	enesim_renderer_rectangle_y_set(thiz->rectangle, y);
+	enesim_renderer_y_origin_set(thiz->background, y);
 }
 
 static void _basic_image_width_set(Eon_Theme_Widget *t, double width)
@@ -85,6 +92,7 @@ static void _basic_image_width_set(Eon_Theme_Widget *t, double width)
 
 	thiz = _basic_image_get(t);
 	enesim_renderer_image_width_set(thiz->image, width);
+	enesim_renderer_rectangle_width_set(thiz->rectangle, width);
 }
 
 static void _basic_image_height_set(Eon_Theme_Widget *t, double height)
@@ -93,6 +101,7 @@ static void _basic_image_height_set(Eon_Theme_Widget *t, double height)
 
 	thiz = _basic_image_get(t);
 	enesim_renderer_image_height_set(thiz->image, height);
+	enesim_renderer_rectangle_height_set(thiz->rectangle, height);
 }
 
 static void _basic_image_free(Eon_Theme_Widget *t)
@@ -147,6 +156,26 @@ EAPI Eon_Theme_Widget * eon_basic_image_new(void)
 	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Basic_Image));
+	r = enesim_renderer_checker_new();
+	if (!r) goto checker_err;
+	enesim_renderer_rop_set(r, ENESIM_FILL);
+	enesim_renderer_checker_odd_color_set(r, 0x55000000);
+	enesim_renderer_checker_even_color_set(r, 0x55555555);
+	enesim_renderer_checker_width_set(r, 10);
+	enesim_renderer_checker_height_set(r, 10);
+	thiz->background = r;
+
+	r = enesim_renderer_rectangle_new();
+	if (!r) goto rect_err;
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_shape_fill_renderer_set(r, thiz->background);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	thiz->rectangle = r;
+
+	r = enesim_renderer_proxy_new();
+	if (!r) goto proxy_err;
+	enesim_renderer_proxy_proxied_set(r, thiz->rectangle);
+	thiz->proxy = r;
 
 	r = enesim_renderer_image_new();
 	if (!r) goto image_err;
@@ -161,6 +190,12 @@ EAPI Eon_Theme_Widget * eon_basic_image_new(void)
 base_err:
 	enesim_renderer_unref(thiz->image);
 image_err:
+	enesim_renderer_unref(thiz->proxy);
+proxy_err:
+	enesim_renderer_unref(thiz->rectangle);
+rect_err:
+	enesim_renderer_unref(thiz->background);
+checker_err:
 	free(thiz);
 	return NULL;
 }
@@ -193,6 +228,7 @@ EAPI void eon_basic_image_status_set(Eon_Theme_Widget *t, Eon_Basic_Image_State 
 			area.x = area.y = 0;
 			enesim_surface_size_get(thiz->src, &area.w, &area.h);
 			enesim_renderer_image_damage_add(thiz->image, &area);
+			enesim_renderer_proxy_proxied_set(thiz->proxy, thiz->image);
 		}
 		break;
 	}

@@ -35,6 +35,7 @@ struct _Eon_Basic_Control_Button
 	double radius;
 	Enesim_Color border_color;
 	Enesim_Color fill_color;
+	double border_weight;
 	/* private */
 	Enesim_Renderer *background_fill;
 	Enesim_Renderer *inner_button_fill;
@@ -47,27 +48,6 @@ struct _Eon_Basic_Control_Button
 	double y;
 	double height;
 };
-
-static const double _border_weight = 2.0;
-
-#if 0
-static void _button_propagate(Eon_Basic_Control_Button *thiz,
-		const Eon_Theme_Widget_State *current,
-		Eina_Bool geometry_changed)
-{
-	Enesim_Renderer *r;
-	Enesim_Matrix m;
-	double x = current->x;
-	double y = current->y;
-	double width = current->width;
-	double height = current->height;
-
-	if (geometry_changed || thiz->changed)
-	{
-		thiz->changed = EINA_FALSE;
-	}
-}
-#endif
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -89,6 +69,7 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	thiz->fill_color = 0xffcccccc;
 	thiz->start_bevel = 0xfffffff;
 	thiz->end_bevel = 0xff000000;
+	thiz->border_weight = 2.0;
 
 	/* FIXME the proxy is for now, until we fix enesim to make
 	 * a renderer "active"
@@ -120,7 +101,7 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	if (!r) goto inner_button_err;
 	enesim_renderer_rectangle_corner_radius_set(r, thiz->radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
-	enesim_renderer_shape_stroke_weight_set(r, _border_weight);
+	enesim_renderer_shape_stroke_weight_set(r, thiz->border_weight);
 	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
 	//enesim_renderer_shape_fill_color_set(r, 0xff00ffff);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->inner_button_fill);
@@ -218,26 +199,6 @@ void eon_basic_control_button_start_bevel_set(Eon_Basic_Control_Button *thiz, En
 void eon_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->end_bevel = color;
-}
-
-void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
-		Enesim_Renderer *content, Eon_Margin *margin)
-{
-	if (!content)
-	{
-		margin->left = thiz->horizontal_padding + 15;;
-		margin->right = thiz->horizontal_padding + 15;
-		margin->top = thiz->vertical_padding + 15;
-		margin->bottom = thiz->vertical_padding + 15;
-
-	}
-	else
-	{
-		margin->left = _border_weight + thiz->horizontal_padding + thiz->radius;
-		margin->right = _border_weight + thiz->horizontal_padding + thiz->radius;
-		margin->top = _border_weight + thiz->vertical_padding + thiz->radius;
-		margin->bottom = _border_weight + thiz->vertical_padding + thiz->radius;
-	}
 }
 
 void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,

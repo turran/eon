@@ -55,7 +55,7 @@ Ender_Element * eon_test_button_image(int argc, char **argv)
 	}
 
 	container = eon_stack_new();
-	eon_stack_direction_set(container, EON_STACK_DIRECTION_VERTICAL);
+	eon_stack_direction_set(container, EON_DIRECTION_VERTICAL);
 	while (argc > 1)
 	{
 		Ender_Element *button;

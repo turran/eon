@@ -16,9 +16,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include <unistd.h>
+#include "eon_private_main.h"
 
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_main.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

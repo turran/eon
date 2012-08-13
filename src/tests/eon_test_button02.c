@@ -19,7 +19,8 @@ Ender_Element * eon_test_button(int argc, char **argv)
 	int i;
 
 	container = eon_stack_new();
-	eon_stack_direction_set(container, EON_STACK_DIRECTION_VERTICAL);
+	eon_stack_direction_set(container, EON_DIRECTION_VERTICAL);
+	eon_stack_homogeneous_set(container, EINA_TRUE);
 	/* normal button */
 	/* something more than a label */
 	/* disabled button */

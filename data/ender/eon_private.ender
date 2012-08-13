@@ -48,11 +48,9 @@ namespace "eon" : 0 {
 	};
 
 	class "stack" : "container" {
-		rel int "child_vertical_alignment";
-		rel int "child_horizontal_alignment";
 		int "direction";
-		bool "last_expand";
 		bool "homogeneous";
+		rel int "child_gravity";
 	};
 
 	class "canvas" : "container" {

@@ -25,10 +25,6 @@ void eon_basic_control_button_start_shadow_set(Eon_Basic_Control_Button *thiz, E
 void eon_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color);
 void eon_basic_control_button_start_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color);
 void eon_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color);
-void eon_basic_control_button_margin_get(Eon_Basic_Control_Button *thiz,
-		Enesim_Renderer *content, Eon_Margin *margin);
-void eon_basic_control_button_position_get(Eon_Basic_Control_Button *thiz, Eon_Size *size,
-		Eon_Position *position);
 void eon_basic_control_button_free(Eon_Basic_Control_Button *thiz);
 Enesim_Renderer * eon_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz);
 
