@@ -784,13 +784,13 @@ void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 		double y = rg.y;
 
 		if (h < 0) h = thiz->last_hints.max.height;
-		switch (thiz->horizontal_alignment)
+		switch (thiz->vertical_alignment)
 		{
-			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+			case EON_VERTICAL_ALIGNMENT_BOTTOM:
 			y = rg.height - h;
 			break;
 
-			case EON_HORIZONTAL_ALIGNMENT_CENTER:
+			case EON_VERTICAL_ALIGNMENT_CENTER:
 			y = (rg.height / 2) - (h / 2);
 			break;
 
