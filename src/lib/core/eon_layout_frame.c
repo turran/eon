@@ -63,6 +63,11 @@ static void _hints_get_cb(void *ref, void *child, void *user_data)
 	double h;
 	double v;
 
+	/* TODO use the hints */
+	eon_size_values_set(&cmin, 0, 0);
+	eon_size_values_set(&cpreferred, -1, -1);
+	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
+
 	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
 	data->d->child_padding_get(ref, child, &cmargin);
 

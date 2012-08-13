@@ -13,6 +13,8 @@
 #include <Ender.h>
 #include <Escen.h>
 
+#include "eon_main.h"
+
 #ifdef EAPI
 # undef EAPI
 #endif
@@ -68,5 +70,18 @@ Ender_Namespace * eon_namespace_get(void);
 #define DBG(...) EINA_LOG_DOM_DBG(eon_log, __VA_ARGS__)
 extern int eon_log;
 
+typedef struct _Eon_Hints
+{
+	Eon_Size min;
+	Eon_Size max;
+	Eon_Size preferred;
+} Eon_Hints;
+
+static inline void eon_hints_initialize(Eon_Hints *h)
+{
+	eon_size_values_set(&h->min, 0, 0);
+	eon_size_values_set(&h->preferred, -1, -1);
+	eon_size_values_set(&h->max, DBL_MAX, DBL_MAX);
+}
 
 #endif

@@ -1,8 +1,6 @@
 #ifndef _EON_PRIVATE_LAYOUT_H
 #define _EON_PRIVATE_LAYOUT_H
 
-#include "eon_main.h"
-
 /* common functions for the possible descriptors */
 typedef void (*Eon_Layout_Child_Foreach_Cb)(void *ref, void *child, void *data);
 typedef void (*Eon_Layout_Child_Foreach)(void *ref, Eon_Layout_Child_Foreach_Cb cb, void *data);

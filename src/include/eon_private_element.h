@@ -11,13 +11,6 @@ typedef struct _Eon_Element_State
 	Eina_Bool visible;
 } Eon_Element_State;
 
-typedef struct _Eon_Hints
-{
-	Eon_Size min;
-	Eon_Size max;
-	Eon_Size preferred;
-} Eon_Hints;
-
 typedef void (*Eon_Element_Initialize)(Ender_Element *e);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e,
 		const Eon_Element_State *state,

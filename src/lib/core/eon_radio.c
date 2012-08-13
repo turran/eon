@@ -172,12 +172,13 @@ static void _radio_stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreac
 
 	/* the only children of this main stack are the two frames */
 	lchild.layout = &eon_layout_frame;
-	lchild.descriptor = &_child_layout;
+	lchild.descriptor = &_radio_layout;
 	cb(ref, &lchild, data);
 
 	lchild.layout = &eon_layout_frame;
-	lchild.descriptor = &_radio_layout;
+	lchild.descriptor = &_child_layout;
 	cb(ref, &lchild, data);
+
 }
 
 static Eina_Bool _radio_stack_layout_is_homogeneous(void *ref)
@@ -525,7 +526,7 @@ EAPI Ender_Element * eon_radio_new_with_label(const char *text)
 	}
 	eon_bin_child_set(e, label);
 	eon_element_vertical_alignment_set(label, EON_VERTICAL_ALIGNMENT_CENTER);
-	eon_element_horizontal_alignment_set(label, EON_HORIZONTAL_ALIGNMENT_RIGHT);
+	eon_element_horizontal_alignment_set(label, EON_HORIZONTAL_ALIGNMENT_LEFT);
 	return e;
 }
 
