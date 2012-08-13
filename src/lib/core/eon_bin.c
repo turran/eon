@@ -73,6 +73,7 @@ static Ender_Element * _eon_bin_state_element_get(Ender_Element *e,
 	ee = ender_element_object_get(e);
 	thiz = _eon_bin_get(ee);
 
+	printf("bin at %g %g\n", x, y);
 	/* there's a default handler */
 	if (thiz->descriptor.child_at)
 		at = thiz->descriptor.child_at(e, x, y);
@@ -169,8 +170,6 @@ static Eina_Bool _eon_bin_needs_setup(Ender_Element *e)
 static Eina_Bool _eon_bin_child_add(Eon_Element *e, Ender_Element *child)
 {
 	Eon_Bin *thiz;
-	Eon_Theme_Instance *theme;
-	Enesim_Renderer *child_r;
 
 	thiz = _eon_bin_get(e);
 	if (thiz->child)
@@ -179,10 +178,6 @@ static Eina_Bool _eon_bin_child_add(Eon_Element *e, Ender_Element *child)
 		return EINA_FALSE;
 	}
 
-	/* FIXME the size of the elements of a stack for example is always
-	 * calculated before calling the setup, so this first time
-	 * an application is run it wont have any valid size
-	 */
 	thiz->child = child;
 	thiz->changed = EINA_TRUE;
 	return EINA_TRUE;
@@ -306,7 +301,6 @@ EAPI void eon_bin_child_set(Ender_Element *e, Ender_Element *child)
  */
 EAPI void eon_bin_child_get(Ender_Element *ee, Ender_Element **child)
 {
-	Eon_Bin *thiz;
 	Eon_Element *e;
 
 	if (!child) return;

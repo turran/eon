@@ -114,69 +114,6 @@ static void _eon_button_base_initialize(Ender_Element *e)
  * the case with this flag
  */
 
-static double _eon_button_base_min_preferred_width_get(Ender_Element *e, double cmv)
-{
-	Eon_Button_Base *thiz;
-	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_button_base_get(ee);
-
-	theme_r = eon_widget_theme_renderer_get(ee);
-	eon_theme_button_base_margin_get(theme_r, &margin);
-
-	return cmv + margin.left + margin.right;
-}
-
-static double _eon_button_base_min_preferred_height_get(Ender_Element *e, double cmv)
-{
-	Eon_Button_Base *thiz;
-	Eon_Margin margin;
-	Enesim_Renderer *theme_r;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_button_base_get(ee);
-
-	theme_r = eon_widget_theme_renderer_get(ee);
-	eon_theme_button_base_margin_get(theme_r, &margin);
-
-	return cmv + margin.top + margin.bottom;
-}
-
-static Eina_Bool _eon_button_base_content_relayout(Ender_Element *content,
-		Enesim_Renderer *theme_r,
-		double ax,
-		double ay,
-		double aw,
-		double ah,
-		Enesim_Surface *s,
-		Enesim_Error **err)
-{
-	Eon_Element *content_e;
-	Eon_Margin margin;
-	Eon_Size size;
-	Eon_Position position;
-
-	content_e = ender_element_object_get(content);
-	eon_theme_button_base_margin_get(theme_r, &margin);
-	size.width = aw - margin.left - margin.right;
-	size.height = ah - margin.top - margin.bottom;
-
-	eon_element_real_relative_size_get(content, &size, &size);
-	eon_element_actual_size_set(content_e, size.width, size.height);
-	eon_theme_button_base_position_get(theme_r, &size, &position);
-	eon_element_actual_position_set(content_e, ax + position.x, ay + position.y);
-	if (!eon_element_setup(content, s, err))
-	{
-		printf("impossible to setup the content\n");
-		return EINA_FALSE;
-	}
-
-	return EINA_TRUE;
-}
 #endif
 
 static Eina_Bool _eon_button_base_setup(Ender_Element *e,

@@ -91,12 +91,14 @@ static Ender_Element * _eon_container_state_element_get(Ender_Element *e,
 {
 	Eon_Container *thiz;
 	Eon_Element *ee;
+	Ender_Element *at = NULL;
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_container_get(ee);
 	if (thiz->descriptor.child_at)
-		return thiz->descriptor.child_at(e, x, y);
-	return NULL;
+		at = thiz->descriptor.child_at(e, x, y);
+	printf("child at %g %g %p\n", x, y, at);
+	return at;
 }
 
 static Ender_Element * _eon_container_state_element_next(Ender_Element *e,
