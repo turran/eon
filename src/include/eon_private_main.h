@@ -84,4 +84,15 @@ static inline void eon_hints_initialize(Eon_Hints *h)
 	eon_size_values_set(&h->max, DBL_MAX, DBL_MAX);
 }
 
+static inline void eon_hints_values_set(Eon_Hints *h, double minw, double maxw,
+		double minh, double maxh, double prefw, double prefh)
+{
+	h->min.width = minw;
+	h->min.height = minh;
+	h->max.width = maxw;
+	h->max.height = maxh;
+	h->preferred.width = prefw;
+	h->preferred.height = prefh;
+}
+
 #endif

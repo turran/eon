@@ -53,6 +53,10 @@ namespace "eon" : 0 {
 		rel int "child_gravity";
 	};
 
+	class "wrapper" : "element" {
+		object "wrapped";
+	};
+
 	class "canvas" : "container" {
 		rel double "child_x";
 		rel double "child_y";
@@ -117,10 +121,6 @@ namespace "eon" : 0 {
 
 	class "frame" : "container" {
 		string "description";
-	};
-
-	class "wrapper" : "element" {
-		ender "wrapped";
 	};
 
 	class "entry" : "widget" {
