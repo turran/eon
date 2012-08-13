@@ -93,11 +93,10 @@ static void _main_layout_child_geometry_set(void *ref, void *child,
 	eon_element_geometry_set(e, g);
 }
 
-static void _main_layout_child_hints_get(void *ref, void *child,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+static void _main_layout_child_hints_get(void *ref, void *child, Eon_Hints *hints)
 {
 	Eon_Element *e = child;
-	eon_element_hints_get(e, min, max, preferred);
+	eon_element_hints_get(e, hints);
 }
 
 static void _main_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
@@ -198,7 +197,7 @@ static void _eon_button_free(Eon_Element *e)
 static void _eon_button_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 		Eon_Hints *hints)
 {
-	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, &hints->min, &hints->max, &hints->preferred);
+	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, hints);
 	hints->max.width = DBL_MAX;
 	hints->max.height = DBL_MAX;
 }

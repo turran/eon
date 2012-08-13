@@ -185,13 +185,13 @@ static int _stack_layout_child_count_get(void *ref)
 }
 
 static void _stack_layout_child_hints_get(void *ref, void *child,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+		Eon_Hints *hints)
 {
 	Eon_Stack_Child *child_thiz = child;
 	Eon_Element *e;
 
 	e = ender_element_object_get(child_thiz->ender);
-	eon_element_hints_get(e, min, max, preferred);
+	eon_element_hints_get(e, hints);
 }
 
 static void _stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
@@ -542,7 +542,7 @@ static void _eon_stack_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(e);
-	eon_layout_hints_get(&eon_layout_stack, &_stack_layout, thiz, &hints->min, &hints->max, &hints->preferred);
+	eon_layout_hints_get(&eon_layout_stack, &_stack_layout, thiz, hints);
 }
 
 static Eon_Container_Descriptor _descriptor = {

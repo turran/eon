@@ -57,7 +57,7 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 void * eon_element_data_get(Eon_Element *e);
 
 /* new ones */
-void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_Size *preferred);
+void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints);
 void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g);
 
 void eon_element_initialize(Ender_Element *ender);

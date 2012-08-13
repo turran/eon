@@ -30,9 +30,7 @@ typedef struct _Eon_Layout_Frame_Geometry_Set_Data
 typedef struct _Eon_Layout_Frame_Hints_Get_Data
 {
 	Eon_Layout_Frame_Descriptor *d;
-	Eon_Size *min;
-	Eon_Size *max;
-	Eon_Size *preferred;
+	Eon_Hints *hints;
 } Eon_Layout_Frame_Hints_Get_Data;
 
 /* TODO when setting the geometry we need to take into
@@ -58,17 +56,13 @@ static void _geometry_set_cb(void *ref, void *child, void *user_data)
 static void _hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Frame_Hints_Get_Data *data = user_data;
-	Eon_Size cmin, cmax, cpreferred;
+	Eon_Hints hints;
 	Eon_Margin cmargin;
 	double h;
 	double v;
 
-	/* TODO use the hints */
-	eon_size_values_set(&cmin, 0, 0);
-	eon_size_values_set(&cpreferred, -1, -1);
-	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
-
-	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	eon_hints_initialize(&hints);
+	data->d->child_hints_get(ref, child, &hints);
 	data->d->child_padding_get(ref, child, &cmargin);
 
 	//printf("child max %g %g %g %g\n", cmax.width, cmax.height, cmin.width, cmin.height);
@@ -76,33 +70,33 @@ static void _hints_get_cb(void *ref, void *child, void *user_data)
 	h = cmargin.left + cmargin.right;
 	v = cmargin.top + cmargin.bottom;
 
-	if (cmin.width < DBL_MAX)
-		cmin.width += h;
-	if (cmin.height < DBL_MAX)
-		cmin.height += v;
-	if (cmax.width < DBL_MAX)
-		cmax.width += h;
-	if (cmax.height < DBL_MAX)
-		cmax.height += v;
-	if (cmax.width < DBL_MAX && cmax.width > 0)
-		cpreferred.width += h;
-	if (cmax.height < DBL_MAX && cmax.height > 0)
-		cpreferred.height += v;
+	if (hints.min.width < DBL_MAX)
+		hints.min.width += h;
+	if (hints.min.height < DBL_MAX)
+		hints.min.height += v;
+	if (hints.max.width < DBL_MAX)
+		hints.max.width += h;
+	if (hints.max.height < DBL_MAX)
+		hints.max.height += v;
+	if (hints.max.width < DBL_MAX && hints.max.width > 0)
+		hints.preferred.width += h;
+	if (hints.max.height < DBL_MAX && hints.max.height > 0)
+		hints.preferred.height += v;
 
 	/* the min size is the max of every child min size */
-	data->min->width = MAX(data->min->width, cmin.width);
-	data->min->height = MAX(data->min->height, cmin.height);
+	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
+	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
 	/* the max size is the min of every child max size */
-	data->max->width = MIN(data->max->width, cmax.width);
-	data->max->height = MIN(data->max->height, cmax.height);
+	data->hints->max.width = MIN(data->hints->max.width, hints.max.width);
+	data->hints->max.height = MIN(data->hints->max.height, hints.max.height);
 	/* the preferred size is the max of every child preferred size */
-	data->preferred->width = MAX(data->preferred->width, cpreferred.width);
-	data->preferred->height = MAX(data->preferred->height, cpreferred.height);
+	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
+	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
 
 	printf("frame: min %g %g max %g %g preferred %g %g\n",
-		data->min->width, data->min->height,
-		data->max->width, data->max->height,
-		data->preferred->width, data->preferred->height);
+		data->hints->min.width, data->hints->min.height,
+		data->hints->max.width, data->hints->max.height,
+		data->hints->preferred.width, data->hints->preferred.height);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's layout interface                          *
@@ -119,15 +113,13 @@ static void _eon_layout_frame_geometry_set(void *descriptor, void *ref,
 }
 
 static void _eon_layout_frame_hints_get(void *descriptor, void *ref,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+		Eon_Hints *hints)
 {
 	Eon_Layout_Frame_Hints_Get_Data data;
 	Eon_Layout_Frame_Descriptor *d = descriptor;
 
 	data.d = d;
-	data.min = min;
-	data.max = max;
-	data.preferred = preferred;
+	data.hints = hints;
 	d->child_foreach(ref, _hints_get_cb, &data);
 }
 /*============================================================================*

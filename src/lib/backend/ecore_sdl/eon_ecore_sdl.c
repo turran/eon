@@ -234,19 +234,19 @@ static Eina_Bool _key_up(void *data, int type, void *event)
 static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int height)
 {
 	Eon_Element *e;
-	Eon_Size min, max, preferred;
+	Eon_Hints hints;
 	Eon_Geometry geometry;
 
 	e = ender_element_object_get(thiz->layout);
-	eon_element_hints_get(e, &min, &max, &preferred);
-	if (width < min.width)
-		width = min.width;
-	if (width > max.width)
-		width = max.width;
-	if (height < min.height)
-		height = min.height;
-	if (height > max.height)
-		height = max.height;
+	eon_element_hints_get(e, &hints);
+	if (width < hints.min.width)
+		width = hints.min.width;
+	if (width > hints.max.width)
+		width = hints.max.width;
+	if (height < hints.min.height)
+		height = hints.min.height;
+	if (height > hints.max.height)
+		height = hints.max.height;
 
 	eon_geometry_coords_from(&geometry, 0, 0, width, height);
 	eon_element_geometry_set(e, &geometry);

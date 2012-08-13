@@ -715,39 +715,35 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
  * we need to take into account the last time the min/max/preferred sizes
  * where calculated
  */
-void eon_element_hints_get(Eon_Element *thiz, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 {
-	Eon_Hints hints;
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	
-	hints.min = thiz->min_size;
-	hints.max = thiz->max_size;
-	hints.preferred.width = -1;
-	hints.preferred.height = -1;
+	hints->min = thiz->min_size;
+	hints->max = thiz->max_size;
+	hints->preferred.width = -1;
+	hints->preferred.height = -1;
 
 	if (thiz->descriptor.hints_get)
 	{
 		Eon_Hints ihints;
 
-		eon_size_values_set(&ihints.min, 0, 0);
-		eon_size_values_set(&ihints.preferred, -1, -1);
-		eon_size_values_set(&ihints.max, DBL_MAX, DBL_MAX);
-
+		eon_hints_initialize(&ihints);
 		thiz->descriptor.hints_get(thiz, &ihints);
 
-		hints.min.width = MAX(hints.min.width, ihints.min.width);
-		hints.min.height = MAX(hints.min.height, ihints.min.height);
+		hints->min.width = MAX(hints->min.width, ihints.min.width);
+		hints->min.height = MAX(hints->min.height, ihints.min.height);
 
-		hints.max.width = MIN(hints.max.width, ihints.max.width);
-		hints.max.height = MIN(hints.max.height, ihints.max.height);
+		hints->max.width = MIN(hints->max.width, ihints.max.width);
+		hints->max.height = MIN(hints->max.height, ihints.max.height);
 
-		hints.preferred = ihints.preferred;
+		hints->preferred = ihints.preferred;
 	}
-	thiz->last_hints = hints;
-	*min = hints.min;
-	*max = hints.max;
-	*preferred = hints.preferred;
-	printf("'%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name, min->width, min->height, max->width, max->height, preferred->width, preferred->height);
+	thiz->last_hints = *hints;
+	printf("'%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name,
+			hints->min.width, hints->min.height,
+			hints->max.width, hints->max.height,
+			hints->preferred.width, hints->preferred.height);
 }
 
 /* this should be called always after the hints_get and also pass the last

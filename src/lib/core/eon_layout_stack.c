@@ -34,9 +34,7 @@ typedef struct _Eon_Layout_Stack_Geometry_Set_Data
 
 typedef struct _Eon_Layout_Stack_Hints_Get_Data
 {
-	Eon_Size *min;
-	Eon_Size *max;
-	Eon_Size *preferred;
+	Eon_Hints *hints;
 	Eon_Direction direction;
 	Eon_Layout_Stack_Descriptor *d;
 	int count;
@@ -51,16 +49,13 @@ static void _gravity_get_cb(void *ref, void *child, void *user_data)
 static void _no_homogeneous_vertical_geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
-	Eon_Size cmin, cmax, cpreferred;
+	Eon_Hints hints;
 	int gravity;
 
-	/* TODO use the hints */
-	eon_size_values_set(&cmin, 0, 0);
-	eon_size_values_set(&cpreferred, -1, -1);
-	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
-	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	eon_hints_initialize(&hints);
+	data->d->child_hints_get(ref, child, &hints);
 
-	data->g.height = cmin.height;
+	data->g.height = hints.min.height;
 	gravity = data->d->child_gravity_get(ref, child);
 	if (gravity != 0)
 		data->g.height += (data->empty / data->gravities) * gravity;
@@ -72,16 +67,13 @@ static void _no_homogeneous_vertical_geometry_set_cb(void *ref, void *child, voi
 static void _no_homogeneous_horizontal_geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
-	Eon_Size cmin, cmax, cpreferred;
+	Eon_Hints hints;
 	int gravity;
 
-	/* TODO use the hints */
-	eon_size_values_set(&cmin, 0, 0);
-	eon_size_values_set(&cpreferred, -1, -1);
-	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
-	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	eon_hints_initialize(&hints);
+	data->d->child_hints_get(ref, child, &hints);
 
-	data->g.width = cmin.width;
+	data->g.width = hints.min.width;
 	gravity = data->d->child_gravity_get(ref, child);
 	if (gravity != 0)
 		data->g.width += (data->empty / data->gravities) * gravity;
@@ -109,23 +101,20 @@ static void _homogeneous_vertical_geometry_set_cb(void *ref, void *child, void *
 static void _homogeneous_hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
-	Eon_Size cmin, cmax, cpreferred;
+	Eon_Hints hints;
 
-	/* TODO use the hints */
-	eon_size_values_set(&cmin, 0, 0);
-	eon_size_values_set(&cpreferred, -1, -1);
-	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
-	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	eon_hints_initialize(&hints);
+	data->d->child_hints_get(ref, child, &hints);
 
 	/* the min size is the max of every child min size */
-	data->min->width = MAX(data->min->width, cmin.width);
-	data->min->height = MAX(data->min->height, cmin.height);
+	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
+	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
 	/* the max size is the min of every child max size */
-	data->max->width = MIN(data->max->width, cmax.width);
-	data->max->height = MIN(data->max->height, cmax.height);
+	data->hints->max.width = MIN(data->hints->max.width, hints.max.width);
+	data->hints->max.height = MIN(data->hints->max.height, hints.max.height);
 	/* the preferred size is the max of every child preferred size */
-	data->preferred->width = MAX(data->preferred->width, cpreferred.width);
-	data->preferred->height = MAX(data->preferred->height, cpreferred.height);
+	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
+	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
 
 	data->count++;
 }
@@ -133,53 +122,47 @@ static void _homogeneous_hints_get_cb(void *ref, void *child, void *user_data)
 static void _no_homogeneous_horizontal_hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
-	Eon_Size cmin, cmax, cpreferred;
+	Eon_Hints hints;
 
-	/* TODO use the hints */
-	eon_size_values_set(&cmin, 0, 0);
-	eon_size_values_set(&cpreferred, -1, -1);
-	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
-	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	eon_hints_initialize(&hints);
+	data->d->child_hints_get(ref, child, &hints);
 
 	/* the width is the sum of every child width */
-	if (data->min->width != DBL_MAX)
-		data->min->width += cmin.width;
-	if (data->max->width != DBL_MAX)
-		data->max->width += cmax.width;
-	if (data->preferred->width != DBL_MAX)
-		data->preferred->width += cpreferred.width;
+	if (data->hints->min.width != DBL_MAX)
+		data->hints->min.width += hints.min.width;
+	if (data->hints->max.width != DBL_MAX)
+		data->hints->max.width += hints.max.width;
+	if (data->hints->preferred.width != DBL_MAX)
+		data->hints->preferred.width += hints.preferred.width;
 	/* the height should follow the normal min/max scheme */
-	data->min->height = MAX(data->min->height, cmin.height);
-	data->max->height = MIN(data->max->height, cmax.height);
-	data->preferred->height = MAX(data->preferred->height, cpreferred.height);
+	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
+	data->hints->max.height = MIN(data->hints->max.height, hints.max.height);
+	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
 	printf("stack: min %g %g max %g %g preferred %g %g\n",
-		data->min->width, data->min->height,
-		data->max->width, data->max->height,
-		data->preferred->width, data->preferred->height);
+		data->hints->min.width, data->hints->min.height,
+		data->hints->max.width, data->hints->max.height,
+		data->hints->preferred.width, data->hints->preferred.height);
 }
 
 static void _no_homogeneous_vertical_hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
-	Eon_Size cmin, cmax, cpreferred;
+	Eon_Hints hints;
 
-	/* TODO use the hints */
-	eon_size_values_set(&cmin, 0, 0);
-	eon_size_values_set(&cpreferred, -1, -1);
-	eon_size_values_set(&cmax, DBL_MAX, DBL_MAX);
-	data->d->child_hints_get(ref, child, &cmin, &cmax, &cpreferred);
+	eon_hints_initialize(&hints);
+	data->d->child_hints_get(ref, child, &hints);
 
 	/* the height is the sum of every child height */
-	if (data->min->height != DBL_MAX)
-		data->min->height += cmin.height;
-	if (data->max->height != DBL_MAX)
-		data->max->height += cmax.height;
-	if (data->preferred->height != DBL_MAX)
-		data->preferred->height += cpreferred.height;
+	if (data->hints->min.height != DBL_MAX)
+		data->hints->min.height += hints.min.height;
+	if (data->hints->max.height != DBL_MAX)
+		data->hints->max.height += hints.max.height;
+	if (data->hints->preferred.height != DBL_MAX)
+		data->hints->preferred.height += hints.preferred.height;
 	/* the width should follow the normal min/max scheme */
-	data->min->width = MAX(data->min->width, cmin.width);
-	data->max->width = MIN(data->max->width, cmax.width);
-	data->preferred->width = MAX(data->preferred->width, cpreferred.width);
+	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
+	data->hints->max.width = MIN(data->hints->max.width, hints.max.width);
+	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's layout interface                          *
@@ -249,7 +232,7 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 }
 
 static void _eon_layout_stack_hints_get(void *descriptor, void *ref,
-		Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
+		Eon_Hints *hints)
 {
 	Eon_Layout_Stack_Hints_Get_Data data;
 	Eon_Layout_Stack_Descriptor *d = descriptor;
@@ -257,9 +240,7 @@ static void _eon_layout_stack_hints_get(void *descriptor, void *ref,
 
 	data.d = d;
 	data.count = 0;
-	data.min = min;
-	data.max = max;
-	data.preferred = preferred;
+	data.hints = hints;
 	data.direction = d->direction_get(ref);
 	homogeneous = d->is_homogeneous(ref);
 	if (homogeneous)
@@ -267,15 +248,15 @@ static void _eon_layout_stack_hints_get(void *descriptor, void *ref,
 		d->child_foreach(ref, _homogeneous_hints_get_cb, &data);
 
 		if (data.direction == EON_DIRECTION_HORIZONTAL) {
-			min->width *= data.count;
-			if (max->width < DBL_MAX)
-				max->width *= data.count;
-			preferred->height *= data.count;
+			hints->min.width *= data.count;
+			if (hints->max.width < DBL_MAX)
+				hints->max.width *= data.count;
+			hints->preferred.height *= data.count;
 		} else {
-			min->height *= data.count;
-			if (max->height < DBL_MAX)
-				max->height *= data.count;
-			preferred->height *= data.count;
+			hints->min.height *= data.count;
+			if (hints->max.height < DBL_MAX)
+				hints->max.height *= data.count;
+			hints->preferred.height *= data.count;
 		}
 		d->child_count_set(ref, data.count);
 	}
@@ -284,12 +265,12 @@ static void _eon_layout_stack_hints_get(void *descriptor, void *ref,
 		if (data.direction == EON_DIRECTION_HORIZONTAL)
 		{
 			d->child_foreach(ref, _no_homogeneous_horizontal_hints_get_cb, &data);
-			d->min_length_set(ref, data.min->width);
+			d->min_length_set(ref, data.hints->min.width);
 		}
 		else
 		{
 			d->child_foreach(ref, _no_homogeneous_vertical_hints_get_cb, &data);
-			d->min_length_set(ref, data.min->height);
+			d->min_length_set(ref, data.hints->min.height);
 		}
 	}
 }
