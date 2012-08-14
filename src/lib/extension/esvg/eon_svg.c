@@ -15,6 +15,9 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "Esvg.h"
+
 #include "eon_private_main.h"
 
 #include "eon_main.h"
@@ -35,8 +38,13 @@ typedef struct _Eon_Svg
 	/* properties */
 	char *file;
 	/* private */
-	Enesim_Renderer *generated_r;
-	Eina_Bool needs_setup : 1;
+	/* in order to place the svg in x,y we need to use an image */
+	Enesim_Renderer *image;
+	int iw;
+	int ih;
+
+	Ender_Element *svg;
+	Eina_Bool changed : 1;
 	/* TODO add the event handler */
 } Eon_Svg;
 
@@ -48,6 +56,12 @@ static inline Eon_Svg * _eon_svg_get(Eon_Element *e)
 	return thiz;
 }
 
+static void _eon_svg_idler(Eon_Svg *thiz)
+{
+	/* get the damages, render them into the surface and inform enesim
+	 * that the surface has damages
+	 */
+}
 /*----------------------------------------------------------------------------*
  *                         The Esvg's parser interface                        *
  *----------------------------------------------------------------------------*/
@@ -90,31 +104,51 @@ static void _eon_svg_initialize(Ender_Element *e)
 
 static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)
 {
+	Eon_Svg *thiz;
+	int iw, ih;
 
+	thiz = _eon_svg_get(e);
+
+	iw = round(g->width);
+	ih = round(g->height);
+
+	if (thiz->iw != iw || thiz->ih != ih)
+	{
+		/* TODO create the surface using the eon way */
+		esvg_renderable_container_width_set(thiz->svg, g->width);
+		esvg_renderable_container_height_set(thiz->svg, g->height);
+	}
 }
 
-static void _eon_svg_hints_get(Eon_Element *e, Eon_Size *min, Eon_Size *max, Eon_Size *preferred)
-{
-
-}
-
-static Eina_Bool _eon_svg_setup(Ender_Element *e,
-		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
+static void _eon_svg_hints_get(Eon_Element *e, Eon_Hints *hints)
 {
 	Eon_Svg *thiz;
-	Eon_Element *ee;
+	Esvg_Length length;
 
-	ee = ender_element_object_get(e);
-	thiz = _eon_svg_get(ee);
-	if (thiz->file && !thiz->generated_r)
+	thiz = _eon_svg_get(e);
+	/* load again the file */
+	if (thiz->changed)
 	{
-
-		thiz->generated_r = esvg_parser_load(thiz->file, NULL, NULL); //&_svg_descriptor, thiz);
+		if (thiz->svg)
+		{
+			ender_element_unref(thiz->svg);
+			thiz->svg = NULL;
+		}
+		if (thiz->file)
+			thiz->svg = esvg_parser_load(thiz->file, NULL, NULL);
+		thiz->changed = EINA_FALSE;
 	}
-	thiz->needs_setup = EINA_FALSE;
-
-	return EINA_TRUE;
+	if (thiz->svg) return;
+	esvg_svg_width_get(thiz->svg, &length);
+	if (length.unit != ESVG_UNIT_LENGTH_PERCENT)
+	{
+		/* add a function on svg to get the pixel size */
+	}
+	esvg_svg_height_get(thiz->svg, &length);
+	if (length.unit != ESVG_UNIT_LENGTH_PERCENT)
+	{
+		/* add a function on svg to get the pixel size */
+	}
 }
 
 static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
@@ -124,17 +158,7 @@ static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_svg_get(ee);
-	return thiz->generated_r;
-}
-
-static Eina_Bool _eon_svg_needs_setup(Ender_Element *e)
-{
-	Eon_Svg *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_svg_get(ee);
-	return thiz->needs_setup;
+	return esvg_renderable_renderer_get(thiz->svg);
 }
 
 static void _eon_svg_free(Eon_Element *e)
@@ -142,54 +166,70 @@ static void _eon_svg_free(Eon_Element *e)
 	Eon_Svg *thiz;
 
 	thiz = _eon_svg_get(e);
+	if (thiz->file)
+		free(thiz->file);
+	if (thiz->svg)
+		ender_element_unref(thiz->svg);
 	free(thiz);
 }
 
 static Eon_Element_Descriptor _descriptor = {
 	/* .initialize 		= */ _eon_svg_initialize,
-	/* .setup 		= */ _eon_svg_setup,
+	/* .setup 		= */ NULL,
 	/* .renderer_get	= */ _eon_svg_renderer_get,
-	/* .needs_setup 	= */ _eon_svg_needs_setup,
+	/* .needs_setup 	= */ NULL,
 	/* .hints_get 		= */ _eon_svg_hints_get,
 	/* .geometry_set 	= */ _eon_svg_geometry_set,
-	/* .is_focusable	= */ EINA_TRUE,
+	/* .is_focusable	= */ NULL,
 	/* .free		= */ _eon_svg_free,
 	/* .name 		= */ "svg",
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_svg_new(void)
+static Eon_Element * _eon_svg_new(void)
 {
 	Eon_Svg *thiz;
 	Eon_Element *e;
+	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Svg));
 	if (!thiz) return NULL;
 
+	r = enesim_renderer_image_new();
+	thiz->image = r;
+
 	e = eon_element_new(&_descriptor, thiz);
-	if (!e) goto renderer_err;
+	if (!e) goto base_err;
 
 	return e;
 
-renderer_err:
+base_err:
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_svg_file_set(Eon_Element *e, const char *file)
+static void _eon_svg_file_set(Eon_Element *e, const char **file)
+{
+	Eon_Svg *thiz;
+
+	if (!file) return;
+	thiz = _eon_svg_get(e);
+	*file = thiz->file;
+}
+
+static void _eon_svg_file_get(Eon_Element *e, const char *file)
 {
 	Eon_Svg *thiz;
 
 	thiz = _eon_svg_get(e);
 	thiz->file = strdup(file);
-	thiz->needs_setup = EINA_TRUE;
+	thiz->changed = EINA_TRUE;
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 #define _eon_svg_delete NULL
-#define _eon_svg_file_get NULL
 #include "eon_generated_svg.c"
 /*============================================================================*
  *                                   API                                      *
@@ -209,5 +249,18 @@ EAPI Ender_Element * eon_svg_new(void)
  */
 EAPI void eon_svg_file_set(Ender_Element *e, const char *file)
 {
-	ender_element_value_set(e, "file", file, NULL);
+	ender_element_property_value_set(e, EON_SVG_FILE, file, NULL);
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_svg_file_get(Ender_Element *e, const char *file)
+{
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	_eon_svg_file_get(ee, file);
+}
+

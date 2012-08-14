@@ -254,7 +254,7 @@ static Eon_Layout_Stack_Descriptor _stack_layout = {
 static void _main_layout_child_padding_get(void *ref, void *child,
 		Eon_Margin *margin)
 {
-	margin->left = margin->top = margin->right = margin->bottom = 10;
+	margin->left = margin->top = margin->right = margin->bottom = 0;
 	/* TODO
 	*margin = thiz->padding;
 	*/

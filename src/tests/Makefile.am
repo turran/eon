@@ -24,10 +24,19 @@ eon_test_checkbox \
 eon_test_image \
 eon_test_radio
 
+if BUILD_EXTENSION_ESVG
+check_PROGRAMS += eon_test_svg
+endif
+
 eon_test_loader_SOURCES = eon_test_loader.c
 eon_test_loader_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_loader_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_loader_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_svg_SOURCES = eon_test_svg.c
+eon_test_svg_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_svg_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_svg_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_button01_SOURCES = eon_test_button01.c
 eon_test_button01_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

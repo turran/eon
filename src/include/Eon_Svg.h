@@ -20,5 +20,7 @@
 #define _EON_SVG_H
 
 EAPI Ender_Element * eon_svg_new(void);
+EAPI void eon_svg_file_set(Ender_Element *e, const char *file);
+EAPI void eon_svg_file_get(Ender_Element *e, const char **file);
 
 #endif
