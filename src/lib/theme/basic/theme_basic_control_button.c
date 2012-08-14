@@ -48,6 +48,28 @@ struct _Eon_Basic_Control_Button
 	double y;
 	double height;
 };
+
+static inline void _set_gradient_stops(Eon_Basic_Control_Button *thiz)
+{
+	Enesim_Renderer_Gradient_Stop stop;
+	Enesim_Renderer *r;
+
+	r = thiz->inner_button_fill;
+	enesim_renderer_gradient_stop_clear(r);
+	stop.argb = thiz->start_bevel;
+	stop.pos = 0;
+	enesim_renderer_gradient_stop_add(r, &stop);
+	stop.argb = thiz->fill_color;
+	stop.pos = (2.0 + 3) / (thiz->height - thiz->vertical_padding);
+	enesim_renderer_gradient_stop_add(r, &stop);
+	stop.argb = thiz->fill_color;
+	stop.pos = 1 - stop.pos;
+	enesim_renderer_gradient_stop_add(r, &stop);
+	stop.argb = thiz->end_bevel;
+	stop.pos = 1;
+	enesim_renderer_gradient_stop_add(r, &stop);
+}
+
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -103,7 +125,6 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_stroke_weight_set(r, thiz->border_weight);
 	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
-	//enesim_renderer_shape_fill_color_set(r, 0xff00ffff);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->inner_button_fill);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
@@ -147,6 +168,7 @@ proxy_default_err:
 void eon_basic_control_button_fill_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->fill_color = color;
+	_set_gradient_stops(thiz);
 }
 
 void eon_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
@@ -194,11 +216,13 @@ void eon_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Ene
 void eon_basic_control_button_start_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->start_bevel = color;
+	_set_gradient_stops(thiz);
 }
 
 void eon_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->end_bevel = color;
+	_set_gradient_stops(thiz);
 }
 
 void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
@@ -232,8 +256,9 @@ void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
 		double height)
 {
 	Enesim_Matrix m;
-	Enesim_Renderer_Gradient_Stop stop;
 	Enesim_Renderer *r;
+
+	/* store the height */
 	thiz->height = height;
 
 	r = thiz->background_fill;
@@ -244,19 +269,7 @@ void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
 	/* the gradient stops */
 	r = thiz->inner_button_fill;
 	enesim_renderer_gradient_linear_y1_set(r, thiz->y + (height - (thiz->radius - 1)));
-	enesim_renderer_gradient_stop_clear(r);
-	stop.argb = thiz->start_bevel;
-	stop.pos = 0;
-	enesim_renderer_gradient_stop_add(r, &stop);
-	stop.argb = thiz->fill_color;
-	stop.pos = (2.0 + 3) / (height - thiz->vertical_padding);
-	enesim_renderer_gradient_stop_add(r, &stop);
-	stop.argb = thiz->fill_color;
-	stop.pos = 1 - stop.pos;
-	enesim_renderer_gradient_stop_add(r, &stop);
-	stop.argb = thiz->end_bevel;
-	stop.pos = 1;
-	enesim_renderer_gradient_stop_add(r, &stop);
+	_set_gradient_stops(thiz);
 
 	r = thiz->inner_button;
 	enesim_renderer_rectangle_height_set(r, height - (thiz->vertical_padding * 2));

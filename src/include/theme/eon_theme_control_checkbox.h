@@ -16,37 +16,32 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_CHECKBOX_H_
-#define _EON_THEME_CHECKBOX_H_
+#ifndef _EON_THEME_CONTROL_CHECKBOX_H_
+#define _EON_THEME_CONTROL_CHECKBOX_H_
 
 /**
  * @{
  */
-typedef void (*Eon_Theme_Checkbox_Control_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
 
-typedef struct _Eon_Theme_Checkbox_Descriptor
+typedef void (*Eon_Theme_Control_Checkbox_Size_Get)(Eon_Theme_Widget *t, Eon_Size *size);
+
+typedef struct _Eon_Theme_Control_Checkbox_Descriptor
 {
 	/* widget descriptor */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
 	Eon_Theme_Widget_X_Set x_set;
 	Eon_Theme_Widget_Y_Set y_set;
-	Eon_Theme_Widget_Width_Set width_set;
-	Eon_Theme_Widget_Height_Set height_set;
 	Eon_Theme_Widget_Free free;
-	/* bin descriptor */
-	Eon_Theme_Bin_Child_Set child_set;
-	Eon_Theme_Bin_Child_Get child_get;
-	/* checkbox descriptor */
-	Eon_Theme_Checkbox_Control_Set control_set;
-} Eon_Theme_Checkbox_Descriptor;
+	/* control_checkbox descriptor */
+	Eon_Theme_Control_Checkbox_Size_Get size_get;
+} Eon_Theme_Control_Checkbox_Descriptor;
 
-EAPI Eon_Theme_Widget * eon_theme_checkbox_new(Eon_Theme_Checkbox_Descriptor *descriptor,
-		void *data);
-EAPI void * eon_theme_checkbox_data_get(Eon_Theme_Widget *t);
-EAPI void eon_theme_checkbox_control_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
+EAPI Eon_Theme_Widget * eon_theme_control_checkbox_new(Eon_Theme_Control_Checkbox_Descriptor *descriptor, void *data);
+EAPI void * eon_theme_control_checkbox_data_get(Eon_Theme_Widget *t);
 
 /**
  * @}
  */
-
 #endif
+
+

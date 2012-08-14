@@ -13,7 +13,6 @@ AM_CPPFLAGS = \
 # theme_basic_control_arrow.c \
 # theme_basic_color.c \
 # theme_basic_entry.c \
-# theme_basic_checkbox.c \
 # theme_basic_frame.c \
 # theme_basic_progressbar.c \
 # theme_basic_scrollbar.c \
@@ -24,9 +23,11 @@ AM_CPPFLAGS = \
 
 libtheme_basic_la_SOURCES = \
 theme_basic.c \
-theme_basic_control_button.c \
-theme_basic_control_radio.c \
 theme_basic_button.c \
+theme_basic_control_button.c \
+theme_basic_control_checkbox.c \
+theme_basic_control_radio.c \
+theme_basic_checkbox.c \
 theme_basic_image.c \
 theme_basic_label.c \
 theme_basic_layout.c \

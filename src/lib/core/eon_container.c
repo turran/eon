@@ -58,7 +58,6 @@ typedef struct _Eon_Container
 	/* the interface */
 	Eon_Container_Descriptor_Internal descriptor;
 	/* internal */
-	Eon_Input_Proxy *proxy;
 	Ender_Element *e;
 	unsigned int width;
 	unsigned int height;
@@ -82,46 +81,9 @@ static Eina_Bool _child_clear_cb(Eon_Element *e, Ender_Element *child, void *dat
 	_eon_container_child_remove(e, child);
 	return EINA_TRUE;
 }
-
-/*----------------------------------------------------------------------------*
- *                       The Eon Input State interface                        *
- *----------------------------------------------------------------------------*/
-static Ender_Element * _eon_container_state_element_get(Ender_Element *e,
-		double x, double y)
-{
-	Eon_Container *thiz;
-	Eon_Element *ee;
-	Ender_Element *at = NULL;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-	if (thiz->descriptor.child_at)
-		at = thiz->descriptor.child_at(e, x, y);
-	printf("child at %g %g %p\n", x, y, at);
-	return at;
-}
-
-static Ender_Element * _eon_container_state_element_next(Ender_Element *e,
-		Ender_Element *curr)
-{
-	return NULL;
-}
-
-static Ender_Element * _eon_container_state_element_prev(Ender_Element *e,
-		Ender_Element *curr)
-{
-	return NULL;
-}
-
-static Eon_Input_State_Descriptor _layout_proxy_descriptor = {
-	/* .element_get 	= */ _eon_container_state_element_get,
-	/* .element_next 	= */ _eon_container_state_element_next,
-	/* .element_prev 	= */ _eon_container_state_element_prev,
-};
 /*----------------------------------------------------------------------------*
  *                         The Eon Widget interface                           *
  *----------------------------------------------------------------------------*/
-
 static void _eon_container_initialize(Ender_Element *e)
 {
 	Eon_Container *thiz;
@@ -129,7 +91,6 @@ static void _eon_container_initialize(Ender_Element *e)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_container_get(ee);
-	thiz->proxy = eon_input_proxy_new(e, &_layout_proxy_descriptor);
 	thiz->e = e;
 	if (thiz->descriptor.initialize)
 		thiz->descriptor.initialize(e);

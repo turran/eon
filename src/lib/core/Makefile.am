@@ -10,7 +10,6 @@ noinst_LTLIBRARIES = libcore.la
 
 #disabled for now until we do the refactor
 # eon_canvas.c \
-# eon_checkbox.c \
 # eon_color.c \
 # eon_entry.c \
 # eon_frame.c \
@@ -27,6 +26,7 @@ noinst_LTLIBRARIES = libcore.la
 
 classes = \
 eon_button.c \
+eon_checkbox.c \
 eon_image.c \
 eon_label.c \
 eon_radio.c \
@@ -56,8 +56,10 @@ eon_mouse_proxy.c \
 eon_theme.c \
 eon_window.c
 
-libcore_la_LIBADD =
+libcore_la_LIBADD = \
+$(top_builddir)/src/lib/theme/libeon_theme.la
 
-libcore_la_DEPENDENCIES =
+libcore_la_DEPENDENCIES = \
+$(top_builddir)/src/lib/theme/libeon_theme.la
 
 libcore_la_LDFLAGS =

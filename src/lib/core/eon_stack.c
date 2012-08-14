@@ -45,10 +45,6 @@ static Ender_Property *EON_STACK_CHILD_GRAVITY;
 typedef struct _Eon_Stack_Child
 {
 	Ender_Element *ender;
-	double old_x;
-	double old_y;
-	double curr_x;
-	double curr_y;
 	int gravity;
 } Eon_Stack_Child;
 
@@ -58,6 +54,7 @@ typedef struct _Eon_Stack
 	Eon_Direction direction;
 	Eina_Bool homogeneous;
 	/* private */
+	Eon_Input_Proxy *proxy;
 	/* container related data */
 	Eina_List *children;
 	/* layout related data */
@@ -83,6 +80,59 @@ static inline Eon_Stack * _eon_stack_get(Eon_Element *ee)
 	thiz = eon_container_data_get(ee);
 	return thiz;
 }
+
+/*----------------------------------------------------------------------------*
+ *                       The Eon Input State interface                        *
+ *----------------------------------------------------------------------------*/
+/* FIXME we need to decide how are we going to get find an element on the scene
+ * so far we were intersecting the input coordinates with the object layout
+ * geometry, for things like comboboxes we might need to intersect against
+ * the displayed geometry, given that a combobox display somehting outside
+ * the layout tree but the user should interact with it normally
+ */
+static Ender_Element * _eon_stack_state_element_get(Ender_Element *e, double x, double y)
+{
+	Eon_Stack *thiz;
+	Eon_Stack_Child *ech;
+	Ender_Element *child = NULL;
+	Eon_Element *ee;
+	Eina_List *l;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_stack_get(ee);
+
+	EINA_LIST_FOREACH (thiz->children, l, ech)
+	{
+		Eon_Geometry g;
+		Eon_Element *child_e;
+
+		child_e = ender_element_object_get(ech->ender);
+		eon_element_geometry_get(child_e, &g);
+		if ((x < g.x + g.width) && (x >= g.x) && (y < g.y + g.height) && (y >= g.y))
+			child = ech->ender;
+	}
+	printf("stack returning %p\n", child);
+
+	return child;
+}
+
+static Ender_Element * _eon_stack_state_element_next(Ender_Element *e,
+		Ender_Element *curr)
+{
+	return NULL;
+}
+
+static Ender_Element * _eon_stack_state_element_prev(Ender_Element *e,
+		Ender_Element *curr)
+{
+	return NULL;
+}
+
+static Eon_Input_State_Descriptor _stack_proxy_descriptor = {
+	/* .element_get 	= */ _eon_stack_state_element_get,
+	/* .element_next 	= */ _eon_stack_state_element_next,
+	/* .element_prev 	= */ _eon_stack_state_element_prev,
+};
 /*----------------------------------------------------------------------------*
  *                    The Keyboard Proxy Navigation interface                 *
  *----------------------------------------------------------------------------*/
@@ -251,7 +301,7 @@ static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .child_geometry_set 	= */ _stack_layout_child_geometry_set,
 };
 /*----------------------------------------------------------------------------*
- *                         The Eon's element interface                        *
+ *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
 static void _eon_stack_free(Eon_Element *ee)
 {
@@ -261,219 +311,14 @@ static void _eon_stack_free(Eon_Element *ee)
 	free(thiz);
 }
 
-#if 0
-static Eina_Bool _eon_stack_needs_setup(Ender_Element *e)
-{
-	Eon_Stack *thiz;
-	Eon_Stack_Child *ech;
-	Eon_Element *ee;
-	Eina_List *l;
-	Eina_Bool ret;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-
-	ret = thiz->needs_setup;
-	if (ret) return EINA_TRUE;
-
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		ret = eon_element_needs_setup(ech->ender);
-		if (ret) break;
-	}
-	return ret;
-}
-
-static Eina_Bool _eon_stack_setup(Ender_Element *e,
-		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
+static void _eon_stack_initialize(Ender_Element *e)
 {
 	Eon_Stack *thiz;
 	Eon_Element *ee;
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_stack_get(ee);
-	/* TODO we should only relayout whenever our properties have changed or a child
-	 * has changed properties, if not just leave it as is. Also we should not
-	 * check *every* property
-	 */
-	/* if the actual size has changed, then relayout
-	 * if some child preferred/min/max size has changed then call the relayout
-	 */
-	return _stack_relayout(e, thiz, &state->actual_position, &state->actual_size, s, err);
-}
-
-static double _eon_stack_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Stack *thiz;
-	Eon_Element *ee;
-	double min_width;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-	if (!thiz) return 0;
-
-	if (thiz->direction == EON_DIRECTION_HORIZONTAL)
-		min_width = _stack_horizontal_min_width(thiz);
-	else
-		min_width = _stack_vertical_min_width(thiz);
-
-	return min_width;
-}
-
-static double _eon_stack_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Stack *thiz;
-	Eon_Element *ee;
-	double min_height;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-	if (!thiz) return 0;
-
-	if (thiz->direction == EON_DIRECTION_HORIZONTAL)
-		min_height = _stack_horizontal_min_height(thiz);
-	else
-		min_height = _stack_vertical_min_height(thiz);
-
-	return min_height;
-}
-
-static double _eon_stack_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Stack *thiz;
-	Eon_Element *ee;
-	double preferred_width = -1;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-	if (!thiz) return preferred_width;
-
-	if (thiz->direction == EON_DIRECTION_HORIZONTAL)
-	{
-		Eon_Stack_Child *ech;
-		Eina_List *l;
-
-		preferred_width = 0;
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			double pw;
-
-			eon_element_preferred_width_get(ech->ender, &pw);
-			if (pw < 0) continue;
-			preferred_width += pw;
-		}
-	}
-	else
-	{
-		Eon_Stack_Child *ech;
-		Eina_List *l;
-
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			double pw;
-
-			eon_element_preferred_width_get(ech->ender, &pw);
-			preferred_width = MAX(pw, preferred_width);
-		}
-
-	}
-	return preferred_width;
-}
-
-static double _eon_stack_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	Eon_Stack *thiz;
-	Eon_Element *ee;
-	double preferred_height = -1;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-	if (!thiz) return preferred_height;
-
-	if (thiz->direction == EON_DIRECTION_VERTICAL)
-	{
-		Eon_Stack_Child *ech;
-		Eina_List *l;
-
-		preferred_height = 0;
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			double ph;
-
-			eon_element_preferred_height_get(ech->ender, &ph);
-			if (ph < 0) continue;
-			preferred_height += ph;
-		}
-	}
-	else
-	{
-		Eon_Stack_Child *ech;
-		Eina_List *l;
-
-		EINA_LIST_FOREACH (thiz->children, l, ech)
-		{
-			double ph;
-
-			eon_element_preferred_height_get(ech->ender, &ph);
-			preferred_height = MAX(ph, preferred_height);
-		}
-		//printf("preferred height %g\n", preferred_height);
-	}
-
-	return preferred_height;
-}
-#endif
-/*----------------------------------------------------------------------------*
- *                         The Eon's layout interface                         *
- *----------------------------------------------------------------------------*/
-/* FIXME we need to decide how are we going to get find an element on the scene
- * so far we were intersecting the input coordinates with the object layout
- * geometry, for things like comboboxes we might need to intersect against
- * the displayed geometry, given that a combobox display somehting outside
- * the layout tree but the user should interact with it normally
- */
-static Ender_Element * _eon_stack_child_at(Ender_Element *e, double x, double y)
-{
-	Eon_Stack *thiz;
-	Eon_Stack_Child *ech;
-	Ender_Element *child = NULL;
-	Eon_Element *ee;
-	Eina_List *l;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-	if (!thiz) return NULL;
-#if 0
-	{
-		char *name;
-		enesim_renderer_name_get(r, &name);
-		printf("stack %s child at %g %g \n", name, x, y);
-	}
-#endif
-
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		Eon_Element *child_e;
-		Eon_Size child_size;
-		double child_x, child_y;
-
-		child_x = x - ech->curr_x;
-		if (child_x < 0) continue;
-		child_y = y - ech->curr_y;
-		if (child_y < 0) continue;
-
-		/* TODO still need the width and height */
-		child_e = ender_element_object_get(ech->ender);
-		//eon_element_actual_size_get(child_e, &child_size);
-		if (child_x <= child_size.width && child_y <= child_size.height)
-		{
-			child = ech->ender;
-		}
-	}
-	//printf("returning %p\n", child);
-
-	return child;
+	thiz->proxy = eon_input_proxy_new(e, &_stack_proxy_descriptor);
 }
 
 static Eina_Bool _eon_stack_child_add(Eon_Element *ee, Ender_Element *child)
@@ -546,7 +391,7 @@ static void _eon_stack_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 }
 
 static Eon_Container_Descriptor _descriptor = {
-	/* .initialize 		= */ NULL,
+	/* .initialize 		= */ _eon_stack_initialize,
 	/* .setup 		= */ NULL,
 	/* .needs_setup 	= */ NULL,
 	/* .geometry_set 	= */ _eon_stack_geometry_set,
@@ -556,7 +401,7 @@ static Eon_Container_Descriptor _descriptor = {
 	/* .child_add 		= */ _eon_stack_child_add,
 	/* .child_remove 	= */ _eon_stack_child_remove,
 	/* .child_foreach 	= */ _eon_stack_child_foreach,
-	/* .child_at 		= */ _eon_stack_child_at,
+	/* .child_at 		= */ NULL,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *

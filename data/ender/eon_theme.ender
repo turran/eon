@@ -1,5 +1,5 @@
-namespace "eon" : 0 {
-	abstract "theme_widget" {
+namespace "eon_theme" : 0 {
+	abstract "widget" {
 		double "width";
 		double "height";
 		double "x";
@@ -7,33 +7,40 @@ namespace "eon" : 0 {
 		object "renderer";
 	};
 
-	abstract "theme_container" : "theme_widget" {
+	abstract "container" : "widget" {
 		[object] "child";
 	};
 
-	abstract "theme_bin" : "theme_container" {
+	abstract "bin" : "container" {
 	};
 
-	abstract "theme_button" : "theme_bin" {
+	abstract "button" : "bin" {
 	};
 
-	abstract "theme_radio" : "theme_bin" {
+	abstract "radio" : "bin" {
 	};
 
-	abstract "theme_spin" : "theme_widget" {
+	abstract "checkbox" : "bin" {
+	};
+
+	/* controls */
+	abstract "control_radio" : "widget" {
+	};
+
+	abstract "control_checkbox" : "widget" {
+	};
+
+	abstract "spin" : "widget" {
 
 	};
 
-	abstract "theme_button_base" : "theme_container" {
+	abstract "button_base" : "container" {
 	};
 
-	abstract "theme_checkbox" : "theme_button_base" {
+	abstract "toggle" : "button_base" {
 	};
 
-	abstract "theme_toggle" : "theme_button_base" {
-	};
-
-	abstract "theme_progressbar" : "theme_widget" {
+	abstract "progressbar" : "widget" {
 		double "min_width";
 		double "max_width";
 		double "min_height";
@@ -42,22 +49,22 @@ namespace "eon" : 0 {
 		double "preferred_height";
 	};
 
-	abstract "theme_label" : "theme_widget" {
+	abstract "label" : "widget" {
 		color "color";
 		string "font";
 		int "font_size";
 	};
 
-	abstract "theme_splitter" : "theme_container" {
+	abstract "splitter" : "container" {
 		int "orientation";
 		object "second content";
 	};
 
-	abstract "theme_scrollview" : "theme_container" {
+	abstract "scrollview" : "container" {
 
 	};
 
-	abstract "theme_image" : "theme_widget" {
+	abstract "image" : "widget" {
 		surface "surface";
 		double "min_width";
 		double "max_width";
@@ -67,11 +74,11 @@ namespace "eon" : 0 {
 		double "preferred_height";
 	};
 
-	abstract "theme_frame" : "theme_container" {
+	abstract "frame" : "container" {
 		string "description";
 	};
 
-	abstract "theme_scrollbar" : "theme_widget" {
+	abstract "scrollbar" : "widget" {
 		int "orientation";
 		double "min_width";
 		double "max_width";
@@ -81,13 +88,13 @@ namespace "eon" : 0 {
 		double "preferred_height";
 	};
 
-	abstract "theme_entry" : "theme_widget" {
+	abstract "entry" : "widget" {
 		string "font";
 		int "size";
 		int "alignment";
 	};
 
-	abstract "theme_color" : "theme_compound" {
+	abstract "color" : "compound" {
 	};
 
 };

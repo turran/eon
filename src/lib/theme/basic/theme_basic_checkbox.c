@@ -16,42 +16,45 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "Eon_Theme.h"
-#include "Eon_Basic.h"
-#include "eon_basic_private.h"
-#include <float.h>
+
+#include "eon_theme_widget.h"
+#include "eon_theme_bin.h"
+#include "eon_theme_checkbox.h"
+
+#include "theme_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Checkbox
+typedef struct _Eon_Basic_Checkbox
 {
-	/* properties */
-	unsigned int size;
-	Eina_Bool selected;
-	Eina_Bool was_selected;
 	/* private */
+	Enesim_Renderer *control;
+
+	Enesim_Renderer *shape;
 	Enesim_Renderer *compound;
 	Enesim_Renderer *background;
-	Enesim_Renderer *box;
-	Enesim_Renderer *check;
-	Enesim_Renderer *shape;
-} Checkbox;
+	Enesim_Renderer *content;
+
+	Enesim_Renderer *proxy;
+	Enesim_Renderer *proxy_default;
+} Eon_Basic_Checkbox;
 
 const static int checkbox_to_content_padding = 10;
 
-static inline Checkbox * _checkbox_get(Enesim_Renderer *r)
+static inline Eon_Basic_Checkbox * _checkbox_get(Eon_Theme_Widget *t)
 {
-	Checkbox *thiz;
+	Eon_Basic_Checkbox *thiz;
 
-	thiz = eon_theme_checkbox_data_get(r);
+	thiz = eon_theme_checkbox_data_get(t);
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
  *                       The Checkbox theme interface                         *
  *----------------------------------------------------------------------------*/
+#if 0
 static void _checkbox_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 {
-	Checkbox *thiz;
+	Eon_Basic_Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
 	margin->left = thiz->size + checkbox_to_content_padding;
@@ -62,7 +65,7 @@ static void _checkbox_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 
 static Enesim_Renderer * _checkbox_renderer_get(Enesim_Renderer *r)
 {
-	Checkbox *thiz;
+	Eon_Basic_Checkbox *thiz;
 	thiz = _checkbox_get(r);
 
 	return thiz->shape;
@@ -73,7 +76,7 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r,
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
 		Enesim_Error **error)
 {
-	Checkbox *thiz;
+	Eon_Basic_Checkbox *thiz;
 	Enesim_Renderer *content;
 	Eina_Bool restack = EINA_FALSE;
 	const Eon_Theme_Container_State *ccs = cstates[ENESIM_STATE_CURRENT];
@@ -132,85 +135,172 @@ static Eina_Bool  _checkbox_setup(Enesim_Renderer *r,
 
 static void _checkbox_free(Enesim_Renderer *r)
 {
-	Checkbox *thiz;
+	Eon_Basic_Checkbox *thiz;
 
 	thiz = _checkbox_get(r);
 	if (thiz->shape)
 		enesim_renderer_unref(thiz->shape);
 	free(thiz);
 }
+#endif
+
+static Enesim_Renderer * _basic_checkbox_renderer_get(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	return thiz->shape;
+}
+
+static void _basic_checkbox_x_set(Eon_Theme_Widget *t, double x)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	enesim_renderer_rectangle_x_set(thiz->shape, x);
+}
+
+static void _basic_checkbox_y_set(Eon_Theme_Widget *t, double y)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	enesim_renderer_rectangle_y_set(thiz->shape, y);
+}
+
+static void _basic_checkbox_width_set(Eon_Theme_Widget *t, double width)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	enesim_renderer_rectangle_width_set(thiz->shape, width);
+}
+
+static void _basic_checkbox_height_set(Eon_Theme_Widget *t, double height)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	enesim_renderer_rectangle_height_set(thiz->shape, height);
+}
+
+static void _basic_checkbox_free(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	if (thiz->shape)
+		enesim_renderer_unref(thiz->shape);
+	
+	free(thiz);
+}
+	
+static void _basic_checkbox_child_set(Eon_Theme_Widget *t, Enesim_Renderer *child)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	enesim_renderer_proxy_proxied_set(thiz->proxy, child);
+	if (!child)
+		enesim_renderer_proxy_proxied_set(thiz->proxy, thiz->proxy_default);
+}
+
+static void _basic_checkbox_child_get(Eon_Theme_Widget *t, Enesim_Renderer **child)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	enesim_renderer_proxy_proxied_get(thiz->proxy, child);
+	if (*child == thiz->proxy_default) *child = NULL;
+}
+
+static void _basic_checkbox_control_set(Eon_Theme_Widget *t, Enesim_Renderer *control)
+{
+	Eon_Basic_Checkbox *thiz;
+
+	thiz = _checkbox_get(t);
+	if (thiz->control)
+		enesim_renderer_compound_layer_remove(thiz->compound, thiz->control);
+	enesim_renderer_compound_layer_add(thiz->compound, control);
+	thiz->control = control;
+}
+
 
 static Eon_Theme_Checkbox_Descriptor _descriptor = {
-	.margin_get = _checkbox_margin_get,
-	.renderer_get = _checkbox_renderer_get,
-	.setup = _checkbox_setup,
-	.free = _checkbox_free,
+	/* .renderer_get 	= */ _basic_checkbox_renderer_get,
+	/* .x_set 		= */ _basic_checkbox_x_set,
+	/* .y_set 		= */ _basic_checkbox_y_set,
+	/* .width_set 		= */ _basic_checkbox_width_set,
+	/* .height_set 		= */ _basic_checkbox_height_set,
+	/* .free 		= */ _basic_checkbox_free,
+	/* .child_set 		= */ _basic_checkbox_child_set,
+	/* .child_get 		= */ _basic_checkbox_child_get,
+	/* .control_set 	= */ _basic_checkbox_control_set,
 };
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Enesim_Renderer * eon_basic_checkbox_new(void)
+EAPI Eon_Theme_Widget * eon_basic_checkbox_new(void)
 {
+	Eon_Theme_Widget *t;
+	Eon_Basic_Checkbox *thiz;
 	Enesim_Renderer *r;
-	Checkbox *thiz;
 
-	thiz = calloc(1, sizeof(Checkbox));
+	thiz = calloc(1, sizeof(Eon_Basic_Checkbox));
 	if (!thiz) return NULL;
+
+	/* FIXME the proxy default is for now, until we fix enesim to make
+	 * a renderer "active"
+	 */
+	r = enesim_renderer_background_new();
+	if (!r) goto proxy_default_err;
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_color_set(r, 0x00000000);
+	thiz->proxy_default = r;
+
+	r = enesim_renderer_proxy_new();
+	if (!r) goto content_proxy_err;
+	enesim_renderer_proxy_proxied_set(r, thiz->proxy_default);
+	thiz->proxy = r;
 
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
+	enesim_renderer_rop_set(r, ENESIM_FILL);
+	enesim_renderer_background_color_set(r, 0xffd7d7d7);
 	thiz->background = r;
-	enesim_renderer_background_color_set(r, 0xffeeeeee);
-
-	r = enesim_renderer_path_new();
-	if (!r) goto path_err;
-	thiz->check = r;
-	enesim_renderer_shape_fill_color_set(r, 0xffff0000);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-
-	r = enesim_renderer_rectangle_new();
-	if (!r) goto rectangle_err;
-	thiz->box = r;
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
-	enesim_renderer_shape_stroke_weight_set(r, 2);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
-	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
-	enesim_renderer_shape_fill_color_set(r, 0xffffffff);
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
 	thiz->compound = r;
+	enesim_renderer_compound_layer_add(r, thiz->background);
+	enesim_renderer_compound_layer_add(r, thiz->proxy);
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto shape_err;
 	thiz->shape = r;
-	/* FIXME we are using the circle_radius from the radiobutton we must share such variable */
 	enesim_renderer_rectangle_corner_radius_set(r, 8);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->compound);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_shape_stroke_color_set(r, 0xffff0000);
+	enesim_renderer_shape_stroke_weight_set(r, 1.0);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
-	r = eon_theme_checkbox_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
+	t = eon_theme_checkbox_new(&_descriptor, thiz);
+	if (!t) goto base_err;
 
-	return r;
-
-renderer_err:
+	return t;
+base_err:
 	enesim_renderer_unref(thiz->shape);
 shape_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
-	enesim_renderer_unref(thiz->box);
-rectangle_err:
-	enesim_renderer_unref(thiz->check);
-path_err:
-	enesim_renderer_unref(thiz->shape);
+	enesim_renderer_unref(thiz->background);
 background_err:
+	enesim_renderer_unref(thiz->proxy);
+content_proxy_err:
+	enesim_renderer_unref(thiz->proxy_default);
+proxy_default_err:
 	free(thiz);
 	return NULL;
 }
@@ -219,36 +309,11 @@ background_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_checkbox_size_set(Enesim_Renderer *r, unsigned int size)
+EAPI void eon_basic_checkbox_background_color_set(Eon_Theme_Widget *t, Enesim_Color background_color)
 {
-	Checkbox *thiz;
+	Eon_Basic_Checkbox *thiz;
 
-	thiz = _checkbox_get(r);
-	thiz->size = size;
-
-	enesim_renderer_rectangle_size_set(thiz->box, size, size);
-	/* create the vertices */
-	enesim_renderer_path_command_clear(thiz->check);
-	enesim_renderer_path_move_to(thiz->check, size * 0.1, size * 0.45);
-	enesim_renderer_path_line_to(thiz->check, size * 0.2, size * 0.35);
-	enesim_renderer_path_line_to(thiz->check, size * 0.4, size * 0.6);
-	enesim_renderer_path_line_to(thiz->check, size * 0.8, size * 0.15);
-	enesim_renderer_path_line_to(thiz->check, size * 0.9, size * 0.25);
-	enesim_renderer_path_line_to(thiz->check, size * 0.4, size * 0.85);
-	enesim_renderer_path_line_to(thiz->check, size * 0.1, size * 0.45);
+	thiz = _checkbox_get(t);
+	enesim_renderer_background_color_set(thiz->background, background_color);
 }
 
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_checkbox_selected_set(Enesim_Renderer *r, Eina_Bool selected)
-{
-	Checkbox *thiz;
-
-	thiz = _checkbox_get(r);
-	if (thiz->selected == selected)
-		return;
-
-	thiz->selected = selected;
-}

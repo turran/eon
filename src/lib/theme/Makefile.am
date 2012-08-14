@@ -11,15 +11,15 @@ AM_CPPFLAGS = \
 -I. \
 @EON_CFLAGS@
 
-noinst_LTLIBRARIES = libtheme.la
+lib_LTLIBRARIES = libeon_theme.la
 
-libtheme_la_DEPENDENCIES = \
+libeon_theme_la_DEPENDENCIES = \
 basic/libtheme_basic.la
 
-libtheme_la_LIBADD = \
-basic/libtheme_basic.la
+libeon_theme_la_LIBADD = \
+basic/libtheme_basic.la \
+@EON_LIBS@
 
-#eon_theme_checkbox.c \
 #eon_theme_compound.c \
 #eon_theme_container.c \
 #eon_theme_button_base.c \
@@ -35,12 +35,17 @@ basic/libtheme_basic.la
 #eon_theme_toggle.c
 
 
-libtheme_la_SOURCES = \
+libeon_theme_la_SOURCES = \
 eon_theme_bin.c \
 eon_theme_container.c \
+eon_theme_control_checkbox.c \
+eon_theme_control_radio.c \
 eon_theme_button.c \
+eon_theme_checkbox.c \
 eon_theme_image.c \
 eon_theme_label.c \
 eon_theme_widget.c \
 eon_theme_radio.c
+
+libeon_theme_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
 

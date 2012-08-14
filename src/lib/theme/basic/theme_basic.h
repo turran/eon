@@ -29,18 +29,6 @@ void eon_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enes
 void eon_basic_control_button_free(Eon_Basic_Control_Button *thiz);
 Enesim_Renderer * eon_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz);
 
-/* the radio control */
-typedef struct _Eon_Basic_Control_Radio  Eon_Basic_Control_Radio;
-Eon_Basic_Control_Radio * eon_basic_control_radio_new(void);
-Enesim_Renderer * eon_basic_control_radio_renderer_get(Eon_Basic_Control_Radio *thiz);
-void eon_basic_control_radio_x_set(Eon_Basic_Control_Radio *thiz, double x);
-void eon_basic_control_radio_y_set(Eon_Basic_Control_Radio *thiz, double y);
-void eon_basic_control_radio_free(Eon_Basic_Control_Radio *thiz);
-void eon_basic_control_radio_selected_set(Eon_Basic_Control_Radio *thiz, Eina_Bool selected);
-void eon_basic_control_radio_background_color_set(Eon_Basic_Control_Radio *thiz, Enesim_Color background_color);
-void eon_basic_control_radio_color_set(Eon_Basic_Control_Radio *thiz, Enesim_Color color);
-
-
 /* the arrow control */
 typedef struct _Eon_Basic_Control_Arrow Eon_Basic_Control_Arrow;
 typedef enum _Eon_Basic_Control_Arrow_Direction

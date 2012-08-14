@@ -7,6 +7,66 @@ escen {
 		};
 	};
 
+	basic_radio "radio" {
+		default {
+			set { background_color = 0xffeeeeee; };
+		};
+
+		state "focus_out" {
+			set { background_color = 0xffeeeeee; };
+		};
+
+		state "focus_in" {
+			set { background_color = 0xff557cb8; };
+		};
+	};
+
+	basic_checkbox "checkbox" {
+	};
+
+	basic_control_checkbox "control_checkbox" {
+		default {
+			set { selected = 0; };
+		};
+
+		state "selected" {
+			set { selected = 1; };
+		};
+
+		state "unselected" {
+			set { selected = 0; };
+		};
+	};
+
+	basic_control_radio "control_radio" {
+		default {
+			set { background_color = 0xffeeeeee; };
+			set { color = 0xffff0000; };
+			set { selected = 0; };
+		};
+
+		state "selected" {
+			set { selected = 1; };
+			animate {
+				property = color;
+				key {
+					value = 0x00000000;
+					time = 0.1;
+					type = LINEAR;
+				};
+				key {
+					value = 0xff000000;
+					time = 1;
+					type = LINEAR;
+				};
+			};
+		};
+
+		state "unselected" {
+			set { selected = 0; };
+		};
+	};
+
 	basic_button "button" {
 		default {
 			set { fill_color = 0xffcccccc; };
@@ -42,7 +102,7 @@ escen {
 
 	basic_layout "stack" {
 		default {
-			set { background_color = 0xffffff00; };
+			set { background_color = 0xffcccccc; };
 		};
 	};
 
@@ -110,43 +170,6 @@ escen {
 		};
 	};
 
-	basic_radio "radio" {
-		default {
-			set { background_color = 0xffeeeeee; };
-			set { color = 0xff000000; };
-			set { selected = 0; };
-		};
-
-		state "selected" {
-			set { selected = 1; };
-			animate {
-				property = color;
-				key {
-					value = 0x00000000;
-					time = 0.1;
-					type = LINEAR;
-				};
-				key {
-					value = 0xff000000;
-					time = 1;
-					type = LINEAR;
-				};
-			};
-		};
-
-		state "focus_out" {
-			set { background_color = 0xffeeeeee; };
-		};
-
-		state "focus_in" {
-			set { background_color = 0xff557cb8; };
-		};
-
-		state "unselected" {
-			set { selected = 0; };
-		};
-	};
-
 	basic_progressbar "progressbar" {
 		default {
 			set { progression = 0.5; };
@@ -157,21 +180,6 @@ escen {
 
 	basic_scrollview "scrollview" {
 		default {
-		};
-	};
-
-	basic_checkbox "checkbox" {
-		default {
-			set { size = 16; };
-			set { selected = 0; };
-		};
-
-		state "selected" {
-			set { selected = 1; };
-		};
-
-		state "unselected" {
-			set { selected = 0; };
 		};
 	};
 

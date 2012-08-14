@@ -1,15 +1,15 @@
 using "enesim" : 0;
-using "eon.theme" : 0;
+using "eon_theme" : 0;
 
 namespace "eon" : 0 {
-	class "basic_label" : "theme_label" {
+	class "basic_label" : "label" {
 	};
 
-	class "basic_layout" : "theme_container" {
+	class "basic_layout" : "container" {
 		color "background_color";
 	};
 
-	class "basic_button" : "theme_button" {
+	class "basic_button" : "button" {
 		color "fill_color";
 		color "border_color";
 		color "start_shadow";
@@ -21,17 +21,27 @@ namespace "eon" : 0 {
 		double "radius";
 	};
 
-	class "basic_radio" : "theme_radio" {
+	class "basic_radio" : "radio" {
+		color "background_color";
+	};
+
+	class "basic_checkbox" : "checkbox" {
+	};
+
+	class "basic_control_radio" : "control_radio" {
 		int "selected";
 		color "color";
 		color "background_color";
 	};
 
-	class "basic_color" : "theme_color" {
+	class "basic_control_checkbox" : "control_checkbox" {
+		int "selected";
 	};
 
+	class "basic_color" : "color" {
+	};
 
-	class "basic_toggle" : "theme_toggle" {
+	class "basic_toggle" : "toggle" {
 		color "fill_color";
 		color "border_color";
 		color "start_shadow";
@@ -43,46 +53,41 @@ namespace "eon" : 0 {
 		double "radius";
 	};
 
-	class "basic_checkbox" : "theme_checkbox" {
-		int "size";
-		int "selected";
-	};
-
-	class "basic_progressbar" : "theme_progressbar" {
+	class "basic_progressbar" : "progressbar" {
 		color "dark_color";
 		color "light_color";
 		double "progression";
 	};
 
-	class "basic_container" : "theme_container" {
+	class "basic_container" : "container" {
 		color "background_color";
 	};
 
-	class "basic_scrollview" : "theme_scrollview" {
+	class "basic_scrollview" : "scrollview" {
 	};
 
-	class "basic_image" : "theme_image" {
+	class "basic_image" : "image" {
 		color "color";
 		int "status";
 	};
 
-	class "basic_frame" : "theme_frame" {
+	class "basic_frame" : "frame" {
 		int "description_size";
 		string "description_font";
 	};
-	class "basic_scrollbar" : "theme_scrollbar" {
+	class "basic_scrollbar" : "scrollbar" {
 
 	};
 
-	class "basic_splitter" : "theme_splitter" {
+	class "basic_splitter" : "splitter" {
 
 	};
 
-	class "basic_entry" : "theme_entry" {
+	class "basic_entry" : "entry" {
 		color "border_color";
 	};
 
-	class "basic_spin" : "theme_spin" {
+	class "basic_spin" : "spin" {
 
 	};
 

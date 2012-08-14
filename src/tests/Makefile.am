@@ -2,7 +2,6 @@ MAINTAINERCLEANFILES = Makefile.in
 
 # old programs
 # eon_test_canvas \
-# eon_test_checkbox \
 # eon_test_color \
 # eon_test_entry \
 # eon_test_frame \
@@ -21,6 +20,7 @@ eon_test_button01 \
 eon_test_button02 \
 eon_test_button03 \
 eon_test_button_image \
+eon_test_checkbox \
 eon_test_image \
 eon_test_radio
 

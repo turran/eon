@@ -18,12 +18,6 @@
 #include "Eon.h"
 
 #include "eon_theme_widget.h"
-/**
- * @todo
- * We must need to simplify the theme creation, all of them need a renderer
- * inside (being a compound or whatever), abstract the whole thing to simplify
- * the callbacks needed for each theme_widget child
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

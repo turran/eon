@@ -29,9 +29,11 @@ typedef struct _Eon_Basic_Radio
 {
 	/* properties */
 	/* private */
-	Eon_Basic_Control_Radio *radio;
+	Enesim_Renderer *control;
+
 	Enesim_Renderer *shape;
 	Enesim_Renderer *compound;
+	Enesim_Renderer *background;
 	Enesim_Renderer *content;
 
 	Enesim_Renderer *proxy;
@@ -140,7 +142,6 @@ static void _basic_radio_x_set(Eon_Theme_Widget *t, double x)
 
 	thiz = _radio_get(t);
 	enesim_renderer_rectangle_x_set(thiz->shape, x);
-	//eon_basic_control_radio_x_set(thiz->cb, x);
 }
 
 static void _basic_radio_y_set(Eon_Theme_Widget *t, double y)
@@ -149,7 +150,6 @@ static void _basic_radio_y_set(Eon_Theme_Widget *t, double y)
 
 	thiz = _radio_get(t);
 	enesim_renderer_rectangle_y_set(thiz->shape, y);
-	//eon_basic_control_radio_y_set(thiz->cb, y);
 }
 
 static void _basic_radio_width_set(Eon_Theme_Widget *t, double width)
@@ -158,7 +158,6 @@ static void _basic_radio_width_set(Eon_Theme_Widget *t, double width)
 
 	thiz = _radio_get(t);
 	enesim_renderer_rectangle_width_set(thiz->shape, width);
-	//eon_basic_control_radio_width_set(thiz->cb, width);
 }
 
 static void _basic_radio_height_set(Eon_Theme_Widget *t, double height)
@@ -167,7 +166,6 @@ static void _basic_radio_height_set(Eon_Theme_Widget *t, double height)
 
 	thiz = _radio_get(t);
 	enesim_renderer_rectangle_height_set(thiz->shape, height);
-	//eon_basic_control_radio_height_set(thiz->cb, height);
 }
 
 static void _basic_radio_free(Eon_Theme_Widget *t)
@@ -178,7 +176,6 @@ static void _basic_radio_free(Eon_Theme_Widget *t)
 	if (thiz->shape)
 		enesim_renderer_unref(thiz->shape);
 	
-	//eon_basic_control_radio_free(thiz->cb);
 	free(thiz);
 }
 	
@@ -201,7 +198,18 @@ static void _basic_radio_child_get(Eon_Theme_Widget *t, Enesim_Renderer **child)
 	if (*child == thiz->proxy_default) *child = NULL;
 }
 
-static Eon_Theme_Bin_Descriptor _descriptor = {
+static void _basic_radio_control_set(Eon_Theme_Widget *t, Enesim_Renderer *control)
+{
+	Eon_Basic_Radio *thiz;
+
+	thiz = _radio_get(t);
+	if (thiz->control)
+		enesim_renderer_compound_layer_remove(thiz->compound, thiz->control);
+	enesim_renderer_compound_layer_add(thiz->compound, control);
+	thiz->control = control;
+}
+
+static Eon_Theme_Radio_Descriptor _descriptor = {
 	/* .renderer_get 	= */ _basic_radio_renderer_get,
 	/* .x_set 		= */ _basic_radio_x_set,
 	/* .y_set 		= */ _basic_radio_y_set,
@@ -210,6 +218,7 @@ static Eon_Theme_Bin_Descriptor _descriptor = {
 	/* .free 		= */ _basic_radio_free,
 	/* .child_set 		= */ _basic_radio_child_set,
 	/* .child_get 		= */ _basic_radio_child_get,
+	/* .control_set 	= */ _basic_radio_control_set,
 };
 /*============================================================================*
  *                                   API                                      *
@@ -222,8 +231,6 @@ EAPI Eon_Theme_Widget * eon_basic_radio_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Basic_Radio));
 	if (!thiz) return NULL;
-
-	thiz->radio = eon_basic_control_radio_new();
 
 	/* FIXME the proxy default is for now, until we fix enesim to make
 	 * a renderer "active"
@@ -239,9 +246,16 @@ EAPI Eon_Theme_Widget * eon_basic_radio_new(void)
 	enesim_renderer_proxy_proxied_set(r, thiz->proxy_default);
 	thiz->proxy = r;
 
+	r = enesim_renderer_background_new();
+	if (!r) goto background_err;
+	enesim_renderer_rop_set(r, ENESIM_FILL);
+	enesim_renderer_background_color_set(r, 0xffd7d7d7);
+	thiz->background = r;
+
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
 	thiz->compound = r;
+	enesim_renderer_compound_layer_add(r, thiz->background);
 	enesim_renderer_compound_layer_add(r, thiz->proxy);
 
 	r = enesim_renderer_rectangle_new();
@@ -264,25 +278,14 @@ base_err:
 shape_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
+	enesim_renderer_unref(thiz->background);
+background_err:
 	enesim_renderer_unref(thiz->proxy);
 content_proxy_err:
 	enesim_renderer_unref(thiz->proxy_default);
 proxy_default_err:
-	eon_basic_control_radio_free(thiz->radio);
 	free(thiz);
 	return NULL;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_radio_selected_set(Eon_Theme_Widget *t, Eina_Bool selected)
-{
-	Eon_Basic_Radio *thiz;
-
-	thiz = _radio_get(t);
-	eon_basic_control_radio_selected_set(thiz->radio, selected);
 }
 
 /**
@@ -294,17 +297,5 @@ EAPI void eon_basic_radio_background_color_set(Eon_Theme_Widget *t, Enesim_Color
 	Eon_Basic_Radio *thiz;
 
 	thiz = _radio_get(t);
-	eon_basic_control_radio_background_color_set(thiz->radio, background_color);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_basic_radio_color_set(Eon_Theme_Widget *t, Enesim_Color color)
-{
-	Eon_Basic_Radio *thiz;
-
-	thiz = _radio_get(t);
-	eon_basic_control_radio_color_set(thiz->radio, color);
+	enesim_renderer_background_color_set(thiz->background, background_color);
 }

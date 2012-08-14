@@ -16,11 +16,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
+
+#include "eon_theme_widget.h"
+#include "eon_theme_control_radio.h"
+
 #include "theme_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-struct _Eon_Basic_Control_Radio
+typedef struct _Eon_Basic_Control_Radio
 {
 	/* properties */
 	int circle_radius;
@@ -28,11 +32,75 @@ struct _Eon_Basic_Control_Radio
 	Enesim_Renderer *background;
 	Enesim_Renderer *outter_circle;
 	Enesim_Renderer *inner_circle;
+} Eon_Basic_Control_Radio;
+
+static inline Eon_Basic_Control_Radio * _eon_basic_control_radio_get(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Control_Radio *thiz;
+	thiz = eon_theme_control_radio_data_get(t);
+	return thiz;
+}
+
+static Enesim_Renderer * _basic_control_radio_renderer_get(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	return thiz->outter_circle;
+}
+
+static void _basic_control_radio_x_set(Eon_Theme_Widget *t, double x)
+{
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	enesim_renderer_circle_x_set(thiz->inner_circle, x);
+	enesim_renderer_circle_x_set(thiz->outter_circle, x + thiz->circle_radius + 2);
+}
+
+static void _basic_control_radio_y_set(Eon_Theme_Widget *t, double y)
+{
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	enesim_renderer_circle_y_set(thiz->outter_circle, y);
+	enesim_renderer_circle_y_set(thiz->inner_circle, y + thiz->circle_radius + 2);
+}
+
+static void _basic_control_radio_free(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	if (thiz->outter_circle)
+		enesim_renderer_unref(thiz->outter_circle);
+	if (thiz->inner_circle)
+		enesim_renderer_unref(thiz->inner_circle);
+	free(thiz);
+}
+
+static void _basic_control_radio_size_get(Eon_Theme_Widget *t, Eon_Size *size)
+{
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	size->width = size->height = thiz->circle_radius;
+}
+
+static Eon_Theme_Control_Radio_Descriptor _descriptor = {
+	/* .renderer_get 	= */ _basic_control_radio_renderer_get,
+	/* .x_set 		= */ _basic_control_radio_x_set,
+	/* .y_set 		= */ _basic_control_radio_y_set,
+	/* .free 		= */ _basic_control_radio_free,
+	/* .size_get 		= */ _basic_control_radio_size_get,
 };
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Basic_Control_Radio * eon_basic_control_radio_new(void)
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+EAPI Eon_Theme_Widget * eon_basic_control_radio_new(void)
 {
 	Enesim_Renderer *r;
 	Eon_Basic_Control_Radio *thiz;
@@ -63,7 +131,7 @@ Eon_Basic_Control_Radio * eon_basic_control_radio_new(void)
 	enesim_renderer_shape_stroke_color_set(r, 0xffffffff);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
-	return thiz;
+	return eon_theme_control_radio_new(&_descriptor, thiz);
 
 inner_err:
 	enesim_renderer_unref(thiz->outter_circle);
@@ -74,34 +142,28 @@ background_err:
 	return NULL;
 }
 
-Enesim_Renderer * eon_basic_control_radio_renderer_get(Eon_Basic_Control_Radio *thiz)
+EAPI void eon_basic_control_radio_background_color_set(Eon_Theme_Widget *t, Enesim_Color background_color)
 {
-	return thiz->outter_circle;
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	enesim_renderer_background_color_set(thiz->background, background_color);
 }
 
-void eon_basic_control_radio_x_set(Eon_Basic_Control_Radio *thiz, double x)
+EAPI void eon_basic_control_radio_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	enesim_renderer_circle_x_set(thiz->inner_circle, x);
-	enesim_renderer_circle_x_set(thiz->outter_circle, x + thiz->circle_radius + 2);
+	Eon_Basic_Control_Radio *thiz;
+
+	thiz = _eon_basic_control_radio_get(t);
+	enesim_renderer_shape_stroke_color_set(thiz->outter_circle, color);
+	enesim_renderer_shape_fill_color_set(thiz->inner_circle, color);
 }
 
-void eon_basic_control_radio_y_set(Eon_Basic_Control_Radio *thiz, double y)
+EAPI void eon_basic_control_radio_selected_set(Eon_Theme_Widget *t, Eina_Bool selected)
 {
-	enesim_renderer_circle_y_set(thiz->outter_circle, y);
-	enesim_renderer_circle_y_set(thiz->inner_circle, y + thiz->circle_radius + 2);
-}
+	Eon_Basic_Control_Radio *thiz;
 
-void eon_basic_control_radio_free(Eon_Basic_Control_Radio *thiz)
-{
-	if (thiz->outter_circle)
-		enesim_renderer_unref(thiz->outter_circle);
-	if (thiz->inner_circle)
-		enesim_renderer_unref(thiz->inner_circle);
-	free(thiz);
-}
-
-void eon_basic_control_radio_selected_set(Eon_Basic_Control_Radio *thiz, Eina_Bool selected)
-{
+	thiz = _eon_basic_control_radio_get(t);
 	if (selected)
 	{
 		enesim_renderer_shape_fill_renderer_set(thiz->outter_circle, thiz->inner_circle);
@@ -111,18 +173,3 @@ void eon_basic_control_radio_selected_set(Eon_Basic_Control_Radio *thiz, Eina_Bo
 		enesim_renderer_shape_fill_renderer_set(thiz->outter_circle, NULL);
 	}
 }
-
-void eon_basic_control_radio_background_color_set(Eon_Basic_Control_Radio *thiz, Enesim_Color background_color)
-{
-	enesim_renderer_background_color_set(thiz->background, background_color);
-}
-
-void eon_basic_control_radio_color_set(Eon_Basic_Control_Radio *thiz, Enesim_Color color)
-{
-	enesim_renderer_shape_stroke_color_set(thiz->outter_circle, color);
-	enesim_renderer_shape_fill_color_set(thiz->inner_circle, color);
-}
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-

@@ -14,14 +14,12 @@ libeon_la_SOURCES =
 
 libeon_la_LIBADD = \
 core/libcore.la \
-theme/libtheme.la \
 backend/libbackend.la \
 extension/libextension.la \
 @EON_LIBS@
 
 libeon_la_DEPENDENCIES = \
 core/libcore.la \
-theme/libtheme.la \
 backend/libbackend.la \
 extension/libextension.la
 
