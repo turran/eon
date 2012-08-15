@@ -27,10 +27,7 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
-/* TODO we need to add an element interface function to know
- * whenever the element has been added into a backend. In that
- * moment create the idler, etc, etc
- */
+/* TODO use the backend to get the surface pool */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -45,13 +42,24 @@ typedef struct _Eon_Svg
 	/* private */
 	/* in order to place the svg in x,y we need to use an image */
 	Enesim_Renderer *image;
+	Enesim_Surface *s;
 	int iw;
 	int ih;
+	int w;
+	int h;
 
 	Ender_Element *svg;
+	/* in case the svg is relative or not */
+	Eina_Bool relative : 1;
 	Eina_Bool changed : 1;
 	/* TODO add the event handler */
 } Eon_Svg;
+
+typedef struct _Eon_Svg_Damages
+{
+	Eon_Svg *thiz;
+	Eina_List *areas;
+} Eon_Svg_Damages;
 
 static inline Eon_Svg * _eon_svg_get(Eon_Element *e)
 {
@@ -61,11 +69,44 @@ static inline Eon_Svg * _eon_svg_get(Eon_Element *e)
 	return thiz;
 }
 
-static void _eon_svg_idler(Eon_Svg *thiz)
+static Eina_Bool _eon_svg_damages_cb(Ender_Element *e, Eina_Rectangle *damage, void *user_data)
 {
+	Eon_Svg_Damages *data = user_data;
+	Eina_Rectangle *area;
+
+	area = malloc(sizeof(Eina_Rectangle));
+	*area = *damage;
+
+	data->areas = eina_list_append(data->areas, area);
+	enesim_renderer_image_damage_add(data->thiz->image, area);
+
+	return EINA_TRUE;
+}
+
+static Eina_Bool _eon_svg_idler(void *user_data)
+{
+	Eon_Svg *thiz = user_data;
+	Eon_Svg_Damages data;
+	Eina_Rectangle *area;
+
+	if (!thiz->svg) goto done;
+	if (!thiz->s) goto done;
 	/* get the damages, render them into the surface and inform enesim
 	 * that the surface has damages
 	 */
+	data.areas = NULL;
+	data.thiz = thiz;
+
+	esvg_element_setup(thiz->svg, NULL);
+	esvg_renderable_damages_get(thiz->svg, _eon_svg_damages_cb, &data);
+	if (!data.areas) goto done;
+
+	esvg_renderable_draw_list(thiz->svg, thiz->s, data.areas, 0, 0, NULL);
+	EINA_LIST_FREE (data.areas, area)
+		free(area);
+
+done:
+	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                         The Esvg's parser interface                        *
@@ -108,6 +149,19 @@ static void _eon_svg_initialize(Ender_Element *e)
 	/* add the idler */
 }
 
+static void _eon_svg_backend_added(Eon_Element *e, Eon_Backend *b)
+{
+	Eon_Svg *thiz;
+
+	thiz = _eon_svg_get(e);
+	eon_backend_idler_add(b, _eon_svg_idler, thiz);
+}
+
+static void _eon_svg_backend_removed(Eon_Element *e, Eon_Backend *b)
+{
+	//eon_backend_idler_remove(b, _eon_svg_idler, e);
+}
+
 static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)
 {
 	Eon_Svg *thiz;
@@ -115,21 +169,52 @@ static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)
 
 	thiz = _eon_svg_get(e);
 
+	if (!thiz->svg) return;
+
 	iw = round(g->width);
 	ih = round(g->height);
 
 	if (thiz->iw != iw || thiz->ih != ih)
 	{
-		/* TODO create the surface using the eon way */
 		esvg_renderable_container_width_set(thiz->svg, g->width);
 		esvg_renderable_container_height_set(thiz->svg, g->height);
+
+		/* TODO create the surface using the eon way */
+		if (thiz->relative)
+		{
+			/* in case of relative svg, create the svg of size of the geometry */
+			if (thiz->s)
+				enesim_surface_unref(thiz->s);
+			thiz->s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, iw, ih);
+			enesim_renderer_image_width_set(thiz->image, iw);
+			enesim_renderer_image_height_set(thiz->image, ih);
+		}
+		else
+		{
+			/* in case the svg does not use relative coordinates, just create the image
+			 * of size of the svg
+			 */
+			if (!thiz->s)
+			{
+				thiz->s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, thiz->w, thiz->h);
+				enesim_renderer_image_width_set(thiz->image, thiz->w);
+				enesim_renderer_image_height_set(thiz->image, thiz->h);
+			}
+		}
+		enesim_renderer_image_src_set(thiz->image, thiz->s);
+		enesim_renderer_image_x_set(thiz->image, 0);
+		enesim_renderer_image_y_set(thiz->image, 0);
 	}
+	enesim_renderer_x_origin_set(thiz->image, g->x);
+	enesim_renderer_y_origin_set(thiz->image, g->y);
 }
 
 static void _eon_svg_hints_get(Eon_Element *e, Eon_Hints *hints)
 {
 	Eon_Svg *thiz;
 	Esvg_Length length;
+	Eina_Bool xrel = EINA_TRUE;
+	Eina_Bool yrel = EINA_TRUE;
 
 	thiz = _eon_svg_get(e);
 	/* load again the file */
@@ -141,20 +226,41 @@ static void _eon_svg_hints_get(Eon_Element *e, Eon_Hints *hints)
 			thiz->svg = NULL;
 		}
 		if (thiz->file)
+		{
+			printf("loading!\n");
 			thiz->svg = esvg_parser_load(thiz->file, NULL, NULL);
+		}
 		thiz->changed = EINA_FALSE;
 	}
-	if (thiz->svg) return;
+	if (!thiz->svg) return;
+
 	esvg_svg_width_get(thiz->svg, &length);
 	if (length.unit != ESVG_UNIT_LENGTH_PERCENT)
 	{
-		/* add a function on svg to get the pixel size */
+		double w;
+
+		esvg_svg_actual_width_get(thiz->svg, &w);
+		hints->min.width = w;
+		hints->max.width = w;
+		hints->preferred.width = w;
+		xrel = EINA_FALSE;
+
+		thiz->w = round(w);
 	}
 	esvg_svg_height_get(thiz->svg, &length);
 	if (length.unit != ESVG_UNIT_LENGTH_PERCENT)
 	{
-		/* add a function on svg to get the pixel size */
+		double h;
+
+		esvg_svg_actual_height_get(thiz->svg, &h);
+		hints->min.height = h;
+		hints->max.height = h;
+		hints->preferred.height = h;
+		yrel = EINA_FALSE;
+
+		thiz->h = round(h);
 	}
+	thiz->relative = yrel || xrel;
 }
 
 static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
@@ -164,7 +270,7 @@ static Enesim_Renderer * _eon_svg_renderer_get(Ender_Element *e)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_svg_get(ee);
-	return esvg_renderable_renderer_get(thiz->svg);
+	return thiz->image;
 }
 
 static void _eon_svg_free(Eon_Element *e)
@@ -181,6 +287,8 @@ static void _eon_svg_free(Eon_Element *e)
 
 static Eon_Element_Descriptor _descriptor = {
 	/* .initialize 		= */ _eon_svg_initialize,
+	/* .backend_added 	= */ _eon_svg_backend_added,
+	/* .backend_removed 	= */ _eon_svg_backend_removed,
 	/* .setup 		= */ NULL,
 	/* .renderer_get	= */ _eon_svg_renderer_get,
 	/* .needs_setup 	= */ NULL,
@@ -203,6 +311,7 @@ static Eon_Element * _eon_svg_new(void)
 	if (!thiz) return NULL;
 
 	r = enesim_renderer_image_new();
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	thiz->image = r;
 
 	e = eon_element_new(&_descriptor, thiz);
@@ -215,22 +324,22 @@ base_err:
 	return NULL;
 }
 
-static void _eon_svg_file_set(Eon_Element *e, const char **file)
-{
-	Eon_Svg *thiz;
-
-	if (!file) return;
-	thiz = _eon_svg_get(e);
-	*file = thiz->file;
-}
-
-static void _eon_svg_file_get(Eon_Element *e, const char *file)
+static void _eon_svg_file_set(Eon_Element *e, const char *file)
 {
 	Eon_Svg *thiz;
 
 	thiz = _eon_svg_get(e);
 	thiz->file = strdup(file);
 	thiz->changed = EINA_TRUE;
+}
+
+static void _eon_svg_file_get(Eon_Element *e, const char **file)
+{
+	Eon_Svg *thiz;
+
+	if (!file) return;
+	thiz = _eon_svg_get(e);
+	*file = thiz->file;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -246,7 +355,7 @@ static void _eon_svg_file_get(Eon_Element *e, const char *file)
  */
 EAPI Ender_Element * eon_svg_new(void)
 {
-	return esvg_svg_new();
+	return EON_ELEMENT_NEW("svg");
 }
 
 /**
@@ -262,7 +371,7 @@ EAPI void eon_svg_file_set(Ender_Element *e, const char *file)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_svg_file_get(Ender_Element *e, const char *file)
+EAPI void eon_svg_file_get(Ender_Element *e, const char **file)
 {
 	Eon_Element *ee;
 

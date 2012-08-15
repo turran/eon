@@ -17,8 +17,12 @@
  */
 #include "eon_private_main.h"
 
+#include "eon_main.h"
+#include "eon_input.h"
 #include "eon_backend.h"
+
 #include "eon_private_backend.h"
+#include "eon_private_element.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -52,6 +56,7 @@ void eon_backend_window_delete(Eon_Backend *backend, void *window_data)
 Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *container,
 		unsigned int width, unsigned int height)
 {
+	Eon_Element *e;
 	void *data;
 
 	if (!backend) return NULL;
@@ -62,6 +67,8 @@ Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *contain
 	if (!backend->descriptor.window_new(backend->data, container, width, height, &data))
 		return NULL;
 
+	e = ender_element_object_get(container);
+	eon_element_backend_set(e, backend);
 	return eon_window_new(backend, width, height, data);
 }
 

@@ -510,6 +510,8 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 
 	/* Set the function pointers */
 	thiz->descriptor.initialize = descriptor->initialize;
+	thiz->descriptor.backend_added = descriptor->backend_added;
+	thiz->descriptor.backend_removed = descriptor->backend_removed;
 	thiz->descriptor.setup = descriptor->setup;
 	thiz->descriptor.renderer_get = descriptor->renderer_get;
 	thiz->descriptor.needs_setup = descriptor->needs_setup;

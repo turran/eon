@@ -74,6 +74,10 @@ static void _register_enders(void *data)
 	eon_button_init();
 	eon_radio_init();
 	eon_checkbox_init();
+	/* extensions */
+#if BUILD_EXTENSION_ESVG
+	eon_svg_init();
+#endif
 #if 0
 	/* widget inheritance */
 	eon_compound_init();
@@ -91,8 +95,6 @@ static void _register_enders(void *data)
 	eon_toggle_init();
 	eon_color_init();
 	eon_frame_init();
-	/* extensions */
-	eon_svg_init();
 #endif
 }
 /*============================================================================*
