@@ -26,6 +26,10 @@
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
+/* TODO we need to add an element interface function to know
+ * whenever the element has been added into a backend. In that
+ * moment create the idler, etc, etc
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

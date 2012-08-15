@@ -62,7 +62,7 @@
 #include "eon_tab.h"
 #include "eon_toggle.h"
 #include "eon_widget.h"
-#include "eon_window.h"
+#include "eon_backend.h"
 #include "eon_wrapper.h"
 /* the backends */
 #include "eon_ecore_sdl.h"

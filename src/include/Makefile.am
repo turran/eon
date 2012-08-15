@@ -9,6 +9,7 @@ Eon_Svg.h
 
 EON_COREHEADERS = \
 eon_main.h \
+eon_backend.h \
 eon_bin.h \
 eon_button.h \
 eon_canvas.h \
@@ -31,7 +32,6 @@ eon_stack.h \
 eon_tab.h \
 eon_toggle.h \
 eon_widget.h \
-eon_window.h \
 eon_wrapper.h \
 eon_ecore_remote.h \
 eon_ecore_sdl.h

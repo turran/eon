@@ -1,5 +1,5 @@
-#ifndef _EON_WINDOW_H_
-#define _EON_WINDOW_H_
+#ifndef _EON_BACKEND_H_
+#define _EON_BACKEND_H_
 
 typedef struct _Eon_Window Eon_Window;
 typedef struct _Eon_Backend Eon_Backend;
