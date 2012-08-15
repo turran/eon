@@ -16,7 +16,7 @@
 		container = eon_test_##name(argc, argv);		\
 		if (!container) return -1;				\
 		win = eon_window_new(backend, container, 320, 240);	\
-		ecore_main_loop_begin();				\
+		eon_backend_run(backend);				\
 		ecore_shutdown();					\
 		eon_shutdown();						\
 									\

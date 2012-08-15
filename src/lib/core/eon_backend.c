@@ -24,7 +24,7 @@
  *============================================================================*/
 struct _Eon_Backend
 {
-	Eon_Backend_Descriptor *descriptor;
+	Eon_Backend_Descriptor descriptor;
 	void *data;
 };
 /*============================================================================*
@@ -35,7 +35,7 @@ Eon_Backend * eon_backend_new(Eon_Backend_Descriptor *descriptor, void *data)
 	Eon_Backend *backend;
 
 	backend = calloc(1, sizeof(Eon_Backend));
-	backend->descriptor = descriptor;
+	backend->descriptor = *descriptor;
 	backend->data = data;
 
 	return backend;
@@ -44,16 +44,26 @@ Eon_Backend * eon_backend_new(Eon_Backend_Descriptor *descriptor, void *data)
 Eina_Bool eon_backend_window_new(Eon_Backend *backend, Ender_Element *layout,
 		unsigned int width, unsigned int height, void *window_data)
 {
-	if (!backend->descriptor->window_new) return EINA_FALSE;
+	if (!backend->descriptor.window_new) return EINA_FALSE;
 
-	return backend->descriptor->window_new(backend->data, layout, width, height, &window_data);
+	return backend->descriptor.window_new(backend->data, layout, width, height, &window_data);
 }
 
 void eon_backend_window_delete(Eon_Backend *backend, void *window_data)
 {
-	if (!backend->descriptor->window_delete) return;
-	backend->descriptor->window_delete(backend->data, window_data);
+	if (!backend->descriptor.window_delete) return;
+	backend->descriptor.window_delete(backend->data, window_data);
 }
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+EAPI void eon_backend_idler_add(Eon_Backend *backend, Eon_Backend_Idler cb, void *data)
+{
+
+}
+
+EAPI void eon_backend_run(Eon_Backend *backend)
+{
+	if (!backend->descriptor.run) return;
+	backend->descriptor.run(backend->data);
+}

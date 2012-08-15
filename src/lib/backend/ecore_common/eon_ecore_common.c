@@ -15,8 +15,15 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include <Ecore.h>
+
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_window.h"
+
+#include "eon_private_backend.h"
+#include "eon_private_ecore_common.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -54,6 +61,9 @@ static void _instance_new_cb(Escen_Instance *eei, void *data)
 	double spf;
 	int fps;
 
+	/* TODO check that the instance inherits from theme widget, if not
+	 * we should not process it
+	 */
 	ee = escen_instance_escen_ender_get(eei);
 	escen = escen_ender_escen_get(ee);
 	fps = escen_fps_get(escen);
@@ -79,9 +89,40 @@ static void _instance_new_cb(Escen_Instance *eei, void *data)
 	timer->instances = eina_list_append(timer->instances, eei);
 }
 
+static void _eon_ecore_idler_add(void *backend_data, Eon_Backend_Idler cb, void *data)
+{
+	ecore_idle_enterer_add(cb, data);
+}
+
+static void _eon_ecore_run(void *backend_data)
+{
+	ecore_main_loop_begin();
+}
+
+static void _eon_ecore_quit(void *backend_data)
+{
+	ecore_main_loop_quit();
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eon_Backend * eon_ecore_backend_new(Eon_Ecore_Backend_Descriptor *descriptor,
+		void *data)
+{
+	Eon_Backend *backend;
+	Eon_Backend_Descriptor pdescriptor;
+
+	pdescriptor.idler_add = _eon_ecore_idler_add;
+	pdescriptor.run = _eon_ecore_run;
+	pdescriptor.quit = _eon_ecore_quit;
+
+	pdescriptor.window_new = descriptor->window_new;
+	pdescriptor.window_delete = descriptor->window_delete;
+
+	backend = eon_backend_new(&pdescriptor, data);
+	return backend;
+}
+
 void eon_ecore_common_init(void)
 {
 	if (!_init++)

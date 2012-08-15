@@ -100,6 +100,7 @@ static void _eon_svg_initialize(Ender_Element *e)
 	if (thiz->initialize)
 		thiz->initialize(e);
 #endif
+	/* add the idler */
 }
 
 static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)

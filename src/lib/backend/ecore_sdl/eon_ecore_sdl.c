@@ -30,6 +30,9 @@
 #include "Ecore_Sdl.h"
 #include "Ecore_Input.h"
 #include "SDL.h"
+
+#include "eon_private_ecore_common.h"
+
 #endif
 /*============================================================================*
  *                                  Local                                     *
@@ -459,9 +462,9 @@ static void _sdl_window_delete(void *data, void *window_data)
 	}
 }
 
-static Eon_Backend_Descriptor _backend = {
-	/* .window_new =    */ _sdl_window_new,
-	/* .window_delete = */ _sdl_window_delete,
+static Eon_Ecore_Backend_Descriptor _backend_descriptor = {
+	/* .window_new 		= */ _sdl_window_new,
+	/* .window_delete 	= */ _sdl_window_delete,
 };
 #endif
 /*============================================================================*
@@ -472,24 +475,23 @@ static Eon_Backend_Descriptor _backend = {
  *============================================================================*/
 EAPI Eon_Backend * eon_ecore_sdl_new(void)
 {
+	Eon_Backend *backend = NULL;
 #ifdef BUILD_BACKEND_SDL
 	Eon_Ecore_SDL *thiz;
-	Eon_Backend *backend;
 
 	thiz = calloc(1, sizeof(Eon_Ecore_SDL));
 	thiz->flags = SDL_RESIZABLE;
-	backend = eon_backend_new(&_backend, thiz);
-	return backend;
+	backend = eon_ecore_backend_new(&_backend_descriptor, thiz);
 #else
-	return NULL;
+	return backend;
 #endif
 }
 
 EAPI Eon_Backend * eon_ecore_sdl_new_with_options(Eina_Bool fullscreen, Eina_Bool resizable)
 {
+	Eon_Backend *backend = NULL;
 #ifdef BUILD_BACKEND_SDL
 	Eon_Ecore_SDL *thiz;
-	Eon_Backend *backend;
 	Uint32 flags = 0;
 
 	thiz = calloc(1, sizeof(Eon_Ecore_SDL));
@@ -499,9 +501,8 @@ EAPI Eon_Backend * eon_ecore_sdl_new_with_options(Eina_Bool fullscreen, Eina_Boo
 		flags |= SDL_RESIZABLE;
 	thiz->flags = flags;
 
-	backend = eon_backend_new(&_backend, thiz);
-	return backend;
+	backend = eon_ecore_backend_new(&_backend_descriptor, thiz);
 #else
-	return NULL;
+	return backend;
 #endif
 }
