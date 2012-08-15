@@ -404,7 +404,6 @@ static Eina_Bool _sdl_window_new(void *data, Ender_Element *layout, unsigned int
 	if (_initialized) return EINA_FALSE;
 	if (!layout) return EINA_FALSE;
 
-	eon_ecore_common_init();
 	ecore_sdl_init(NULL);
 	SDL_Init(SDL_INIT_VIDEO);
 

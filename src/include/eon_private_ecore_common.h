@@ -8,7 +8,5 @@ typedef struct _Eon_Ecore_Backend_Descriptor
 	Eon_Backend_Window_Delete window_delete;
 } Eon_Ecore_Backend_Descriptor;
 
-void eon_ecore_common_init();
-
 #endif
 

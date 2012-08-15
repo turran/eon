@@ -28,51 +28,30 @@
  *============================================================================*/
 struct _Eon_Window
 {
-	Ender_Element *layout;
+	Ender_Element *container;
 	unsigned int width;
 	unsigned int height;
 	Eon_Backend *backend;
 	void *data;
 };
-
-static Ecore_Idle_Enterer * _global_idler = NULL;
-
-static Eina_Bool _global_idler_cb(void *data)
-{
-	/* we must call this before the window idlers
-	 * basically we process the emage events here
-	 */
-	emage_dispatch();
-	return EINA_TRUE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *layout,
-		unsigned int width, unsigned int height)
+Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *container,
+		unsigned int width, unsigned int height, void *data)
 {
 	Eon_Window *ee;
-	void *data;
-
-	if (!backend) return NULL;
-	if (!layout) return NULL;
-	if (!eon_is_container(layout)) return NULL;
-
-	if (!eon_backend_window_new(backend, layout, width, height, &data))
-		return NULL;
-
-	if (!_global_idler)
-		_global_idler = ecore_idle_enterer_add(_global_idler_cb, NULL);
 
 	ee = calloc(1, sizeof(Eon_Window));
 	ee->width = width;
 	ee->height = height;
 	ee->backend = backend;
-	ee->layout = layout;
+	ee->container = container;
 	ee->data = data;
 
 	return ee;
 }
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+

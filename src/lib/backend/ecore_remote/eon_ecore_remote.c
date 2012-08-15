@@ -430,7 +430,6 @@ EAPI Eon_Backend * eon_ecore_remote_new(void)
 #ifdef BUILD_BACKEND_REMOTE
 	Eon_Backend *backend;
 
-	eon_ecore_common_init();
 	backend = eon_backend_new(&_backend, NULL);
 	return backend;
 #else

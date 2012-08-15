@@ -41,14 +41,6 @@ Eon_Backend * eon_backend_new(Eon_Backend_Descriptor *descriptor, void *data)
 	return backend;
 }
 
-Eina_Bool eon_backend_window_new(Eon_Backend *backend, Ender_Element *layout,
-		unsigned int width, unsigned int height, void *window_data)
-{
-	if (!backend->descriptor.window_new) return EINA_FALSE;
-
-	return backend->descriptor.window_new(backend->data, layout, width, height, &window_data);
-}
-
 void eon_backend_window_delete(Eon_Backend *backend, void *window_data)
 {
 	if (!backend->descriptor.window_delete) return;
@@ -57,9 +49,26 @@ void eon_backend_window_delete(Eon_Backend *backend, void *window_data)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *container,
+		unsigned int width, unsigned int height)
+{
+	void *data;
+
+	if (!backend) return NULL;
+	if (!container) return NULL;
+	if (!eon_is_container(container)) return NULL;
+
+	if (!backend->descriptor.window_new) return NULL;
+	if (!backend->descriptor.window_new(backend->data, container, width, height, &data))
+		return NULL;
+
+	return eon_window_new(backend, width, height, data);
+}
+
 EAPI void eon_backend_idler_add(Eon_Backend *backend, Eon_Backend_Idler cb, void *data)
 {
-
+	if (!backend->descriptor.idler_add) return;
+	backend->descriptor.idler_add(backend->data, cb, data);
 }
 
 EAPI void eon_backend_run(Eon_Backend *backend)
@@ -67,3 +76,16 @@ EAPI void eon_backend_run(Eon_Backend *backend)
 	if (!backend->descriptor.run) return;
 	backend->descriptor.run(backend->data);
 }
+
+EAPI void eon_backend_delete(Eon_Backend *backend)
+{
+	if (!backend->descriptor.free) return;
+	backend->descriptor.free(backend->data);
+}
+
+EAPI void eon_backend_quit(Eon_Backend *backend)
+{
+	if (!backend->descriptor.quit) return;
+	backend->descriptor.quit(backend->data);
+}
+

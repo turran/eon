@@ -35,6 +35,7 @@ typedef struct _Eon_Window_Instance_Timer
 } Eon_Window_Instance_Timer;
 
 static int _init = 0;
+static Ecore_Idle_Enterer * _global_idler = NULL;
 static Eina_List *_instance_timers = NULL;
 
 static Eina_Bool _instance_timer_cb(void *data)
@@ -89,6 +90,17 @@ static void _instance_new_cb(Escen_Instance *eei, void *data)
 	timer->instances = eina_list_append(timer->instances, eei);
 }
 
+static Eina_Bool _global_idler_cb(void *data)
+{
+	/* we must call this before the window idlers
+	 * basically we process the emage events here
+	 */
+	emage_dispatch();
+	return EINA_TRUE;
+}
+/*----------------------------------------------------------------------------*
+ *                           Eon backend interface                            *
+ *----------------------------------------------------------------------------*/
 static void _eon_ecore_idler_add(void *backend_data, Eon_Backend_Idler cb, void *data)
 {
 	ecore_idle_enterer_add(cb, data);
@@ -103,6 +115,14 @@ static void _eon_ecore_quit(void *backend_data)
 {
 	ecore_main_loop_quit();
 }
+
+static void _eon_ecore_free(void *backend_data)
+{
+	printf("freeing!\n");
+	/* TODO here we should call the free functions from the backend
+	 * descriptor
+	 */
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -112,6 +132,16 @@ Eon_Backend * eon_ecore_backend_new(Eon_Ecore_Backend_Descriptor *descriptor,
 	Eon_Backend *backend;
 	Eon_Backend_Descriptor pdescriptor;
 
+	if (!_init++)
+	{
+		ecore_init();
+		escen_instance_new_callback_add(_instance_new_cb, NULL);
+		if (!_global_idler)
+			_global_idler = ecore_idle_enterer_add(_global_idler_cb, NULL);
+
+	}
+
+	pdescriptor.free = _eon_ecore_free;
 	pdescriptor.idler_add = _eon_ecore_idler_add;
 	pdescriptor.run = _eon_ecore_run;
 	pdescriptor.quit = _eon_ecore_quit;
@@ -123,15 +153,7 @@ Eon_Backend * eon_ecore_backend_new(Eon_Ecore_Backend_Descriptor *descriptor,
 	return backend;
 }
 
-void eon_ecore_common_init(void)
-{
-	if (!_init++)
-	{
-		ecore_init();
-		escen_instance_new_callback_add(_instance_new_cb, NULL);
-	}
-}
-
+#if 0
 void eon_ecore_common_shutdown(void)
 {
 	if (_init == 1)
@@ -140,6 +162,7 @@ void eon_ecore_common_shutdown(void)
 	}
 	_init--;
 }
+#endif
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
