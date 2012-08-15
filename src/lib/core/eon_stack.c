@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_widget.h"
@@ -392,6 +393,8 @@ static void _eon_stack_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 
 static Eon_Container_Descriptor _descriptor = {
 	/* .initialize 		= */ _eon_stack_initialize,
+	/* .backend_added 	= */ NULL,
+	/* .backend_removed 	= */ NULL,
 	/* .setup 		= */ NULL,
 	/* .needs_setup 	= */ NULL,
 	/* .geometry_set 	= */ _eon_stack_geometry_set,

@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_widget.h"
@@ -27,6 +28,7 @@
 #include "eon_private_element.h"
 #include "eon_private_theme.h"
 #include "eon_private_widget.h"
+/* TODO use the backend to get the surface pool */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -142,6 +144,8 @@ static void _eon_image_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 
 static Eon_Widget_Descriptor _eon_image_descriptor = {
 	/* .initialize 		= */ NULL,
+	/* .backend_added 	= */ NULL,
+	/* .backend_removed 	= */ NULL,
 	/* .setup 		= */ NULL,
 	/* .needs_setup 	= */ NULL,
 	/* .geometry_set 	= */ _eon_image_geometry_set,

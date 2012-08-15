@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 
@@ -87,6 +88,8 @@ static void _eon_wrapper_hints_get(Eon_Element *e, Eon_Hints *hints)
 
 static Eon_Element_Descriptor _descriptor = {
 	/* .initialize 		= */ NULL,
+	/* .backend_added	= */ NULL,
+	/* .backend_removed	= */ NULL,
 	/* .setup 		= */ NULL,
 	/* .renderer_get 	= */ _eon_wrapper_renderer_get,
 	/* .needs_setup 	= */ NULL,

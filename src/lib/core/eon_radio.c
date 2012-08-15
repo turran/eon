@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_widget.h"

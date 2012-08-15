@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 
@@ -86,6 +87,7 @@ struct _Eon_Element
 	Eon_Size max_size;
 	Eon_Size size;
 	/* private */
+	Eon_Backend *backend;
 	Eon_Geometry geometry;
 	Eon_Hints last_hints;
 
@@ -810,6 +812,26 @@ void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 void eon_element_geometry_get(Eon_Element *thiz, Eon_Geometry *g)
 {
 	*g = thiz->geometry;
+}
+
+Eon_Backend * eon_element_backend_get(Eon_Element *thiz)
+{
+	return thiz->backend;
+}
+
+void eon_element_backend_set(Eon_Element *thiz, Eon_Backend *backend)
+{
+	if (thiz->backend)
+	{
+		if (thiz->descriptor.backend_removed)
+			thiz->descriptor.backend_removed(thiz, thiz->backend);
+	}
+	thiz->backend = backend;
+	if (thiz->backend)
+	{
+		if (thiz->descriptor.backend_added)
+			thiz->descriptor.backend_added(thiz, thiz->backend);
+	}
 }
 
 void eon_element_inform_change(Eon_Element *thiz)

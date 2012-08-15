@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_widget.h"
@@ -304,6 +305,8 @@ Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 	thiz->descriptor.hints_get = descriptor->hints_get;
 
 	pdescriptor.initialize = _eon_widget_initialize;
+	pdescriptor.backend_added = descriptor->backend_added;
+	pdescriptor.backend_removed = descriptor->backend_removed;
 	pdescriptor.setup = NULL;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
 	pdescriptor.needs_setup = NULL;

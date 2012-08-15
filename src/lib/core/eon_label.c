@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_widget.h"
@@ -108,6 +109,8 @@ static void _eon_label_free(Eon_Element *e)
 
 static Eon_Widget_Descriptor _eon_label_descriptor = {
 	/* .initialize 		= */ NULL,
+	/* .backend_added 	= */ NULL,
+	/* .backend_removed 	= */ NULL,
 	/* .setup 		= */ NULL,
 	/* .needs_setup 	= */ NULL,
 	/* .geometry_set 	= */ NULL,

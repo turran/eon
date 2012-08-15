@@ -12,6 +12,8 @@ typedef struct _Eon_Element_State
 } Eon_Element_State;
 
 typedef void (*Eon_Element_Initialize)(Ender_Element *e);
+typedef void (*Eon_Element_Backend_Added)(Eon_Element *e, Eon_Backend *backend);
+typedef void (*Eon_Element_Backend_Removed)(Eon_Element *e, Eon_Backend *backend);
 typedef Eina_Bool (*Eon_Element_Setup)(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **error);
@@ -42,6 +44,8 @@ typedef Eina_Bool (*Eon_Element_Needs_Setup)(Ender_Element *e);
 typedef struct _Eon_Element_Descriptor
 {
 	Eon_Element_Initialize initialize;
+	Eon_Element_Backend_Added backend_added;
+	Eon_Element_Backend_Removed backend_removed;
 	Eon_Element_Setup setup;
 	Eon_Element_Renderer_Get renderer_get;
 	Eon_Element_Needs_Setup needs_setup;
@@ -59,6 +63,8 @@ void * eon_element_data_get(Eon_Element *e);
 /* new ones */
 void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints);
 void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g);
+Eon_Backend * eon_element_backend_get(Eon_Element *thiz);
+void eon_element_backend_set(Eon_Element *thiz, Eon_Backend *backend);
 
 void eon_element_initialize(Ender_Element *ender);
 void eon_element_real_width_get(Ender_Element *e, double *width);

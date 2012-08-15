@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_container.h"
@@ -48,6 +49,8 @@ typedef struct _Eon_Container_Descriptor_Internal
 	Eon_Container_Child_Foreach child_foreach;
 	Eon_Container_Child_At child_at;
 	Eon_Element_Initialize initialize;
+	Eon_Element_Backend_Added backend_added;
+	Eon_Element_Backend_Removed backend_removed;
 	Eon_Element_Setup setup;
 	Eon_Element_Free free;
 } Eon_Container_Descriptor_Internal;
@@ -81,6 +84,16 @@ static Eina_Bool _child_clear_cb(Eon_Element *e, Ender_Element *child, void *dat
 	_eon_container_child_remove(e, child);
 	return EINA_TRUE;
 }
+
+static Eina_Bool _child_backend_set_cb(Eon_Element *e, Ender_Element *child, void *data)
+{
+	Eon_Backend *backend = data;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(child);
+	eon_element_backend_set(ee, backend);
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                         The Eon Widget interface                           *
  *----------------------------------------------------------------------------*/
@@ -94,6 +107,24 @@ static void _eon_container_initialize(Ender_Element *e)
 	thiz->e = e;
 	if (thiz->descriptor.initialize)
 		thiz->descriptor.initialize(e);
+}
+
+static void _eon_container_backend_added(Eon_Element *e, Eon_Backend *b)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(e);
+	/* iterate over the childs and set the backend too */	
+	eon_container_internal_child_foreach(e, _child_backend_set_cb, b);
+}
+
+static void _eon_container_backend_removed(Eon_Element *e, Eon_Backend *b)
+{
+	Eon_Container *thiz;
+
+	thiz = _eon_container_get(e);
+	/* iterate over the childs and remove the backend too */	
+	eon_container_internal_child_foreach(e, _child_backend_set_cb, NULL);
 }
 
 /* FIXME We must delete this one */
@@ -201,6 +232,8 @@ Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 	EINA_MAGIC_SET(thiz, EON_CONTAINER_MAGIC);
 	thiz->data = data;
 	thiz->descriptor.initialize = descriptor->initialize;
+	thiz->descriptor.backend_added = descriptor->backend_added;
+	thiz->descriptor.backend_removed = descriptor->backend_removed;
 	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.child_add = descriptor->child_add;
 	thiz->descriptor.child_remove = descriptor->child_remove;
@@ -210,6 +243,8 @@ Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 
 	/* element interface */
 	pdescriptor.initialize = _eon_container_initialize;
+	pdescriptor.backend_added = _eon_container_backend_added;
+	pdescriptor.backend_removed = _eon_container_backend_removed;
 	pdescriptor.free = _eon_container_free;
 	pdescriptor.name = descriptor->name;
 	pdescriptor.setup = _eon_container_setup;
@@ -238,7 +273,11 @@ void * eon_container_data_get(Eon_Element *ee)
 
 void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Child_Foreach_Cb cb, void *user_data)
 {
+	Eon_Container *thiz;
 
+	thiz = _eon_container_get(e);
+	if (thiz->descriptor.child_foreach)
+		thiz->descriptor.child_foreach(e, cb, user_data);
 }
 
 #define _eon_container_delete NULL

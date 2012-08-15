@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_bin.h"
@@ -203,7 +204,8 @@ static void _eon_bin_child_foreach(Eon_Element *ee, Eon_Container_Child_Foreach_
 	Eon_Bin *thiz;
 
 	thiz = _eon_bin_get(ee);
-	cb(ee, thiz->child, user_data);
+	if (thiz->child)
+		cb(ee, thiz->child, user_data);
 }
 
 static void _eon_bin_free(Eon_Element *ee)
@@ -253,6 +255,8 @@ Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
 	thiz->pass_events = descriptor->pass_events;
 
 	pdescriptor.initialize = _eon_bin_initialize;
+	pdescriptor.backend_added = descriptor->backend_added;
+	pdescriptor.backend_removed = descriptor->backend_removed;
 	pdescriptor.setup = _eon_bin_setup;
 	pdescriptor.needs_setup = _eon_bin_needs_setup;
 	pdescriptor.geometry_set = descriptor->geometry_set;
