@@ -26,6 +26,7 @@ typedef struct _Eon_Theme_Control_Scroll_Arrow_Descriptor_Internal
 {
 	Eon_Theme_Widget_Free free;
 	Eon_Theme_Control_Scroll_Arrow_Size_Get size_get;
+	Eon_Theme_Control_Scroll_Arrow_Direction_Set direction_set;
 } Eon_Theme_Control_Scroll_Arrow_Descriptor_Internal;
 
 typedef struct _Eon_Theme_Control_Scroll_Arrow
@@ -54,23 +55,10 @@ static void _eon_theme_control_scroll_arrow_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_control_scroll_arrow_size_get(Eon_Theme_Widget *t, Eon_Size *size)
-{
-	Eon_Theme_Control_Scroll_Arrow *thiz;
-
-	thiz = _eon_theme_control_scroll_arrow_get(t);
-	if (thiz->descriptor.size_get)
-		thiz->descriptor.size_get(t, size);
-	else
-	{
-		size->width = 0;
-		size->height = 0;
-	}	
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Eon_Theme_Widget * eon_theme_control_scroll_arrow_new(Eon_Theme_Control_Scroll_Arrow_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_control_scroll_arrow_new(Eon_Theme_Control_Scroll_Arrow_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Theme_Control_Scroll_Arrow *thiz;
@@ -78,6 +66,7 @@ Eon_Theme_Widget * eon_theme_control_scroll_arrow_new(Eon_Theme_Control_Scroll_A
 
 	thiz = calloc(1, sizeof(Eon_Theme_Control_Scroll_Arrow));
 	thiz->descriptor.size_get = descriptor->size_get;
+	thiz->descriptor.direction_set = descriptor->direction_set;
 	thiz->descriptor.free = _eon_theme_control_scroll_arrow_free;
 	thiz->data = data;
 	/* widget descriptor */
@@ -91,7 +80,7 @@ Eon_Theme_Widget * eon_theme_control_scroll_arrow_new(Eon_Theme_Control_Scroll_A
 	return eon_theme_widget_new(&pdescriptor, thiz);
 }
 
-void * eon_theme_control_scroll_arrow_data_get(Eon_Theme_Widget *t)
+EAPI void * eon_theme_control_scroll_arrow_data_get(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Control_Scroll_Arrow *thiz;
 
@@ -99,3 +88,25 @@ void * eon_theme_control_scroll_arrow_data_get(Eon_Theme_Widget *t)
 	return thiz->data;
 }
 
+EAPI void eon_theme_control_scroll_arrow_size_get(Eon_Theme_Widget *t, Eon_Size *size)
+{
+	Eon_Theme_Control_Scroll_Arrow *thiz;
+
+	thiz = _eon_theme_control_scroll_arrow_get(t);
+	if (thiz->descriptor.size_get)
+		thiz->descriptor.size_get(t, size);
+	else
+	{
+		size->width = 0;
+		size->height = 0;
+	}	
+}
+
+EAPI void eon_theme_control_scroll_arrow_direction_set(Eon_Theme_Widget *t, Eon_Direction direction)
+{
+	Eon_Theme_Control_Scroll_Arrow *thiz;
+
+	thiz = _eon_theme_control_scroll_arrow_get(t);
+	if (thiz->descriptor.direction_set)
+		thiz->descriptor.direction_set(t, direction);
+}

@@ -22,11 +22,24 @@
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_widget.h"
+#include "eon_scrollbar.h"
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"
 #include "eon_private_theme.h"
 #include "eon_private_widget.h"
+
+#include "eon_private_layout.h"
+#include "eon_private_layout_stack.h"
+
+#include "theme/eon_theme_widget.h"
+#include "theme/eon_theme_scrollbar.h"
+#include "theme/eon_theme_control_scroll_arrow.h"
+#include "theme/eon_theme_control_scroll_thumb.h"
+/* The scrollbar is composed of differnt theme instances. One
+ * for the thumb and two for the different arrows. All of it is
+ * wrapped inside a stack layout to order theme
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -61,6 +74,8 @@ typedef struct _Eon_Scrollbar
 	Eon_Theme_Instance *t_increment;
 	Eon_Theme_Instance *t_decrement;
 	Eon_Theme_Instance *t_thumb;
+	/* needed for the layout */
+	double min_length;
 
 	Eina_Bool changed : 1;
 	Eina_Bool thumb_dragging;
@@ -82,7 +97,117 @@ static inline double _eon_scrollbar_value_check(Eon_Scrollbar *thiz, double v)
 
 	return v;
 }
+/*----------------------------------------------------------------------------*
+ *                       The Eon's layout descriptors                         *
+ *----------------------------------------------------------------------------*/
+static void _scrollbar_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+	Eon_Theme_Instance *child_thiz = child;
 
+	eon_theme_instance_property_set(child_thiz, "x", g->x, NULL);
+	eon_theme_instance_property_set(child_thiz, "y", g->y, NULL);
+	eon_theme_instance_property_set(child_thiz, "width", g->width, NULL);
+	eon_theme_instance_property_set(child_thiz, "height", g->height, NULL);
+}
+
+static void _scrollbar_layout_child_hints_get(void *ref, void *child,
+		Eon_Hints *hints)
+{
+	Eon_Scrollbar *thiz = ref;
+	Eon_Theme_Instance *child_thiz = child;
+	Eon_Element *e;
+
+	if (thiz->t_thumb == child_thiz)
+	{
+		Eon_Size min, max;
+
+		eon_theme_control_scroll_thumb_sizes_get(child_thiz->object, &min, &max);
+		hints->min = min;
+		hints->max = max;
+		hints->preferred.width = hints->preferred.height = -1;
+		printf("thumb size %g %g %g %g\n", min.width, min.height, max.width, max.height);
+	}
+	else
+	{
+		Eon_Size size;
+
+		eon_theme_control_scroll_arrow_size_get(child_thiz->object, &size);
+		printf("arrow size %g %g\n", size.width, size.height);
+		hints->min = size;
+		hints->max = size;
+		hints->preferred = size;
+	}
+}
+
+static void _scrollbar_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	Eon_Scrollbar *thiz = ref;
+
+	/* call them in order */
+	/* TODO later we can make the user provides the order
+	 * so the controls are ordered like:
+	 * arrow - arrow - thumb,
+	 * arrow - thumb - arrow,
+	 * etc
+	 */
+	cb(ref, thiz->t_increment, data);
+	cb(ref, thiz->t_thumb, data);
+	cb(ref, thiz->t_decrement, data);
+}
+
+static Eina_Bool _scrollbar_layout_is_homogeneous(void *ref)
+{
+	return EINA_FALSE;
+}
+
+static Eon_Orientation _scrollbar_layout_orientation_get(void *ref)
+{
+	Eon_Scrollbar *thiz = ref;
+	return thiz->orientation;
+}
+
+static void _scrollbar_layout_min_length_get(void *ref, double *min)
+{
+	Eon_Scrollbar *thiz = ref;
+	*min = thiz->min_length;
+}
+
+static void _scrollbar_layout_min_length_set(void *ref, double min)
+{
+	Eon_Scrollbar *thiz = ref;
+	thiz->min_length = min;
+}
+
+static int _scrollbar_layout_child_gravity_get(void *ref, void *child)
+{
+	Eon_Scrollbar *thiz = ref;
+	Eon_Theme_Instance *thiz_child = child;
+
+	/* the thumb should take all the space */
+	if (thiz->t_thumb == thiz_child)
+		return 1;
+	else
+		return 0;
+}
+
+static Eon_Layout_Stack_Descriptor _scrollbar_layout = {
+	/* .is_homogeneous 	= */ _scrollbar_layout_is_homogeneous,
+	/* .orientation_get 	= */ _scrollbar_layout_orientation_get,
+	/* .min_length_get 	= */ _scrollbar_layout_min_length_get,
+	/* .min_length_get 	= */ _scrollbar_layout_min_length_set,
+	/* .child_gravity_get 	= */ _scrollbar_layout_child_gravity_get,
+	/* .child_count_get 	= */ NULL,
+	/* .child_count_set 	= */ NULL,
+	/* .child_foreach 	= */ _scrollbar_layout_child_foreach,
+	/* .child_hints_get 	= */ _scrollbar_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _scrollbar_layout_child_geometry_set,
+};
+/*----------------------------------------------------------------------------*
+ *                                Event handlers                              *
+ *----------------------------------------------------------------------------*/
+#if 0
 static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	Eon_Scrollbar *thiz;
@@ -199,6 +324,7 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 		}
 	}
 }
+#endif
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
  *----------------------------------------------------------------------------*/
@@ -210,10 +336,12 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	ee = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(ee);
 
+#if 0
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_scrollbar_mouse_click, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], _eon_scrollbar_mouse_drag_start, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_STOP], _eon_scrollbar_mouse_drag_stop, NULL);
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_scrollbar_mouse_move, NULL);
+#endif
 }
 
 #if 0
@@ -253,88 +381,23 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 	thiz->changed = EINA_FALSE;
 	return EINA_TRUE;
 }
-
-static Eina_Bool _eon_scrollbar_needs_setup(Ender_Element *e)
-{
-	Eon_Scrollbar *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(ee);
-	return thiz->changed;
-}
-
-static double _eon_scrollbar_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	double v;
-
-	eon_theme_scrollbar_min_width_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_scrollbar_max_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	double v;
-
-	eon_theme_scrollbar_max_width_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_scrollbar_min_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	double v;
-
-	eon_theme_scrollbar_min_height_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_scrollbar_max_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	double v;
-
-	eon_theme_scrollbar_max_height_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_scrollbar_preferred_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	double v;
-
-	eon_theme_scrollbar_preferred_width_get(theme_r, &v);
-
-	return v;
-}
-
-static double _eon_scrollbar_preferred_height_get(Ender_Element *e, Enesim_Renderer *theme_r)
-{
-	double v;
-
-	eon_theme_scrollbar_preferred_height_get(theme_r, &v);
-
-	return v;
-}
 #endif
 
 static void _eon_scrollbar_geometry_set(Eon_Element *e, Eon_Geometry *g)
 {
-	/* set the geometry on every control */
+	Eon_Scrollbar *thiz;
+
+	thiz = _eon_scrollbar_get(e);
+	eon_layout_geometry_set(&eon_layout_stack, &_scrollbar_layout, thiz, g);
 }
 
 static void _eon_scrollbar_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 		Eon_Hints *hints)
 {
-	Eon_Size size;
+	Eon_Scrollbar *thiz;
 
-	/* get the size of the different controls */
-
-	//eon_theme_scrollbar_size_get(theme->object, &size);
-	hints->min = size;
-	hints->max = size;
-	hints->preferred = size;
+	thiz = _eon_scrollbar_get(e);
+	eon_layout_hints_get(&eon_layout_stack, &_scrollbar_layout, thiz, hints);
 }
 
 static void _eon_scrollbar_free(Eon_Element *e)
@@ -352,7 +415,7 @@ static Eon_Widget_Descriptor _eon_scrollbar_descriptor = {
 	/* .backend_removed 	= */ NULL,
 	/* .setup 		= */ NULL,
 	/* .needs_setup 	= */ NULL,
-	/* .geometry_set 	= */ NULL,
+	/* .geometry_set 	= */ _eon_scrollbar_geometry_set,
 	/* .free		= */ _eon_scrollbar_free,
 	/* .name 		= */ "scrollbar",
 	/* .hints_get 		= */ _eon_scrollbar_hints_get,
@@ -416,8 +479,20 @@ static void _eon_scrollbar_orientation_set(Eon_Element *ee, Eon_Orientation orie
 	if (!thiz) return;
 	thiz->orientation = orientation;
 	thiz->changed = EINA_TRUE;
+	/* TODO inform of the change */
 
-	//eon_widget_property_set(ee, "orientation", orientation, NULL);
+	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
+	{
+		eon_theme_control_scroll_arrow_direction_set(thiz->t_increment->object, EON_DIRECTION_TOP);
+		eon_theme_control_scroll_thumb_orientation_set(thiz->t_thumb->object, EON_ORIENTATION_VERTICAL);
+		eon_theme_control_scroll_arrow_direction_set(thiz->t_decrement->object, EON_DIRECTION_BOTTOM);
+	}
+	else
+	{
+		eon_theme_control_scroll_arrow_direction_set(thiz->t_increment->object, EON_DIRECTION_LEFT);
+		eon_theme_control_scroll_thumb_orientation_set(thiz->t_thumb->object, EON_ORIENTATION_HORIZONTAL);
+		eon_theme_control_scroll_arrow_direction_set(thiz->t_decrement->object, EON_DIRECTION_RIGHT);
+	}
 }
 
 static void _eon_scrollbar_orientation_get(Eon_Element *ee, Eon_Orientation *orientation)

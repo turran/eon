@@ -29,8 +29,8 @@ EAPI Ender_Element * eon_scrollbar_new(void);
 EAPI Ender_Element * eon_hscrollbar_new(void);
 EAPI Ender_Element * eon_vscrollbar_new(void);
 
-EAPI void eon_scrollbar_direction_set(Ender_Element *e, Eon_Orientation direction);
-EAPI void eon_scrollbar_direction_get(Ender_Element *e, Eon_Orientation *direction);
+EAPI void eon_scrollbar_orientation_set(Ender_Element *e, Eon_Orientation direction);
+EAPI void eon_scrollbar_orientation_get(Ender_Element *e, Eon_Orientation *direction);
 EAPI void eon_scrollbar_max_set(Ender_Element *e, double max);
 EAPI void eon_scrollbar_max_get(Ender_Element *e, double *max);
 EAPI void eon_scrollbar_min_set(Ender_Element *e, double min);

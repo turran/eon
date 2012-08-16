@@ -24,6 +24,7 @@
  */
 
 typedef void (*Eon_Theme_Control_Scroll_Thumb_Sizes_Get)(Eon_Theme_Widget *t, Eon_Size *min, Eon_Size *max);
+typedef void (*Eon_Theme_Control_Scroll_Thumb_Orientation_Set)(Eon_Theme_Widget *t, Eon_Orientation orientation);
 
 typedef struct _Eon_Theme_Control_Scroll_Thumb_Descriptor
 {
@@ -36,10 +37,14 @@ typedef struct _Eon_Theme_Control_Scroll_Thumb_Descriptor
 	Eon_Theme_Widget_Free free;
 	/* control_scroll_thumb descriptor */
 	Eon_Theme_Control_Scroll_Thumb_Sizes_Get sizes_get;
+	Eon_Theme_Control_Scroll_Thumb_Orientation_Set orientation_set;
 } Eon_Theme_Control_Scroll_Thumb_Descriptor;
 
 EAPI Eon_Theme_Widget * eon_theme_control_scroll_thumb_new(Eon_Theme_Control_Scroll_Thumb_Descriptor *descriptor, void *data);
 EAPI void * eon_theme_control_scroll_thumb_data_get(Eon_Theme_Widget *t);
+
+EAPI void eon_theme_control_scroll_thumb_sizes_get(Eon_Theme_Widget *t, Eon_Size *min, Eon_Size *max);
+EAPI void eon_theme_control_scroll_thumb_orientation_set(Eon_Theme_Widget *t, Eon_Orientation orientation);
 
 /**
  * @}

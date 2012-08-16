@@ -96,6 +96,7 @@ static void _basic_control_scroll_arrow_direction_set(Eon_Theme_Widget *t, Eon_D
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
 	thiz = _eon_basic_control_scroll_arrow_get(t);
+	printf("setting direction to %d of %d\n", d, EON_DIRECTIONS);
 	thiz->m = &thiz->ms[d];
 }
 
@@ -155,6 +156,7 @@ Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
 		enesim_matrix_compose(&tx1, &ms[i], &thiz->ms[i]);
 		enesim_matrix_compose(&thiz->ms[i], &tx2, &thiz->ms[i]);
 	}
+	thiz->m = &thiz->ms[0];
 
 	return eon_theme_control_scroll_arrow_new(&_descriptor, thiz);
 }

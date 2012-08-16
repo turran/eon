@@ -54,23 +54,10 @@ static void _eon_theme_control_radio_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_control_radio_size_get(Eon_Theme_Widget *t, Eon_Size *size)
-{
-	Eon_Theme_Control_Radio *thiz;
-
-	thiz = _eon_theme_control_radio_get(t);
-	if (thiz->descriptor.size_get)
-		thiz->descriptor.size_get(t, size);
-	else
-	{
-		size->width = 0;
-		size->height = 0;
-	}	
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Eon_Theme_Widget * eon_theme_control_radio_new(Eon_Theme_Control_Radio_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_control_radio_new(Eon_Theme_Control_Radio_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Theme_Control_Radio *thiz;
@@ -91,10 +78,25 @@ Eon_Theme_Widget * eon_theme_control_radio_new(Eon_Theme_Control_Radio_Descripto
 	return eon_theme_widget_new(&pdescriptor, thiz);
 }
 
-void * eon_theme_control_radio_data_get(Eon_Theme_Widget *t)
+EAPI void * eon_theme_control_radio_data_get(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Control_Radio *thiz;
 
 	thiz = _eon_theme_control_radio_get(t);
 	return thiz->data;
 }
+
+EAPI void eon_theme_control_radio_size_get(Eon_Theme_Widget *t, Eon_Size *size)
+{
+	Eon_Theme_Control_Radio *thiz;
+
+	thiz = _eon_theme_control_radio_get(t);
+	if (thiz->descriptor.size_get)
+		thiz->descriptor.size_get(t, size);
+	else
+	{
+		size->width = 0;
+		size->height = 0;
+	}	
+}
+

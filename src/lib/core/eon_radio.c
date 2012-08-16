@@ -37,6 +37,11 @@
 #include "eon_private_layout.h"
 #include "eon_private_layout_stack.h"
 #include "eon_private_layout_frame.h"
+
+#include "theme/eon_theme_widget.h"
+#include "theme/eon_theme_bin.h"
+#include "theme/eon_theme_radio.h"
+#include "theme/eon_theme_control_radio.h"
 /* The radio should be composed of a stack layout.
  * Inside the stack there should be two frame layouts, one for the
  * radio control and another for the bin contents

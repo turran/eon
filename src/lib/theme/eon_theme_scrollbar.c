@@ -56,32 +56,6 @@ static void _eon_theme_scrollbar_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_scrollbar_thumb_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(t);
-	if (thiz->descriptor.thumb_set)
-		thiz->descriptor.thumb_set(t, r);
-}
-
-void eon_theme_scrollbar_arrow_increment_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(t);
-	if (thiz->descriptor.arrow_increment_set)
-		thiz->descriptor.arrow_increment_set(t, r);
-}
-
-void eon_theme_scrollbar_arrow_decrement_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
-{
-	Eon_Theme_Scrollbar *thiz;
-
-	thiz = _eon_theme_scrollbar_get(t);
-	if (thiz->descriptor.arrow_decrement_set)
-		thiz->descriptor.arrow_decrement_set(t, r);
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -127,4 +101,30 @@ EAPI void * eon_theme_scrollbar_data_get(Eon_Theme_Widget *t)
 	return thiz->data;
 }
 
+EAPI void eon_theme_scrollbar_thumb_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(t);
+	if (thiz->descriptor.thumb_set)
+		thiz->descriptor.thumb_set(t, r);
+}
+
+EAPI void eon_theme_scrollbar_arrow_increment_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(t);
+	if (thiz->descriptor.arrow_increment_set)
+		thiz->descriptor.arrow_increment_set(t, r);
+}
+
+EAPI void eon_theme_scrollbar_arrow_decrement_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(t);
+	if (thiz->descriptor.arrow_decrement_set)
+		thiz->descriptor.arrow_decrement_set(t, r);
+}
 

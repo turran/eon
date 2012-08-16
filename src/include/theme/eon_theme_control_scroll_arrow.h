@@ -41,6 +41,9 @@ typedef struct _Eon_Theme_Control_Scroll_Arrow_Descriptor
 EAPI Eon_Theme_Widget * eon_theme_control_scroll_arrow_new(Eon_Theme_Control_Scroll_Arrow_Descriptor *descriptor, void *data);
 EAPI void * eon_theme_control_scroll_arrow_data_get(Eon_Theme_Widget *t);
 
+EAPI void eon_theme_control_scroll_arrow_size_get(Eon_Theme_Widget *t, Eon_Size *size);
+EAPI void eon_theme_control_scroll_arrow_direction_set(Eon_Theme_Widget *t, Eon_Direction direction);
+
 /**
  * @}
  */

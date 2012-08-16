@@ -31,7 +31,7 @@ typedef struct _Eon_Basic_Control_Scroll_Thumb
 	double border_weight;
 	Enesim_Color border_color;
 	/* private */
-	Eon_Direction orientation;
+	Eon_Orientation orientation;
 
 	Enesim_Renderer *bar;
 	Enesim_Renderer *bar_background;
@@ -152,12 +152,12 @@ static void _basic_control_scroll_thumb_sizes_get(Eon_Theme_Widget *t, Eon_Size 
 	{
 		min->width = 14;
 		max->width = 14;
-		min->height = DBL_MAX;
+		min->height = 14;
 		max->height = DBL_MAX;
 	}
 	else
 	{
-		min->width = DBL_MAX;
+		min->width = 14;
 		max->width = DBL_MAX;
 		min->height = 14;
 		max->height = 14;

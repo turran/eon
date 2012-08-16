@@ -39,6 +39,9 @@ typedef struct _Eon_Theme_Control_Radio_Descriptor
 EAPI Eon_Theme_Widget * eon_theme_control_radio_new(Eon_Theme_Control_Radio_Descriptor *descriptor, void *data);
 EAPI void * eon_theme_control_radio_data_get(Eon_Theme_Widget *t);
 
+
+EAPI void eon_theme_control_radio_size_get(Eon_Theme_Widget *t, Eon_Size *size);
+
 /**
  * @}
  */

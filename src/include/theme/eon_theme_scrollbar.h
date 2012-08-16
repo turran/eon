@@ -46,6 +46,11 @@ EAPI Eon_Theme_Widget * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *
 		void *data);
 EAPI void * eon_theme_scrollbar_data_get(Eon_Theme_Widget *t);
 
+EAPI void eon_theme_scrollbar_thumb_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
+EAPI void eon_theme_scrollbar_arrow_increment_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
+EAPI void eon_theme_scrollbar_arrow_decrement_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
+
+
 /**
  * @}
  */
