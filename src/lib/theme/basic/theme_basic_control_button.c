@@ -91,7 +91,7 @@ Eon_Basic_Control_Button * eon_basic_control_button_new(void)
 	thiz->fill_color = 0xffcccccc;
 	thiz->start_bevel = 0xfffffff;
 	thiz->end_bevel = 0xff000000;
-	thiz->border_weight = 2.0;
+	thiz->border_weight = 1.0;
 
 	/* FIXME the proxy default is for now, until we fix enesim to make
 	 * a renderer "active"

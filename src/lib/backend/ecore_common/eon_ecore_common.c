@@ -101,9 +101,14 @@ static Eina_Bool _global_idler_cb(void *data)
 /*----------------------------------------------------------------------------*
  *                           Eon backend interface                            *
  *----------------------------------------------------------------------------*/
-static void _eon_ecore_idler_add(void *backend_data, Eon_Backend_Idler cb, void *data)
+static void _eon_ecore_idler_add(void *backend_data, Eon_Backend_Task cb, void *data)
 {
 	ecore_idle_enterer_add(cb, data);
+}
+
+static void _eon_ecore_timer_add(void *backend_data, double t, Eon_Backend_Task cb, void *data)
+{
+	ecore_timer_add(t, cb, data);
 }
 
 static void _eon_ecore_run(void *backend_data)
@@ -143,6 +148,7 @@ Eon_Backend * eon_ecore_backend_new(Eon_Ecore_Backend_Descriptor *descriptor,
 
 	pdescriptor.free = _eon_ecore_free;
 	pdescriptor.idler_add = _eon_ecore_idler_add;
+	pdescriptor.timer_add = _eon_ecore_timer_add;
 	pdescriptor.run = _eon_ecore_run;
 	pdescriptor.quit = _eon_ecore_quit;
 

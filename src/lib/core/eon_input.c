@@ -360,7 +360,7 @@ void eon_input_state_feed_mouse_up(Eon_Input_State *thiz)
 	thiz->pointer.grabbed = NULL;
 }
 
-void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int direction)
+void eon_input_state_feed_mouse_wheel(Eon_Input_State *thiz, int orientation)
 {
 	Eon_Event_Mouse_Wheel ev;
 	Ender_Element *child;

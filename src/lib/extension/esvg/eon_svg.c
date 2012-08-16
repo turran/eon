@@ -108,6 +108,17 @@ static Eina_Bool _eon_svg_idler(void *user_data)
 done:
 	return EINA_TRUE;
 }
+
+static Eina_Bool _eon_svg_timer(void *user_data)
+{
+	Eon_Svg *thiz = user_data;
+
+	if (!thiz->svg) goto done;
+
+	esvg_svg_time_tick(thiz->svg);
+done:
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                         The Esvg's parser interface                        *
  *----------------------------------------------------------------------------*/
@@ -155,6 +166,7 @@ static void _eon_svg_backend_added(Eon_Element *e, Eon_Backend *b)
 
 	thiz = _eon_svg_get(e);
 	eon_backend_idler_add(b, _eon_svg_idler, thiz);
+	eon_backend_timer_add(b, 1.0/30.0, _eon_svg_timer, thiz);
 }
 
 static void _eon_svg_backend_removed(Eon_Element *e, Eon_Backend *b)
@@ -202,11 +214,9 @@ static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)
 			}
 		}
 		enesim_renderer_image_src_set(thiz->image, thiz->s);
-		enesim_renderer_image_x_set(thiz->image, 0);
-		enesim_renderer_image_y_set(thiz->image, 0);
 	}
-	enesim_renderer_x_origin_set(thiz->image, g->x);
-	enesim_renderer_y_origin_set(thiz->image, g->y);
+	enesim_renderer_image_x_set(thiz->image, g->x);
+	enesim_renderer_image_y_set(thiz->image, g->y);
 }
 
 static void _eon_svg_hints_get(Eon_Element *e, Eon_Hints *hints)
@@ -227,7 +237,6 @@ static void _eon_svg_hints_get(Eon_Element *e, Eon_Hints *hints)
 		}
 		if (thiz->file)
 		{
-			printf("loading!\n");
 			thiz->svg = esvg_parser_load(thiz->file, NULL, NULL);
 		}
 		thiz->changed = EINA_FALSE;

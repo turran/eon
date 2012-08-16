@@ -39,7 +39,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static Ender_Property *EON_STACK_DIRECTION;
+static Ender_Property *EON_STACK_ORIENTATION;
 static Ender_Property *EON_STACK_HOMOGENEOUS;
 static Ender_Property *EON_STACK_CHILD_GRAVITY;
 
@@ -52,7 +52,7 @@ typedef struct _Eon_Stack_Child
 typedef struct _Eon_Stack
 {
 	/* properties */
-	Eon_Direction direction;
+	Eon_Orientation orientation;
 	Eina_Bool homogeneous;
 	/* private */
 	Eon_Input_Proxy *proxy;
@@ -264,10 +264,10 @@ static Eina_Bool _stack_layout_is_homogeneous(void *ref)
 	return thiz->homogeneous;
 }
 
-static Eon_Direction _stack_layout_direction_get(void *ref)
+static Eon_Orientation _stack_layout_orientation_get(void *ref)
 {
 	Eon_Stack *thiz = ref;
-	return thiz->direction;
+	return thiz->orientation;
 }
 
 static void _stack_layout_min_length_get(void *ref, double *min)
@@ -291,7 +291,7 @@ static int _stack_layout_child_gravity_get(void *ref, void *child)
 
 static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .is_homogeneous 	= */ _stack_layout_is_homogeneous,
-	/* .direction_get 	= */ _stack_layout_direction_get,
+	/* .orientation_get 	= */ _stack_layout_orientation_get,
 	/* .min_length_get 	= */ _stack_layout_min_length_get,
 	/* .min_length_get 	= */ _stack_layout_min_length_set,
 	/* .child_gravity_get 	= */ _stack_layout_child_gravity_get,
@@ -435,21 +435,21 @@ base_err:
 	return NULL;
 }
 
-static void _eon_stack_direction_set(Eon_Element *ee, Eon_Direction direction)
+static void _eon_stack_orientation_set(Eon_Element *ee, Eon_Orientation orientation)
 {
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(ee);
-	thiz->direction = direction;
+	thiz->orientation = orientation;
 	thiz->needs_setup = EINA_TRUE;
 }
 
-static void _eon_stack_direction_get(Eon_Element *ee, Eon_Direction *direction)
+static void _eon_stack_orientation_get(Eon_Element *ee, Eon_Orientation *orientation)
 {
 	Eon_Stack *thiz;
 
 	thiz = _eon_stack_get(ee);
-	if (direction) *direction = thiz->direction;
+	if (orientation) *orientation = thiz->orientation;
 
 }
 
@@ -515,7 +515,7 @@ EAPI Ender_Element * eon_hstack_new(void)
 	Ender_Element *e;
 
 	e = EON_ELEMENT_NEW("stack");
-	eon_stack_direction_set(e, EON_DIRECTION_HORIZONTAL);
+	eon_stack_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
 	return e;
 }
 
@@ -528,7 +528,7 @@ EAPI Ender_Element * eon_vstack_new(void)
 	Ender_Element *e;
 
 	e = EON_ELEMENT_NEW("stack");
-	eon_stack_direction_set(e, EON_DIRECTION_VERTICAL);
+	eon_stack_orientation_set(e, EON_ORIENTATION_VERTICAL);
 	return e;
 }
 
@@ -536,24 +536,24 @@ EAPI Ender_Element * eon_vstack_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_direction_set(Ender_Element *e, Eon_Direction direction)
+EAPI void eon_stack_orientation_set(Ender_Element *e, Eon_Orientation orientation)
 {
-	ender_element_property_value_set(e, EON_STACK_DIRECTION, direction, NULL);
+	ender_element_property_value_set(e, EON_STACK_ORIENTATION, orientation, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_direction_get(Ender_Element *e, Eon_Direction *direction)
+EAPI void eon_stack_orientation_get(Ender_Element *e, Eon_Orientation *orientation)
 {
 	Eon_Stack *thiz;
 	Eon_Element *ee;
 
-	if (!direction) return;
+	if (!orientation) return;
 	ee = ender_element_object_get(e);
 	thiz = _eon_stack_get(ee);
-	*direction = thiz->direction;
+	*orientation = thiz->orientation;
 }
 
 /**

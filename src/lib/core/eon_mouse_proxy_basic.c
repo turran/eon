@@ -308,7 +308,7 @@ void eon_mouse_proxy_basic_feed_mouse_up(Eon_Mouse_Proxy_Basic *thiz)
 	thiz->pointer.grabbed = NULL;
 }
 
-void eon_mouse_proxy_basic_feed_mouse_wheel(Eon_Mouse_Proxy_Basic *thiz, int direction)
+void eon_mouse_proxy_basic_feed_mouse_wheel(Eon_Mouse_Proxy_Basic *thiz, int orientation)
 {
 	Eon_Event_Mouse_Wheel ev;
 	Ender_Element *child;

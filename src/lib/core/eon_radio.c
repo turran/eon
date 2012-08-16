@@ -75,7 +75,10 @@ static inline Eon_Radio * _eon_radio_get(Eon_Element *ee)
 static void _radio_layout_child_padding_get(void *ref, void *child,
 		Eon_Margin *margin)
 {
-	margin->left = margin->top = margin->right = margin->bottom = 10;
+	margin->left = 4;
+	margin->top = 2;
+	margin->bottom = 2;
+	margin->right = 4;
 	/* TODO
 	*margin = thiz->padding;
 	*/
@@ -86,12 +89,20 @@ static void _radio_layout_child_geometry_set(void *ref, void *child,
 {
 	Eon_Radio *thiz;
 	Eon_Element *e = ref;
+	Eon_Size size;
+	double x;
+	double y;
 
 	thiz = _eon_radio_get(e);
-	eon_theme_instance_property_set(thiz->control, "x", g->x, NULL);
-	eon_theme_instance_property_set(thiz->control, "y", g->y, NULL);
-	eon_theme_instance_property_set(thiz->control, "width", g->width, NULL);
-	eon_theme_instance_property_set(thiz->control, "height", g->height, NULL);
+	eon_theme_control_radio_size_get(thiz->control->object, &size);
+	/* always center it */
+	//printf("control %g %g %g %g\n", g->x, g->y, g->width, g->height);
+	x = (g->width / 2) - (size.width / 2);
+	y = (g->height / 2) - (size.height);
+	eon_theme_instance_property_set(thiz->control, "x", g->x + x, NULL);
+	eon_theme_instance_property_set(thiz->control, "y", g->y + y, NULL);
+	eon_theme_instance_property_set(thiz->control, "width", size.width, NULL);
+	eon_theme_instance_property_set(thiz->control, "height", size.height, NULL);
 }
 
 static void _radio_layout_child_hints_get(void *ref, void *child,
@@ -126,7 +137,10 @@ static Eon_Layout_Frame_Descriptor _radio_layout = {
 static void _child_layout_child_padding_get(void *ref, void *child,
 		Eon_Margin *margin)
 {
-	margin->left = margin->top = margin->right = margin->bottom = 10;
+	margin->left = 2;
+	margin->top = 2;
+	margin->bottom = 2;
+	margin->right = 2;
 	/* TODO
 	*margin = thiz->padding;
 	*/
@@ -202,9 +216,9 @@ static Eina_Bool _radio_stack_layout_is_homogeneous(void *ref)
 	return EINA_FALSE;
 }
 
-static Eon_Direction _radio_stack_layout_direction_get(void *ref)
+static Eon_Orientation _radio_stack_layout_orientation_get(void *ref)
 {
-	return EON_DIRECTION_HORIZONTAL;
+	return EON_ORIENTATION_HORIZONTAL;
 }
 
 static void _radio_stack_layout_min_length_get(void *ref, double *min)
@@ -239,7 +253,7 @@ static int _radio_stack_layout_child_gravity_get(void *ref, void *child)
 
 static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .is_homogeneous 	= */ _radio_stack_layout_is_homogeneous,
-	/* .direction_get 	= */ _radio_stack_layout_direction_get,
+	/* .orientation_get 	= */ _radio_stack_layout_orientation_get,
 	/* .min_length_get 	= */ _radio_stack_layout_min_length_get,
 	/* .min_length_get 	= */ _radio_stack_layout_min_length_set,
 	/* .child_gravity_get 	= */ _radio_stack_layout_child_gravity_get,
@@ -466,6 +480,7 @@ static void _eon_radio_selected_set(Eon_Element *ee, Eina_Bool selected)
 	thiz = _eon_radio_get(ee);
 	if (thiz->selected == selected) return;
 
+	thiz->selected = selected;
 	theme = eon_widget_theme_instance_get(ee);
 	if (selected)
 	{

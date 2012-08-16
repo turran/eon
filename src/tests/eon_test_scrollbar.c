@@ -1,4 +1,5 @@
 #include "Eon.h"
+#include "eon_test_main.h"
 
 /* this functions should be called whenever the value of the scrollbar has changed */
 static void _scroll_updated(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -8,22 +9,10 @@ static void _scroll_updated(Ender_Element *e, const char *event_name, void *even
 
 int main(int argc, char **argv)
 {
-	Eon_Window *win;
-	Ender_Element *layout;
+	Ender_Element *container;
 	Ender_Element *scrollbar;
-	Eon_Backend *backend;
-	int i;
 
-	eon_init();
-	ecore_init();
-
-	//backend = eon_ecore_remote_new();
-	backend = eon_ecore_sdl_new();
-
-	layout = eon_stack_new();
-
-	win = eon_window_new(backend, layout, 320, 240);
-	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
+	container = eon_stack_new();
 
 	scrollbar = eon_scrollbar_new();
 	eon_scrollbar_min_set(scrollbar, 0);
@@ -31,13 +20,10 @@ int main(int argc, char **argv)
 	eon_scrollbar_step_increment_set(scrollbar, 1);
 	eon_scrollbar_page_increment_set(scrollbar, 2);
 	//ender_event_listener_add(scrollbar, "ScrollAdjustment", _scroll_updated, NULL);
+	eon_container_child_add(container, scrollbar);
 
-	eon_layout_child_add(layout, scrollbar);
-
-	ecore_main_loop_begin();
-	ecore_shutdown();
-	eon_shutdown();
-
-	return 0;
+	return container;
 }
+
+EXAMPLE(scrollbar)
 

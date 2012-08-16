@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 
 	layout = eon_canvas_new();
 
-	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
+	eon_stack_orientation_set(layout, EON_STACK_ORIENTATION_VERTICAL);
 	win = eon_window_new(backend, layout, 320, 240);
 
 	for (i = 0; i < 5; i++)

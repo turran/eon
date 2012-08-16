@@ -40,6 +40,8 @@ eon_theme_bin.c \
 eon_theme_container.c \
 eon_theme_control_checkbox.c \
 eon_theme_control_radio.c \
+eon_theme_control_scroll_arrow.c \
+eon_theme_control_scroll_thumb.c \
 eon_theme_button.c \
 eon_theme_checkbox.c \
 eon_theme_image.c \

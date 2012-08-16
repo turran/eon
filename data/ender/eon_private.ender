@@ -48,7 +48,7 @@ namespace "eon" : 0 {
 	};
 
 	class "stack" : "container" {
-		int "direction";
+		int "orientation";
 		bool "homogeneous";
 		rel int "child_gravity";
 	};

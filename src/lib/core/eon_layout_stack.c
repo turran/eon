@@ -26,7 +26,7 @@
 typedef struct _Eon_Layout_Stack_Geometry_Set_Data
 {
 	Eon_Geometry g;
-	Eon_Direction direction;
+	Eon_Orientation orientation;
 	Eon_Layout_Stack_Descriptor *d;
 	int gravities;
 	double empty;
@@ -35,7 +35,7 @@ typedef struct _Eon_Layout_Stack_Geometry_Set_Data
 typedef struct _Eon_Layout_Stack_Hints_Get_Data
 {
 	Eon_Hints *hints;
-	Eon_Direction direction;
+	Eon_Orientation orientation;
 	Eon_Layout_Stack_Descriptor *d;
 	int count;
 } Eon_Layout_Stack_Hints_Get_Data;
@@ -109,9 +109,7 @@ static void _homogeneous_hints_get_cb(void *ref, void *child, void *user_data)
 	/* the min size is the max of every child min size */
 	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
 	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
-	/* the max size is the min of every child max size */
-	data->hints->max.width = MIN(data->hints->max.width, hints.max.width);
-	data->hints->max.height = MIN(data->hints->max.height, hints.max.height);
+	/* the max size can be anything */
 	/* the preferred size is the max of every child preferred size */
 	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
 	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
@@ -178,7 +176,7 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 	homogeneous = d->is_homogeneous(ref);
 
 	data.d = d;
-	data.direction = d->direction_get(ref);
+	data.orientation = d->orientation_get(ref);
 	data.gravities = 0;
 	if (homogeneous)
 	{
@@ -186,7 +184,7 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 
 		data.g.x = g->x;
 		data.g.y = g->y;
-		if (data.direction == EON_DIRECTION_HORIZONTAL)
+		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
 		{
 			data.g.width = g->width / count;
 			data.g.height = g->height;
@@ -214,7 +212,7 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 
 		printf("min size is %g gravity is %d\n", min, data.gravities);
 		/* get all the gravities */
-		if (data.direction == EON_DIRECTION_HORIZONTAL)
+		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
 		{
 			data.empty = g->width - min;
 			printf("empty is %g\n", data.empty);
@@ -241,28 +239,24 @@ static void _eon_layout_stack_hints_get(void *descriptor, void *ref,
 	data.d = d;
 	data.count = 0;
 	data.hints = hints;
-	data.direction = d->direction_get(ref);
+	data.orientation = d->orientation_get(ref);
 	homogeneous = d->is_homogeneous(ref);
 	if (homogeneous)
 	{
 		d->child_foreach(ref, _homogeneous_hints_get_cb, &data);
 
-		if (data.direction == EON_DIRECTION_HORIZONTAL) {
+		if (data.orientation == EON_ORIENTATION_HORIZONTAL) {
 			hints->min.width *= data.count;
-			if (hints->max.width < DBL_MAX)
-				hints->max.width *= data.count;
 			hints->preferred.height *= data.count;
 		} else {
 			hints->min.height *= data.count;
-			if (hints->max.height < DBL_MAX)
-				hints->max.height *= data.count;
 			hints->preferred.height *= data.count;
 		}
 		d->child_count_set(ref, data.count);
 	}
 	else
 	{
-		if (data.direction == EON_DIRECTION_HORIZONTAL)
+		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
 		{
 			d->child_foreach(ref, _no_homogeneous_horizontal_hints_get_cb, &data);
 			d->min_length_set(ref, data.hints->min.width);

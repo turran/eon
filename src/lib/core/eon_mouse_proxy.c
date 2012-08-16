@@ -91,12 +91,12 @@ void eon_mouse_proxy_feed_button_up(Eon_Mouse_Proxy *thiz,
 void eon_mouse_proxy_feed_wheel(Eon_Mouse_Proxy *thiz,
 		Ender_Element *e,
 		Eon_Input *input,
-		int direction)
+		int orientation)
 {
 	if (!thiz->descriptor->wheel)
 		return;
 
-	thiz->descriptor->wheel(thiz->data, e, input, direction);
+	thiz->descriptor->wheel(thiz->data, e, input, orientation);
 }
 /*============================================================================*
  *                                   API                                      *

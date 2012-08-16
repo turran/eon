@@ -40,7 +40,6 @@ typedef struct _Eon_Basic_Radio
 	Enesim_Renderer *proxy_default;
 } Eon_Basic_Radio;
 
-const static int radio_to_content_padding = 10;
 const static int circle_radius = 8;
 
 static inline Eon_Basic_Radio * _radio_get(Eon_Theme_Widget *t)
@@ -53,81 +52,6 @@ static inline Eon_Basic_Radio * _radio_get(Eon_Theme_Widget *t)
 /*----------------------------------------------------------------------------*
  *                          The Radio theme interface                         *
  *----------------------------------------------------------------------------*/
-#if 0
-static void _radio_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
-{
-	margin->left = circle_radius + 2 + radio_to_content_padding;
-	margin->right = 2;
-	margin->top = circle_radius;
-	margin->bottom = circle_radius;
-}
-static Enesim_Renderer * _radio_renderer_get(Enesim_Renderer *r)
-{
-	Eon_Basic_Radio *thiz;
-
-	thiz = _radio_get(r);
-	return thiz->shape;
-}
-
-static Eina_Bool _radio_setup(Enesim_Renderer *r,
-		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
-{
-	Eon_Basic_Radio *thiz;
-	const Eon_Theme_Container_State *ccs = cstates[ENESIM_STATE_CURRENT];
-	const Eon_Theme_Container_State *pcs = cstates[ENESIM_STATE_PAST];
-	const Eon_Theme_Widget_State *cs = states[ENESIM_STATE_CURRENT];
-	const Eon_Theme_Widget_State *ps = states[ENESIM_STATE_PAST];
-
-	thiz = _radio_get(r);
-
-	/* add the compound layers */
-	if (ccs->content != pcs->content)
-	{
-		enesim_renderer_compound_layer_clear(thiz->compound);
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->outter_circle);
-		if (ccs->content)
-		{
-			enesim_renderer_compound_layer_add(thiz->compound, ccs->content);
-		}
-	}
-	if ((cs->x != ps->x) ||
-			(cs->y != ps->y) ||
-			(cs->width != ps->width) ||
-			(cs->height != ps->height))
-	{
-		double x = cs->x;
-		double y = cs->y;
-		double width = cs->width;
-		double height = cs->height;
-
-		/* set the needed properties */
-		enesim_renderer_rectangle_position_set(thiz->shape, x, y);
-		enesim_renderer_rectangle_width_set(thiz->shape, width);
-		enesim_renderer_rectangle_height_set(thiz->shape, height);
-		enesim_renderer_origin_set(thiz->inner_circle, x + circle_radius + 2, y + height/2);
-		enesim_renderer_origin_set(thiz->outter_circle, x + circle_radius + 2, y + height/2);
-	}
-
-	return EINA_TRUE;
-}
-static void _radio_free(Enesim_Renderer *r)
-{
-	Eon_Basic_Radio *rad;
-
-	rad = _radio_get(r);
-	if (rad->compound)
-		enesim_renderer_unref(rad->compound);
-	if (rad->outter_circle)
-		enesim_renderer_unref(rad->outter_circle);
-	if (rad->inner_circle)
-		enesim_renderer_unref(rad->inner_circle);
-	free(rad);
-}
-#endif
-
 static Enesim_Renderer * _basic_radio_renderer_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Radio *thiz;
@@ -264,9 +188,7 @@ EAPI Eon_Theme_Widget * eon_basic_radio_new(void)
 	enesim_renderer_rectangle_corner_radius_set(r, circle_radius);
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_fill_renderer_set(r, thiz->compound);
-	enesim_renderer_shape_stroke_color_set(r, 0xffff0000);
-	enesim_renderer_shape_stroke_weight_set(r, 1.0);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	t = eon_theme_radio_new(&_descriptor, thiz);

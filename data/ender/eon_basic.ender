@@ -30,8 +30,10 @@ namespace "eon" : 0 {
 
 	class "basic_control_radio" : "control_radio" {
 		int "selected";
+		color "selected_color";
 		color "color";
-		color "background_color";
+		color "start_shadow";
+		color "end_shadow";
 	};
 
 	class "basic_control_checkbox" : "control_checkbox" {

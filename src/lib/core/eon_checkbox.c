@@ -194,9 +194,9 @@ static Eina_Bool _checkbox_stack_layout_is_homogeneous(void *ref)
 	return EINA_FALSE;
 }
 
-static Eon_Direction _checkbox_stack_layout_direction_get(void *ref)
+static Eon_Orientation _checkbox_stack_layout_orientation_get(void *ref)
 {
-	return EON_DIRECTION_HORIZONTAL;
+	return EON_ORIENTATION_HORIZONTAL;
 }
 
 static void _checkbox_stack_layout_min_length_get(void *ref, double *min)
@@ -231,7 +231,7 @@ static int _checkbox_stack_layout_child_gravity_get(void *ref, void *child)
 
 static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .is_homogeneous 	= */ _checkbox_stack_layout_is_homogeneous,
-	/* .direction_get 	= */ _checkbox_stack_layout_direction_get,
+	/* .orientation_get 	= */ _checkbox_stack_layout_orientation_get,
 	/* .min_length_get 	= */ _checkbox_stack_layout_min_length_get,
 	/* .min_length_get 	= */ _checkbox_stack_layout_min_length_set,
 	/* .child_gravity_get 	= */ _checkbox_stack_layout_child_gravity_get,

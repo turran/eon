@@ -72,10 +72,16 @@ Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *contain
 	return eon_window_new(backend, width, height, data);
 }
 
-EAPI void eon_backend_idler_add(Eon_Backend *backend, Eon_Backend_Idler cb, void *data)
+EAPI void eon_backend_idler_add(Eon_Backend *backend, Eon_Backend_Task cb, void *data)
 {
 	if (!backend->descriptor.idler_add) return;
 	backend->descriptor.idler_add(backend->data, cb, data);
+}
+
+EAPI void eon_backend_timer_add(Eon_Backend *backend, double t, Eon_Backend_Task cb, void *data)
+{
+	if (!backend->descriptor.timer_add) return;
+	backend->descriptor.timer_add(backend->data, t, cb, data);
 }
 
 EAPI void eon_backend_run(Eon_Backend *backend)

@@ -406,13 +406,13 @@ static Eon_Element * _eon_scrollview_new(void)
 
 	e = eon_scrollbar_new();
 	thiz->hbar = e;
-	eon_scrollbar_direction_set(e, EON_ORIENTATION_HORIZONTAL);
+	eon_scrollbar_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
 	eon_scrollbar_min_set(e, 0);
 	eon_scrollbar_max_set(e, 100);
 
 	e = eon_scrollbar_new();
 	thiz->vbar = e;
-	eon_scrollbar_direction_set(e, EON_ORIENTATION_VERTICAL);
+	eon_scrollbar_orientation_set(e, EON_ORIENTATION_VERTICAL);
 	eon_scrollbar_min_set(e, 0);
 	eon_scrollbar_max_set(e, 100);
 

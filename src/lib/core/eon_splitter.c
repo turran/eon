@@ -27,7 +27,7 @@ static Ender_Property *EON_SPLITTER_SECOND_CONTENT;
 static Ender_Property *EON_SPLITTER_POSITION;
 
 typedef struct _Eon_Splitter_State {
-	Eon_Direction direction;
+	Eon_Orientation orientation;
 	Ender_Element *second_content;
 	double position;
 } Eon_Splitter_State;
@@ -66,7 +66,7 @@ static void _eon_splitter_mouse_move(Ender_Element *e, const char *event_name, v
 	if (!thiz->dragging) return;
 
 	/* get the absolute position of the event */
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		c = ev->x - thiz->offset_dragging;
 	}
@@ -107,7 +107,7 @@ static void _eon_splitter_mouse_drag_start(Ender_Element *e, const char *event_n
 	thiz = _eon_splitter_get(ee);
 	theme_r = eon_widget_theme_renderer_get(ee);
 
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		eon_theme_splitter_position_get(theme_r, &g.x);
 		g.y = 0;
@@ -146,7 +146,7 @@ static double _eon_splitter_min_width_get(Ender_Element *e, double cmv)
 	if (thiz->current.second_content)
 		eon_element_min_width_get(thiz->current.second_content, &scmv);
 
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
 		bmv = scmv + cmv;
@@ -180,7 +180,7 @@ static double _eon_splitter_max_width_get(Ender_Element *e, double cmv)
 	if (thiz->current.second_content)
 		eon_element_max_width_get(thiz->current.second_content, &scmv);
 
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
 
@@ -215,7 +215,7 @@ static double _eon_splitter_min_height_get(Ender_Element *e, double cmv)
 
 	if (thiz->current.second_content)
 		eon_element_min_height_get(thiz->current.second_content, &scmv);
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double length;
 
@@ -249,7 +249,7 @@ static double _eon_splitter_max_height_get(Ender_Element *e, double cmv)
 	if (thiz->current.second_content)
 		eon_element_max_width_get(thiz->current.second_content, &scmv);
 
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double length;
 
@@ -284,7 +284,7 @@ static double _eon_splitter_preferred_width_get(Ender_Element *e, double cmv)
 
 	if (thiz->current.second_content)
 		eon_element_preferred_width_get(thiz->current.second_content, &scmv);
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double thickness;
 
@@ -313,7 +313,7 @@ static double _eon_splitter_preferred_height_get(Ender_Element *e, double cmv)
 
 	if (thiz->current.second_content)
 		eon_element_preferred_height_get(thiz->current.second_content, &scmv);
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		/* FIXME */
 	}
@@ -407,7 +407,7 @@ static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 	ax = state->actual_position.x;
 	ay = state->actual_position.y;
 
-	if (thiz->current.direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double len;
 		double cmin, cmax;
@@ -518,7 +518,7 @@ static Eina_Bool _eon_splitter_needs_setup(Ender_Element *e)
 	if (thiz->current.second_content != thiz->past.second_content)
 		return EINA_TRUE;
 
-	if (thiz->current.direction != thiz->past.direction)
+	if (thiz->current.orientation != thiz->past.orientation)
 		return EINA_TRUE;
 
 	if (thiz->current.position != thiz->past.position)
@@ -565,25 +565,25 @@ renderer_err:
 	return NULL;
 }
 
-static void _eon_splitter_direction_set(Eon_Element *ee, Eon_Direction direction)
+static void _eon_splitter_orientation_set(Eon_Element *ee, Eon_Orientation orientation)
 {
 	Eon_Splitter *thiz;
 
 	thiz = _eon_splitter_get(ee);
 	if (!thiz) return;
-	thiz->current.direction = direction;
+	thiz->current.orientation = orientation;
 	thiz->changed = EINA_TRUE;
 
-	eon_widget_property_set(ee, "direction", direction, NULL);
+	eon_widget_property_set(ee, "orientation", orientation, NULL);
 }
 
-static void _eon_splitter_direction_get(Eon_Element *ee, Eon_Direction *direction)
+static void _eon_splitter_orientation_get(Eon_Element *ee, Eon_Orientation *orientation)
 {
 	Eon_Splitter *thiz;
 
 	thiz = _eon_splitter_get(ee);
 	if (!thiz) return;
-	*direction = thiz->current.direction;
+	*orientation = thiz->current.orientation;
 }
 
 static void _eon_splitter_second_content_set(Eon_Element *ee, Ender_Element *second_content)
@@ -659,7 +659,7 @@ EAPI Ender_Element * eon_hsplitter_new(void)
 	Ender_Element *e;
 
 	e = eon_splitter_new();
-	eon_splitter_direction_set(e, EON_ORIENTATION_HORIZONTAL);
+	eon_splitter_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
 	return e;
 }
 
@@ -672,7 +672,7 @@ EAPI Ender_Element * eon_vsplitter_new(void)
 	Ender_Element *e;
 
 	e = eon_splitter_new();
-	eon_splitter_direction_set(e, EON_ORIENTATION_VERTICAL);
+	eon_splitter_orientation_set(e, EON_ORIENTATION_VERTICAL);
 	return e;
 }
 
@@ -680,18 +680,18 @@ EAPI Ender_Element * eon_vsplitter_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_splitter_direction_set(Ender_Element *e, Eon_Direction direction)
+EAPI void eon_splitter_orientation_set(Ender_Element *e, Eon_Orientation orientation)
 {
-	ender_element_property_value_set(e, EON_SPLITTER_ORIENTATION, direction, NULL);
+	ender_element_property_value_set(e, EON_SPLITTER_ORIENTATION, orientation, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_splitter_direction_get(Ender_Element *e, Eon_Direction *direction)
+EAPI void eon_splitter_orientation_get(Ender_Element *e, Eon_Orientation *orientation)
 {
-	ender_element_property_value_get(e, EON_SPLITTER_SECOND_CONTENT, direction, NULL);
+	ender_element_property_value_get(e, EON_SPLITTER_SECOND_CONTENT, orientation, NULL);
 }
 
 /**

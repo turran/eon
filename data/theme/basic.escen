@@ -40,37 +40,36 @@ escen {
 
 	basic_control_radio "control_radio" {
 		default {
-			set { background_color = 0xffeeeeee; };
-			set { color = 0xffff0000; };
+			set { start_shadow = 0x55000000; };
+			set { end_shadow = 0x22000000; };
+			set { selected_color = 0xff000000; };
+			set { color = 0xff555555; };
 			set { selected = 0; };
 		};
 
 		state "selected" {
 			set { selected = 1; };
-			animate {
-				property = color;
-				key {
-					value = 0x00000000;
-					time = 0.1;
-					type = LINEAR;
-				};
-				key {
-					value = 0xff000000;
-					time = 1;
-					type = LINEAR;
-				};
-			};
 		};
 
 		state "unselected" {
 			set { selected = 0; };
+		};
+
+		state "focus_out" {
+			set { start_shadow = 0x55000000; };
+			set { end_shadow = 0x22000000; };
+		};
+
+		state "focus_in" {
+			set { start_shadow = 0xff557cb8; };
+			set { end_shadow = 0xff557cb8; };
 		};
 	};
 
 	basic_button "button" {
 		default {
 			set { fill_color = 0xffcccccc; };
-			set { start_shadow = 0x77000000; };
+			set { start_shadow = 0x55000000; };
 			set { end_shadow = 0x22000000; };
 			set { start_bevel = 0xffffffff; };
 			set { end_bevel = 0xff000000; };
@@ -90,7 +89,7 @@ escen {
 		};
 
 		state "focus_out" {
-			set { start_shadow = 0x77000000; };
+			set { start_shadow = 0x55000000; };
 			set { end_shadow = 0x22000000; };
 		};
 

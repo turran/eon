@@ -1,7 +1,7 @@
 #ifndef _EON_PRIVATE_LAYOUT_STACK_H
 #define _EON_PRIVATE_LAYOUT_STACK_H
 
-typedef Eon_Direction (*Eon_Layout_Stack_Direction_Get)(void *ref);
+typedef Eon_Orientation (*Eon_Layout_Stack_Orientation_Get)(void *ref);
 typedef Eina_Bool (*Eon_Layout_Stack_Is_Homogeneous)(void *ref);
 typedef void (*Eon_Layout_Stack_Min_Length_Set)(void *ref, double min);;
 typedef void (*Eon_Layout_Stack_Min_Length_Get)(void *ref, double *min);;
@@ -13,7 +13,7 @@ typedef void (*Eon_Layout_Stack_Child_Count_Set)(void *ref, int count);
 typedef struct _Eon_Layout_Stack_Descriptor
 {
 	Eon_Layout_Stack_Is_Homogeneous is_homogeneous;
-	Eon_Layout_Stack_Direction_Get direction_get;
+	Eon_Layout_Stack_Orientation_Get orientation_get;
 	Eon_Layout_Stack_Min_Length_Get min_length_get;
 	Eon_Layout_Stack_Min_Length_Set min_length_set;
 	Eon_Layout_Stack_Child_Gravity_Get child_gravity_get;

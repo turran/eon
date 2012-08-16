@@ -250,23 +250,23 @@ EAPI void eon_label_ellipsize_get(Ender_Element *e, Eina_Bool *enable)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_label_text_direction_set(Ender_Element *e, Etex_Direction direction)
+EAPI void eon_label_text_orientation_set(Ender_Element *e, Etex_Direction orientation)
 {
 	Eon_Label *thiz;
 
 	thiz = _eon_label_get(ee);
-	eon_widget_property_set(ee, "direction", direction);
+	eon_widget_property_set(ee, "orientation", orientation);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_label_text_direction_get(Ender_Element *e, Etex_Direction *direction)
+EAPI void eon_label_text_orientation_get(Ender_Element *e, Etex_Direction *orientation)
 {
 	Eon_Label *thiz;
 
 	thiz = _eon_label_get(ee);
-	eon_widget_property_get(ee, "direction", direction);
+	eon_widget_property_get(ee, "orientation", orientation);
 }
 #endif

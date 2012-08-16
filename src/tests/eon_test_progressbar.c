@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	layout = eon_stack_new();
 
-	eon_stack_direction_set(layout, EON_STACK_DIRECTION_VERTICAL);
+	eon_stack_orientation_set(layout, EON_STACK_ORIENTATION_VERTICAL);
 	backend = eon_ecore_sdl_new();
 	win = eon_window_new(backend, layout, 320, 240);
 

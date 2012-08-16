@@ -16,9 +16,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "eon_private.h"
-#include "Eon_Theme.h"
-#include "eon_theme_private.h"
+
+#include "eon_theme_widget.h"
+#include "eon_theme_control_scroll_thumb.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

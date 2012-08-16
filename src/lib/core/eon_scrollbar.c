@@ -15,10 +15,18 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
-#include "Eon_Theme.h"
-#include "eon_theme_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_backend.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_widget.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_theme.h"
+#include "eon_private_widget.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -32,7 +40,7 @@ static Ender_Property *EON_SCROLLBAR_STEP_INCREMENT;
 
 typedef struct _Eon_Scrollbar_State
 {
-	Eon_Direction direction;
+	Eon_Orientation orientation;
 	double max;
 	double min;
 	double page_size;
@@ -42,7 +50,7 @@ typedef struct _Eon_Scrollbar_State
 typedef struct _Eon_Scrollbar
 {
 	/* properties */
-	Eon_Direction direction;
+	Eon_Orientation orientation;
 	double max;
 	double min;
 	double page_increment;
@@ -50,6 +58,10 @@ typedef struct _Eon_Scrollbar
 	double step_increment;
 	double value;
 	/* private */
+	Eon_Theme_Instance *t_increment;
+	Eon_Theme_Instance *t_decrement;
+	Eon_Theme_Instance *t_thumb;
+
 	Eina_Bool changed : 1;
 	Eina_Bool thumb_dragging;
 	double offset_dragging;
@@ -87,7 +99,7 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 
 	eon_element_actual_size_get(ee, &size);
 	/* get the absolute position of the event */
-	if (thiz->direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		c = ev->x - thiz->offset_dragging;
 		length = size.width;
@@ -127,7 +139,7 @@ static void _eon_scrollbar_mouse_drag_start(Ender_Element *e, const char *event_
 	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
 	if (!enesim_rectangle_is_inside(&tg, ev->rel_x, ev->rel_y))
 		return;
-	if (thiz->direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 		thiz->offset_dragging = ev->x - tg.x;
 	else
 		thiz->offset_dragging = ev->y - tg.y;
@@ -164,7 +176,7 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 		double dt, it;
 		double c;
 
-		if (thiz->direction == EON_ORIENTATION_HORIZONTAL)
+		if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 		{
 			dt = tg.x;
 			it = tg.x + tg.w;
@@ -204,6 +216,7 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_scrollbar_mouse_move, NULL);
 }
 
+#if 0
 static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		Enesim_Surface *s, Enesim_Error **err)
@@ -220,7 +233,7 @@ static Eina_Bool _eon_scrollbar_setup(Ender_Element *e,
 	thiz = _eon_scrollbar_get(ee);
 	theme_r = eon_widget_theme_renderer_get(ee);
 
-	if (thiz->direction == EON_ORIENTATION_HORIZONTAL)
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 		length = state->actual_size.width;
 	else
 		length = state->actual_size.height;
@@ -249,14 +262,6 @@ static Eina_Bool _eon_scrollbar_needs_setup(Ender_Element *e)
 	ee = ender_element_object_get(e);
 	thiz = _eon_scrollbar_get(ee);
 	return thiz->changed;
-}
-
-static void _eon_scrollbar_free(Eon_Element *ee)
-{
-	Eon_Scrollbar *thiz;
-
-	thiz = _eon_scrollbar_get(ee);
-	free(thiz);
 }
 
 static double _eon_scrollbar_min_width_get(Ender_Element *e, Enesim_Renderer *theme_r)
@@ -312,19 +317,45 @@ static double _eon_scrollbar_preferred_height_get(Ender_Element *e, Enesim_Rende
 
 	return v;
 }
+#endif
 
-static Eon_Widget_Descriptor _eon_scrollbar_widget_descriptor = {
-	.name = "scrollbar",
-	.initialize = _eon_scrollbar_initialize,
-	.free = _eon_scrollbar_free,
-	.setup = _eon_scrollbar_setup,
-	.needs_setup = _eon_scrollbar_needs_setup,
-	.min_width_get = _eon_scrollbar_min_width_get,
-	.max_width_get = _eon_scrollbar_max_width_get,
-	.min_height_get = _eon_scrollbar_min_height_get,
-	.max_height_get = _eon_scrollbar_max_height_get,
-	.preferred_width_get = _eon_scrollbar_preferred_width_get,
-	.preferred_height_get = _eon_scrollbar_preferred_height_get,
+static void _eon_scrollbar_geometry_set(Eon_Element *e, Eon_Geometry *g)
+{
+	/* set the geometry on every control */
+}
+
+static void _eon_scrollbar_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Hints *hints)
+{
+	Eon_Size size;
+
+	/* get the size of the different controls */
+
+	//eon_theme_scrollbar_size_get(theme->object, &size);
+	hints->min = size;
+	hints->max = size;
+	hints->preferred = size;
+}
+
+static void _eon_scrollbar_free(Eon_Element *e)
+{
+	Eon_Scrollbar *thiz;
+
+	thiz = _eon_scrollbar_get(e);
+	free(thiz);
+}
+
+
+static Eon_Widget_Descriptor _eon_scrollbar_descriptor = {
+	/* .initialize 		= */ NULL,
+	/* .backend_added 	= */ NULL,
+	/* .backend_removed 	= */ NULL,
+	/* .setup 		= */ NULL,
+	/* .needs_setup 	= */ NULL,
+	/* .geometry_set 	= */ NULL,
+	/* .free		= */ _eon_scrollbar_free,
+	/* .name 		= */ "scrollbar",
+	/* .hints_get 		= */ _eon_scrollbar_hints_get,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -333,9 +364,13 @@ static Eon_Element * _eon_scrollbar_new(void)
 {
 	Eon_Scrollbar *thiz;
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
+	Eon_Theme_Instance *control;
+
+	theme = eon_theme_instance_new("scrollbar", EINA_TRUE);
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Scrollbar));
-	if (!thiz) return NULL;
 	/* default values */
 	thiz->value = 0;
 	thiz->max = 100;
@@ -344,35 +379,54 @@ static Eon_Element * _eon_scrollbar_new(void)
 	thiz->page_increment = 10;
 	thiz->page_size = 10;
 
-	ee = eon_widget_new(&_eon_scrollbar_widget_descriptor, thiz);
-	if (!ee) goto renderer_err;
+	control = eon_theme_instance_new("scroll_thumb", EINA_TRUE);
+	if (!control) goto scroll_thumb_err;
+	thiz->t_thumb = control;
+
+	control = eon_theme_instance_new("scroll_arrow", EINA_TRUE);
+	if (!control) goto scroll_increment_err;
+	thiz->t_increment = control;
+
+	control = eon_theme_instance_new("scroll_arrow", EINA_TRUE);
+	if (!control) goto scroll_decrement_err;
+	thiz->t_decrement = control;
+
+	ee = eon_widget_new(theme, &_eon_scrollbar_descriptor, thiz);
+	if (!ee) goto base_err;
 
 	return ee;
 
-renderer_err:
+base_err:
+	// eon_theme_instance_free(thiz->t_decrement);
+scroll_decrement_err:
+	// eon_theme_instance_free(thiz->t_increment);
+scroll_increment_err:
+	// eon_theme_instance_free(thiz->t_thumb);
+scroll_thumb_err:
+	// eon_theme_instance_free(theme);
 	free(thiz);
 	return NULL;
 }
 
-static void _eon_scrollbar_direction_set(Eon_Element *ee, Eon_Direction direction)
+static void _eon_scrollbar_orientation_set(Eon_Element *ee, Eon_Orientation orientation)
 {
 	Eon_Scrollbar *thiz;
 
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
-	thiz->direction = direction;
+	thiz->orientation = orientation;
 	thiz->changed = EINA_TRUE;
 
-	eon_widget_property_set(ee, "direction", direction, NULL);
+	//eon_widget_property_set(ee, "orientation", orientation, NULL);
 }
 
-static void _eon_scrollbar_direction_get(Eon_Element *ee, Eon_Direction *direction)
+static void _eon_scrollbar_orientation_get(Eon_Element *ee, Eon_Orientation *orientation)
 {
 	Eon_Scrollbar *thiz;
 
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
-	*direction = thiz->direction;
+	*orientation = thiz->orientation;
 }
 
 static void _eon_scrollbar_max_set(Eon_Element *ee, double max)
@@ -516,7 +570,7 @@ EAPI Ender_Element * eon_hscrollbar_new(void)
 	Ender_Element *e;
 
 	e = eon_scrollbar_new();
-	eon_scrollbar_direction_set(e, EON_ORIENTATION_HORIZONTAL);
+	eon_scrollbar_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
 	return e;
 }
 
@@ -529,7 +583,7 @@ EAPI Ender_Element * eon_vscrollbar_new(void)
 	Ender_Element *e;
 
 	e = eon_scrollbar_new();
-	eon_scrollbar_direction_set(e, EON_ORIENTATION_VERTICAL);
+	eon_scrollbar_orientation_set(e, EON_ORIENTATION_VERTICAL);
 	return e;
 }
 
@@ -537,18 +591,18 @@ EAPI Ender_Element * eon_vscrollbar_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_scrollbar_direction_set(Ender_Element *e, Eon_Direction direction)
+EAPI void eon_scrollbar_orientation_set(Ender_Element *e, Eon_Orientation orientation)
 {
-	ender_element_property_value_set(e, EON_SCROLLBAR_ORIENTATION, direction, NULL);
+	ender_element_property_value_set(e, EON_SCROLLBAR_ORIENTATION, orientation, NULL);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_scrollbar_direction_get(Ender_Element *e, Eon_Direction *direction)
+EAPI void eon_scrollbar_orientation_get(Ender_Element *e, Eon_Orientation *orientation)
 {
-	ender_element_property_value_get(e, EON_SCROLLBAR_ORIENTATION, direction, NULL);
+	ender_element_property_value_get(e, EON_SCROLLBAR_ORIENTATION, orientation, NULL);
 }
 
 /**

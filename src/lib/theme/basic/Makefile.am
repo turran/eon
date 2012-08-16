@@ -10,7 +10,6 @@ AM_CPPFLAGS = \
 @EON_CFLAGS@
 
 # theme_basic_control_bar.c \
-# theme_basic_control_arrow.c \
 # theme_basic_color.c \
 # theme_basic_entry.c \
 # theme_basic_frame.c \
@@ -27,6 +26,8 @@ theme_basic_button.c \
 theme_basic_control_button.c \
 theme_basic_control_checkbox.c \
 theme_basic_control_radio.c \
+theme_basic_control_scroll_arrow.c \
+theme_basic_control_scroll_thumb.c \
 theme_basic_checkbox.c \
 theme_basic_image.c \
 theme_basic_label.c \

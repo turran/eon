@@ -29,8 +29,8 @@ EAPI Ender_Element * eon_splitter_new(void);
 EAPI Ender_Element * eon_hsplitter_new(void);
 EAPI Ender_Element * eon_vsplitter_new(void);
 
-EAPI void eon_splitter_direction_set(Ender_Element *e, Eon_Direction direction);
-EAPI void eon_splitter_direction_get(Ender_Element *e, Eon_Direction *direction);
+EAPI void eon_splitter_direction_set(Ender_Element *e, Eon_Orientation direction);
+EAPI void eon_splitter_direction_get(Ender_Element *e, Eon_Orientation *direction);
 
 EAPI void eon_splitter_second_content_set(Ender_Element *e, Ender_Element *content);
 EAPI void eon_splitter_second_content_get(Ender_Element *e, Ender_Element **content);
