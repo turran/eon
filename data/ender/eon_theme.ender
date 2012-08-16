@@ -14,13 +14,16 @@ namespace "eon_theme" : 0 {
 	abstract "bin" : "container" {
 	};
 
-	abstract "button" : "bin" {
+	abstract "button_base" : "bin" {
 	};
 
-	abstract "radio" : "bin" {
+	abstract "button" : "button_base" {
 	};
 
-	abstract "checkbox" : "bin" {
+	abstract "radio" : "button_base" {
+	};
+
+	abstract "checkbox" : "button_base" {
 	};
 
 	/* controls */
@@ -30,11 +33,14 @@ namespace "eon_theme" : 0 {
 	abstract "control_checkbox" : "widget" {
 	};
 
-	abstract "spin" : "widget" {
-
+	abstract "control_scroll_thumb" : "widget" {
 	};
 
-	abstract "button_base" : "container" {
+	abstract "control_scroll_arrow" : "widget" {
+	};
+
+	abstract "spin" : "widget" {
+
 	};
 
 	abstract "toggle" : "button_base" {

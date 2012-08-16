@@ -383,11 +383,11 @@ static Eon_Element * _eon_scrollbar_new(void)
 	if (!control) goto scroll_thumb_err;
 	thiz->t_thumb = control;
 
-	control = eon_theme_instance_new("scroll_arrow", EINA_TRUE);
+	control = eon_theme_instance_new("scroll_arrow_increment", EINA_TRUE);
 	if (!control) goto scroll_increment_err;
 	thiz->t_increment = control;
 
-	control = eon_theme_instance_new("scroll_arrow", EINA_TRUE);
+	control = eon_theme_instance_new("scroll_arrow_decrement", EINA_TRUE);
 	if (!control) goto scroll_decrement_err;
 	thiz->t_decrement = control;
 

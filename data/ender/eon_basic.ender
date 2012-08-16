@@ -40,6 +40,12 @@ namespace "eon" : 0 {
 		int "selected";
 	};
 
+	class "basic_control_scroll_arrow" : "control_scroll_arrow" {
+	};
+
+	class "basic_control_scroll_thumb" : "control_scroll_thumb" {
+	};
+
 	class "basic_color" : "color" {
 	};
 

@@ -56,6 +56,14 @@ static void _eon_theme_radio_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_theme_radio_control_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Radio *thiz;
+
+	thiz = _eon_theme_radio_get(t);
+	if (thiz->descriptor.control_set)
+		thiz->descriptor.control_set(t, r);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -101,12 +109,4 @@ EAPI void * eon_theme_radio_data_get(Eon_Theme_Widget *t)
 	return thiz->data;
 }
 
-EAPI void eon_theme_radio_control_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
-{
-	Eon_Theme_Radio *thiz;
-
-	thiz = _eon_theme_radio_get(t);
-	if (thiz->descriptor.control_set)
-		thiz->descriptor.control_set(t, r);
-}
 

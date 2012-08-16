@@ -22,63 +22,29 @@
 /**
  * @{
  */
-typedef double (*Eon_Theme_Scrollbar_Max_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Max_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Min_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Min_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Preferred_Height_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Preferred_Width_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Thumb_Max_Size_Get)(Enesim_Renderer *r);
-typedef double (*Eon_Theme_Scrollbar_Thumb_Min_Size_Get)(Enesim_Renderer *r);
-typedef void (*Eon_Theme_Scrollbar_Thumb_Percent_Set)(Enesim_Renderer *r, double percent);
-typedef void (*Eon_Theme_Scrollbar_Thumb_Size_Set)(Enesim_Renderer *r, double size);
-typedef void (*Eon_Theme_Scrollbar_Decrement_Arrow_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geometry);
-typedef void (*Eon_Theme_Scrollbar_Increment_Arrow_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geometry);
-typedef void (*Eon_Theme_Scrollbar_Thumb_Geometry_Get)(Enesim_Renderer *r, Enesim_Rectangle *geometry);
+
+typedef void (*Eon_Theme_Scrollbar_Thumb_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
+typedef void (*Eon_Theme_Scrollbar_Arrow_Increment_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
+typedef void (*Eon_Theme_Scrollbar_Arrow_Decrement_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
 
 typedef struct _Eon_Theme_Scrollbar_Descriptor
 {
-	Eon_Theme_Scrollbar_Max_Width_Get max_width_get;
-	Eon_Theme_Scrollbar_Min_Width_Get min_width_get;
-	Eon_Theme_Scrollbar_Max_Height_Get max_height_get;
-	Eon_Theme_Scrollbar_Min_Height_Get min_height_get;
-	Eon_Theme_Scrollbar_Preferred_Width_Get preferred_width_get;
-	Eon_Theme_Scrollbar_Preferred_Height_Get preferred_height_get;
-	Eon_Theme_Scrollbar_Thumb_Max_Size_Get thumb_max_size_get;
-	Eon_Theme_Scrollbar_Thumb_Min_Size_Get thumb_min_size_get;
-	Eon_Theme_Scrollbar_Thumb_Size_Set thumb_size_set;
-	Eon_Theme_Scrollbar_Thumb_Percent_Set thumb_percent_set;
-	Eon_Theme_Scrollbar_Thumb_Geometry_Get thumb_geometry_get;
-	Eon_Theme_Scrollbar_Decrement_Arrow_Geometry_Get decrement_arrow_geometry_get;;
-	Eon_Theme_Scrollbar_Increment_Arrow_Geometry_Get increment_arrow_geometry_get;
-	/* renderer needed functions */
+	/* widget descriptor */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Widget_Setup setup;
-	Enesim_Renderer_Delete free;
+	Eon_Theme_Widget_X_Set x_set;
+	Eon_Theme_Widget_Y_Set y_set;
+	Eon_Theme_Widget_Width_Set width_set;
+	Eon_Theme_Widget_Height_Set height_set;
+	Eon_Theme_Widget_Free free;
+	/* scrollbar functions */
+	Eon_Theme_Scrollbar_Thumb_Set thumb_set;
+	Eon_Theme_Scrollbar_Arrow_Increment_Set arrow_increment_set;
+	Eon_Theme_Scrollbar_Arrow_Decrement_Set arrow_decrement_set;
 } Eon_Theme_Scrollbar_Descriptor;
 
-EAPI Enesim_Renderer * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *descriptor,
 		void *data);
-EAPI Eina_Bool eon_is_theme_scrollbar(Enesim_Renderer *r);
-EAPI void * eon_theme_scrollbar_data_get(Enesim_Renderer *r);
-
-EAPI void eon_theme_scrollbar_min_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_scrollbar_min_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_scrollbar_max_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_scrollbar_max_height_get(Enesim_Renderer *r, double *height);
-EAPI void eon_theme_scrollbar_preferred_width_get(Enesim_Renderer *r, double *width);
-EAPI void eon_theme_scrollbar_preferred_height_get(Enesim_Renderer *r, double *height);
-
-EAPI void eon_theme_scrollbar_orientation_set(Enesim_Renderer *r, Eon_Orientation orientation);
-EAPI void eon_theme_scrollbar_orientation_get(Enesim_Renderer *r, Eon_Orientation *orientation);
-
-EAPI void eon_theme_scrollbar_thumb_min_size_get(Enesim_Renderer *r, double *size);
-EAPI void eon_theme_scrollbar_thumb_max_size_get(Enesim_Renderer *r, double *size);
-
-EAPI void eon_theme_scrollbar_thumb_size_set(Enesim_Renderer *r, double size);
-EAPI void eon_theme_scrollbar_thumb_size_get(Enesim_Renderer *r, double *size);
-EAPI void eon_theme_scrollbar_thumb_percent_set(Enesim_Renderer *r, double percent);
-EAPI void eon_theme_scrollbar_thumb_percent_get(Enesim_Renderer *r, double *percent);
+EAPI void * eon_theme_scrollbar_data_get(Eon_Theme_Widget *t);
 
 /**
  * @}

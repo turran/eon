@@ -7,7 +7,7 @@ static void _scroll_updated(Ender_Element *e, const char *event_name, void *even
 
 }
 
-int main(int argc, char **argv)
+Ender_Element * eon_test_scrollbar(int argc, char **argv)
 {
 	Ender_Element *container;
 	Ender_Element *scrollbar;

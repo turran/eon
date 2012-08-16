@@ -65,6 +65,7 @@ static void _register_enders(void)
 	eon_container_init();
 	eon_image_init();
 	eon_label_init();
+	eon_scrollbar_init();
 	/* container inheritance */
 	eon_bin_init();
 	eon_stack_init();
@@ -82,7 +83,6 @@ static void _register_enders(void)
 	/* widget inheritance */
 	eon_compound_init();
 	eon_container_init();
-	eon_scrollbar_init();
 	eon_progressbar_init();
 	eon_entry_init();
 	eon_spin_init();

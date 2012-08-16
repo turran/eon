@@ -43,7 +43,6 @@ typedef struct _Eon_Theme_Radio_Descriptor
 EAPI Eon_Theme_Widget * eon_theme_radio_new(Eon_Theme_Radio_Descriptor *descriptor,
 		void *data);
 EAPI void * eon_theme_radio_data_get(Eon_Theme_Widget *t);
-EAPI void eon_theme_radio_control_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
 
 /**
  * @}
