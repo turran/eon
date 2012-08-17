@@ -18,38 +18,38 @@
 #include "Eon.h"
 
 #include "eon_theme_widget.h"
-#include "eon_theme_control_scroll_thumb.h"
+#include "eon_theme_control_scroll_thumb_area.h"
 
 #include <float.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Theme_Control_Scroll_Thumb_Descriptor_Internal
+typedef struct _Eon_Theme_Control_Scroll_Thumb_Area_Descriptor_Internal
 {
 	Eon_Theme_Widget_Free free;
-	Eon_Theme_Control_Scroll_Thumb_Sizes_Get sizes_get;
-	Eon_Theme_Control_Scroll_Thumb_Orientation_Set orientation_set;
-} Eon_Theme_Control_Scroll_Thumb_Descriptor_Internal;
+	Eon_Theme_Control_Scroll_Thumb_Area_Sizes_Get sizes_get;
+	Eon_Theme_Control_Scroll_Thumb_Area_Orientation_Set orientation_set;
+} Eon_Theme_Control_Scroll_Thumb_Area_Descriptor_Internal;
 
-typedef struct _Eon_Theme_Control_Scroll_Thumb
+typedef struct _Eon_Theme_Control_Scroll_Thumb_Area
 {
-	Eon_Theme_Control_Scroll_Thumb_Descriptor_Internal descriptor;
+	Eon_Theme_Control_Scroll_Thumb_Area_Descriptor_Internal descriptor;
 	void *data;
-} Eon_Theme_Control_Scroll_Thumb;
+} Eon_Theme_Control_Scroll_Thumb_Area;
 
-static inline Eon_Theme_Control_Scroll_Thumb * _eon_theme_control_scroll_thumb_get(Eon_Theme_Widget *t)
+static inline Eon_Theme_Control_Scroll_Thumb_Area * _eon_theme_control_scroll_thumb_area_get(Eon_Theme_Widget *t)
 {
-	Eon_Theme_Control_Scroll_Thumb *thiz;
+	Eon_Theme_Control_Scroll_Thumb_Area *thiz;
 
 	thiz = eon_theme_widget_data_get(t);
 	return thiz;
 }
 
-static void _eon_theme_control_scroll_thumb_free(Eon_Theme_Widget *t)
+static void _eon_theme_control_scroll_thumb_area_free(Eon_Theme_Widget *t)
 {
-	Eon_Theme_Control_Scroll_Thumb *thiz;
+	Eon_Theme_Control_Scroll_Thumb_Area *thiz;
 
-	thiz = _eon_theme_control_scroll_thumb_get(t);
+	thiz = _eon_theme_control_scroll_thumb_area_get(t);
 	if (thiz->descriptor.free)
 		thiz->descriptor.free(t);
 	free(thiz);
@@ -60,15 +60,15 @@ static void _eon_theme_control_scroll_thumb_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Eon_Theme_Widget * eon_theme_control_scroll_thumb_new(Eon_Theme_Control_Scroll_Thumb_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_control_scroll_thumb_area_new(Eon_Theme_Control_Scroll_Thumb_Area_Descriptor *descriptor,
 		void *data)
 {
-	Eon_Theme_Control_Scroll_Thumb *thiz;
+	Eon_Theme_Control_Scroll_Thumb_Area *thiz;
 	Eon_Theme_Widget_Descriptor pdescriptor;
 
-	thiz = calloc(1, sizeof(Eon_Theme_Control_Scroll_Thumb));
+	thiz = calloc(1, sizeof(Eon_Theme_Control_Scroll_Thumb_Area));
 	thiz->descriptor.sizes_get = descriptor->sizes_get;
-	thiz->descriptor.free = _eon_theme_control_scroll_thumb_free;
+	thiz->descriptor.free = _eon_theme_control_scroll_thumb_area_free;
 	thiz->data = data;
 	/* widget descriptor */
 	pdescriptor.renderer_get = descriptor->renderer_get;
@@ -76,24 +76,24 @@ EAPI Eon_Theme_Widget * eon_theme_control_scroll_thumb_new(Eon_Theme_Control_Scr
 	pdescriptor.y_set = descriptor->y_set;
 	pdescriptor.width_set = descriptor->width_set;
 	pdescriptor.height_set = descriptor->height_set;
-	pdescriptor.free = _eon_theme_control_scroll_thumb_free;
+	pdescriptor.free = _eon_theme_control_scroll_thumb_area_free;
 
 	return eon_theme_widget_new(&pdescriptor, thiz);
 }
 
-EAPI void * eon_theme_control_scroll_thumb_data_get(Eon_Theme_Widget *t)
+EAPI void * eon_theme_control_scroll_thumb_area_data_get(Eon_Theme_Widget *t)
 {
-	Eon_Theme_Control_Scroll_Thumb *thiz;
+	Eon_Theme_Control_Scroll_Thumb_Area *thiz;
 
-	thiz = _eon_theme_control_scroll_thumb_get(t);
+	thiz = _eon_theme_control_scroll_thumb_area_get(t);
 	return thiz->data;
 }
 
-EAPI void eon_theme_control_scroll_thumb_sizes_get(Eon_Theme_Widget *t, Eon_Size *min, Eon_Size *max)
+EAPI void eon_theme_control_scroll_thumb_area_sizes_get(Eon_Theme_Widget *t, Eon_Size *min, Eon_Size *max)
 {
-	Eon_Theme_Control_Scroll_Thumb *thiz;
+	Eon_Theme_Control_Scroll_Thumb_Area *thiz;
 
-	thiz = _eon_theme_control_scroll_thumb_get(t);
+	thiz = _eon_theme_control_scroll_thumb_area_get(t);
 	if (thiz->descriptor.sizes_get)
 		thiz->descriptor.sizes_get(t, min, max);
 	else
@@ -103,12 +103,13 @@ EAPI void eon_theme_control_scroll_thumb_sizes_get(Eon_Theme_Widget *t, Eon_Size
 	}	
 }
 
-EAPI void eon_theme_control_scroll_thumb_orientation_set(Eon_Theme_Widget *t, Eon_Orientation orientation)
+EAPI void eon_theme_control_scroll_thumb_area_orientation_set(Eon_Theme_Widget *t, Eon_Orientation orientation)
 {
-	Eon_Theme_Control_Scroll_Thumb *thiz;
+	Eon_Theme_Control_Scroll_Thumb_Area *thiz;
 
-	thiz = _eon_theme_control_scroll_thumb_get(t);
+	thiz = _eon_theme_control_scroll_thumb_area_get(t);
 	if (thiz->descriptor.orientation_set)
 		thiz->descriptor.orientation_set(t, orientation);
 }
+
 

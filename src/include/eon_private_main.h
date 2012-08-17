@@ -95,4 +95,66 @@ static inline void eon_hints_values_set(Eon_Hints *h, double minw, double maxw,
 	h->preferred.height = prefh;
 }
 
+static inline void eon_hints_sanitize(Eon_Hints *h)
+{
+	if (h->max.width < h->min.width)
+		h->max.width = h->min.width;
+	if (h->max.height < h->min.height)
+		h->max.height = h->min.height;
+
+	if (h->preferred.width < h->min.width)
+		h->preferred.width = h->min.width;
+	if (h->preferred.height < h->min.height)
+		h->preferred.height = h->min.height;
+}
+
+static inline void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, Eon_Horizontal_Alignment halign, Eon_Vertical_Alignment valign)
+{
+	/* check the geometry against the last hints */
+	if (g->width > hints->max.width)
+	{
+		double w = hints->preferred.width;
+		double x = g->x;
+
+		if (w < 0) w = hints->max.width;
+		switch (halign)
+		{
+			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+			x = g->width - w;
+			break;
+
+			case EON_HORIZONTAL_ALIGNMENT_CENTER:
+			x = (g->width / 2) - (w / 2);
+			break;
+
+			default:
+			break;
+		}
+		g->x += x;
+		g->width = w;
+	}
+	if (g->height > hints->max.height)
+	{
+		double h = hints->preferred.height;
+		double y = g->y;
+
+		if (h < 0) h = hints->max.height;
+		switch (valign)
+		{
+			case EON_VERTICAL_ALIGNMENT_BOTTOM:
+			y = g->height - h;
+			break;
+
+			case EON_VERTICAL_ALIGNMENT_CENTER:
+			y = (g->height / 2) - (h / 2);
+			break;
+
+			default:
+			break;
+		}
+		g->y += y;
+		g->height = h;
+	}
+}
+
 #endif

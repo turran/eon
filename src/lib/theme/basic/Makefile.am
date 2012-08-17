@@ -27,6 +27,7 @@ theme_basic_control_checkbox.c \
 theme_basic_control_radio.c \
 theme_basic_control_scroll_arrow.c \
 theme_basic_control_scroll_thumb.c \
+theme_basic_control_scroll_thumb_area.c \
 theme_basic_checkbox.c \
 theme_basic_image.c \
 theme_basic_label.c \

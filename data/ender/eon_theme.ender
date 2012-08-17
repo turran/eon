@@ -36,6 +36,9 @@ namespace "eon_theme" : 0 {
 	abstract "control_scroll_thumb" : "widget" {
 	};
 
+	abstract "control_scroll_thumb_area" : "widget" {
+	};
+
 	abstract "control_scroll_arrow" : "widget" {
 	};
 

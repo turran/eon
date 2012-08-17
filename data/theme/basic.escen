@@ -35,6 +35,9 @@ escen {
 	basic_control_scroll_thumb "scroll_thumb" {
 	};
 
+	basic_control_scroll_thumb_area "scroll_thumb_area" {
+	};
+
 	basic_control_checkbox "control_checkbox" {
 		default {
 			set { selected = 0; };

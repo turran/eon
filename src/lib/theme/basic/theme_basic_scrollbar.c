@@ -31,6 +31,7 @@ typedef struct _Eon_Basic_Scrollbar
 	Enesim_Renderer *arrow_increment;
 	Enesim_Renderer *arrow_decrement;
 	Enesim_Renderer *thumb;
+	Enesim_Renderer *thumb_area;
 
 	Enesim_Renderer *shape;
 	Enesim_Renderer *compound;
@@ -109,6 +110,17 @@ static void _basic_scrollbar_thumb_set(Eon_Theme_Widget *t, Enesim_Renderer *thu
 	thiz->thumb = thumb;
 }
 
+static void _basic_scrollbar_thumb_area_set(Eon_Theme_Widget *t, Enesim_Renderer *thumb_area)
+{
+	Eon_Basic_Scrollbar *thiz;
+
+	thiz = _scrollbar_get(t);
+	if (thiz->thumb_area)	
+		enesim_renderer_compound_layer_remove(thiz->compound, thiz->thumb_area);
+	enesim_renderer_compound_layer_add(thiz->compound, thumb_area);
+	thiz->thumb_area = thumb_area;
+}
+
 static void _basic_scrollbar_arrow_increment_set(Eon_Theme_Widget *t, Enesim_Renderer *arrow_increment)
 {
 	Eon_Basic_Scrollbar *thiz;
@@ -139,6 +151,7 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 	/* .height_set 		= */ _basic_scrollbar_height_set,
 	/* .free 		= */ _basic_scrollbar_free,
 	/* .thumb_set 		= */ _basic_scrollbar_thumb_set,
+	/* .thumb_area_set 	= */ _basic_scrollbar_thumb_area_set,
 	/* .arrow_increment_set	= */ _basic_scrollbar_arrow_increment_set,
 	/* .arrow_decrement_set	= */ _basic_scrollbar_arrow_decrement_set,
 };

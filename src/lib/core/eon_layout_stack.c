@@ -121,22 +121,37 @@ static void _no_homogeneous_horizontal_hints_get_cb(void *ref, void *child, void
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
 	Eon_Hints hints;
+	double min = 0;
 
 	eon_hints_initialize(&hints);
 	data->d->child_hints_get(ref, child, &hints);
 
 	/* the width is the sum of every child width */
+	if (hints.min.width == DBL_MAX)
+		data->hints->min.width = DBL_MAX;
 	if (data->hints->min.width != DBL_MAX)
-		data->hints->min.width += hints.min.width;
+	{
+		min = hints.min.width;
+		data->hints->min.width += min;
+	}
+
+	if (hints.max.width == DBL_MAX)
+		data->hints->max.width = DBL_MAX;
 	if (data->hints->max.width != DBL_MAX)
 		data->hints->max.width += hints.max.width;
+
+	if (hints.preferred.width < 0)
+		data->hints->preferred.width += min;
 	if (data->hints->preferred.width != DBL_MAX)
 		data->hints->preferred.width += hints.preferred.width;
+
 	/* the height should follow the normal min/max scheme */
 	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
 	data->hints->max.height = MIN(data->hints->max.height, hints.max.height);
 	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
-	printf("stack: min %g %g max %g %g preferred %g %g\n",
+
+	eon_hints_sanitize(data->hints);
+	printf("stack nhh: min %g %g max %g %g preferred %g %g\n",
 		data->hints->min.width, data->hints->min.height,
 		data->hints->max.width, data->hints->max.height,
 		data->hints->preferred.width, data->hints->preferred.height);
@@ -146,21 +161,39 @@ static void _no_homogeneous_vertical_hints_get_cb(void *ref, void *child, void *
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
 	Eon_Hints hints;
+	double min = 0;
 
 	eon_hints_initialize(&hints);
 	data->d->child_hints_get(ref, child, &hints);
 
 	/* the height is the sum of every child height */
+	if (hints.min.height == DBL_MAX)
+		data->hints->min.height = DBL_MAX;
 	if (data->hints->min.height != DBL_MAX)
-		data->hints->min.height += hints.min.height;
+	{
+		min = hints.min.height;
+		data->hints->min.height += min;
+	}
+
+	if (hints.max.height == DBL_MAX)
+		data->hints->max.height = DBL_MAX;
 	if (data->hints->max.height != DBL_MAX)
 		data->hints->max.height += hints.max.height;
+
+	if (hints.preferred.height < 0)
+		data->hints->preferred.height += min;
 	if (data->hints->preferred.height != DBL_MAX)
 		data->hints->preferred.height += hints.preferred.height;
 	/* the width should follow the normal min/max scheme */
 	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
 	data->hints->max.width = MIN(data->hints->max.width, hints.max.width);
 	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
+
+	eon_hints_sanitize(data->hints);
+	printf("stack nhv: min %g %g max %g %g preferred %g %g\n",
+		data->hints->min.width, data->hints->min.height,
+		data->hints->max.width, data->hints->max.height,
+		data->hints->preferred.width, data->hints->preferred.height);
 }
 /*----------------------------------------------------------------------------*
  *                        The Eon's layout interface                          *

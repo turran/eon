@@ -93,6 +93,7 @@ static void _hints_get_cb(void *ref, void *child, void *user_data)
 	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
 	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
 
+	eon_hints_sanitize(data->hints);
 	printf("frame: min %g %g max %g %g preferred %g %g\n",
 		data->hints->min.width, data->hints->min.height,
 		data->hints->max.width, data->hints->max.height,

@@ -760,50 +760,7 @@ void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 	printf("1 '%s' element setting geometry %g %g %g %g\n", thiz->descriptor.name, rg.x, rg.y, rg.width, rg.height);
 
 	/* check the geometry against the last hints */
-	if (rg.width > thiz->last_hints.max.width)
-	{
-		double w = thiz->last_hints.preferred.width;
-		double x = rg.x;
-
-		if (w < 0) w = thiz->last_hints.max.width;
-		switch (thiz->horizontal_alignment)
-		{
-			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
-			x = rg.width - w;
-			break;
-
-			case EON_HORIZONTAL_ALIGNMENT_CENTER:
-			x = (rg.width / 2) - (w / 2);
-			break;
-
-			default:
-			break;
-		}
-		rg.x += x;
-		rg.width = w;
-	}
-	if (rg.height > thiz->last_hints.max.height)
-	{
-		double h = thiz->last_hints.preferred.height;
-		double y = rg.y;
-
-		if (h < 0) h = thiz->last_hints.max.height;
-		switch (thiz->vertical_alignment)
-		{
-			case EON_VERTICAL_ALIGNMENT_BOTTOM:
-			y = rg.height - h;
-			break;
-
-			case EON_VERTICAL_ALIGNMENT_CENTER:
-			y = (rg.height / 2) - (h / 2);
-			break;
-
-			default:
-			break;
-		}
-		rg.y += y;
-		rg.height = h;
-	}
+	eon_hints_geometry_align(&thiz->last_hints, &rg, thiz->horizontal_alignment, thiz->vertical_alignment);
 	printf("2 '%s' element setting geometry %g %g %g %g\n", thiz->descriptor.name, rg.x, rg.y, rg.width, rg.height);
 
 	if (thiz->descriptor.geometry_set)

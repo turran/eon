@@ -26,6 +26,7 @@ typedef struct _Eon_Theme_Scrollbar_Descriptor_Internal
 {
 	Eon_Theme_Widget_Free free;
 	Eon_Theme_Scrollbar_Thumb_Set thumb_set;
+	Eon_Theme_Scrollbar_Thumb_Area_Set thumb_area_set;
 	Eon_Theme_Scrollbar_Arrow_Increment_Set arrow_increment_set;
 	Eon_Theme_Scrollbar_Arrow_Decrement_Set arrow_decrement_set;
 } Eon_Theme_Scrollbar_Descriptor_Internal;
@@ -72,6 +73,7 @@ EAPI Eon_Theme_Widget * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *
 
 	thiz = calloc(1, sizeof(Eon_Theme_Scrollbar));
 	thiz->descriptor.thumb_set = descriptor->thumb_set;
+	thiz->descriptor.thumb_area_set = descriptor->thumb_area_set;
 	thiz->descriptor.arrow_increment_set = descriptor->arrow_increment_set;
 	thiz->descriptor.arrow_decrement_set = descriptor->arrow_decrement_set;
 	thiz->descriptor.free = descriptor->free;
@@ -110,6 +112,15 @@ EAPI void eon_theme_scrollbar_thumb_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
 		thiz->descriptor.thumb_set(t, r);
 }
 
+EAPI void eon_theme_scrollbar_thumb_area_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
+{
+	Eon_Theme_Scrollbar *thiz;
+
+	thiz = _eon_theme_scrollbar_get(t);
+	if (thiz->descriptor.thumb_area_set)
+		thiz->descriptor.thumb_area_set(t, r);
+}
+
 EAPI void eon_theme_scrollbar_arrow_increment_set(Eon_Theme_Widget *t, Enesim_Renderer *r)
 {
 	Eon_Theme_Scrollbar *thiz;
@@ -127,4 +138,3 @@ EAPI void eon_theme_scrollbar_arrow_decrement_set(Eon_Theme_Widget *t, Enesim_Re
 	if (thiz->descriptor.arrow_decrement_set)
 		thiz->descriptor.arrow_decrement_set(t, r);
 }
-

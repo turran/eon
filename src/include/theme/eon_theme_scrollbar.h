@@ -23,9 +23,10 @@
  * @{
  */
 
-typedef void (*Eon_Theme_Scrollbar_Thumb_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
-typedef void (*Eon_Theme_Scrollbar_Arrow_Increment_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
-typedef void (*Eon_Theme_Scrollbar_Arrow_Decrement_Set)(Eon_Theme_Widget *t, Enesim_Renderer *child);
+typedef void (*Eon_Theme_Scrollbar_Thumb_Set)(Eon_Theme_Widget *t, Enesim_Renderer *r);
+typedef void (*Eon_Theme_Scrollbar_Thumb_Area_Set)(Eon_Theme_Widget *t, Enesim_Renderer *r);
+typedef void (*Eon_Theme_Scrollbar_Arrow_Increment_Set)(Eon_Theme_Widget *t, Enesim_Renderer *r);
+typedef void (*Eon_Theme_Scrollbar_Arrow_Decrement_Set)(Eon_Theme_Widget *t, Enesim_Renderer *r);
 
 typedef struct _Eon_Theme_Scrollbar_Descriptor
 {
@@ -38,6 +39,7 @@ typedef struct _Eon_Theme_Scrollbar_Descriptor
 	Eon_Theme_Widget_Free free;
 	/* scrollbar functions */
 	Eon_Theme_Scrollbar_Thumb_Set thumb_set;
+	Eon_Theme_Scrollbar_Thumb_Area_Set thumb_area_set;
 	Eon_Theme_Scrollbar_Arrow_Increment_Set arrow_increment_set;
 	Eon_Theme_Scrollbar_Arrow_Decrement_Set arrow_decrement_set;
 } Eon_Theme_Scrollbar_Descriptor;
@@ -47,6 +49,7 @@ EAPI Eon_Theme_Widget * eon_theme_scrollbar_new(Eon_Theme_Scrollbar_Descriptor *
 EAPI void * eon_theme_scrollbar_data_get(Eon_Theme_Widget *t);
 
 EAPI void eon_theme_scrollbar_thumb_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
+EAPI void eon_theme_scrollbar_thumb_area_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
 EAPI void eon_theme_scrollbar_arrow_increment_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
 EAPI void eon_theme_scrollbar_arrow_decrement_set(Eon_Theme_Widget *t, Enesim_Renderer *r);
 

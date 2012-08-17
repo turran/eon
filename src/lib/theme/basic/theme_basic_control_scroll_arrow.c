@@ -28,7 +28,6 @@ typedef struct _Eon_Basic_Control_Scroll_Arrow
 {
 	Enesim_Renderer *shape;
 	Enesim_Renderer *arrow;
-	Enesim_Color border_color;
 	Enesim_Color fill_color;
 	double border_weight;
 
@@ -60,6 +59,7 @@ static void _basic_control_scroll_arrow_x_set(Eon_Theme_Widget *t, double x)
 	Enesim_Matrix m;
 
 	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz->x = x;
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
 	enesim_matrix_compose(thiz->m, &m, &m);
 	enesim_renderer_geometry_transformation_set(thiz->shape, &m);
@@ -71,6 +71,7 @@ static void _basic_control_scroll_arrow_y_set(Eon_Theme_Widget *t, double y)
 	Enesim_Matrix m;
 
 	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz->y = y;
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
 	enesim_matrix_compose(thiz->m, &m, &m);
 	enesim_renderer_geometry_transformation_set(thiz->shape, &m);
@@ -126,21 +127,18 @@ Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Basic_Control_Scroll_Arrow));
 	if (!thiz) return NULL;
-	thiz->border_color = 0xff555555;
 	thiz->fill_color = 0xffcccccc;
 	thiz->border_weight = 2.0;
 
 	r = enesim_renderer_path_new();
-	enesim_renderer_shape_fill_color_set(r, thiz->fill_color);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
-	enesim_renderer_shape_stroke_weight_set(r, thiz->border_weight);
-	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
+	enesim_renderer_shape_fill_color_set(r, 0xff000000);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	/* create the arrow */
 	/* we define it on a 4x4 box */
 	enesim_renderer_path_move_to(r, 2, 2);
 	enesim_renderer_path_line_to(r, 4, 4);
-	enesim_renderer_path_line_to(r, 4, 4);
+	enesim_renderer_path_line_to(r, 0, 4);
 	enesim_renderer_path_close(r, EINA_TRUE);
 	thiz->shape = r;
 	/* create every transformation */
@@ -150,7 +148,7 @@ Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
 	enesim_matrix_identity(&ms[EON_DIRECTION_BOTTOM]);
 
 	enesim_matrix_translate(&tx1, 2, 2);
-	enesim_matrix_translate(&tx1, -2, -2);
+	enesim_matrix_translate(&tx2, -2, -2);
 	for (i = 0; i < EON_DIRECTIONS; i++)
 	{
 		enesim_matrix_compose(&tx1, &ms[i], &thiz->ms[i]);
