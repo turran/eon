@@ -70,6 +70,9 @@ EAPI void eon_theme_widget_width_set(Eon_Theme_Widget *thiz, double width);
 EAPI void eon_theme_widget_width_get(Eon_Theme_Widget *thiz, double *width);
 EAPI void eon_theme_widget_height_set(Eon_Theme_Widget *thiz, double height);
 EAPI void eon_theme_widget_height_get(Eon_Theme_Widget *thiz, double *height);
+EAPI void eon_theme_widget_size_get(Eon_Theme_Widget *thiz, Eon_Size *s);
+EAPI void eon_theme_widget_geometry_get(Eon_Theme_Widget *thiz, Eon_Geometry *g);
+
 EAPI void eon_theme_widget_renderer_get(Eon_Theme_Widget *thiz, Enesim_Renderer **r);
 EAPI void eon_theme_widget_size_changed(Eon_Theme_Widget *thiz);
 EAPI void eon_theme_widget_size_changed_cb_set(Eon_Theme_Widget *thiz, Eon_Theme_Widget_Size_Changed_Cb cb, void *data);

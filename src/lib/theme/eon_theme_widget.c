@@ -176,6 +176,30 @@ EAPI void eon_theme_widget_renderer_get(Eon_Theme_Widget *thiz, Enesim_Renderer 
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void eon_theme_widget_size_get(Eon_Theme_Widget *thiz, Eon_Size *s)
+{
+	if (!s) return;
+	s->width = thiz->width;
+	s->height = thiz->height;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void eon_theme_widget_geometry_get(Eon_Theme_Widget *thiz, Eon_Geometry *g)
+{
+	if (!g) return;
+	g->x = thiz->x;
+	g->y = thiz->y;
+	g->width = thiz->width;
+	g->height = thiz->height;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void eon_theme_widget_size_changed(Eon_Theme_Widget *thiz)
 {
 	if (thiz->size_changed)

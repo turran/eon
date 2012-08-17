@@ -157,4 +157,12 @@ static inline void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, E
 	}
 }
 
+static inline Eina_Bool eon_geometry_is_inside(Eon_Geometry *g, double x, double y)
+{
+	if (x >= g->x && x < g->x + g->width && y >= g->y && y < g->y + g->height)
+		return EINA_TRUE;
+	else
+		return EINA_FALSE;
+}
+
 #endif
