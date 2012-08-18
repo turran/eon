@@ -25,11 +25,15 @@ escen {
 	};
 
 	basic_control_scroll_arrow "scroll_arrow_increment" {
-
+		default {
+			set { color = 0xff555555; };
+		};
 	};
 
 	basic_control_scroll_arrow "scroll_arrow_decrement" {
-
+		default {
+			set { color = 0xff555555; };
+		};
 	};
 
 	basic_control_scroll_thumb "scroll_thumb" {

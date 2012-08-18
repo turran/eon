@@ -68,6 +68,7 @@ EAPI Eon_Theme_Widget * eon_theme_control_scroll_thumb_area_new(Eon_Theme_Contro
 
 	thiz = calloc(1, sizeof(Eon_Theme_Control_Scroll_Thumb_Area));
 	thiz->descriptor.sizes_get = descriptor->sizes_get;
+	thiz->descriptor.orientation_set = descriptor->orientation_set;
 	thiz->descriptor.free = _eon_theme_control_scroll_thumb_area_free;
 	thiz->data = data;
 	/* widget descriptor */

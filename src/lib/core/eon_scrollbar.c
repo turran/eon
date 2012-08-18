@@ -159,19 +159,99 @@ static void _eon_scrollbar_thumb_area_hints_get(Eon_Scrollbar *thiz, Eon_Hints *
 	printf("thumb area size %g %g %g %g\n", min.width, min.height, max.width, max.height);
 }
 /*----------------------------------------------------------------------------*
+ *                            The arrows layout                               *
+ *----------------------------------------------------------------------------*/
+static void _arrow_layout_child_padding_get(void *ref, void *child,
+		Eon_Margin *margin)
+{
+	margin->left = 2;
+	margin->top = 2;
+	margin->bottom = 2;
+	margin->right = 2;
+}
+
+static void _arrow_layout_child_geometry_set(void *ref, void *child,
+		Eon_Geometry *g)
+{
+	Eon_Theme_Instance *child_thiz = child;
+	Eon_Geometry dst;
+	Eon_Size size;
+	Eon_Hints hints;
+
+	/* make the arrow be centered */
+	eon_theme_control_scroll_arrow_size_get(child_thiz->object, &size);
+	eon_hints_values_set(&hints, size.width, size.height, size.width, size.height, size.width, size.height);
+	dst = *g;
+	eon_hints_geometry_align(&hints, &dst, EON_HORIZONTAL_ALIGNMENT_CENTER,
+				EON_VERTICAL_ALIGNMENT_CENTER);
+	eon_theme_instance_property_set(child_thiz, "x", dst.x, NULL);
+	eon_theme_instance_property_set(child_thiz, "y", dst.y, NULL);
+	eon_theme_instance_property_set(child_thiz, "width", dst.width, NULL);
+	eon_theme_instance_property_set(child_thiz, "height", dst.height, NULL);
+}
+
+static void _arrow_layout_child_hints_get(void *ref, void *child,
+		Eon_Hints *hints)
+{
+	Eon_Theme_Instance *child_thiz = child;
+	Eon_Size size;
+
+	eon_theme_control_scroll_arrow_size_get(child_thiz->object, &size);
+	printf("arrow size %g %g\n", size.width, size.height);
+	hints->min = size;
+	hints->max = size;
+	hints->preferred = size;
+}
+
+static void _increment_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	Eon_Scrollbar *thiz = ref;
+	cb(ref, thiz->t_increment, data);
+}
+
+static void _decrement_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
+		 void *data)
+{
+	Eon_Scrollbar *thiz = ref;
+	cb(ref, thiz->t_decrement, data);
+}
+
+static Eon_Layout_Frame_Descriptor _increment_layout = {
+	/* .child_padding_get 	= */ _arrow_layout_child_padding_get,
+	/* .child_foreach 	= */ _increment_layout_child_foreach,
+	/* .child_hints_get 	= */ _arrow_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _arrow_layout_child_geometry_set,
+};
+
+static Eon_Layout_Frame_Descriptor _decrement_layout = {
+	/* .child_padding_get 	= */ _arrow_layout_child_padding_get,
+	/* .child_foreach 	= */ _decrement_layout_child_foreach,
+	/* .child_hints_get 	= */ _arrow_layout_child_hints_get,
+	/* .child_geometry_set 	= */ _arrow_layout_child_geometry_set,
+};
+/*----------------------------------------------------------------------------*
  *                             The thumb layout                               *
  *----------------------------------------------------------------------------*/
 static void _thumb_layout_child_padding_get(void *ref, void *child,
 		Eon_Margin *margin)
 {
-	//if (thiz->t_thumb == thiz_child)
-	margin->left = 10;
-	margin->top = 2;
-	margin->bottom = 2;
-	margin->right = 10;
-	/* TODO
-	*margin = thiz->padding;
-	*/
+	Eon_Scrollbar *thiz = ref;
+
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		margin->left = 10;
+		margin->top = 2;
+		margin->bottom = 2;
+		margin->right = 10;
+	}
+	else
+	{
+		margin->left = 2;
+		margin->top = 10;
+		margin->bottom = 10;
+		margin->right = 2;
+	}
 }
 
 static void _thumb_layout_child_geometry_set(void *ref, void *child,
@@ -255,47 +335,24 @@ static void _scrollbar_layout_child_geometry_set(void *ref, void *child,
 		Eon_Geometry *g)
 {
 	Eon_Scrollbar *thiz = ref;
-	Eon_Theme_Instance *child_thiz = child;
+	Eon_Layout_Child_Data *data = child;
 
-	if (child_thiz)
-	{
-		eon_theme_instance_property_set(child_thiz, "x", g->x, NULL);
-		eon_theme_instance_property_set(child_thiz, "y", g->y, NULL);
-		eon_theme_instance_property_set(child_thiz, "width", g->width, NULL);
-		eon_theme_instance_property_set(child_thiz, "height", g->height, NULL);
-	}
-	else
-	{
-		printf("scrollbar thumb layout of size %g %g %g %g\n", g->x, g->y, g->width, g->height);
-		eon_layout_geometry_set(&eon_layout_frame, &_thumb_layout, thiz, g);
-	}
+	eon_layout_geometry_set(data->layout, data->descriptor, thiz, g);
 }
 
 static void _scrollbar_layout_child_hints_get(void *ref, void *child,
 		Eon_Hints *hints)
 {
 	Eon_Scrollbar *thiz = ref;
-	Eon_Theme_Instance *child_thiz = child;
+	Eon_Layout_Child_Data *data = child;
 
-	if (child_thiz)
-	{
-		Eon_Size size;
-
-		eon_theme_control_scroll_arrow_size_get(child_thiz->object, &size);
-		printf("arrow size %g %g\n", size.width, size.height);
-		hints->min = size;
-		hints->max = size;
-		hints->preferred = size;
-	}
-	else
-	{
-		eon_layout_hints_get(&eon_layout_frame, &_thumb_layout, thiz, hints);
-	}
+	eon_layout_hints_get(data->layout, data->descriptor, thiz, hints);
 }
 
 static void _scrollbar_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
 		 void *data)
 {
+	Eon_Layout_Child_Data child;
 	Eon_Scrollbar *thiz = ref;
 
 	/* call them in order */
@@ -305,12 +362,25 @@ static void _scrollbar_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_
 	 * arrow - thumb - arrow,
 	 * etc
 	 */
-	cb(ref, thiz->t_increment, data);
-	/* for the thumb we send NULL as a child to inform that we need
-	 * the stack layout
-	 */
-	cb(ref, NULL, data);
-	cb(ref, thiz->t_decrement, data);
+	child.layout =  &eon_layout_frame;
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		child.descriptor = &_decrement_layout;
+		cb(ref, &child, data);
+		child.descriptor = &_thumb_layout;
+		cb(ref, &child, data);
+		child.descriptor = &_increment_layout;
+		cb(ref, &child, data);
+	}
+	else
+	{
+		child.descriptor = &_increment_layout;
+		cb(ref, &child, data);
+		child.descriptor = &_thumb_layout;
+		cb(ref, &child, data);
+		child.descriptor = &_decrement_layout;
+		cb(ref, &child, data);
+	}
 }
 
 static Eina_Bool _scrollbar_layout_is_homogeneous(void *ref)
@@ -338,8 +408,10 @@ static void _scrollbar_layout_min_length_set(void *ref, double min)
 
 static int _scrollbar_layout_child_gravity_get(void *ref, void *child)
 {
+	Eon_Layout_Child_Data *data = child;
+
 	/* the thumb should take all the space */
-	if (!child)
+	if (data->descriptor == &_thumb_layout)
 		return 1;
 	else
 		return 0;

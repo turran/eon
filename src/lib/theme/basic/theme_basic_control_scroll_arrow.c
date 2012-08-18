@@ -21,22 +21,49 @@
 #include "eon_theme_control_scroll_arrow.h"
 
 #include "theme_basic.h"
+
+#include <math.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 typedef struct _Eon_Basic_Control_Scroll_Arrow
 {
+	/* private */
+	Eon_Direction direction;
+
 	Enesim_Renderer *shape;
 	Enesim_Renderer *arrow;
-	Enesim_Color fill_color;
-	double border_weight;
 
-	Enesim_Matrix ms[EON_DIRECTIONS];
 	Enesim_Matrix *m;
 
 	double x;
 	double y;
 } Eon_Basic_Control_Scroll_Arrow;
+
+static Enesim_Matrix _ms[EON_DIRECTIONS];
+
+static void _eon_basic_control_scroll_arrow_init(void)
+{
+	Enesim_Matrix m1, m2;
+
+	/* set the initial transform to the top corner of the triangle */
+	/* top */
+	enesim_matrix_identity(&_ms[EON_DIRECTION_TOP]);
+	/* left */
+	enesim_matrix_translate(&m2, -6, 0);
+	enesim_matrix_rotate(&m1, -M_PI_2);
+	enesim_matrix_compose(&m1, &m2, &_ms[EON_DIRECTION_LEFT]);
+	/* bottom */
+	enesim_matrix_translate(&m1, 6, 4);
+	enesim_matrix_rotate(&m2, M_PI);
+	enesim_matrix_compose(&m1, &m2, &_ms[EON_DIRECTION_BOTTOM]);
+	/* right */
+	enesim_matrix_translate(&m1, 4, 0);
+	enesim_matrix_rotate(&m2, M_PI_2);
+	enesim_matrix_compose(&m1, &m2, &_ms[EON_DIRECTION_RIGHT]);
+
+	/* create every transformation */
+}
 
 static inline Eon_Basic_Control_Scroll_Arrow * _eon_basic_control_scroll_arrow_get(Eon_Theme_Widget *t)
 {
@@ -61,7 +88,7 @@ static void _basic_control_scroll_arrow_x_set(Eon_Theme_Widget *t, double x)
 	thiz = _eon_basic_control_scroll_arrow_get(t);
 	thiz->x = x;
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
-	enesim_matrix_compose(thiz->m, &m, &m);
+	enesim_matrix_compose(&m, thiz->m, &m);
 	enesim_renderer_geometry_transformation_set(thiz->shape, &m);
 }
 
@@ -73,8 +100,16 @@ static void _basic_control_scroll_arrow_y_set(Eon_Theme_Widget *t, double y)
 	thiz = _eon_basic_control_scroll_arrow_get(t);
 	thiz->y = y;
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
-	enesim_matrix_compose(thiz->m, &m, &m);
+	enesim_matrix_compose(&m, thiz->m, &m);
 	enesim_renderer_geometry_transformation_set(thiz->shape, &m);
+	{
+		Eina_Rectangle b;
+
+		printf("positioning at %g %g\n", thiz->x, thiz->y);
+		enesim_renderer_destination_boundings(thiz->shape, &b, 0, 0);
+		printf("%d %d %d %d\n", b.x, b.y, b.w, b.h);
+	}
+	
 }
 
 static void _basic_control_scroll_arrow_free(Eon_Theme_Widget *t)
@@ -89,7 +124,19 @@ static void _basic_control_scroll_arrow_free(Eon_Theme_Widget *t)
 
 static void _basic_control_scroll_arrow_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 {
-	size->width = size->height = 4;
+	Eon_Basic_Control_Scroll_Arrow *thiz;
+
+	thiz = _eon_basic_control_scroll_arrow_get(t);
+	if (thiz->direction == EON_DIRECTION_TOP || thiz->direction == EON_DIRECTION_BOTTOM)
+	{
+		size->width = 8;
+		size->height = 6;
+	}
+	else
+	{
+		size->width = 6;
+		size->height = 8;
+	}
 }
 
 static void _basic_control_scroll_arrow_direction_set(Eon_Theme_Widget *t, Eon_Direction d)
@@ -97,8 +144,8 @@ static void _basic_control_scroll_arrow_direction_set(Eon_Theme_Widget *t, Eon_D
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
 	thiz = _eon_basic_control_scroll_arrow_get(t);
-	printf("setting direction to %d of %d\n", d, EON_DIRECTIONS);
-	thiz->m = &thiz->ms[d];
+	thiz->direction = d;
+	thiz->m = &_ms[d];
 }
 
 static Eon_Theme_Control_Scroll_Arrow_Descriptor _descriptor = {
@@ -119,42 +166,40 @@ static Eon_Theme_Control_Scroll_Arrow_Descriptor _descriptor = {
 Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
+	Enesim_Color fill_color = 0xff000000;
 	Enesim_Renderer *r;
-	Enesim_Matrix ms[EON_DIRECTIONS];
-	Enesim_Matrix tx1;
-	Enesim_Matrix tx2;
-	int i;
+	static int init = 0;
+
+	if (!init)
+	{
+		_eon_basic_control_scroll_arrow_init();
+		init++;
+	}
 
 	thiz = calloc(1, sizeof(Eon_Basic_Control_Scroll_Arrow));
 	if (!thiz) return NULL;
-	thiz->fill_color = 0xffcccccc;
-	thiz->border_weight = 2.0;
+	thiz->direction = EON_DIRECTION_TOP;
 
 	r = enesim_renderer_path_new();
-	enesim_renderer_shape_fill_color_set(r, 0xff000000);
+	enesim_renderer_shape_fill_color_set(r, fill_color);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 	/* create the arrow */
 	/* we define it on a 4x4 box */
-	enesim_renderer_path_move_to(r, 2, 2);
-	enesim_renderer_path_line_to(r, 4, 4);
+	enesim_renderer_path_move_to(r, 4, 0);
+	enesim_renderer_path_line_to(r, 6, 4);
 	enesim_renderer_path_line_to(r, 0, 4);
 	enesim_renderer_path_close(r, EINA_TRUE);
 	thiz->shape = r;
-	/* create every transformation */
-	enesim_matrix_identity(&ms[EON_DIRECTION_LEFT]);
-	enesim_matrix_identity(&ms[EON_DIRECTION_TOP]);
-	enesim_matrix_identity(&ms[EON_DIRECTION_RIGHT]);
-	enesim_matrix_identity(&ms[EON_DIRECTION_BOTTOM]);
-
-	enesim_matrix_translate(&tx1, 2, 2);
-	enesim_matrix_translate(&tx2, -2, -2);
-	for (i = 0; i < EON_DIRECTIONS; i++)
-	{
-		enesim_matrix_compose(&tx1, &ms[i], &thiz->ms[i]);
-		enesim_matrix_compose(&thiz->ms[i], &tx2, &thiz->ms[i]);
-	}
-	thiz->m = &thiz->ms[0];
+	thiz->m = &_ms[thiz->direction];
 
 	return eon_theme_control_scroll_arrow_new(&_descriptor, thiz);
+}
+
+EAPI void eon_basic_control_scroll_arrow_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+{
+	Eon_Basic_Control_Scroll_Arrow *thiz;
+
+	thiz = _eon_basic_control_scroll_arrow_get(t);
+	enesim_renderer_shape_fill_color_set(thiz->shape, color);
 }

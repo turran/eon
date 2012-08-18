@@ -153,6 +153,14 @@ static void _basic_control_scroll_thumb_area_sizes_get(Eon_Theme_Widget *t, Eon_
 	}
 }
 
+static void _basic_control_scroll_thumb_area_orientation_set(Eon_Theme_Widget *t, Eon_Orientation orientation)
+{
+	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
+
+	thiz = _eon_basic_control_scroll_thumb_area_get(t);
+	thiz->orientation = orientation;
+}
+
 static Eon_Theme_Control_Scroll_Thumb_Area_Descriptor _descriptor = {
 	/* .renderer_get 	= */ _basic_control_scroll_thumb_area_renderer_get,
 	/* .x_set 		= */ _basic_control_scroll_thumb_area_x_set,
@@ -161,6 +169,7 @@ static Eon_Theme_Control_Scroll_Thumb_Area_Descriptor _descriptor = {
 	/* .height_set 		= */ _basic_control_scroll_thumb_area_height_set,
 	/* .free 		= */ _basic_control_scroll_thumb_area_free,
 	/* .sizes_get 		= */ _basic_control_scroll_thumb_area_sizes_get,
+	/* .orientation_set	= */ _basic_control_scroll_thumb_area_orientation_set,
 };
 /*============================================================================*
  *                                 Global                                     *

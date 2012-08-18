@@ -167,6 +167,14 @@ static void _basic_control_scroll_thumb_sizes_get(Eon_Theme_Widget *t, Eon_Size 
 	}
 }
 
+static void _basic_control_scroll_thumb_orientation_set(Eon_Theme_Widget *t, Eon_Orientation orientation)
+{
+	Eon_Basic_Control_Scroll_Thumb *thiz;
+
+	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz->orientation = orientation;
+}
+
 static Eon_Theme_Control_Scroll_Thumb_Descriptor _descriptor = {
 	/* .renderer_get 	= */ _basic_control_scroll_thumb_renderer_get,
 	/* .x_set 		= */ _basic_control_scroll_thumb_x_set,
@@ -175,6 +183,7 @@ static Eon_Theme_Control_Scroll_Thumb_Descriptor _descriptor = {
 	/* .height_set 		= */ _basic_control_scroll_thumb_height_set,
 	/* .free 		= */ _basic_control_scroll_thumb_free,
 	/* .sizes_get 		= */ _basic_control_scroll_thumb_sizes_get,
+	/* .orientation_set	= */ _basic_control_scroll_thumb_orientation_set,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -192,7 +201,7 @@ EAPI Eon_Theme_Widget * eon_basic_control_scroll_thumb_new(void)
 	thiz = calloc(1, sizeof(Eon_Basic_Control_Scroll_Thumb));
 	thiz->radius = 4;
 	thiz->border_color = 0xff555555;
-	thiz->border_weight = 2.0;
+	thiz->border_weight = 1.2;
 
 	r = enesim_renderer_stripes_new();
 	if (!r) goto bar_background_fill_err;

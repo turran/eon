@@ -41,6 +41,7 @@ namespace "eon" : 0 {
 	};
 
 	class "basic_control_scroll_arrow" : "control_scroll_arrow" {
+		color "color";
 	};
 
 	class "basic_control_scroll_thumb_area" : "control_scroll_thumb_area" {
