@@ -117,6 +117,7 @@ src/lib/theme/basic/Makefile
 src/include/Makefile
 src/include/generated/Makefile
 src/tests/Makefile
+src/examples/Makefile
 ],[
 ])
 
