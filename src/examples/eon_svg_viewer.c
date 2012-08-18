@@ -35,8 +35,7 @@ int main(int argc, char **argv)
 	viewer = calloc(1, sizeof(Svg_Viewer));
 	/* create the main window */
 	win = eon_stack_new();
-	eon_stack_direction_set(win, EON_STACK_DIRECTION_HORIZONTAL);
-	eon_stack_last_expand_set(win, EINA_TRUE);
+	eon_stack_orientation_set(win, EON_ORIENTATION_HORIZONTAL);
 	ee = eon_window_new(eon_ecore_sdl_new(), win, 640, 480);
 	if (!ee)
 	{
@@ -44,7 +43,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	eon_svg_file_set(svg, argv[1]);
-	eon_layout_child_add(win, svg);
+	eon_container_child_add(win, svg);
 
 	ecore_main_loop_begin();
 
