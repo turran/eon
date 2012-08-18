@@ -434,30 +434,31 @@ static Eon_Layout_Stack_Descriptor _scrollbar_layout = {
  *----------------------------------------------------------------------------*/
 static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Scrollbar *thiz;
+	Eon_Scrollbar *thiz = data;
 	Eon_Event_Mouse_Move *ev = event_data;
-	Eon_Size size;
-	Eon_Element *ee;
+	double x, y;
 	double c;
 	double v;
 	double length;
 
-	ee = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(ee);
 	if (!thiz->thumb_dragging) return;
 
-	eon_element_actual_size_get(ee, &size);
+	x = ev->x;
+	y = ev->y;
+
+	printf("moving! %g %g - %g\n", x, y, thiz->offset_dragging);
 	/* get the absolute position of the event */
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
-		c = ev->x - thiz->offset_dragging;
-		length = size.width;
+		c = x - thiz->offset_dragging;
+		length = thiz->track_area.width;
 	}
 	else
 	{
-		c = ev->y - thiz->offset_dragging;
-		length = size.height;
+		c = y - thiz->offset_dragging;
+		length = thiz->track_area.height;
 	}
+
 	if (c > length) c = length;
 	v = c / length;
 	v = (thiz->max - thiz->min) * v;
@@ -476,22 +477,20 @@ static void _eon_scrollbar_mouse_drag_stop(Ender_Element *e, const char *event_n
 
 static void _eon_scrollbar_mouse_drag_start(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
-	Eon_Scrollbar *thiz;
+	Eon_Scrollbar *thiz = data;
 	Eon_Event_Mouse_Drag_Start *ev = event_data;
-	Eon_Element *ee;
-	Enesim_Renderer *theme_r;
-	Enesim_Rectangle tg;
+	Eon_Geometry g;
+	double x, y;
 
-	ee = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(ee);
-	theme_r = eon_widget_theme_renderer_get(ee);
-	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
-	if (!enesim_rectangle_is_inside(&tg, ev->rel_x, ev->rel_y))
-		return;
+	x = ev->x;
+	y = ev->y;
+	eon_theme_widget_geometry_get(thiz->t_thumb->object, &g);
+	if (!eon_geometry_is_inside(&g, x, y)) return;
+	
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
-		thiz->offset_dragging = ev->x - tg.x;
+		thiz->offset_dragging = x - g.x;
 	else
-		thiz->offset_dragging = ev->y - tg.y;
+		thiz->offset_dragging = y - g.y;
 	thiz->thumb_dragging = EINA_TRUE;
 }
 
@@ -610,11 +609,9 @@ static void _eon_scrollbar_initialize(Ender_Element *e)
 	thiz = _eon_scrollbar_get(ee);
 
 	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK], _eon_scrollbar_mouse_click, thiz);
-#if 0
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], _eon_scrollbar_mouse_drag_start, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_STOP], _eon_scrollbar_mouse_drag_stop, NULL);
-	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_scrollbar_mouse_move, NULL);
-#endif
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_START], _eon_scrollbar_mouse_drag_start, thiz);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_DRAG_STOP], _eon_scrollbar_mouse_drag_stop, thiz);
+	ender_event_listener_add(e, eon_input_event_names[EON_INPUT_EVENT_MOUSE_MOVE], _eon_scrollbar_mouse_move, thiz);
 }
 
 static void _eon_scrollbar_geometry_set(Eon_Element *e, Eon_Geometry *g)
