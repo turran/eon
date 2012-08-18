@@ -31,6 +31,7 @@ eon_label.c \
 eon_radio.c \
 eon_stack.c \
 eon_scrollbar.c \
+eon_surface.c \
 eon_wrapper.c
 
 abstracts = \

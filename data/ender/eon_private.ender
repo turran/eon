@@ -57,6 +57,9 @@ namespace "eon" : 0 {
 		object "wrapped";
 	};
 
+	class "surface" : "element" {
+	};
+
 	class "canvas" : "container" {
 		rel double "child_x";
 		rel double "child_y";
