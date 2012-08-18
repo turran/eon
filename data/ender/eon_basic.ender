@@ -44,6 +44,8 @@ namespace "eon" : 0 {
 	};
 
 	class "basic_control_scroll_thumb_area" : "control_scroll_thumb_area" {
+		color "in_color";
+		color "out_color";
 	};
 
 	class "basic_control_scroll_thumb" : "control_scroll_thumb" {
@@ -87,7 +89,8 @@ namespace "eon" : 0 {
 		string "description_font";
 	};
 	class "basic_scrollbar" : "scrollbar" {
-
+		color "background_color";
+		color "border_color";
 	};
 
 	class "basic_splitter" : "splitter" {

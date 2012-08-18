@@ -36,6 +36,10 @@ escen {
 	};
 
 	basic_control_scroll_thumb_area "scroll_thumb_area" {
+		default {
+			set { in_color = 0xffffffff; };
+			set { out_color = 0xff555555; };
+		};
 	};
 
 	basic_control_checkbox "control_checkbox" {
@@ -247,7 +251,10 @@ escen {
 	};
 
 	basic_scrollbar "scrollbar" {
-
+		default {
+			set { background_color = 0xffcccccc; };
+			set { border_color = 0xff555555; };
+		};
 	};
 
 	basic_splitter "splitter" {

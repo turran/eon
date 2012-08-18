@@ -27,8 +27,6 @@
 typedef struct _Eon_Basic_Control_Scroll_Thumb_Area
 {
 	/* properties */
-	Enesim_Color in_color;
-	Enesim_Color out_color;
 	/* private */
 	Eon_Orientation orientation;
 	Enesim_Renderer *in;
@@ -57,7 +55,6 @@ static void _basic_control_scroll_thumb_area_x_set(Eon_Theme_Widget *t, double x
 	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
 
 	thiz = _eon_basic_control_scroll_thumb_area_get(t);
-	printf("thumb_area setting x %g\n", x);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
 		enesim_renderer_rectangle_x_set(thiz->out, x);
@@ -75,7 +72,6 @@ static void _basic_control_scroll_thumb_area_y_set(Eon_Theme_Widget *t, double y
 	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
 
 	thiz = _eon_basic_control_scroll_thumb_area_get(t);
-	printf("thumb_area setting y %g\n", y);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
 		enesim_renderer_rectangle_y_set(thiz->out, y);
@@ -93,7 +89,6 @@ static void _basic_control_scroll_thumb_area_width_set(Eon_Theme_Widget *t, doub
 	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
 
 	thiz = _eon_basic_control_scroll_thumb_area_get(t);
-	printf("thumb_area setting width %g\n", width);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
 		enesim_renderer_rectangle_width_set(thiz->out, 2);
@@ -111,7 +106,6 @@ static void _basic_control_scroll_thumb_area_height_set(Eon_Theme_Widget *t, dou
 	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
 
 	thiz = _eon_basic_control_scroll_thumb_area_get(t);
-	printf("thumb_area setting height %g\n", height);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
 		enesim_renderer_rectangle_height_set(thiz->out, height);
@@ -178,21 +172,21 @@ EAPI Eon_Theme_Widget * eon_basic_control_scroll_thumb_area_new(void)
 {
 	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
 	Enesim_Renderer *r;
+	Enesim_Color in_color = 0xffffffff;
+	Enesim_Color out_color = 0xff000000;
 
 	thiz = calloc(1, sizeof(Eon_Basic_Control_Scroll_Thumb_Area));
-	thiz->in_color = 0xffffffff;
-	thiz->out_color = 0xff000000;
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto out_err;
-	enesim_renderer_shape_fill_color_set(r, thiz->out_color);
+	enesim_renderer_shape_fill_color_set(r, out_color);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_FILL);
 	thiz->out = r;
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto in_err;
-	enesim_renderer_shape_fill_color_set(r, thiz->in_color);
+	enesim_renderer_shape_fill_color_set(r, in_color);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_FILL);
 	thiz->in = r;
@@ -215,3 +209,18 @@ out_err:
 	return NULL;
 }
 
+EAPI void eon_basic_control_scroll_thumb_area_out_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+{
+	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
+
+	thiz = _eon_basic_control_scroll_thumb_area_get(t);
+	enesim_renderer_shape_fill_color_set(thiz->out, color);
+}
+
+EAPI void eon_basic_control_scroll_thumb_area_in_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+{
+	Eon_Basic_Control_Scroll_Thumb_Area *thiz;
+
+	thiz = _eon_basic_control_scroll_thumb_area_get(t);
+	enesim_renderer_shape_fill_color_set(thiz->in, color);
+}
