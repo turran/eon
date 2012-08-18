@@ -61,8 +61,6 @@ static void _eon_basic_control_scroll_arrow_init(void)
 	enesim_matrix_translate(&m1, 4, 0);
 	enesim_matrix_rotate(&m2, M_PI_2);
 	enesim_matrix_compose(&m1, &m2, &_ms[EON_DIRECTION_RIGHT]);
-
-	/* create every transformation */
 }
 
 static inline Eon_Basic_Control_Scroll_Arrow * _eon_basic_control_scroll_arrow_get(Eon_Theme_Widget *t)
@@ -102,14 +100,6 @@ static void _basic_control_scroll_arrow_y_set(Eon_Theme_Widget *t, double y)
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
 	enesim_matrix_compose(&m, thiz->m, &m);
 	enesim_renderer_geometry_transformation_set(thiz->shape, &m);
-	{
-		Eina_Rectangle b;
-
-		printf("positioning at %g %g\n", thiz->x, thiz->y);
-		enesim_renderer_destination_boundings(thiz->shape, &b, 0, 0);
-		printf("%d %d %d %d\n", b.x, b.y, b.w, b.h);
-	}
-	
 }
 
 static void _basic_control_scroll_arrow_free(Eon_Theme_Widget *t)

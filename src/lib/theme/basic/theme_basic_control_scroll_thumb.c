@@ -63,7 +63,8 @@ static void _basic_control_scroll_thumb_x_set(Eon_Theme_Widget *t, double x)
 	printf("thumb setting x %g\n", x);
 	enesim_renderer_rectangle_x_set(thiz->bar_shape, x);
 	enesim_renderer_rectangle_x_set(thiz->bar_background, x + 3);
-	enesim_renderer_x_origin_set(thiz->bar_background_fill, x + 3);
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+		enesim_renderer_y_origin_set(thiz->bar_background_fill, x + 3);
 }
 
 static void _basic_control_scroll_thumb_y_set(Eon_Theme_Widget *t, double y)
@@ -75,7 +76,8 @@ static void _basic_control_scroll_thumb_y_set(Eon_Theme_Widget *t, double y)
 	printf("thumb setting y %g\n", y);
 	enesim_renderer_rectangle_y_set(thiz->bar_shape, y);
 	enesim_renderer_rectangle_y_set(thiz->bar_background, y + 3);
-	enesim_renderer_y_origin_set(thiz->bar_background_fill, y + 3);
+	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
+		enesim_renderer_y_origin_set(thiz->bar_background_fill, y + 3);
 }
 
 static void _basic_control_scroll_thumb_width_set(Eon_Theme_Widget *t, double width)
