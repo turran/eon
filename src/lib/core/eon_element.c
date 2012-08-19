@@ -104,38 +104,7 @@ struct _Eon_Element
 	Ender_Element *e;
 };
 
-static double _element_min_width_get(Ender_Element *e)
-{
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-	return thiz->min_size.width;
-}
-
-static double _element_min_height_get(Ender_Element *e)
-{
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-	return thiz->min_size.height;
-}
-
-static double _element_max_width_get(Ender_Element *e)
-{
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-	return thiz->max_size.width;
-}
-
-static double _element_max_height_get(Ender_Element *e)
-{
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-	return thiz->max_size.height;
-}
-
+#if 0
 static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
 {
 	Eon_Element *thiz;
@@ -155,6 +124,7 @@ static void _eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 	thiz->past = thiz->current;
 	thiz->do_needs_setup = EINA_FALSE;
 }
+#endif
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
@@ -180,6 +150,7 @@ static void _eon_element_height_set(Eon_Element *thiz, double height)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	thiz->size.height = height;
+	eon_element_inform_change(thiz);
 }
 
 static void _eon_element_width_get(Eon_Element *thiz, double *width)
@@ -192,6 +163,7 @@ static void _eon_element_width_set(Eon_Element *thiz, double width)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	thiz->size.width = width;
+	eon_element_inform_change(thiz);
 }
 
 static void _eon_element_min_width_set(Eon_Element *thiz, double width)
@@ -202,18 +174,9 @@ static void _eon_element_min_width_set(Eon_Element *thiz, double width)
 
 static void _eon_element_min_width_get(Eon_Element *thiz, double *width)
 {
-	Ender_Element *e;
-	double v = 0;
-	double max;
-
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	if (!width) return;
-	e = thiz->e;
-	if (!thiz) return;
-	v = _element_min_width_get(e);
-	/* make sure we dont conflict with the max */
-	max = _element_max_width_get(e);
-	*width = MIN(v, max);
+	*width = thiz->min_size.width;
 }
 
 static void _eon_element_min_height_set(Eon_Element *thiz, double height)
@@ -224,18 +187,9 @@ static void _eon_element_min_height_set(Eon_Element *thiz, double height)
 
 static void _eon_element_min_height_get(Eon_Element *thiz, double *height)
 {
-	Ender_Element *e;
-	double v = 0;
-	double max;
-
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	if (!height) return;
-	e = thiz->e;
-	if (!thiz) return;
-	v = _element_min_height_get(e);
-	/* make sure we dont conflict with the max */
-	max = _element_max_height_get(e);
-	*height = MIN(v, max);
+	*height = thiz->min_size.height;
 }
 
 static void _eon_element_max_width_set(Eon_Element *thiz, double width)
@@ -246,18 +200,9 @@ static void _eon_element_max_width_set(Eon_Element *thiz, double width)
 
 static void _eon_element_max_width_get(Eon_Element *thiz, double *width)
 {
-	Ender_Element *e;
-	double v = DBL_MAX;
-	double min;
-
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	if (!width) return;
-
-	e = thiz->e;
-	v = _element_max_width_get(e);
-	/* make sure we dont conflict with the min */
-	min = _element_min_width_get(e);
-	*width = MAX(v, min);
+	*width = thiz->max_size.width;
 }
 
 static void _eon_element_max_height_set(Eon_Element *thiz, double height)
@@ -268,18 +213,9 @@ static void _eon_element_max_height_set(Eon_Element *thiz, double height)
 
 static void _eon_element_max_height_get(Eon_Element *thiz, double *height)
 {
-	Ender_Element *e;
-	double v = DBL_MAX;
-	double min;
-
 	EON_ELEMENT_MAGIC_CHECK(thiz);
 	if (!height) return;
-
-	e = thiz->e;
-	v = _element_max_height_get(e);
-	/* make sure we dont conflict with the min */
-	min = _element_min_height_get(e);
-	*height = MAX(v, min);
+	*height = thiz->max_size.height;
 }
 
 static void _eon_element_visibility_set(Eon_Element *thiz, double visible)
@@ -451,6 +387,7 @@ void eon_element_initialize(Ender_Element *e)
 		thiz->descriptor.initialize(e);
 }
 
+#if 0
 Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
 {
 	Eina_Bool ret;
@@ -469,6 +406,7 @@ void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
 {
 	_eon_element_cleanup(e, s);
 }
+#endif
 
 /* functions to manage the focus/mouse events */
 void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
@@ -754,6 +692,30 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 
 		hints->preferred = ihints.preferred;
 	}
+	/* now use the user provided width/height */
+	if (thiz->size.width != -1)
+	{
+		double w = thiz->size.width;
+
+		if (w < hints->min.width)
+			w = hints->min.width;
+		if (w > hints->max.width)
+			w = hints->max.width;
+
+		hints->min.width = hints->max.width = hints->preferred.width = w;
+	}
+	if (thiz->size.height != -1)
+	{
+		double h = thiz->size.height;
+
+		if (h < hints->min.height)
+			h = hints->min.height;
+		if (h > hints->max.height)
+			h = hints->max.height;
+
+		hints->min.height = hints->max.height = hints->preferred.height = h;
+	}
+
 	thiz->last_hints = *hints;
 	printf("'%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name,
 			hints->min.width, hints->min.height,
