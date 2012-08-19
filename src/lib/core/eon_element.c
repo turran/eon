@@ -87,6 +87,7 @@ struct _Eon_Element
 	Eon_Size max_size;
 	Eon_Size size;
 	/* private */
+	Eina_Bool changed;
 	Eon_Backend *backend;
 	Eon_Geometry geometry;
 	Eon_Hints last_hints;
@@ -497,6 +498,8 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 
 	thiz = calloc(1, sizeof(Eon_Element));
 	EINA_MAGIC_SET(thiz, EON_ELEMENT_MAGIC);
+	thiz->changed = EINA_TRUE;
+
 	thiz->data = data;
 	thiz->current.actual_size.width = -1;
 	thiz->current.actual_size.height = -1;
@@ -722,7 +725,15 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 {
 	EON_ELEMENT_MAGIC_CHECK(thiz);
-	
+
+	/* just use the cached versions in case we haven't changed */
+	if (!thiz->changed)
+	{
+		printf("HINTS CACHED\n");
+		*hints = thiz->last_hints;
+		return;
+	}
+
 	hints->min = thiz->min_size;
 	hints->max = thiz->max_size;
 	hints->preferred.width = -1;
@@ -766,6 +777,7 @@ void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g)
 	if (thiz->descriptor.geometry_set)
 		thiz->descriptor.geometry_set(thiz, &rg);
 	thiz->geometry = rg;
+	thiz->changed = EINA_FALSE;
 }
 
 void eon_element_geometry_get(Eon_Element *thiz, Eon_Geometry *g)
@@ -793,13 +805,24 @@ void eon_element_backend_set(Eon_Element *thiz, Eon_Backend *backend)
 	}
 }
 
+/* Use this function to informa that the geometry (min/max/preferred) has to be
+ * recalculated. 
+ */
 void eon_element_inform_change(Eon_Element *thiz)
 {
-	/* TODO now that eon should just be an arranger
-	 * of objects based on the hints/geometry
-	 * this function should inform upward the setup()
-	 * process: get_hints -> geometry_set
-	 */
+	Eon_Element *thiz_parent;
+
+	if (thiz->changed) return;
+	thiz->changed = EINA_TRUE;
+	/* inform the parent */
+	if (!thiz->parent_relation.parent) return;
+	thiz_parent = ender_element_object_get(thiz->parent_relation.parent);
+	eon_element_inform_change(thiz_parent);
+}
+
+Eina_Bool eon_element_has_changed(Eon_Element *thiz)
+{
+	return thiz->changed;
 }
 
 Ender_Element * eon_element_ender_get(Eon_Element *thiz)

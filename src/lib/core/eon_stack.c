@@ -61,9 +61,6 @@ typedef struct _Eon_Stack
 	/* layout related data */
 	int children_count;
 	double min_length;
-
-	/* TODO remove ... */
-	Eina_Bool needs_setup : 1;
 } Eon_Stack;
 
 typedef struct _Eon_Stack_Damage_Data
@@ -331,7 +328,6 @@ static Eina_Bool _eon_stack_child_add(Eon_Element *ee, Ender_Element *child)
 	thiz_child = calloc(1, sizeof(Eon_Stack_Child));
 	thiz_child->ender = child;
 	thiz->children = eina_list_append(thiz->children, thiz_child);
-	thiz->needs_setup = EINA_TRUE;
 
 	return EINA_TRUE;
 }
@@ -355,7 +351,6 @@ static Eina_Bool _eon_stack_child_remove(Eon_Element *ee, Ender_Element *child)
 	}
 	if (found)
 	{
-		thiz->needs_setup = EINA_TRUE;
 		return EINA_TRUE;
 	}
 	return EINA_FALSE;
@@ -435,57 +430,55 @@ base_err:
 	return NULL;
 }
 
-static void _eon_stack_orientation_set(Eon_Element *ee, Eon_Orientation orientation)
+static void _eon_stack_orientation_set(Eon_Element *e, Eon_Orientation orientation)
 {
 	Eon_Stack *thiz;
 
-	thiz = _eon_stack_get(ee);
+	thiz = _eon_stack_get(e);
 	thiz->orientation = orientation;
-	thiz->needs_setup = EINA_TRUE;
+	eon_element_inform_change(e);
 }
 
-static void _eon_stack_orientation_get(Eon_Element *ee, Eon_Orientation *orientation)
+static void _eon_stack_orientation_get(Eon_Element *e, Eon_Orientation *orientation)
 {
 	Eon_Stack *thiz;
 
-	thiz = _eon_stack_get(ee);
+	thiz = _eon_stack_get(e);
 	if (orientation) *orientation = thiz->orientation;
-
 }
 
-static void _eon_stack_child_gravity_set(Eon_Element *ee, Ender_Element *child,
+static void _eon_stack_child_gravity_set(Eon_Element *e, Ender_Element *child,
 		int gravity)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
 	Eina_List *l;
 
-	thiz = _eon_stack_get(ee);
-	printf(">>> setting gravity %d\n", gravity);
+	thiz = _eon_stack_get(e);
 	EINA_LIST_FOREACH (thiz->children, l, ech)
 	{
 		if (ech->ender == child)
 		{
 			ech->gravity = gravity;
-			thiz->needs_setup = EINA_TRUE;
+			eon_element_inform_change(e);
 		}
 	}
 }
 
-static void _eon_stack_homogeneous_set(Eon_Element *ee, Eina_Bool homogeneous)
+static void _eon_stack_homogeneous_set(Eon_Element *e, Eina_Bool homogeneous)
 {
 	Eon_Stack *thiz;
 
-	thiz = _eon_stack_get(ee);
+	thiz = _eon_stack_get(e);
 	thiz->homogeneous = homogeneous;
-	thiz->needs_setup = EINA_TRUE;
+	eon_element_inform_change(e);
 }
 
-static void _eon_stack_homogeneous_get(Eon_Element *ee, Eina_Bool *homogeneous)
+static void _eon_stack_homogeneous_get(Eon_Element *e, Eina_Bool *homogeneous)
 {
 	Eon_Stack *thiz;
 
-	thiz = _eon_stack_get(ee);
+	thiz = _eon_stack_get(e);
 	*homogeneous = thiz->homogeneous;
 }
 /*============================================================================*

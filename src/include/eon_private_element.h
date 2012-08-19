@@ -65,6 +65,8 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints);
 void eon_element_geometry_set(Eon_Element *thiz, Eon_Geometry *g);
 Eon_Backend * eon_element_backend_get(Eon_Element *thiz);
 void eon_element_backend_set(Eon_Element *thiz, Eon_Backend *backend);
+void eon_element_inform_change(Eon_Element *thiz);
+Eina_Bool eon_element_has_changed(Eon_Element *thiz);
 
 void eon_element_initialize(Ender_Element *ender);
 void eon_element_real_width_get(Ender_Element *e, double *width);

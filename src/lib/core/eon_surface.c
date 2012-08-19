@@ -71,16 +71,17 @@ static void _eon_surface_geometry_set(Eon_Element *e, Eon_Geometry *g)
 	enesim_renderer_image_height_set(thiz->image, g->height);
 }
 
-static void _eon_surface_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
-		Eon_Hints *hints)
+static void _eon_surface_hints_get(Eon_Element *e, Eon_Hints *hints)
 {
 	Eon_Surface *thiz;
-	int sw, sh;
+	int sw = 0;
+	int sh = 0;
 
 	thiz = _eon_surface_get(e);
-	if (!thiz->s) return;
-
-	enesim_surface_size_get(thiz->s, &sw, &sh);
+	if (thiz->s)
+	{
+		enesim_surface_size_get(thiz->s, &sw, &sh);
+	}
 	eon_hints_values_set(hints, sw, sh, sw, sh, sw, sh);
 }
 
@@ -114,8 +115,12 @@ static Eon_Element * _eon_surface_new(void)
 {
 	Eon_Surface *thiz;
 	Eon_Element *ee;
+	Enesim_Renderer *r;
 
 	thiz = calloc(1, sizeof(Eon_Surface));
+
+	r = enesim_renderer_image_new();
+	thiz->image = r;
 
 	ee = eon_element_new(&_eon_surface_descriptor, thiz);
 	if (!ee) goto base_err;
@@ -141,4 +146,15 @@ base_err:
 EAPI Ender_Element * eon_surface_new(void)
 {
 	return EON_ELEMENT_NEW("surface");
+}
+
+EAPI void eon_surface_source_set(Ender_Element *e, Enesim_Surface *s)
+{
+	Eon_Surface *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_surface_get(ee);
+	thiz->s = s;
+	enesim_renderer_image_src_set(thiz->image, thiz->s);
 }

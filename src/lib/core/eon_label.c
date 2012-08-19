@@ -214,7 +214,7 @@ EAPI Ender_Element * eon_label_new_with_text(const char *text)
  */
 EAPI void eon_label_text_set(Ender_Element *e, const char *text)
 {
-	ender_element_value_set(e, "text", text, NULL);
+	ender_element_property_value_set(e, EON_LABEL_TEXT, text, NULL);
 }
 
 /**
@@ -223,7 +223,10 @@ EAPI void eon_label_text_set(Ender_Element *e, const char *text)
  */
 EAPI void eon_label_text_get(Ender_Element *e, const char **text)
 {
-	ender_element_value_get(e, "text", text, NULL);
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	_eon_label_text_get(ee, text);
 }
 
 

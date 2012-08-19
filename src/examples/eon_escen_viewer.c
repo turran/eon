@@ -19,6 +19,7 @@ typedef struct _Escen_Viewer
 	Ender_Element *states_stack;
 	/* for the area where we should render the escen */
 	Ender_Element *scene_area; /* where the escen loaded should be drawn */
+	Ender_Element *scene_area_stack;
 	Enesim_Surface *s;
 	Escen_Ender *current_escen_ender; /* current escen ender */
 	Escen_Instance *current_instance; /* current instance displaying */
@@ -88,6 +89,7 @@ static void ender_clicked(Ender_Element *e, const char *event_name, void *event_
 	eon_bin_child_get(e, &label);
 	if (!label) return;
 	eon_label_text_get(label, &string);
+
 	new_escen_ender = escen_ender_get(thiz->escen, string);
 	if (!new_escen_ender) return;
 
@@ -137,6 +139,7 @@ static void populate_enders(Escen_Viewer *thiz, Ender_Element *container, Escen 
 static void draw_ui(Escen_Viewer *thiz)
 {
 	Ender_Element *e;
+	Enesim_Surface *s;
 
 	/* add a stack with the enders, make it scrollable */
 	e = eon_stack_new();
@@ -156,13 +159,19 @@ static void draw_ui(Escen_Viewer *thiz)
 
 	/* the scene area */
 	e = eon_stack_new();
-	thiz->scene_area = e;
-#if 0
+	thiz->scene_area_stack = e;
 	eon_stack_orientation_set(e, EON_ORIENTATION_VERTICAL);
 	eon_stack_homogeneous_set(e, EINA_TRUE);
 	eon_container_child_add(thiz->container, e);
 	eon_stack_child_gravity_set(thiz->container, e, 1);
-#endif
+
+	e = eon_surface_new();
+	thiz->scene_area = e;
+	s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, 640, 480);
+	eon_surface_source_set(e, s);
+	eon_element_vertical_alignment_set(e, EON_VERTICAL_ALIGNMENT_TOP);
+	eon_element_horizontal_alignment_set(e, EON_HORIZONTAL_ALIGNMENT_LEFT);
+	eon_container_child_add(thiz->scene_area_stack, e);
 
 	/* set the default state */
 	thiz->current_escen_ender = escen_ender_nth_get(thiz->escen, 0);
@@ -205,6 +214,15 @@ Escen_Viewer * escen_viewer_new(int width, int height, const char *file)
 	backend = eon_ecore_sdl_new();
 	thiz->backend = backend;
 
+	/* FIXME the win must be created on the _new function, but we are having issues with the propagation */
+	win = eon_backend_window_new(thiz->backend, thiz->container, thiz->width, thiz->height);
+	if (!win)
+	{
+		printf("Can not create the Eon_Window container\n");
+		return NULL;
+	}
+	thiz->win = win;
+
 	return thiz;
 }
 
@@ -217,7 +235,6 @@ void escen_viewer_free(Escen_Viewer *thiz)
 int main(int argc, char **argv)
 {
 	Escen_Viewer *thiz;
-	Eon_Window *ee;
 	int width;
 	int height;
 	char *file;
@@ -239,13 +256,6 @@ int main(int argc, char **argv)
 	if (!thiz) return -1;
 
 	draw_ui(thiz);
-	/* FIXME the win must be created on the _new function, but we are having issues with the propagation */
-	thiz->win = eon_backend_window_new(thiz->backend, thiz->container, thiz->width, thiz->height);
-	if (!thiz->win)
-	{
-		printf("Can not create the Eon_Window container\n");
-		return NULL;
-	}
 
 	eon_backend_run(thiz->backend);
 	escen_viewer_free(thiz);

@@ -169,6 +169,8 @@ static void _eon_container_child_remove(Eon_Element *ee, Ender_Element *child)
 		child_r = eon_element_renderer_get(child);
 		eon_theme_instance_property_remove(theme, "child", child_r, NULL);
 		eon_element_parent_set(child, NULL, NULL, NULL);
+
+		eon_element_inform_change(ee);
 	}
 }
 
@@ -198,6 +200,8 @@ static void _eon_container_child_add(Eon_Element *ee, Ender_Element *child)
 		child_r = eon_element_renderer_get(child);
 		eon_theme_instance_property_add(theme, "child", child_r, NULL);
 		eon_element_parent_set(child, thiz->e, NULL, NULL);
+
+		eon_element_inform_change(ee);
 	}
 }
 

@@ -293,6 +293,7 @@ static Eina_Bool _idler_cb(void *data)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
 	Enesim_Renderer *r;
+	Eon_Element *e;
 	Enesim_Error *error = NULL;
 	Eina_List *redraws = NULL;
 	Eina_Bool full = EINA_FALSE;
@@ -309,30 +310,13 @@ static Eina_Bool _idler_cb(void *data)
 		full = EINA_TRUE;
 	}
 
-	/* TODO
-	 * once the eon element does not inherit from a renderer then
-	 * we should call:
-	 * Eina_Bool has_changed = eon_element_has_changed(e);
-	 * if (has_changed) eon_element_setup(e);
-	 * r = eon_element_renderer_get(e);
-	 * enesim_renderer_damages_get(r, _sdl_damages_get, thiz);
-	 * the problem with this approach is that basically every element
-	 * has a renderer associated, if we do the setup on every element
-	 * and then we get the damages at the end we are iterating over
-	 * the element tree once and over the renderer tree once, it might
-	 * be too much
-	 */
-#if 1
-	//eon_element_setup(thiz->layout, thiz->surface, &error);
-	//eon_element_geometry_set(e, &geometry);
-#else
-	if (eon_element_needs_setup(thiz->layout))
+	e = ender_element_object_get(thiz->layout);
+	if (eon_element_has_changed(e))
 	{
-		printf("needs setup!!!\n");
-		eon_element_setup(thiz->layout, thiz->surface, &error);
-		eon_element_cleanup(thiz->layout, thiz->surface);
+		/* set the new geometry */
+		_calculate_layout_size(thiz, thiz->width, thiz->height);
 	}
-#endif
+
 	r = eon_element_renderer_get(thiz->layout);
 	if (full)
 		goto all;

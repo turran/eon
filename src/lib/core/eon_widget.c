@@ -81,9 +81,10 @@ static inline Eon_Widget * _eon_widget_get(Eon_Element *ee)
 	return thiz;
 }
 
-static void _eon_widget_theme_changed(Ender_Element *e)
+static void _eon_widget_theme_changed(Eon_Element *e)
 {
 	printf("the theme changed!!!\n");
+	eon_element_inform_change(e);
 }
 
 static void _widget_focus_in(Ender_Element *e, const char *event_name, void *event_data, void *data)

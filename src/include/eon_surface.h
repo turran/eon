@@ -26,6 +26,7 @@
  */
 
 EAPI Ender_Element * eon_surface_new(void);
+EAPI void eon_surface_source_set(Ender_Element *e, Enesim_Surface *s);
 
 /**
  * @}

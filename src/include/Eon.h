@@ -59,6 +59,7 @@
 #include "eon_frame.h"
 #include "eon_label.h"
 #include "eon_spin.h"
+#include "eon_surface.h"
 #include "eon_tab.h"
 #include "eon_toggle.h"
 #include "eon_widget.h"

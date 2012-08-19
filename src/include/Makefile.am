@@ -28,6 +28,7 @@ eon_scrollbar.h \
 eon_scrollview.h \
 eon_spin.h \
 eon_splitter.h \
+eon_surface.h \
 eon_stack.h \
 eon_tab.h \
 eon_toggle.h \
