@@ -114,7 +114,7 @@ static inline void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, E
 	if (g->width > hints->max.width)
 	{
 		double w = hints->preferred.width;
-		double x = g->x;
+		double x = 0;
 
 		if (w < 0) w = hints->max.width;
 		switch (halign)
@@ -136,7 +136,7 @@ static inline void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, E
 	if (g->height > hints->max.height)
 	{
 		double h = hints->preferred.height;
-		double y = g->y;
+		double y = 0;
 
 		if (h < 0) h = hints->max.height;
 		switch (valign)

@@ -109,7 +109,7 @@ static Ender_Element * _eon_stack_state_element_get(Ender_Element *e, double x, 
 		if ((x < g.x + g.width) && (x >= g.x) && (y < g.y + g.height) && (y >= g.y))
 			child = ech->ender;
 	}
-	printf("stack returning %p\n", child);
+	printf("stack returning %p at %g %g\n", child, x, y);
 
 	return child;
 }

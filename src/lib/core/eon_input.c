@@ -108,9 +108,6 @@ Ender_Element * _eon_input_state_element_get(Eon_Input_State *thiz, double x, do
 	Eon_Geometry g;
 	Ender_Element *e;
 
-	x -= thiz->pointer.offset_x;
-	y -= thiz->pointer.offset_y;
-
 	e = thiz->descriptor->element_get(thiz->element, x, y);
 	if (!e) return NULL;
 	e_e = ender_element_object_get(e);

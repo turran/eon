@@ -113,6 +113,7 @@ static void populate_states(Escen_Viewer *thiz, Ender_Element *container, Escen_
 		ender_event_listener_add(radio, "MouseClick", state_clicked, thiz);
 		eon_radio_group_name_set(radio, "states");
 		eon_bin_child_set(radio, label);
+		eon_element_horizontal_alignment_set(label, EON_HORIZONTAL_ALIGNMENT_LEFT);
 
 		eon_element_vertical_alignment_set(radio, EON_VERTICAL_ALIGNMENT_TOP);
 		eon_container_child_add(container, radio);
@@ -175,6 +176,7 @@ static void populate_enders(Escen_Viewer *thiz, Ender_Element *container, Escen 
 		ender_event_listener_add(radio, "MouseClick", ender_clicked, thiz);
 		eon_bin_child_set(radio, label);
 		eon_element_vertical_alignment_set(radio, EON_VERTICAL_ALIGNMENT_TOP);
+		eon_element_horizontal_alignment_set(label, EON_HORIZONTAL_ALIGNMENT_LEFT);
 
 		eon_container_child_add(container, radio);
 	}

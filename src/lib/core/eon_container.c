@@ -216,7 +216,6 @@ static void _eon_container_child_set(Eon_Element *ee, Eina_List *childs)
 	}
 }
 
-
 static void _eon_container_child_clear(Eon_Element *e)
 {
 	eon_container_internal_child_foreach(e, _child_clear_cb, NULL);
