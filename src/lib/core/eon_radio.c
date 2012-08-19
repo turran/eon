@@ -83,7 +83,7 @@ static void _radio_layout_child_padding_get(void *ref, void *child,
 	margin->left = 4;
 	margin->top = 2;
 	margin->bottom = 2;
-	margin->right = 4;
+	margin->right = 10;
 	/* TODO
 	*margin = thiz->padding;
 	*/
@@ -329,7 +329,6 @@ static void _eon_radio_key_up(Ender_Element *e,
 {
 	Eon_Event_Key_Up *ev = event_data;
 	Eon_Navigation_Key nkey;
-	Eon_Theme_Instance *theme;
 	Eina_Bool enabled;
 
 	/* check if the key is an enter key */

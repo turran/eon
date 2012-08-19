@@ -158,3 +158,14 @@ EAPI void eon_surface_source_set(Ender_Element *e, Enesim_Surface *s)
 	thiz->s = s;
 	enesim_renderer_image_src_set(thiz->image, thiz->s);
 }
+
+EAPI void eon_surface_damage_add(Ender_Element *e, Eina_Rectangle *area)
+{
+	Eon_Surface *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_surface_get(ee);
+	enesim_renderer_image_damage_add(thiz->image, area);
+}
+

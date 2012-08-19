@@ -24,11 +24,54 @@ typedef struct _Escen_Viewer
 	Escen_Ender *current_escen_ender; /* current escen ender */
 	Escen_Instance *current_instance; /* current instance displaying */
 	Ender_Element *current_ender;
+	Enesim_Renderer *current_renderer;
 } Escen_Viewer;
+
+typedef struct _Escen_Viewer_Damages
+{
+	Escen_Viewer *thiz;
+	Eina_List *areas;
+} Escen_Viewer_Damages;
 
 static void help(void)
 {
 	printf("Usage escen_viewer WIDTH HEIGHT ESCEN_FILE\n");
+}
+
+static Eina_Bool _damages_cb(Enesim_Renderer *r, const Eina_Rectangle *area, Eina_Bool past, void *data)
+{
+	Escen_Viewer_Damages *damages = data;
+	Eina_Rectangle *a;
+
+	a = malloc(sizeof(Eina_Rectangle));
+	*a = *area;
+
+	damages->areas = eina_list_append(damages->areas, a);
+	eon_surface_damage_add(damages->thiz->scene_area, a);
+
+	return EINA_TRUE;
+}
+
+static Eina_Bool idler(void *data)
+{
+	Escen_Viewer *thiz = data;
+	Escen_Viewer_Damages damages;
+	Eina_Rectangle *a;
+
+	if (!thiz->current_renderer) return EINA_TRUE;
+
+	damages.thiz = thiz;
+	damages.areas = NULL;
+	/* get the damages */
+	enesim_renderer_damages_get(thiz->current_renderer, _damages_cb, &damages);
+	if (!damages.areas) goto done;
+
+	/* draw it */
+	enesim_renderer_draw_list(thiz->current_renderer, thiz->s, damages.areas, 0, 0, NULL);
+	EINA_LIST_FREE (damages.areas, a)
+		free(a);
+done:
+	return EINA_TRUE;
 }
 
 static void state_clicked(Ender_Element *e, const char *event_name, void *event_data,
@@ -100,6 +143,7 @@ static void ender_clicked(Ender_Element *e, const char *event_name, void *event_
 	thiz->current_instance = new_instance;
 	thiz->current_escen_ender = new_escen_ender;
 	thiz->current_ender = new_ender;
+	thiz->current_renderer = ender_element_object_get(thiz->current_ender);
 	/* just replace what we have as content of the scene area */
 	populate_states(thiz, thiz->states_stack, thiz->current_escen_ender);
 }
@@ -167,7 +211,10 @@ static void draw_ui(Escen_Viewer *thiz)
 
 	e = eon_surface_new();
 	thiz->scene_area = e;
+
+	/* TODO use the backend to create the surface */
 	s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, 640, 480);
+	thiz->s = s;
 	eon_surface_source_set(e, s);
 	eon_element_vertical_alignment_set(e, EON_VERTICAL_ALIGNMENT_TOP);
 	eon_element_horizontal_alignment_set(e, EON_HORIZONTAL_ALIGNMENT_LEFT);
@@ -178,7 +225,9 @@ static void draw_ui(Escen_Viewer *thiz)
 	thiz->current_instance = escen_instance_new(thiz->current_escen_ender, EINA_TRUE);
 	escen_instance_state_set(thiz->current_instance, escen_ender_state_get(thiz->current_escen_ender, "default"));
 	thiz->current_ender = escen_instance_ender_get(thiz->current_instance);
+	thiz->current_renderer = ender_element_object_get(thiz->current_ender);
 
+	/* populate the radio buttons */
 	populate_enders(thiz, thiz->enders_stack, thiz->escen);
 	populate_states(thiz, thiz->states_stack, thiz->current_escen_ender);
 }
@@ -222,6 +271,8 @@ Escen_Viewer * escen_viewer_new(int width, int height, const char *file)
 		return NULL;
 	}
 	thiz->win = win;
+
+	eon_backend_idler_add(thiz->backend, idler, thiz);
 
 	return thiz;
 }

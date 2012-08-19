@@ -27,6 +27,7 @@
 
 EAPI Ender_Element * eon_surface_new(void);
 EAPI void eon_surface_source_set(Ender_Element *e, Enesim_Surface *s);
+EAPI void eon_surface_damage_add(Ender_Element *e, Eina_Rectangle *area);
 
 /**
  * @}
