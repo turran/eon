@@ -208,7 +208,7 @@ static Eon_Keyboard_Proxy_Navigation_Descriptor _stack_navigation_descriptor = {
 	/* .right 	= */ NULL
 };
 /*----------------------------------------------------------------------------*
- *                       The Eon's layout descriptors                         *
+ *                        The main layout descriptors                         *
  *----------------------------------------------------------------------------*/
 static void _stack_layout_child_geometry_set(void *ref, void *child,
 		Eon_Geometry *g)
@@ -299,7 +299,7 @@ static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .child_geometry_set 	= */ _stack_layout_child_geometry_set,
 };
 /*----------------------------------------------------------------------------*
- *                         The Eon's layout interface                         *
+ *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
 static void _eon_stack_free(Eon_Element *ee)
 {

@@ -46,7 +46,7 @@ static inline Eon_Basic_Scrollbar * _scrollbar_get(Eon_Theme_Widget *t)
 	return thiz;
 }
 /*----------------------------------------------------------------------------*
- *                          The Scrollbar theme interface                         *
+ *                          The Scrollbar theme interface                     *
  *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _basic_scrollbar_renderer_get(Eon_Theme_Widget *t)
 {
@@ -167,9 +167,6 @@ EAPI Eon_Theme_Widget * eon_basic_scrollbar_new(void)
 	thiz = calloc(1, sizeof(Eon_Basic_Scrollbar));
 	if (!thiz) return NULL;
 
-	/* FIXME the proxy default is for now, until we fix enesim to make
-	 * a renderer "active"
-	 */
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
 	enesim_renderer_rop_set(r, ENESIM_BLEND);

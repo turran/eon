@@ -25,6 +25,10 @@ typedef struct _Escen_Viewer
 	Escen_Instance *current_instance; /* current instance displaying */
 	Ender_Element *current_ender;
 	Enesim_Renderer *current_renderer;
+
+	/* our own scene background */
+	Enesim_Renderer *checker;
+	Enesim_Renderer *compound;
 } Escen_Viewer;
 
 typedef struct _Escen_Viewer_Damages
@@ -58,16 +62,14 @@ static Eina_Bool idler(void *data)
 	Escen_Viewer_Damages damages;
 	Eina_Rectangle *a;
 
-	if (!thiz->current_renderer) return EINA_TRUE;
-
 	damages.thiz = thiz;
 	damages.areas = NULL;
 	/* get the damages */
-	enesim_renderer_damages_get(thiz->current_renderer, _damages_cb, &damages);
+	enesim_renderer_damages_get(thiz->compound, _damages_cb, &damages);
 	if (!damages.areas) goto done;
 
 	/* draw it */
-	enesim_renderer_draw_list(thiz->current_renderer, thiz->s, damages.areas, 0, 0, NULL);
+	enesim_renderer_draw_list(thiz->compound, thiz->s, damages.areas, 0, 0, NULL);
 	EINA_LIST_FREE (damages.areas, a)
 		free(a);
 done:
@@ -128,6 +130,7 @@ static void ender_clicked(Ender_Element *e, const char *event_name, void *event_
 	Escen_Instance *new_instance;
 	Ender_Element *new_ender;
 	Ender_Element *label;
+	Enesim_Renderer *r;
 	const char *string = NULL;
 
 	eon_bin_child_get(e, &label);
@@ -144,7 +147,14 @@ static void ender_clicked(Ender_Element *e, const char *event_name, void *event_
 	thiz->current_instance = new_instance;
 	thiz->current_escen_ender = new_escen_ender;
 	thiz->current_ender = new_ender;
-	thiz->current_renderer = ender_element_object_get(thiz->current_ender);
+	r = ender_element_object_get(thiz->current_ender);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_compound_layer_add(thiz->compound, r);
+
+	/* FIXME we should not set this */
+	enesim_renderer_compound_layer_remove(thiz->compound, thiz->current_renderer);
+	thiz->current_renderer = r;
+
 	/* just replace what we have as content of the scene area */
 	populate_states(thiz, thiz->states_stack, thiz->current_escen_ender);
 }
@@ -186,6 +196,7 @@ static void draw_ui(Escen_Viewer *thiz)
 {
 	Ender_Element *e;
 	Enesim_Surface *s;
+	Enesim_Renderer *r;
 
 	/* add a stack with the enders, make it scrollable */
 	e = eon_stack_new();
@@ -222,12 +233,29 @@ static void draw_ui(Escen_Viewer *thiz)
 	eon_element_horizontal_alignment_set(e, EON_HORIZONTAL_ALIGNMENT_LEFT);
 	eon_container_child_add(thiz->scene_area_stack, e);
 
+	r = enesim_renderer_checker_new();
+	enesim_renderer_checker_even_color_set(r, 0xffcccccc);
+	enesim_renderer_checker_odd_color_set(r, 0xffffffff);
+	enesim_renderer_checker_width_set(r, 10);
+	enesim_renderer_checker_height_set(r, 10);
+	enesim_renderer_rop_set(r, ENESIM_FILL);
+	thiz->checker = r;
+
+	r = enesim_renderer_compound_new();
+	enesim_renderer_compound_layer_add(r, thiz->checker);
+	enesim_renderer_rop_set(r, ENESIM_FILL);
+	thiz->compound = r;
+
 	/* set the default state */
 	thiz->current_escen_ender = escen_ender_nth_get(thiz->escen, 0);
 	thiz->current_instance = escen_instance_new(thiz->current_escen_ender, EINA_TRUE);
 	escen_instance_state_set(thiz->current_instance, escen_ender_state_get(thiz->current_escen_ender, "default"));
 	thiz->current_ender = escen_instance_ender_get(thiz->current_instance);
 	thiz->current_renderer = ender_element_object_get(thiz->current_ender);
+
+	/* FIXME we should not set this */
+	enesim_renderer_rop_set(thiz->current_renderer, ENESIM_BLEND);
+	enesim_renderer_compound_layer_add(thiz->compound, thiz->current_renderer);
 
 	/* populate the radio buttons */
 	populate_enders(thiz, thiz->enders_stack, thiz->escen);

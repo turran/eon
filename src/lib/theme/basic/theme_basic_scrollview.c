@@ -16,14 +16,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-#include "Eon_Theme.h"
-#include "Eon_Basic.h"
-#include "eon_basic_private.h"
-#include <float.h>
+
+#include "eon_theme_widget.h"
+#include "eon_theme_container.h"
+#include "eon_theme_bin.h"
+#include "eon_theme_scrollview.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Theme_Basic_Scrollview
+typedef struct _Eon_Basic_Scrollview
 {
 	/* properties */
 	Eina_Bool over;
@@ -32,97 +33,126 @@ typedef struct _Theme_Basic_Scrollview
 	/* private */
 	Enesim_Renderer *compound;
 	Enesim_Renderer *background;
+	Enesim_Renderer *shape;
 	Enesim_Renderer *hbar;
 	Enesim_Renderer *vbar;
-	Enesim_Renderer *content;
-	Enesim_Renderer *clipper;
-} Theme_Basic_Scrollview;
+	Enesim_Renderer *child;
+} Eon_Basic_Scrollview;
 
-static inline Theme_Basic_Scrollview * _scrollview_get(Enesim_Renderer *r)
+static inline Eon_Basic_Scrollview * _scrollview_get(Eon_Theme_Widget *t)
 {
-	Theme_Basic_Scrollview *thiz;
+	Eon_Basic_Scrollview *thiz;
 
-	thiz = eon_theme_scrollview_data_get(r);
+	thiz = eon_theme_scrollview_data_get(t);
 	return thiz;
 }
 
 /*----------------------------------------------------------------------------*
- *                   The Eon's theme scrollview interface                     *
+ *                          The Scrollview theme interface                    *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _scrollview_renderer_get(Enesim_Renderer *r)
+static Enesim_Renderer * _basic_scrollview_renderer_get(Eon_Theme_Widget *t)
 {
-	Theme_Basic_Scrollview *thiz;
-	thiz = _scrollview_get(r);
+	Eon_Basic_Scrollview *thiz;
 
-	return thiz->clipper;
+	thiz = _scrollview_get(t);
+	return thiz->shape;
 }
 
-static Eina_Bool _scrollview_setup(Enesim_Renderer *r, Enesim_Error **error)
+static void _basic_scrollview_x_set(Eon_Theme_Widget *t, double x)
 {
-	Theme_Basic_Scrollview *thiz;
-	Eon_Position offset;
-	Enesim_Renderer *content;
-	double ox, oy;
-	double width, height;
+	Eon_Basic_Scrollview *thiz;
 
-	thiz = _scrollview_get(r);
-
-	/* setup common properties */
-	eon_theme_widget_x_get(r, &ox);
-	eon_theme_widget_y_get(r, &oy);
-	eon_theme_widget_width_get(r, &width);
-	eon_theme_widget_height_get(r, &height);
-	eon_theme_scrollview_offset_get(r, &offset);
-	eon_theme_container_content_get(r, &content);
-	if (!content)
-	{
-		printf("scrollview no content\n");
-		return EINA_FALSE;
-	}
-	//printf("offset = %g %g\n", offset.x, offset.y);
-	enesim_renderer_origin_set(content, offset.x, offset.y);
-
-	enesim_renderer_compound_layer_clear(thiz->compound);
-	enesim_renderer_compound_layer_add(thiz->compound, thiz->background);
-
-	/* the clipper */
-	enesim_renderer_origin_set(thiz->clipper, ox, oy);
-	enesim_renderer_clipper_width_set(thiz->clipper, width);
-	enesim_renderer_clipper_height_set(thiz->clipper, height);
-	//printf("boundings %g %g\n", width, height);
-
-	enesim_renderer_compound_layer_add(thiz->compound, content);
-	/* the bars */
-	eon_theme_scrollview_hbar_get(r, &thiz->hbar);
-	if (thiz->hbar)
-	{
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->hbar);
-		enesim_renderer_rop_set(thiz->hbar, ENESIM_BLEND);
-	}
-	eon_theme_scrollview_vbar_get(r, &thiz->vbar);
-	if (thiz->vbar)
-	{
-		enesim_renderer_compound_layer_add(thiz->compound, thiz->vbar);
-		enesim_renderer_rop_set(thiz->vbar, ENESIM_BLEND);
-	}
-
-	return EINA_TRUE;
+	thiz = _scrollview_get(t);
+	enesim_renderer_rectangle_x_set(thiz->shape, x);
 }
 
-static void _scrollview_free(Enesim_Renderer *r)
+static void _basic_scrollview_y_set(Eon_Theme_Widget *t, double y)
 {
-	Theme_Basic_Scrollview *thiz;
+	Eon_Basic_Scrollview *thiz;
 
-	thiz = _scrollview_get(r);
-	if (thiz->compound)
-		enesim_renderer_unref(thiz->compound);
+	thiz = _scrollview_get(t);
+	enesim_renderer_rectangle_y_set(thiz->shape, y);
+}
+
+static void _basic_scrollview_width_set(Eon_Theme_Widget *t, double width)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	enesim_renderer_rectangle_width_set(thiz->shape, width);
+}
+
+static void _basic_scrollview_height_set(Eon_Theme_Widget *t, double height)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	enesim_renderer_rectangle_height_set(thiz->shape, height);
+}
+
+static void _basic_scrollview_free(Eon_Theme_Widget *t)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	if (thiz->shape)
+		enesim_renderer_unref(thiz->shape);
+	
 	free(thiz);
 }
 
+static void _basic_scrollview_child_set(Eon_Theme_Widget *t, Enesim_Renderer *child)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	if (thiz->child)	
+		enesim_renderer_compound_layer_remove(thiz->compound, thiz->child);
+	enesim_renderer_compound_layer_add(thiz->compound, child);
+	thiz->child = child;
+}
+
+static void _basic_scrollview_child_get(Eon_Theme_Widget *t, Enesim_Renderer **child)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	*child = thiz->child;
+}
+
+static void _basic_scrollview_hbar_set(Eon_Theme_Widget *t, Enesim_Renderer *hbar)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	if (thiz->hbar)	
+		enesim_renderer_compound_layer_remove(thiz->compound, thiz->hbar);
+	enesim_renderer_compound_layer_add(thiz->compound, hbar);
+	thiz->hbar = hbar;
+}
+
+static void _basic_scrollview_vbar_set(Eon_Theme_Widget *t, Enesim_Renderer *vbar)
+{
+	Eon_Basic_Scrollview *thiz;
+
+	thiz = _scrollview_get(t);
+	if (thiz->vbar)	
+		enesim_renderer_compound_layer_remove(thiz->compound, thiz->vbar);
+	enesim_renderer_compound_layer_add(thiz->compound, vbar);
+	thiz->vbar = vbar;
+}
+
 static Eon_Theme_Scrollview_Descriptor _descriptor = {
-	.renderer_get = _scrollview_renderer_get,
-	.setup = _scrollview_setup,
-	.free = _scrollview_free,
+	/* .renderer_get 	= */ _basic_scrollview_renderer_get,
+	/* .x_set 		= */ _basic_scrollview_x_set,
+	/* .y_set 		= */ _basic_scrollview_y_set,
+	/* .width_set 		= */ _basic_scrollview_width_set,
+	/* .height_set 		= */ _basic_scrollview_height_set,
+	/* .free 		= */ _basic_scrollview_free,
+	/* .child_set 		= */ _basic_scrollview_child_set,
+	/* .child_get 		= */ _basic_scrollview_child_get,
+	/* .hbar_set 		= */ _basic_scrollview_hbar_set,
+	/* .vbar_set 		= */ _basic_scrollview_vbar_set,
 };
 /*============================================================================*
  *                                   API                                      *
@@ -131,40 +161,42 @@ static Eon_Theme_Scrollview_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_scrollview_new(void)
+EAPI Eon_Theme_Widget * eon_basic_scrollview_new(void)
 {
+	Eon_Theme_Widget *t;
+	Eon_Basic_Scrollview *thiz;
 	Enesim_Renderer *r;
-	Theme_Basic_Scrollview *thiz;
 
-	thiz = calloc(1, sizeof(Theme_Basic_Scrollview));
+	thiz = calloc(1, sizeof(Eon_Basic_Scrollview));
 	if (!thiz) return NULL;
-	thiz->bar_radius = 5;
-	thiz->bar_width = 10;
 
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
-	enesim_renderer_background_color_set(r, 0xffd7d7d7);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_background_color_set(r, 0xffff0000);
 	thiz->background = r;
 
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
-	enesim_renderer_compound_layer_add(r, thiz->background);
 	thiz->compound = r;
+	enesim_renderer_compound_layer_add(r, thiz->background);
 
-	r = enesim_renderer_clipper_new();
-	if (!r) goto clipper_err;
-	thiz->clipper = r;
-	enesim_renderer_clipper_content_set(thiz->clipper, thiz->compound);
+	r = enesim_renderer_rectangle_new();
+	if (!r) goto shape_err;
+	thiz->shape = r;
+	enesim_renderer_shape_fill_renderer_set(r, thiz->compound);
+	enesim_renderer_shape_stroke_weight_set(r, 1.0);
+	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
+	t = eon_theme_scrollview_new(&_descriptor, thiz);
+	if (!t) goto base_err;
 
-	r = eon_theme_scrollview_new(&_descriptor, thiz);
-	if (!r) goto renderer_err;
-
-	return r;
-
-renderer_err:
-	enesim_renderer_unref(thiz->clipper);
-clipper_err:
+	return t;
+base_err:
+	enesim_renderer_unref(thiz->shape);
+shape_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
 	enesim_renderer_unref(thiz->background);

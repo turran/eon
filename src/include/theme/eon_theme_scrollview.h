@@ -23,24 +23,32 @@
  * @{
  */
 
+typedef void (*Eon_Theme_Scrollview_HBar_Set)(Eon_Theme_Widget *t, Enesim_Renderer *r);
+typedef void (*Eon_Theme_Scrollview_VBar_Set)(Eon_Theme_Widget *t, Enesim_Renderer *r);
+
 typedef struct _Eon_Theme_Scrollview_Descriptor
 {
-	/* renderer needed functions */
+	/* widget descriptor */
 	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Widget_Setup setup;
-	Enesim_Renderer_Delete free;
+	Eon_Theme_Widget_X_Set x_set;
+	Eon_Theme_Widget_Y_Set y_set;
+	Eon_Theme_Widget_Width_Set width_set;
+	Eon_Theme_Widget_Height_Set height_set;
+	Eon_Theme_Widget_Free free;
+	/* bin descriptor */
+	Eon_Theme_Bin_Child_Set child_set;
+	Eon_Theme_Bin_Child_Get child_get;
+	/* scrollview descriptor */
+	Eon_Theme_Scrollview_HBar_Set hbar_set;
+	Eon_Theme_Scrollview_VBar_Set vbar_set;
 } Eon_Theme_Scrollview_Descriptor;
 
-EAPI Enesim_Renderer * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_scrollview_new(Eon_Theme_Scrollview_Descriptor *descriptor,
 		void *data);
-EAPI Eina_Bool eon_is_theme_scrollview(Enesim_Renderer *r);
-EAPI void * eon_theme_scrollview_data_get(Enesim_Renderer *r);
-EAPI void eon_theme_scrollview_hbar_set(Enesim_Renderer *r, Enesim_Renderer *hbar);
-EAPI void eon_theme_scrollview_hbar_get(Enesim_Renderer *r, Enesim_Renderer **hbar);
-EAPI void eon_theme_scrollview_vbar_set(Enesim_Renderer *r, Enesim_Renderer *vbar);
-EAPI void eon_theme_scrollview_vbar_get(Enesim_Renderer *r, Enesim_Renderer **vbar);
-EAPI void eon_theme_scrollview_offset_set(Enesim_Renderer *r, Eon_Position *position);
-EAPI void eon_theme_scrollview_offset_get(Enesim_Renderer *r, Eon_Position *position);
+EAPI Eina_Bool eon_is_theme_scrollview(Eon_Theme_Widget *t);
+EAPI void * eon_theme_scrollview_data_get(Eon_Theme_Widget *t);
+EAPI void eon_theme_scrollview_hbar_set(Eon_Theme_Widget *t, Enesim_Renderer *hbar);
+EAPI void eon_theme_scrollview_vbar_set(Eon_Theme_Widget *t, Enesim_Renderer *vbar);
 
 /**
  * @}

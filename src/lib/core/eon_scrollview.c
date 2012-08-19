@@ -15,13 +15,9 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
-#include "Eon_Theme.h"
-#include "eon_theme_private.h"
 /**
  * @todo
- * The scrollview should not behave exactly as a container, the min width/height
+ * The scrollview should not behave exactly as a bin, the min width/height
  * should not be the contents plus this, but only this
  * Add the inset/outset theme property
  * Add the hbar, vbar position property (left, right, top, bottom)
@@ -29,6 +25,24 @@
  * the content but only when we are scrolling, whenever we stop scrolling continue
  * using the content renderer
  */
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_backend.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_widget.h"
+#include "eon_container.h"
+#include "eon_bin.h"
+#include "eon_scrollbar.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_theme.h"
+#include "eon_private_widget.h"
+#include "eon_private_container.h"
+#include "eon_private_bin.h"
+
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -46,23 +60,34 @@ typedef struct _Eon_Scrollview
 	Eon_Scrollview_State current;
 	Eon_Scrollview_State past;
 	/* private */
+	Ender_Element *stack;
 	Enesim_Surface *content_s;
 	Enesim_Renderer *image;
-	Eina_Bool changed : 1;
 	Ender_Element *hbar;
 	Eina_Bool has_vbar;
 	Ender_Element *vbar;
 	Eina_Bool has_hbar;
+
+	/* needed for the layouts */
+	int main_min_length;
+	int pre_min_length;
+
+	/* remove this */
+	Eina_Bool changed : 1;
 } Eon_Scrollview;
 
 static inline Eon_Scrollview * _eon_scrollview_get(Eon_Element *ee)
 {
 	Eon_Scrollview *thiz;
 
-	thiz = eon_container_data_get(ee);
+	thiz = eon_bin_data_get(ee);
 	return thiz;
 }
 
+/*----------------------------------------------------------------------------*
+ *                                Event handlers                              *
+ *----------------------------------------------------------------------------*/
+#if 0
 static void _scrollview_mouse_drag_start(Ender_Element *e, const char *event_name, void *event_data, void *data)
 {
 	printf("mouse drag\n");
@@ -96,7 +121,7 @@ static void _bar_changed(Ender_Element *e, const char *event_name, void *event_d
 
 		ee = ender_element_object_get(element);
 		thiz = _eon_scrollview_get(ee);
-		eon_container_content_get(element, &content);
+		eon_bin_content_get(element, &content);
 		ee = ender_element_object_get(content);
 		eon_element_actual_size_get(ee, &size);
 		/* check if the property changed is the value, if so, move the content */
@@ -116,65 +141,13 @@ static void _bar_changed(Ender_Element *e, const char *event_name, void *event_d
 		}
 	}
 }
+#endif
 /*----------------------------------------------------------------------------*
- *                       The Eon's container interface                        *
+ *                         The Eon's bin interface                            *
  *----------------------------------------------------------------------------*/
-static double _eon_scrollview_min_width_get(Ender_Element *e, double cmv)
-{
-	Eon_Scrollview *thiz;
-	Eon_Element *ee;
-	double vbmv;
-	double hbmv;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_scrollview_get(ee);
-
-	/* FIXME scrollbar inside/outside? */
-	eon_element_min_width_get(thiz->vbar, &vbmv);
-	eon_element_min_width_get(thiz->hbar, &hbmv);
-
-	return vbmv + hbmv;
-}
-
-static double _eon_scrollview_max_width_get(Ender_Element *e, double cmv)
-{
-	return DBL_MAX;
-}
-
-static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
-{
-	Eon_Scrollview *thiz;
-	Eon_Element *ee;
-	double vbmv;
-	double hbmv;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_scrollview_get(ee);
-
-	/* FIXME scrollbar inside/outside? */
-	eon_element_min_height_get(thiz->vbar, &vbmv);
-	eon_element_min_height_get(thiz->hbar, &hbmv);
-
-	return vbmv + hbmv;
-}
-
-static double _eon_scrollview_max_height_get(Ender_Element *e, double cmv)
-{
-	return DBL_MAX;
-}
-
-static double _eon_scrollview_preferred_width_get(Ender_Element *e, double cmv)
-{
-	return cmv;
-}
-
-static double _eon_scrollview_preferred_height_get(Ender_Element *e, double cmv)
-{
-	return cmv;
-}
-
 static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, double y)
 {
+#if 0
 	Eon_Scrollview *thiz;
 	Eon_Element *ee;
 	Eon_Element *bar_e;
@@ -201,7 +174,7 @@ static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, do
 		if ((x >= ax && x < ax + size.width) && (y >= ay && y < ay + size.height))
 			return thiz->vbar;
 	}
-
+#endif
 	return NULL;
 }
 
@@ -212,14 +185,17 @@ static void _eon_scrollview_initialize(Ender_Element *e)
 
 	ee = ender_element_object_get(e);
 	thiz = _eon_scrollview_get(ee);
+#if 0
 	ender_event_listener_add(e, "MouseDragStart", _scrollview_mouse_drag_start, NULL);
 	ender_event_listener_add(e, "MouseDragStop", _scrollview_mouse_drag_stop, NULL);
 	ender_event_listener_add(e, "MouseWheel", _scrollview_mouse_wheel, NULL);
 	/* FIXME on finalize remove this callbacks */
 	ender_event_listener_add(thiz->hbar, "Mutation", _bar_changed, e);
 	ender_event_listener_add(thiz->vbar, "Mutation", _bar_changed, e);
+#endif
 }
 
+#if 0
 static Eina_Bool _eon_scrollview_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		const Eon_Container_State *cstate,
@@ -372,25 +348,125 @@ static Eina_Bool _eon_scrollview_needs_setup(Ender_Element *e)
 	return EINA_FALSE;
 }
 
+static double _eon_scrollview_min_width_get(Ender_Element *e, double cmv)
+{
+	Eon_Scrollview *thiz;
+	Eon_Element *ee;
+	double vbmv;
+	double hbmv;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollview_get(ee);
+
+	/* FIXME scrollbar inside/outside? */
+	eon_element_min_width_get(thiz->vbar, &vbmv);
+	eon_element_min_width_get(thiz->hbar, &hbmv);
+
+	return vbmv + hbmv;
+}
+
+static double _eon_scrollview_max_width_get(Ender_Element *e, double cmv)
+{
+	return DBL_MAX;
+}
+
+static double _eon_scrollview_min_height_get(Ender_Element *e, double cmv)
+{
+	Eon_Scrollview *thiz;
+	Eon_Element *ee;
+	double vbmv;
+	double hbmv;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_scrollview_get(ee);
+
+	/* FIXME scrollbar inside/outside? */
+	eon_element_min_height_get(thiz->vbar, &vbmv);
+	eon_element_min_height_get(thiz->hbar, &hbmv);
+
+	return vbmv + hbmv;
+}
+
+static double _eon_scrollview_max_height_get(Ender_Element *e, double cmv)
+{
+	return DBL_MAX;
+}
+
+static double _eon_scrollview_preferred_width_get(Ender_Element *e, double cmv)
+{
+	return cmv;
+}
+
+static double _eon_scrollview_preferred_height_get(Ender_Element *e, double cmv)
+{
+	return cmv;
+}
+#endif
+
+static void _eon_scrollview_geometry_set(Eon_Element *e, Eon_Geometry *g)
+{
+	Eon_Scrollview *thiz;
+	Ender_Element *child;
+	Eon_Hints hints;
+
+	thiz = _eon_scrollview_get(e);
+	child = eon_bin_internal_child_get(e);
+	if (child)
+	{
+		Eon_Element *child_e;
+
+		child_e = ender_element_object_get(child);
+		eon_element_hints_get(child_e, &hints);
+		printf("scrollview: child hints %g %g %g %g %g %g\n",
+			hints.min.width, hints.min.height,
+			hints.max.width, hints.max.height,
+			hints.preferred.width, hints.preferred.height);
+	}
+	/* now set the bars */
+}
+
+static void _eon_scrollview_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Hints *hints)
+{
+	Eon_Scrollview *thiz;
+	Ender_Element *child;
+
+	thiz = _eon_scrollview_get(e);
+	/* the preferred size is the child size */
+	child = eon_bin_internal_child_get(e);
+	if (child)
+	{
+		Eon_Element *child_e;
+		Eon_Hints child_hints;
+
+		child_e = ender_element_object_get(child);
+		eon_element_hints_get(child_e, &child_hints);
+		hints->preferred = child_hints.preferred;
+	}
+	else
+	{
+		hints->preferred.width = hints->preferred.height = -1;
+	}
+}
+
+
 static void _eon_scrollview_free(Eon_Element *ee)
 {
 	/* TODO destroy the two bars */
 }
 
-static Eon_Container_Descriptor _descriptor = {
-	.initialize = _eon_scrollview_initialize,
-	.setup = _eon_scrollview_setup,
-	.needs_setup = _eon_scrollview_needs_setup,
-	.free = _eon_scrollview_free,
-	.min_width_get = _eon_scrollview_min_width_get,
-	.min_height_get = _eon_scrollview_min_height_get,
-	.max_width_get = _eon_scrollview_max_width_get,
-	.max_height_get = _eon_scrollview_max_height_get,
-	.preferred_width_get = _eon_scrollview_preferred_width_get,
-	.preferred_height_get = _eon_scrollview_preferred_height_get,
-	.element_at = _eon_scrollview_element_at,
-	.pass_events = EINA_TRUE,
-	.name = "scrollview",
+static Eon_Bin_Descriptor _eon_scrollbar_descriptor = {
+	/* .initialize 		= */ _eon_scrollview_initialize,
+	/* .backend_added 	= */ NULL,
+	/* .backend_removed 	= */ NULL,
+	/* .setup 		= */ NULL,
+	/* .needs_setup 	= */ NULL,
+	/* .geometry_set 	= */ _eon_scrollview_geometry_set,
+	/* .free		= */ _eon_scrollview_free,
+	/* .name 		= */ "scrollview",
+	/* .hints_get 		= */ _eon_scrollview_hints_get,
+	/* .child_at 		= */ _eon_scrollview_element_at,
+	/* .pass_events 	= */ EINA_TRUE,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -399,7 +475,11 @@ static Eon_Element * _eon_scrollview_new(void)
 {
 	Eon_Scrollview *thiz;
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
 	Ender_Element *e;
+
+	theme = eon_theme_instance_new("scrollview", EINA_TRUE);
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Scrollview));
 	if (!thiz) return NULL;
@@ -417,7 +497,7 @@ static Eon_Element * _eon_scrollview_new(void)
 	eon_scrollbar_max_set(e, 100);
 
 	/* create the two scrollbars */
-	ee = eon_container_new(&_descriptor, thiz);
+	ee = eon_bin_new(theme, &_eon_scrollbar_descriptor, thiz);
 	if (!ee) goto renderer_err;
 
 	return ee;
@@ -435,9 +515,10 @@ static void _eon_scrollview_x_position_set(Eon_Element *ee, double x)
 	thiz = _eon_scrollview_get(ee);
 	thiz->current.offset.x = x;
 	thiz->changed = EINA_TRUE;
-
+#if 0
 	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_scrollview_offset_set(theme_r, &thiz->current.offset);
+#endif
 }
 
 static void _eon_scrollview_x_position_get(Eon_Element *ee, double *x)
@@ -457,8 +538,10 @@ static void _eon_scrollview_y_position_set(Eon_Element *ee, double y)
 	thiz->current.offset.y = y;
 	thiz->changed = EINA_TRUE;
 
+#if 0
 	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_scrollview_offset_set(theme_r, &thiz->current.offset);
+#endif
 }
 
 static void _eon_scrollview_y_position_get(Eon_Element *ee, double *y)
@@ -491,7 +574,7 @@ EAPI Ender_Element * eon_scrollview_new(void)
  */
 EAPI void eon_scrollview_x_position_set(Ender_Element *e, double x)
 {
-	ender_element_value_set(e, "x_position", x, NULL);
+	ender_element_property_value_set(e, EON_SCROLLVIEW_X_POSITION, x, NULL);
 }
 
 /**
@@ -500,7 +583,7 @@ EAPI void eon_scrollview_x_position_set(Ender_Element *e, double x)
  */
 EAPI void eon_scrollview_x_position_get(Ender_Element *e, double *x)
 {
-	ender_element_value_get(e, "x_position", x, NULL);
+	ender_element_property_value_get(e, EON_SCROLLVIEW_X_POSITION, x, NULL);
 }
 
 /**
@@ -509,7 +592,7 @@ EAPI void eon_scrollview_x_position_get(Ender_Element *e, double *x)
  */
 EAPI void eon_scrollview_y_position_set(Ender_Element *e, double y)
 {
-	ender_element_value_set(e, "y_position", y, NULL);
+	ender_element_property_value_set(e, EON_SCROLLVIEW_Y_POSITION, y, NULL);
 }
 
 /**
@@ -518,6 +601,6 @@ EAPI void eon_scrollview_y_position_set(Ender_Element *e, double y)
  */
 EAPI void eon_scrollview_y_position_get(Ender_Element *e, double *y)
 {
-	ender_element_value_get(e, "y_position", y, NULL);
+	ender_element_property_value_get(e, EON_SCROLLVIEW_Y_POSITION, y, NULL);
 }
 

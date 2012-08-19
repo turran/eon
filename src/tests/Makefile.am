@@ -8,7 +8,6 @@ MAINTAINERCLEANFILES = Makefile.in
 # eon_test_label \
 # eon_test_loader \
 # eon_test_progressbar \
-# eon_test_scrollview \
 # eon_test_splitter \
 # eon_test_spin \
 # eon_test_toggle \
@@ -22,7 +21,8 @@ eon_test_button_image \
 eon_test_checkbox \
 eon_test_image \
 eon_test_radio \
-eon_test_scrollbar
+eon_test_scrollbar \
+eon_test_scrollview
 
 if BUILD_EXTENSION_ESVG
 check_PROGRAMS += eon_test_svg
