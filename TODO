@@ -1,17 +1,3 @@
-+ Eon needs a refactor to keep growing:
-  1. Split the layout from a container. A layout should be just the logic on how a container behaves.
-     That is, an "inner" layout for example will accept only one child and the container will expand
-     based on a "padding" property. This property should be part of the theme, so, it must be an
-     "element property" and for that we need escen to not set the "default" state on created instances.
-  2. The themes should always *set*, the eon elements should not *get* a property in order to know
-     the value of a property. This way we avoid having to get the value to do the calcs on the element itself
-     Still there are properties on the theme elements that have to be "getable", like the min/max width/height
-  3. Common graphics (checkbox, radios, scrolls, separators) must be controls (themable too) that other elements
-     instantiate. Then a radio button is composed of a container (with "inner" layout), another container (with
-     a stack layout) that holds a radio control and the content the user sets.
-  4. We need to decide if we keep the theme elements as now (renderers) or just use a renderer. And once that's
-     done, we need to figure out if we really need to export its .ender file or just make it static
-
 + We need to create some common code for widgets that are in fact compound widgets, like the color_button for example.
   Basically we need to create some kind of wrapper of the theme ender element which will just add the same properties
   the theme of the widgets that are used by the new widget has, or at least what it exposes. this way the theme editor
@@ -19,14 +5,12 @@
   a way to handle such stuff automatically? or just let it do manually?
 + Refactor the widget to make the theme usage configurable
 + Add a simple widget one can inherit from to make "instances" of widgets, like an Ok button, a Cancel button, a Color button, etc.
-+ Add the "enabled" property on the widgets
 + Add parent, sibling, etc information on every eon element, we need that for focus handling
 + Add events to the input, the input should trigger events whenever something happens, like a new focus element or a new grabbed element. This input event should be registered
   on the window? on the input?
 + Now that we are building more widgets we need a way to actually set themes based on its class/child-parent relation, maybe we can create something similar to css?
 + Add a scaler element, the scaler should be an element that can scale renderers or other elements by using a WIP property on enesim called scale which should scale the geometry not the final rendering process, ie. before applying the transformation matrix
 + Change the static const attributes on the different basic theme implementation into properties
-+ Remove every width/height/x/y/ callback on the descriptors, use the size/position where possible
 + List of widgets we should have:
   button (DONE)
   radio (DONE)
@@ -52,7 +36,4 @@
   Where B should be eon_theme_engine_property_set(element, enum). in the case of escen, the enum should match to a string for now given that escen does not handle
   direct integer properties yet
   Where C should be escen calling the correct object and set its properties, animations whatever
-+ We can create a simple way of handling direct property set/get, on the ender generator, whenever a property is added, the return property can be managed
-  as an external Ender_Property so then, we can handle the direct property set
 + Cache every escen state a widget needs, to avoid having to fetch the state each time something changes
-+ We need to avoid having to go through the list of widgets that much, one to check if the widget needs a setup, another to do the setup, another for the cleanup, etc, etc, etc
