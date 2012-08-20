@@ -43,6 +43,12 @@
 #include "eon_private_container.h"
 #include "eon_private_bin.h"
 
+#include "theme/eon_theme_widget.h"
+#include "theme/eon_theme_container.h"
+#include "theme/eon_theme_bin.h"
+#include "theme/eon_theme_scrollview.h"
+/* TODO add directions for the bars, hbar: top, bottom. vbar: left, right
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -60,12 +66,15 @@ typedef struct _Eon_Scrollview
 	Eon_Scrollview_State current;
 	Eon_Scrollview_State past;
 	/* private */
-	Ender_Element *stack;
-	Enesim_Surface *content_s;
+	Enesim_Surface *s;
 	Enesim_Renderer *image;
-	Ender_Element *hbar;
+
+	struct {
+		Ender_Element *e;
+		Eon_Element *ee;
+	} hbar, vbar;
+
 	Eina_Bool has_vbar;
-	Ender_Element *vbar;
 	Eina_Bool has_hbar;
 
 	/* needed for the layouts */
@@ -83,6 +92,47 @@ static inline Eon_Scrollview * _eon_scrollview_get(Eon_Element *ee)
 	thiz = eon_bin_data_get(ee);
 	return thiz;
 }
+
+#if 0
+static void _eon_scrollview_child_geometry_get(Eon_Element *child, Eon_Geometry *g, Eon_Geometry *dst)
+{
+	Eon_Hints chints;
+	Eon_Size cs;
+	Eina_Bool has_hbar = EINA_FALSE;
+	Eina_Bool has_vbar = EINA_FALSE;
+
+	eon_element_hints_get(child, &chints);
+	cs.width = chints.preferred.width;
+	/* first the hbar */
+	/* in case the preferred is -1, just occupy the whole area */
+	if (cs.width < g->width)
+		cs.width = g->width;
+
+	if (cs.width < chints.min.width)
+		cs.width = chints.min.width;
+	if (cs.width > chints.max.width)
+		cs.width = chints.max.width;
+
+	if (cs.width > g->width)
+	{
+		has_hbar = EINA_TRUE;
+	}
+
+	/* now the vbar */
+	if (cs.height < g->height)
+		cs.height = g->height;
+
+	if (cs.height < chints.min.height)
+		cs.height = chints.min.height;
+	if (cs.height > chints.max.height)
+		cs.height = chints.max.height;
+
+	if (cs.height > g->height)
+	{
+		has_vbar = EINA_TRUE;
+	}
+}
+#endif
 
 /*----------------------------------------------------------------------------*
  *                                Event handlers                              *
@@ -408,21 +458,86 @@ static void _eon_scrollview_geometry_set(Eon_Element *e, Eon_Geometry *g)
 	Eon_Scrollview *thiz;
 	Ender_Element *child;
 	Eon_Hints hints;
+	Eon_Geometry cg;
+	Eon_Theme_Instance *theme;
 
 	thiz = _eon_scrollview_get(e);
 	child = eon_bin_internal_child_get(e);
+	theme = eon_widget_theme_instance_get(e);
+
 	if (child)
 	{
 		Eon_Element *child_e;
+		Eon_Size area;
+		Eon_Hints vbh;
+		Eon_Hints hbh;
+		Eon_Geometry bg;
+		Enesim_Renderer *child_r;
 
+		/* for now we always display the two bars
+		 * but we can make it configureable through
+		 * a property on the scrollview
+		 */
+		area.width = g->width;
+		area.height = g->height;
+
+		eon_element_hints_get(thiz->hbar.ee, &hbh);
+		eon_element_hints_get(thiz->vbar.ee, &vbh);
+		area.height -= hbh.min.height;
+		area.width -= vbh.min.width;
+
+		bg.x = g->x;
+		bg.y = g->y + area.height;
+		bg.width = area.width;
+		bg.height = hbh.min.height;
+		eon_element_geometry_set(thiz->hbar.ee, &bg);
+
+		bg.x = g->x + area.width;
+		bg.y = g->y;
+		bg.width = vbh.min.width;
+		bg.height = area.height;
+		eon_element_geometry_set(thiz->vbar.ee, &bg);
+
+
+		if (thiz->s)
+			enesim_surface_unref(thiz->s);
+		thiz->s = enesim_surface_new(ENESIM_FORMAT_ARGB8888,
+				ceil(area.width), ceil(area.height));
+		
+		/* TODO now draw into the scrollable area */
 		child_e = ender_element_object_get(child);
 		eon_element_hints_get(child_e, &hints);
 		printf("scrollview: child hints %g %g %g %g %g %g\n",
 			hints.min.width, hints.min.height,
 			hints.max.width, hints.max.height,
 			hints.preferred.width, hints.preferred.height);
+
+		/* TODO set the size of the child */
+#if 0
+		cg.x = g->x;
+		cg.y = g->y;
+		cg.width = area.width;
+		cg.height = area.height;
+		eon_hints_geometry_align(hints, &cg,
+				EON_HORIZONTAL_ALIGNMENT_CENTER,
+				EON_VERTICAL_ALIGNMENT_CENTER);
+		if (cg.width > area.width)
+		{
+
+		}
+
+		if (cg.height > area.height)
+		{
+
+		}
+#endif
+	}
+	else
+	{
+
 	}
 	/* now set the bars */
+	printf("scrollview: setting the geometry %g %g %g %g\n", g->x, g->y, g->width, g->height);
 }
 
 static void _eon_scrollview_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
@@ -438,15 +553,34 @@ static void _eon_scrollview_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 	{
 		Eon_Element *child_e;
 		Eon_Hints child_hints;
+		Eon_Hints hg, vg;
+		//Eina_Bool vbar;
+		//Eina_Bool hbar;
 
 		child_e = ender_element_object_get(child);
 		eon_element_hints_get(child_e, &child_hints);
 		hints->preferred = child_hints.preferred;
+
+		/* the min size is the scrollbars size */
+		eon_element_hints_get(thiz->hbar.ee, &hg);
+		eon_element_hints_get(thiz->vbar.ee, &vg);
+
+		hints->min.width = hg.min.width;
+		if (hints->min.width > child_hints.min.width)
+			hints->min.width = child_hints.min.width;
+
+		hints->min.height = vg.min.height;
+		if (hints->min.height > child_hints.min.height)
+			hints->min.height = child_hints.min.height;
 	}
 	else
 	{
 		hints->preferred.width = hints->preferred.height = -1;
 	}
+	printf("scrollview hints %g %g %g %g %g %g\n",
+			hints->min.width, hints->min.height,
+			hints->max.width, hints->max.height,
+			hints->preferred.width, hints->preferred.height);
 }
 
 
@@ -477,6 +611,7 @@ static Eon_Element * _eon_scrollview_new(void)
 	Eon_Element *ee;
 	Eon_Theme_Instance *theme;
 	Ender_Element *e;
+	Enesim_Renderer *r;
 
 	theme = eon_theme_instance_new("scrollview", EINA_TRUE);
 	if (!theme) return NULL;
@@ -485,16 +620,22 @@ static Eon_Element * _eon_scrollview_new(void)
 	if (!thiz) return NULL;
 
 	e = eon_scrollbar_new();
-	thiz->hbar = e;
+	thiz->hbar.e = e;
+	thiz->hbar.ee = ender_element_object_get(e);
 	eon_scrollbar_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
 	eon_scrollbar_min_set(e, 0);
 	eon_scrollbar_max_set(e, 100);
+	r = eon_element_renderer_get(thiz->hbar.e);
+	eon_theme_scrollview_hbar_set(theme->object, r);
 
 	e = eon_scrollbar_new();
-	thiz->vbar = e;
+	thiz->vbar.e = e;
+	thiz->vbar.ee = ender_element_object_get(e);
 	eon_scrollbar_orientation_set(e, EON_ORIENTATION_VERTICAL);
 	eon_scrollbar_min_set(e, 0);
 	eon_scrollbar_max_set(e, 100);
+	r = eon_element_renderer_get(thiz->vbar.e);
+	eon_theme_scrollview_vbar_set(theme->object, r);
 
 	/* create the two scrollbars */
 	ee = eon_bin_new(theme, &_eon_scrollbar_descriptor, thiz);

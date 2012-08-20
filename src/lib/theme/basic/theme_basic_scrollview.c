@@ -125,6 +125,7 @@ static void _basic_scrollview_hbar_set(Eon_Theme_Widget *t, Enesim_Renderer *hba
 	Eon_Basic_Scrollview *thiz;
 
 	thiz = _scrollview_get(t);
+	printf("setting hbar!!!! >>>>>\n");
 	if (thiz->hbar)	
 		enesim_renderer_compound_layer_remove(thiz->compound, thiz->hbar);
 	enesim_renderer_compound_layer_add(thiz->compound, hbar);
@@ -172,7 +173,7 @@ EAPI Eon_Theme_Widget * eon_basic_scrollview_new(void)
 
 	r = enesim_renderer_background_new();
 	if (!r) goto background_err;
-	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	enesim_renderer_rop_set(r, ENESIM_FILL);
 	enesim_renderer_background_color_set(r, 0xffff0000);
 	thiz->background = r;
 
@@ -185,9 +186,7 @@ EAPI Eon_Theme_Widget * eon_basic_scrollview_new(void)
 	if (!r) goto shape_err;
 	thiz->shape = r;
 	enesim_renderer_shape_fill_renderer_set(r, thiz->compound);
-	enesim_renderer_shape_stroke_weight_set(r, 1.0);
-	enesim_renderer_shape_stroke_color_set(r, 0xff000000);
-	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
 
 	t = eon_theme_scrollview_new(&_descriptor, thiz);

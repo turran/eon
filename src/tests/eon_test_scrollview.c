@@ -10,6 +10,7 @@ Ender_Element * eon_test_scrollview(int argc, char **argv)
 
 	container = eon_stack_new();
 	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);
+	eon_stack_homogeneous_set(container, EINA_TRUE);
 
 	scrollview = eon_scrollview_new();
 
