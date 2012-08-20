@@ -80,11 +80,11 @@ typedef struct _Eon_Scrollbar
 	Eon_Theme_Instance *t_thumb_area;
 
 	Eon_Geometry track_area;
+	double thumb_length;
 
 	/* needed for the layout */
 	double min_length;
 
-	Eina_Bool changed : 1;
 	Eina_Bool thumb_dragging;
 	double offset_dragging;
 } Eon_Scrollbar;
@@ -97,23 +97,25 @@ static inline Eon_Scrollbar * _eon_scrollbar_get(Eon_Element *ee)
 	return thiz;
 }
 
-static inline double _eon_scrollbar_value_check(Eon_Scrollbar *thiz, double v)
+static inline double _eon_scrollbar_value_sanitize(Eon_Scrollbar *thiz, double value)
 {
-	if (v > thiz->max - thiz->page_size) v = thiz->max - thiz->page_size;
-	if (v < thiz->min) v = thiz->min;
-
-	return v;
+	if (value < thiz->min)
+		value = thiz->min;
+	if (value > thiz->max)
+		value = thiz->max;
+	return value;
 }
 
 static double _eon_scrollbar_thumb_length(Eon_Scrollbar *thiz, double length, double min, double max)
 {
 	double size;
 
-	size = (thiz->page_size / (thiz->max - thiz->min)) * length;
+	size = thiz->page_size * length;
 	if (size < min)
 		size = min;
 	if (size > max)
 		size = max;
+
 	return size;
 }
 
@@ -122,7 +124,7 @@ static double _eon_scrollbar_thumb_position(Eon_Scrollbar *thiz, double s, doubl
 	double percent;
 
 	percent = thiz->value / (thiz->max - thiz->min);
-	return s + length * percent;
+	return s + ((length - thiz->thumb_length) * percent);
 }
 
 static void _eon_scrollbar_thumb_geometry_get(Eon_Scrollbar *thiz, Eon_Geometry *g, Eon_Geometry *dst)
@@ -134,17 +136,19 @@ static void _eon_scrollbar_thumb_geometry_get(Eon_Scrollbar *thiz, Eon_Geometry 
 	/* TODO center the thumb */
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
+		thiz->thumb_length = _eon_scrollbar_thumb_length(thiz, g->width, min.width, max.width);
 		dst->x = _eon_scrollbar_thumb_position(thiz, g->x, g->width);
 		dst->y = g->y;
-		dst->width = _eon_scrollbar_thumb_length(thiz, g->width, min.width, max.width);
+		dst->width = thiz->thumb_length;
 		dst->height = g->height;
 	}
 	else
 	{
+		thiz->thumb_length = _eon_scrollbar_thumb_length(thiz, g->height, min.height, max.height);
 		dst->x = g->x;
 		dst->y = _eon_scrollbar_thumb_position(thiz, g->y, g->height);
 		dst->width = g->width;
-		dst->height = _eon_scrollbar_thumb_length(thiz, g->height, min.height, max.height);
+		dst->height = thiz->thumb_length;
 	}
 }
 
@@ -438,31 +442,41 @@ static void _eon_scrollbar_mouse_move(Ender_Element *e, const char *event_name, 
 	Eon_Event_Mouse_Move *ev = event_data;
 	double x, y;
 	double c;
+	double cmin;
+	double cmax;
 	double v;
-	double length;
+	double percent;
 
 	if (!thiz->thumb_dragging) return;
 
 	x = ev->x;
 	y = ev->y;
 
-	printf("moving! %g %g - %g\n", x, y, thiz->offset_dragging);
 	/* get the absolute position of the event */
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
+		cmin = thiz->track_area.x;
+		cmax = cmin + thiz->track_area.width - thiz->thumb_length;
 		c = x - thiz->offset_dragging;
-		length = thiz->track_area.width;
 	}
 	else
 	{
+		cmin = thiz->track_area.y;
+		cmax = cmin + thiz->track_area.height - thiz->thumb_length;
 		c = y - thiz->offset_dragging;
-		length = thiz->track_area.height;
 	}
+	/* normalize the coordinate */
+	if (c < cmin)
+		c = cmin;
+	if (c > cmax)
+		c = cmax;
+	percent = (c - cmin) / (cmax - cmin);
+	/* get the value matching the coordinate */
+	v = thiz->min + ((thiz->max - thiz->min) * percent);
 
-	if (c > length) c = length;
-	v = c / length;
-	v = (thiz->max - thiz->min) * v;
-	eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, v));
+	v = _eon_scrollbar_value_sanitize(thiz, v);
+	if (thiz->value != v)
+		eon_scrollbar_value_set(e, v);
 }
 
 static void _eon_scrollbar_mouse_drag_stop(Ender_Element *e, const char *event_name, void *event_data, void *data)
@@ -484,6 +498,8 @@ static void _eon_scrollbar_mouse_drag_start(Ender_Element *e, const char *event_
 
 	x = ev->x;
 	y = ev->y;
+
+	/* keep the coordinates relative to the thumb */
 	eon_theme_widget_geometry_get(thiz->t_thumb->object, &g);
 	if (!eon_geometry_is_inside(&g, x, y)) return;
 	
@@ -500,6 +516,7 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	Eon_Event_Mouse_Click *ev = event_data;
 	Eon_Geometry g;
 	double x, y;
+	double v;
 
 	x = ev->x;
 	y = ev->y;
@@ -508,21 +525,22 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 	eon_theme_widget_geometry_get(thiz->t_increment->object, &g);
 	if (eon_geometry_is_inside(&g, x, y))
 	{
-		eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value - thiz->step_increment));
-		return;
+		v = thiz->value + thiz->step_increment;
+		goto set;
 	}
 
 	eon_theme_widget_geometry_get(thiz->t_decrement->object, &g);
 	if (eon_geometry_is_inside(&g, x, y))
 	{
-		eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value + thiz->step_increment));
-		return;
+		v = thiz->value - thiz->step_increment;
+		goto set;
 	}
 
 	eon_theme_widget_geometry_get(thiz->t_thumb->object, &g);
 	if (eon_geometry_is_inside(&g, x, y))
 	{
 		printf("thumb!\n");
+		return;
 	}
 	else
 	{
@@ -543,59 +561,23 @@ static void _eon_scrollbar_mouse_click(Ender_Element *e, const char *event_name,
 			c = g.y;
 			l = g.height;
 		}
+
 		if (ic > c + l)
 		{
-			printf("page increment\n");
-			eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value + thiz->page_increment));
+			v = thiz->value + thiz->page_increment;
 		}
 		else
 		{
-			printf("page decrement\n");
-			eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value - thiz->page_increment));
+			v = thiz->value - thiz->page_increment;
 		}
+		goto set;
 	}
-#if 0
-	ee = ender_element_object_get(e);
-	thiz = _eon_scrollbar_get(ee);
-	theme_r = eon_widget_theme_renderer_get(ee);
 
-
-	eon_theme_scrollbar_decrement_arrow_geometry_get(theme_r, &ig);
-	eon_theme_scrollbar_increment_arrow_geometry_get(theme_r, &dg);
-	eon_theme_scrollbar_thumb_geometry_get(theme_r, &tg);
-
-	if (enesim_rectangle_is_inside(&dg, ev->rel_x, ev->rel_y))
-	{
-	}
-	/* the thumb case */
-	else
-	{
-		double dt, it;
-		double c;
-
-		if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
-		{
-			dt = tg.x;
-			it = tg.x + tg.w;
-			c = ev->rel_x;
-		}
-		else
-		{
-			dt = tg.y;
-			it = tg.y + tg.h;
-			c = ev->rel_y;
-		}
-		/* decrement side */
-		if (dt - c > DBL_EPSILON)
-		{
-			eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value - thiz->page_increment));
-		}
-		else if (c - it > DBL_EPSILON)
-		{
-			eon_scrollbar_value_set(e, _eon_scrollbar_value_check(thiz, thiz->value + thiz->page_increment));
-		}
-	}
-#endif
+	return;
+set:
+	v = _eon_scrollbar_value_sanitize(thiz, v);
+	if (thiz->value != v)
+		eon_scrollbar_value_set(e, v);
 }
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
@@ -671,7 +653,7 @@ static Eon_Element * _eon_scrollbar_new(void)
 	thiz->min = 0;
 	thiz->step_increment = 1;
 	thiz->page_increment = 10;
-	thiz->page_size = 10;
+	thiz->page_size = 0.5;
 
 	control = eon_theme_instance_new("scroll_thumb_area", EINA_TRUE);
 	if (!control) goto scroll_thumb_area_err;
@@ -724,7 +706,6 @@ static void _eon_scrollbar_orientation_set(Eon_Element *ee, Eon_Orientation orie
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->orientation = orientation;
-	thiz->changed = EINA_TRUE;
 	/* TODO inform of the change */
 
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
@@ -759,7 +740,6 @@ static void _eon_scrollbar_max_set(Eon_Element *ee, double max)
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->max = max;
-	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_scrollbar_max_get(Eon_Element *ee, double *max)
@@ -778,7 +758,6 @@ static void _eon_scrollbar_min_set(Eon_Element *ee, double min)
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 	thiz->min = min;
-	thiz->changed = EINA_TRUE;
 }
 
 static void _eon_scrollbar_min_get(Eon_Element *ee, double *min)
@@ -811,12 +790,26 @@ static void _eon_scrollbar_page_increment_get(Eon_Element *ee, double *page_incr
 static void _eon_scrollbar_page_size_set(Eon_Element *ee, double page_size)
 {
 	Eon_Scrollbar *thiz;
+	Eon_Geometry dst;
 
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
 
+	if (page_size < 0)
+		page_size = 0;
+	if (page_size > 1)
+		page_size = 1;
+
 	thiz->page_size = page_size;
-	thiz->changed = EINA_TRUE;
+
+	if (eon_element_has_changed(ee))
+		return;
+
+	_eon_scrollbar_thumb_geometry_get(thiz, &thiz->track_area, &dst);
+	eon_theme_instance_property_set(thiz->t_thumb, "x", dst.x, NULL);
+	eon_theme_instance_property_set(thiz->t_thumb, "y", dst.y, NULL);
+	eon_theme_instance_property_set(thiz->t_thumb, "width", dst.width, NULL);
+	eon_theme_instance_property_set(thiz->t_thumb, "height", dst.height, NULL);
 }
 
 static void _eon_scrollbar_page_size_get(Eon_Element *ee, double *page_size)
@@ -852,13 +845,15 @@ static void _eon_scrollbar_value_set(Eon_Element *ee, double value)
 
 	thiz = _eon_scrollbar_get(ee);
 	if (!thiz) return;
-	if (value > thiz->max - thiz->page_size) value = thiz->max - thiz->page_size;
-	if (value < thiz->min) value = thiz->min;
+
+	value = _eon_scrollbar_value_sanitize(thiz, value);
+
 	thiz->value = value;
-	thiz->changed = EINA_TRUE;
+	if (eon_element_has_changed(ee))
+		return;
 
 	/* set the thumb position */
-	printf("setting value!!!\n");
+	printf("setting value!!! %g\n", value);
 	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
 	{
 		double p;
@@ -1002,6 +997,7 @@ EAPI void eon_scrollbar_page_increment_get(Ender_Element *e, double *page_increm
 /**
  * To be documented
  * FIXME: To be fixed
+ * This is between 0 and 1. This range is relative to the area specified for the scrollarea
  */
 EAPI void eon_scrollbar_page_size_set(Ender_Element *e, double page_size)
 {

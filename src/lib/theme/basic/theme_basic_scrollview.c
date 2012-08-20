@@ -33,6 +33,7 @@ typedef struct _Eon_Basic_Scrollview
 	/* private */
 	Enesim_Renderer *compound;
 	Enesim_Renderer *background;
+	Enesim_Renderer *proxy;
 	Enesim_Renderer *shape;
 	Enesim_Renderer *hbar;
 	Enesim_Renderer *vbar;
@@ -106,9 +107,7 @@ static void _basic_scrollview_child_set(Eon_Theme_Widget *t, Enesim_Renderer *ch
 	Eon_Basic_Scrollview *thiz;
 
 	thiz = _scrollview_get(t);
-	if (thiz->child)	
-		enesim_renderer_compound_layer_remove(thiz->compound, thiz->child);
-	enesim_renderer_compound_layer_add(thiz->compound, child);
+	enesim_renderer_proxy_proxied_set(thiz->proxy, child);
 	thiz->child = child;
 }
 
@@ -125,7 +124,6 @@ static void _basic_scrollview_hbar_set(Eon_Theme_Widget *t, Enesim_Renderer *hba
 	Eon_Basic_Scrollview *thiz;
 
 	thiz = _scrollview_get(t);
-	printf("setting hbar!!!! >>>>>\n");
 	if (thiz->hbar)	
 		enesim_renderer_compound_layer_remove(thiz->compound, thiz->hbar);
 	enesim_renderer_compound_layer_add(thiz->compound, hbar);
@@ -177,10 +175,16 @@ EAPI Eon_Theme_Widget * eon_basic_scrollview_new(void)
 	enesim_renderer_background_color_set(r, 0xffff0000);
 	thiz->background = r;
 
+	r = enesim_renderer_proxy_new();
+	if (!r) goto proxy_err;
+	enesim_renderer_rop_set(r, ENESIM_BLEND);
+	thiz->proxy = r;
+
 	r = enesim_renderer_compound_new();
 	if (!r) goto compound_err;
 	thiz->compound = r;
 	enesim_renderer_compound_layer_add(r, thiz->background);
+	enesim_renderer_compound_layer_add(r, thiz->proxy);
 
 	r = enesim_renderer_rectangle_new();
 	if (!r) goto shape_err;
@@ -198,6 +202,8 @@ base_err:
 shape_err:
 	enesim_renderer_unref(thiz->compound);
 compound_err:
+	enesim_renderer_unref(thiz->proxy);
+proxy_err:
 	enesim_renderer_unref(thiz->background);
 background_err:
 	free(thiz);

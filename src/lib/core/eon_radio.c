@@ -319,7 +319,6 @@ static void _eon_radio_mouse_click(Ender_Element *e,
 		return;
 
 	eon_radio_selected_set(e, EINA_TRUE);
-	/* TODO trigger the selected event */
 }
 
 static void _eon_radio_key_up(Ender_Element *e,
@@ -343,7 +342,6 @@ static void _eon_radio_key_up(Ender_Element *e,
 		return;
 
 	eon_radio_selected_set(e, EINA_TRUE);
-	/* TODO trigger the selected event */
 }
 /*----------------------------------------------------------------------------*
  *                     The Eon's button_base interface                          *
@@ -518,6 +516,7 @@ static void _eon_radio_selected_set(Eon_Element *ee, Eina_Bool selected)
 		}
 		eon_theme_instance_state_set(theme, "selected", EINA_FALSE);
 		eon_theme_instance_state_set(thiz->control, "selected", EINA_FALSE);
+		/* TODO trigger the selected event */
 	}
 	else
 	{
