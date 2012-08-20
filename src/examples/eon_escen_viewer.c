@@ -19,7 +19,7 @@ typedef struct _Escen_Viewer
 	Ender_Element *states_stack;
 	/* for the area where we should render the escen */
 	Ender_Element *scene_area; /* where the escen loaded should be drawn */
-	Ender_Element *scene_area_stack;
+	Ender_Element *scene_area_scrollview;
 	Enesim_Surface *s;
 	Escen_Ender *current_escen_ender; /* current escen ender */
 	Escen_Instance *current_instance; /* current instance displaying */
@@ -215,10 +215,8 @@ static void draw_ui(Escen_Viewer *thiz)
 	thiz->states_stack = e;
 
 	/* the scene area */
-	e = eon_stack_new();
-	thiz->scene_area_stack = e;
-	eon_stack_orientation_set(e, EON_ORIENTATION_VERTICAL);
-	eon_stack_homogeneous_set(e, EINA_TRUE);
+	e = eon_scrollview_new();
+	thiz->scene_area_scrollview = e;
 	eon_container_child_add(thiz->container, e);
 	eon_stack_child_gravity_set(thiz->container, e, 1);
 
@@ -231,7 +229,7 @@ static void draw_ui(Escen_Viewer *thiz)
 	eon_surface_source_set(e, s);
 	eon_element_vertical_alignment_set(e, EON_VERTICAL_ALIGNMENT_TOP);
 	eon_element_horizontal_alignment_set(e, EON_HORIZONTAL_ALIGNMENT_LEFT);
-	eon_container_child_add(thiz->scene_area_stack, e);
+	eon_container_child_add(thiz->scene_area_scrollview, e);
 
 	r = enesim_renderer_checker_new();
 	enesim_renderer_checker_even_color_set(r, 0xffcccccc);

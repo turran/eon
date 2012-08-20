@@ -88,18 +88,6 @@ static inline Eon_Scrollview * _eon_scrollview_get(Eon_Element *ee)
 	return thiz;
 }
 
-#if 0
-static void _eon_Scrollview_child_position_get(Eon_Element *child, Eon_Geometry *g, Eon_Position *p)
-{
-
-}
-#endif
-
-static void _eon_scrollview_scrollbar_setup(void)
-{
-
-}
-
 static void _eon_scrollview_scrollbars_setup(Eon_Scrollview *thiz, Eon_Size *area, double cw, double ch)
 {
 	printf("setting up the scrollbars %g %g - %g %g\n", cw, ch, area->width, area->height);
@@ -141,7 +129,6 @@ static void _eon_scrollview_persistent_scrollbars_geometry_set(Eon_Scrollview *t
 	bg.height = area.height;
 	eon_element_geometry_set(thiz->vbar.ee, &bg);
 
-	printf(">>>> scrollview area = %g %g\n", area.width, area.height);
 	*darea = area;
 	thiz->has_hbar = EINA_TRUE;
 	thiz->has_vbar = EINA_TRUE;
