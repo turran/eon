@@ -5,7 +5,6 @@ Ender_Element * eon_test_button(int argc, char **argv)
 {
 	Ender_Element *container;
 	Ender_Element *button;
-	int i;
 
 	container = eon_stack_new();
 	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);

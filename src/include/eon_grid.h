@@ -16,28 +16,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_STACK_H
-#define _EON_STACK_H
+#ifndef _EON_GRID_H
+#define _EON_GRID_H
 
 /**
- * @defgroup Eon_Stack Stack
+ * @defgroup Eon_Grid Grid
  * @ingroup Eon_Container
  * @{
  */
 
-EAPI Ender_Element * eon_stack_new(void);
-EAPI Ender_Element * eon_hstack_new(void);
-EAPI Ender_Element * eon_vstack_new(void);
-
-EAPI void eon_stack_orientation_set(Ender_Element *e, Eon_Orientation orientation);
-EAPI void eon_stack_orientation_get(Ender_Element *e, Eon_Orientation *orientation);
-EAPI void eon_stack_homogeneous_set(Ender_Element *e, Eina_Bool homogeneous);
-EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous);
-EAPI void eon_stack_child_gravity_set(Ender_Element *e, Ender_Element *child,
-		int gravity);
+EAPI Ender_Element * eon_grid_new(void);
+EAPI void eon_grid_num_columns_set(Ender_Element *e, int num_columns);
+EAPI void eon_grid_num_columns_get(Ender_Element *e, int *num_columns);
 
 /**
  * @}
  */
 
 #endif
+

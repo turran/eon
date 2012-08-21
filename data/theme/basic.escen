@@ -127,6 +127,12 @@ escen {
 		};
 	};
 
+	basic_layout "grid" {
+		default {
+			set { background_color = 0xffcccccc; };
+		};
+	};
+
 	basic_layout "canvas" {
 
 	};

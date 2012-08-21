@@ -18,8 +18,6 @@
 #include "eon_private_main.h"
 #include "eon_private_layout.h"
 #include "eon_private_layout_stack.h"
-
-/* FIXME We handle only homogeneus space for now */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

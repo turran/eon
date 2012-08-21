@@ -19,6 +19,7 @@ eon_container.h \
 eon_element.h \
 eon_entry.h \
 eon_frame.h \
+eon_grid.h \
 eon_image.h \
 eon_input.h \
 eon_label.h \

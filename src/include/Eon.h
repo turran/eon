@@ -44,6 +44,7 @@
 #include "eon_image.h"
 #include "eon_container.h"
 #include "eon_bin.h"
+#include "eon_grid.h"
 #include "eon_canvas.h"
 #include "eon_entry.h"
 #include "eon_stack.h"

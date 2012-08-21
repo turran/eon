@@ -63,14 +63,6 @@ typedef struct _Eon_Stack
 	double min_length;
 } Eon_Stack;
 
-typedef struct _Eon_Stack_Damage_Data
-{
-	double x;
-	double y;
-	Enesim_Renderer_Damage_Cb real_cb;
-	void *real_data;
-} Eon_Stack_Damage_Data;
-
 static inline Eon_Stack * _eon_stack_get(Eon_Element *ee)
 {
 	Eon_Stack *thiz;

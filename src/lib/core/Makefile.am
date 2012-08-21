@@ -25,6 +25,7 @@ noinst_LTLIBRARIES = libcore.la
 classes = \
 eon_button.c \
 eon_checkbox.c \
+eon_grid.c \
 eon_image.c \
 eon_label.c \
 eon_radio.c \
@@ -50,6 +51,7 @@ eon_keyboard_proxy_navigation.c \
 eon_keyboard_proxy_passthrough.c \
 eon_keyboard_proxy_focus.c \
 eon_layout_frame.c \
+eon_layout_grid.c \
 eon_layout_stack.c \
 eon_main.c \
 eon_misc.c \

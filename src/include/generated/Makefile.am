@@ -9,6 +9,7 @@ eon_generated_entry.c \
 eon_generated_frame.c \
 eon_generated_widget.c \
 eon_generated_container.c \
+eon_generated_grid.c \
 eon_generated_stack.c \
 eon_generated_progressbar.c \
 eon_generated_radio.c \

@@ -17,6 +17,7 @@ check_PROGRAMS = \
 eon_test_button01 \
 eon_test_button02 \
 eon_test_button03 \
+eon_test_button04 \
 eon_test_button_image \
 eon_test_checkbox \
 eon_test_image \
@@ -52,6 +53,11 @@ eon_test_button03_SOURCES = eon_test_button03.c
 eon_test_button03_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 eon_test_button03_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 eon_test_button03_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+
+eon_test_button04_SOURCES = eon_test_button04.c
+eon_test_button04_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_button04_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+eon_test_button04_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_toggle_SOURCES = eon_test_toggle.c
 eon_test_toggle_CFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
