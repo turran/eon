@@ -33,8 +33,8 @@ EAPI void eon_stack_orientation_set(Ender_Element *e, Eon_Orientation orientatio
 EAPI void eon_stack_orientation_get(Ender_Element *e, Eon_Orientation *orientation);
 EAPI void eon_stack_homogeneous_set(Ender_Element *e, Eina_Bool homogeneous);
 EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous);
-EAPI void eon_stack_child_gravity_set(Ender_Element *e, Ender_Element *child,
-		int gravity);
+EAPI void eon_stack_child_weight_set(Ender_Element *e, Ender_Element *child,
+		int weight);
 
 /**
  * @}

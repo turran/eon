@@ -217,7 +217,7 @@ static void _checkbox_stack_layout_min_length_set(void *ref, double min)
 	thiz->min_length = min;
 }
 
-static int _checkbox_stack_layout_child_gravity_get(void *ref, void *child)
+static int _checkbox_stack_layout_child_weight_get(void *ref, void *child)
 {
 	Eon_Layout_Child_Data *lchild = child;
 	
@@ -234,7 +234,7 @@ static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .orientation_get 	= */ _checkbox_stack_layout_orientation_get,
 	/* .min_length_get 	= */ _checkbox_stack_layout_min_length_get,
 	/* .min_length_get 	= */ _checkbox_stack_layout_min_length_set,
-	/* .child_gravity_get 	= */ _checkbox_stack_layout_child_gravity_get,
+	/* .child_weight_get 	= */ _checkbox_stack_layout_child_weight_get,
 	/* .child_count_get 	= */ NULL,
 	/* .child_count_set 	= */ NULL,
 	/* .child_foreach 	= */ _checkbox_stack_layout_child_foreach,

@@ -41,12 +41,12 @@
  *============================================================================*/
 static Ender_Property *EON_STACK_ORIENTATION;
 static Ender_Property *EON_STACK_HOMOGENEOUS;
-static Ender_Property *EON_STACK_CHILD_GRAVITY;
+static Ender_Property *EON_STACK_CHILD_WEIGHT;
 
 typedef struct _Eon_Stack_Child
 {
 	Ender_Element *ender;
-	int gravity;
+	int weight;
 } Eon_Stack_Child;
 
 typedef struct _Eon_Stack
@@ -271,11 +271,11 @@ static void _stack_layout_min_length_set(void *ref, double min)
 	thiz->min_length = min;
 }
 
-static int _stack_layout_child_gravity_get(void *ref, void *child)
+static int _stack_layout_child_weight_get(void *ref, void *child)
 {
 	Eon_Stack_Child *thiz_child = child;
 
-	return thiz_child->gravity;
+	return thiz_child->weight;
 }
 
 static Eon_Layout_Stack_Descriptor _stack_layout = {
@@ -283,7 +283,7 @@ static Eon_Layout_Stack_Descriptor _stack_layout = {
 	/* .orientation_get 	= */ _stack_layout_orientation_get,
 	/* .min_length_get 	= */ _stack_layout_min_length_get,
 	/* .min_length_get 	= */ _stack_layout_min_length_set,
-	/* .child_gravity_get 	= */ _stack_layout_child_gravity_get,
+	/* .child_weight_get 	= */ _stack_layout_child_weight_get,
 	/* .child_count_get 	= */ _stack_layout_child_count_get,
 	/* .child_count_set 	= */ _stack_layout_child_count_set,
 	/* .child_foreach 	= */ _stack_layout_child_foreach,
@@ -439,8 +439,8 @@ static void _eon_stack_orientation_get(Eon_Element *e, Eon_Orientation *orientat
 	if (orientation) *orientation = thiz->orientation;
 }
 
-static void _eon_stack_child_gravity_set(Eon_Element *e, Ender_Element *child,
-		int gravity)
+static void _eon_stack_child_weight_set(Eon_Element *e, Ender_Element *child,
+		int weight)
 {
 	Eon_Stack *thiz;
 	Eon_Stack_Child *ech;
@@ -451,7 +451,7 @@ static void _eon_stack_child_gravity_set(Eon_Element *e, Ender_Element *child,
 	{
 		if (ech->ender == child)
 		{
-			ech->gravity = gravity;
+			ech->weight = weight;
 			eon_element_inform_change(e);
 		}
 	}
@@ -477,7 +477,7 @@ static void _eon_stack_homogeneous_get(Eon_Element *e, Eina_Bool *homogeneous)
  *                                 Global                                     *
  *============================================================================*/
 #define _eon_stack_delete NULL
-#define _eon_stack_child_gravity_get NULL
+#define _eon_stack_child_weight_get NULL
 #include "eon_generated_stack.c"
 /*============================================================================*
  *                                   API                                      *
@@ -569,9 +569,9 @@ EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_stack_child_gravity_set(Ender_Element *e, Ender_Element *child,
-		int gravity)
+EAPI void eon_stack_child_weight_set(Ender_Element *e, Ender_Element *child,
+		int weight)
 {
-	ender_element_property_value_set(child, EON_STACK_CHILD_GRAVITY, gravity, NULL);
+	ender_element_property_value_set(child, EON_STACK_CHILD_WEIGHT, weight, NULL);
 }
 

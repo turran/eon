@@ -26,7 +26,7 @@ typedef struct _Eon_Layout_Stack_Geometry_Set_Data
 	Eon_Geometry g;
 	Eon_Orientation orientation;
 	Eon_Layout_Stack_Descriptor *d;
-	int gravities;
+	int weights;
 	double empty;
 } Eon_Layout_Stack_Geometry_Set_Data;
 
@@ -38,25 +38,25 @@ typedef struct _Eon_Layout_Stack_Hints_Get_Data
 	int count;
 } Eon_Layout_Stack_Hints_Get_Data;
 
-static void _gravity_get_cb(void *ref, void *child, void *user_data)
+static void _weight_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
-	data->gravities += data->d->child_gravity_get(ref, child);
+	data->weights += data->d->child_weight_get(ref, child);
 }
 
 static void _no_homogeneous_vertical_geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
 	Eon_Hints hints;
-	int gravity;
+	int weight;
 
 	eon_hints_initialize(&hints);
 	data->d->child_hints_get(ref, child, &hints);
 
 	data->g.height = hints.min.height;
-	gravity = data->d->child_gravity_get(ref, child);
-	if (gravity != 0)
-		data->g.height += (data->empty / data->gravities) * gravity;
+	weight = data->d->child_weight_get(ref, child);
+	if (weight != 0)
+		data->g.height += (data->empty / data->weights) * weight;
 	printf("stack: setting geometry %g %g %g %g\n", data->g.x, data->g.y, data->g.width, data->g.height);
 	data->d->child_geometry_set(ref, child, &data->g);
 	data->g.y += data->g.height;
@@ -66,15 +66,15 @@ static void _no_homogeneous_horizontal_geometry_set_cb(void *ref, void *child, v
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
 	Eon_Hints hints;
-	int gravity;
+	int weight;
 
 	eon_hints_initialize(&hints);
 	data->d->child_hints_get(ref, child, &hints);
 
 	data->g.width = hints.min.width;
-	gravity = data->d->child_gravity_get(ref, child);
-	if (gravity != 0)
-		data->g.width += (data->empty / data->gravities) * gravity;
+	weight = data->d->child_weight_get(ref, child);
+	if (weight != 0)
+		data->g.width += (data->empty / data->weights) * weight;
 	printf("stack: setting geometry %g %g %g %g\n", data->g.x, data->g.y, data->g.width, data->g.height);
 	data->d->child_geometry_set(ref, child, &data->g);
 	data->g.x += data->g.width;
@@ -208,7 +208,7 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 
 	data.d = d;
 	data.orientation = d->orientation_get(ref);
-	data.gravities = 0;
+	data.weights = 0;
 	if (homogeneous)
 	{
 		count = d->child_count_get(ref);
@@ -233,16 +233,16 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 		double min;
 
 		/* get the difference between the min size and the geometry
-		 * then, use the gravity to calculate how much space should
+		 * then, use the weight to calculate how much space should
 		 * we allocate for every child min size
 		 */
 		d->min_length_get(ref, &min);
-		d->child_foreach(ref, _gravity_get_cb, &data);
+		d->child_foreach(ref, _weight_get_cb, &data);
 		data.g.x = g->x;
 		data.g.y = g->y;
 
-		printf("min size is %g gravity is %d\n", min, data.gravities);
-		/* get all the gravities */
+		printf("min size is %g weight is %d\n", min, data.weights);
+		/* get all the weights */
 		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
 		{
 			data.empty = g->width - min;

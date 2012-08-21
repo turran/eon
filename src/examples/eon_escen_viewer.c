@@ -218,7 +218,7 @@ static void draw_ui(Escen_Viewer *thiz)
 	e = eon_scrollview_new();
 	thiz->scene_area_scrollview = e;
 	eon_container_child_add(thiz->container, e);
-	eon_stack_child_gravity_set(thiz->container, e, 1);
+	eon_stack_child_weight_set(thiz->container, e, 1);
 
 	e = eon_surface_new();
 	thiz->scene_area = e;
