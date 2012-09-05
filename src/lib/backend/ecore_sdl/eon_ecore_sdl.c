@@ -256,6 +256,9 @@ static void _calculate_layout_size(Eon_Ecore_SDL_Window *thiz, int width, int he
 	printf("setting geometry %d %d\n", width, height);
 }
 
+/* FIXME we should limit the size of the window, looks like we cannot
+ * do it with SDL itself, but using some X11 hints
+ */
 static Eina_Bool _resize(void *data, int type, void *event)
 {
 	Eon_Ecore_SDL_Window *thiz = data;
@@ -267,9 +270,6 @@ static Eina_Bool _resize(void *data, int type, void *event)
 	thiz->width = ev->w;
 	thiz->height = ev->h;
 	//printf("resize to %d %d\n", thiz->width, thiz->height);
-	/* FIXME we should limit the size of the window, looks like we cannot
-	 * do it with SDL itself, but using some X11 hints
-	 */
 	//printf("%d %d: %g %g - %g %g\n", ev->w, ev->h, min_w, min_h, max_w, max_h);
 
 	return ECORE_CALLBACK_RENEW;

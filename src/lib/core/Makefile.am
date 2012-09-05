@@ -52,6 +52,7 @@ eon_keyboard_proxy_passthrough.c \
 eon_keyboard_proxy_focus.c \
 eon_layout_frame.c \
 eon_layout_grid.c \
+eon_layout_list.c \
 eon_layout_stack.c \
 eon_main.c \
 eon_misc.c \
