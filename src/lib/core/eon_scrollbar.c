@@ -387,11 +387,6 @@ static void _scrollbar_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_
 	}
 }
 
-static Eina_Bool _scrollbar_layout_is_homogeneous(void *ref)
-{
-	return EINA_FALSE;
-}
-
 static Eon_Orientation _scrollbar_layout_orientation_get(void *ref)
 {
 	Eon_Scrollbar *thiz = ref;
@@ -422,13 +417,10 @@ static int _scrollbar_layout_child_weight_get(void *ref, void *child)
 }
 
 static Eon_Layout_Stack_Descriptor _scrollbar_layout = {
-	/* .is_homogeneous 	= */ _scrollbar_layout_is_homogeneous,
 	/* .orientation_get 	= */ _scrollbar_layout_orientation_get,
 	/* .min_length_get 	= */ _scrollbar_layout_min_length_get,
 	/* .min_length_get 	= */ _scrollbar_layout_min_length_set,
 	/* .child_weight_get 	= */ _scrollbar_layout_child_weight_get,
-	/* .child_count_get 	= */ NULL,
-	/* .child_count_set 	= */ NULL,
 	/* .child_foreach 	= */ _scrollbar_layout_child_foreach,
 	/* .child_hints_get 	= */ _scrollbar_layout_child_hints_get,
 	/* .child_geometry_set 	= */ _scrollbar_layout_child_geometry_set,

@@ -40,7 +40,6 @@
  *                                  Local                                     *
  *============================================================================*/
 static Ender_Property *EON_STACK_ORIENTATION;
-static Ender_Property *EON_STACK_HOMOGENEOUS;
 static Ender_Property *EON_STACK_CHILD_WEIGHT;
 
 typedef struct _Eon_Stack_Child
@@ -53,13 +52,11 @@ typedef struct _Eon_Stack
 {
 	/* properties */
 	Eon_Orientation orientation;
-	Eina_Bool homogeneous;
 	/* private */
 	Eon_Input_Proxy *proxy;
 	/* container related data */
 	Eina_List *children;
 	/* layout related data */
-	int children_count;
 	double min_length;
 } Eon_Stack;
 
@@ -212,18 +209,6 @@ static void _stack_layout_child_geometry_set(void *ref, void *child,
 	eon_element_geometry_set(e, g);
 }
 
-static void _stack_layout_child_count_set(void *ref, int count)
-{
-	Eon_Stack *thiz = ref;
-	thiz->children_count = count;
-}
-
-static int _stack_layout_child_count_get(void *ref)
-{
-	Eon_Stack *thiz = ref;
-	return thiz->children_count;
-}
-
 static void _stack_layout_child_hints_get(void *ref, void *child,
 		Eon_Hints *hints)
 {
@@ -245,12 +230,6 @@ static void _stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb c
 	{
 		cb(ref, thiz_child, data);
 	}
-}
-
-static Eina_Bool _stack_layout_is_homogeneous(void *ref)
-{
-	Eon_Stack *thiz = ref;
-	return thiz->homogeneous;
 }
 
 static Eon_Orientation _stack_layout_orientation_get(void *ref)
@@ -279,13 +258,10 @@ static int _stack_layout_child_weight_get(void *ref, void *child)
 }
 
 static Eon_Layout_Stack_Descriptor _stack_layout = {
-	/* .is_homogeneous 	= */ _stack_layout_is_homogeneous,
 	/* .orientation_get 	= */ _stack_layout_orientation_get,
 	/* .min_length_get 	= */ _stack_layout_min_length_get,
 	/* .min_length_set 	= */ _stack_layout_min_length_set,
 	/* .child_weight_get 	= */ _stack_layout_child_weight_get,
-	/* .child_count_get 	= */ _stack_layout_child_count_get,
-	/* .child_count_set 	= */ _stack_layout_child_count_set,
 	/* .child_foreach 	= */ _stack_layout_child_foreach,
 	/* .child_hints_get 	= */ _stack_layout_child_hints_get,
 	/* .child_geometry_set 	= */ _stack_layout_child_geometry_set,
@@ -454,23 +430,6 @@ static void _eon_stack_child_weight_set(Eon_Element *e, Ender_Element *child,
 		}
 	}
 }
-
-static void _eon_stack_homogeneous_set(Eon_Element *e, Eina_Bool homogeneous)
-{
-	Eon_Stack *thiz;
-
-	thiz = _eon_stack_get(e);
-	thiz->homogeneous = homogeneous;
-	eon_element_inform_change(e);
-}
-
-static void _eon_stack_homogeneous_get(Eon_Element *e, Eina_Bool *homogeneous)
-{
-	Eon_Stack *thiz;
-
-	thiz = _eon_stack_get(e);
-	*homogeneous = thiz->homogeneous;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -537,30 +496,6 @@ EAPI void eon_stack_orientation_get(Ender_Element *e, Eon_Orientation *orientati
 	ee = ender_element_object_get(e);
 	thiz = _eon_stack_get(ee);
 	*orientation = thiz->orientation;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_stack_homogeneous_set(Ender_Element *e, Eina_Bool homogeneous)
-{
-	ender_element_property_value_set(e, EON_STACK_HOMOGENEOUS, homogeneous, NULL);
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_stack_homogeneous_get(Ender_Element *e, Eina_Bool *homogeneous)
-{
-	Eon_Stack *thiz;
-	Eon_Element *ee;
-
-	if (!homogeneous) return;
-	ee = ender_element_object_get(e);
-	thiz = _eon_stack_get(ee);
-	*homogeneous = thiz->homogeneous;
 }
 
 /**

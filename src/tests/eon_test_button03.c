@@ -8,7 +8,6 @@ Ender_Element * eon_test_button(int argc, char **argv)
 
 	container = eon_stack_new();
 	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);
-	eon_stack_homogeneous_set(container, EINA_FALSE);
 	button = eon_button_new_with_label("No weight 01");
 	eon_container_child_add(container, button);
 

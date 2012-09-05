@@ -202,7 +202,6 @@ static void draw_ui(Escen_Viewer *thiz)
 	e = eon_stack_new();
 	/* TODO make it scrollable */
 	eon_stack_orientation_set(e, EON_ORIENTATION_VERTICAL);
-	eon_stack_homogeneous_set(e, EINA_FALSE);
 	eon_container_child_add(thiz->container, e);
 	thiz->enders_stack = e;
 
@@ -210,7 +209,6 @@ static void draw_ui(Escen_Viewer *thiz)
 	/* TODO make it scrollable */
 	e = eon_stack_new();
 	eon_stack_orientation_set(e, EON_ORIENTATION_VERTICAL);
-	eon_stack_homogeneous_set(e, EINA_FALSE);
 	eon_container_child_add(thiz->container, e);
 	thiz->states_stack = e;
 
@@ -285,7 +283,6 @@ Escen_Viewer * escen_viewer_new(int width, int height, const char *file)
 	/* create the main container */
 	e = eon_stack_new();
 	eon_stack_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
-	eon_stack_homogeneous_set(e, EINA_FALSE);
 	thiz->container = e;
 
 	backend = eon_ecore_sdl_new();

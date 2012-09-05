@@ -44,7 +44,7 @@ static void _weight_get_cb(void *ref, void *child, void *user_data)
 	data->weights += data->d->child_weight_get(ref, child);
 }
 
-static void _no_homogeneous_vertical_geometry_set_cb(void *ref, void *child, void *user_data)
+static void _stack_vertical_geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
 	Eon_Hints hints;
@@ -62,7 +62,7 @@ static void _no_homogeneous_vertical_geometry_set_cb(void *ref, void *child, voi
 	data->g.y += data->g.height;
 }
 
-static void _no_homogeneous_horizontal_geometry_set_cb(void *ref, void *child, void *user_data)
+static void _stack_horizontal_geometry_set_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
 	Eon_Hints hints;
@@ -80,42 +80,7 @@ static void _no_homogeneous_horizontal_geometry_set_cb(void *ref, void *child, v
 	data->g.x += data->g.width;
 }
 
-static void _homogeneous_horizontal_geometry_set_cb(void *ref, void *child, void *user_data)
-{
-	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
-	printf("stack: setting geometry %g %g %g %g\n", data->g.x, data->g.y, data->g.width, data->g.height);
-	data->d->child_geometry_set(ref, child, &data->g);
-	data->g.x += data->g.width;
-}
-
-static void _homogeneous_vertical_geometry_set_cb(void *ref, void *child, void *user_data)
-{
-	Eon_Layout_Stack_Geometry_Set_Data *data = user_data;
-	printf("stack: setting geometry %g %g %g %g\n", data->g.x, data->g.y, data->g.width, data->g.height);
-	data->d->child_geometry_set(ref, child, &data->g);
-	data->g.y += data->g.height;
-}
-
-static void _homogeneous_hints_get_cb(void *ref, void *child, void *user_data)
-{
-	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
-	Eon_Hints hints;
-
-	eon_hints_initialize(&hints);
-	data->d->child_hints_get(ref, child, &hints);
-
-	/* the min size is the max of every child min size */
-	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
-	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
-	/* the max size can be anything */
-	/* the preferred size is the max of every child preferred size */
-	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
-	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
-
-	data->count++;
-}
-
-static void _no_homogeneous_horizontal_hints_get_cb(void *ref, void *child, void *user_data)
+static void _stack_horizontal_hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
 	Eon_Hints hints;
@@ -155,7 +120,7 @@ static void _no_homogeneous_horizontal_hints_get_cb(void *ref, void *child, void
 		data->hints->preferred.width, data->hints->preferred.height);
 }
 
-static void _no_homogeneous_vertical_hints_get_cb(void *ref, void *child, void *user_data)
+static void _stack_vertical_hints_get_cb(void *ref, void *child, void *user_data)
 {
 	Eon_Layout_Stack_Hints_Get_Data *data = user_data;
 	Eon_Hints hints;
@@ -201,62 +166,37 @@ static void _eon_layout_stack_geometry_set(void *descriptor, void *ref,
 {
 	Eon_Layout_Stack_Geometry_Set_Data data;
 	Eon_Layout_Stack_Descriptor *d = descriptor;
-	Eina_Bool homogeneous;
+	double min;
 	int count;
-
-	homogeneous = d->is_homogeneous(ref);
 
 	data.d = d;
 	data.orientation = d->orientation_get(ref);
 	data.weights = 0;
-	if (homogeneous)
-	{
-		count = d->child_count_get(ref);
 
-		data.g.x = g->x;
-		data.g.y = g->y;
-		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
-		{
-			data.g.width = g->width / count;
-			data.g.height = g->height;
-			d->child_foreach(ref, _homogeneous_horizontal_geometry_set_cb, &data);
-		}
-		else
-		{
-			data.g.width = g->width;
-			data.g.height = g->height / count;
-			d->child_foreach(ref, _homogeneous_vertical_geometry_set_cb, &data);
-		}
+	/* get the difference between the min size and the geometry
+	 * then, use the weight to calculate how much space should
+	 * we allocate for every child min size
+	 */
+	d->min_length_get(ref, &min);
+	d->child_foreach(ref, _weight_get_cb, &data);
+	data.g.x = g->x;
+	data.g.y = g->y;
+
+	printf("min size is %g weight is %d\n", min, data.weights);
+	/* get all the weights */
+	if (data.orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		data.empty = g->width - min;
+		printf("empty is %g\n", data.empty);
+		data.g.height = g->height;
+		d->child_foreach(ref, _stack_horizontal_geometry_set_cb, &data);
 	}
 	else
 	{
-		double min;
-
-		/* get the difference between the min size and the geometry
-		 * then, use the weight to calculate how much space should
-		 * we allocate for every child min size
-		 */
-		d->min_length_get(ref, &min);
-		d->child_foreach(ref, _weight_get_cb, &data);
-		data.g.x = g->x;
-		data.g.y = g->y;
-
-		printf("min size is %g weight is %d\n", min, data.weights);
-		/* get all the weights */
-		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
-		{
-			data.empty = g->width - min;
-			printf("empty is %g\n", data.empty);
-			data.g.height = g->height;
-			d->child_foreach(ref, _no_homogeneous_horizontal_geometry_set_cb, &data);
-		}
-		else
-		{
-			data.empty = g->height - min;
-			printf("empty is %g\n", data.empty);
-			data.g.width = g->width;
-			d->child_foreach(ref, _no_homogeneous_vertical_geometry_set_cb, &data);
-		}
+		data.empty = g->height - min;
+		printf("empty is %g\n", data.empty);
+		data.g.width = g->width;
+		d->child_foreach(ref, _stack_vertical_geometry_set_cb, &data);
 	}
 }
 
@@ -265,38 +205,21 @@ static void _eon_layout_stack_hints_get(void *descriptor, void *ref,
 {
 	Eon_Layout_Stack_Hints_Get_Data data;
 	Eon_Layout_Stack_Descriptor *d = descriptor;
-	Eina_Bool homogeneous;
 
 	data.d = d;
 	data.count = 0;
 	data.hints = hints;
 	data.orientation = d->orientation_get(ref);
-	homogeneous = d->is_homogeneous(ref);
-	if (homogeneous)
-	{
-		d->child_foreach(ref, _homogeneous_hints_get_cb, &data);
 
-		if (data.orientation == EON_ORIENTATION_HORIZONTAL) {
-			hints->min.width *= data.count;
-			hints->preferred.height *= data.count;
-		} else {
-			hints->min.height *= data.count;
-			hints->preferred.height *= data.count;
-		}
-		d->child_count_set(ref, data.count);
+	if (data.orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		d->child_foreach(ref, _stack_horizontal_hints_get_cb, &data);
+		d->min_length_set(ref, data.hints->min.width);
 	}
 	else
 	{
-		if (data.orientation == EON_ORIENTATION_HORIZONTAL)
-		{
-			d->child_foreach(ref, _no_homogeneous_horizontal_hints_get_cb, &data);
-			d->min_length_set(ref, data.hints->min.width);
-		}
-		else
-		{
-			d->child_foreach(ref, _no_homogeneous_vertical_hints_get_cb, &data);
-			d->min_length_set(ref, data.hints->min.height);
-		}
+		d->child_foreach(ref, _stack_vertical_hints_get_cb, &data);
+		d->min_length_set(ref, data.hints->min.height);
 	}
 }
 /*============================================================================*
