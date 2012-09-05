@@ -12,8 +12,7 @@ Ender_Element * eon_test_scrollbar(int argc, char **argv)
 	Ender_Element *container;
 	Ender_Element *scrollbar;
 
-	container = eon_stack_new();
-	eon_stack_homogeneous_set(container, EINA_TRUE);
+	container = eon_list_new();
 
 	scrollbar = eon_scrollbar_new();
 	eon_scrollbar_orientation_set(scrollbar, EON_ORIENTATION_VERTICAL);

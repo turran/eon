@@ -16,8 +16,7 @@ Ender_Element * eon_test_svg(int argc, char **argv)
 		return NULL;
 	}
 
-	container = eon_stack_new();
-	eon_stack_homogeneous_set(container, EINA_TRUE);
+	container = eon_list_new();
 	svg = eon_svg_new();
 	eon_svg_file_set(svg, argv[1]);
 	eon_container_child_add(container, svg);

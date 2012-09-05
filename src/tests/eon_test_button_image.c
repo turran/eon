@@ -53,9 +53,8 @@ Ender_Element * eon_test_button_image(int argc, char **argv)
 		return NULL;
 	}
 
-	container = eon_stack_new();
-	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);
-	eon_stack_homogeneous_set(container, EINA_TRUE);
+	container = eon_list_new();
+	eon_list_orientation_set(container, EON_ORIENTATION_VERTICAL);
 	while (argc > 1)
 	{
 		Ender_Element *button;

@@ -7,6 +7,7 @@ eon_generated_compound.c \
 eon_generated_element.c \
 eon_generated_entry.c \
 eon_generated_frame.c \
+eon_generated_image.c \
 eon_generated_widget.c \
 eon_generated_container.c \
 eon_generated_grid.c \
@@ -17,10 +18,10 @@ eon_generated_checkbox.c \
 eon_generated_label.c \
 eon_generated_button.c \
 eon_generated_button_base.c \
+eon_generated_list.c \
 eon_generated_scrollbar.c \
 eon_generated_scrollview.c \
 eon_generated_splitter.c \
-eon_generated_image.c \
 eon_generated_surface.c \
 eon_generated_wrapper.c \
 eon_generated_toggle.c \

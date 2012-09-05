@@ -6,9 +6,8 @@ Ender_Element * eon_test_radio(int argc, char **argv)
 	Ender_Element *container;
 	int i;
 
-	container = eon_stack_new();
-	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);
-	eon_stack_homogeneous_set(container, EINA_TRUE);
+	container = eon_list_new();
+	eon_list_orientation_set(container, EON_ORIENTATION_VERTICAL);
 
 	for (i = 0; i < 5; i++)
 	{

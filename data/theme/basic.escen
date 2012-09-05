@@ -137,6 +137,12 @@ escen {
 
 	};
 
+	basic_layout "list" {
+		default {
+			set { background_color = 0xffcccccc; };
+		};
+	};
+
 	basic_color "color" {
 		default {
 			set { fill_color = 0xffcccccc; };

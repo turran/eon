@@ -70,6 +70,7 @@ static void _register_enders(void)
 	/* container inheritance */
 	eon_bin_init();
 	eon_stack_init();
+	eon_list_init();
 	eon_grid_init();
 	/* bin inheritance */
 	eon_button_base_init();

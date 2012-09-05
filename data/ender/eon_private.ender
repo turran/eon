@@ -53,6 +53,10 @@ namespace "eon" : 0 {
 		rel int "child_weight";
 	};
 
+	class "list" : "container" {
+		int "orientation";
+	};
+
 	class "grid" : "container" {
 		int "num_columns";
 	};

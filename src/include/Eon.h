@@ -59,6 +59,7 @@
 #include "eon_color.h"
 #include "eon_frame.h"
 #include "eon_label.h"
+#include "eon_list.h"
 #include "eon_spin.h"
 #include "eon_surface.h"
 #include "eon_tab.h"

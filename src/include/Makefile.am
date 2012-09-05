@@ -23,6 +23,7 @@ eon_grid.h \
 eon_image.h \
 eon_input.h \
 eon_label.h \
+eon_list.h \
 eon_progressbar.h \
 eon_radio.h \
 eon_scrollbar.h \

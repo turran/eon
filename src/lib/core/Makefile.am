@@ -28,6 +28,7 @@ eon_checkbox.c \
 eon_grid.c \
 eon_image.c \
 eon_label.c \
+eon_list.c \
 eon_radio.c \
 eon_stack.c \
 eon_scrollbar.c \
