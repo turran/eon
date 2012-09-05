@@ -70,8 +70,15 @@ Ender_Namespace * eon_namespace_get(void);
 #define DBG(...) EINA_LOG_DOM_DBG(eon_log, __VA_ARGS__)
 extern int eon_log;
 
+typedef enum _Eon_Hints_Type
+{
+	EON_HINTS_FEATURE_FIXED,
+	EON_HINTS_FEATURE_DYNAMIC,
+} Eon_Hints_Type;
+
 typedef struct _Eon_Hints
 {
+	Eon_Hints_Type type;
 	Eon_Size min;
 	Eon_Size max;
 	Eon_Size preferred;
@@ -84,7 +91,7 @@ static inline void eon_hints_initialize(Eon_Hints *h)
 	eon_size_values_set(&h->max, DBL_MAX, DBL_MAX);
 }
 
-static inline void eon_hints_values_set(Eon_Hints *h, double minw, double maxw,
+static inline void eon_hints_sizes_values_set(Eon_Hints *h, double minw, double maxw,
 		double minh, double maxh, double prefw, double prefh)
 {
 	h->min.width = minw;

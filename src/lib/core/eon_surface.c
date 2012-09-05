@@ -82,7 +82,7 @@ static void _eon_surface_hints_get(Eon_Element *e, Eon_Hints *hints)
 	{
 		enesim_surface_size_get(thiz->s, &sw, &sh);
 	}
-	eon_hints_values_set(hints, sw, sh, sw, sh, sw, sh);
+	eon_hints_sizes_values_set(hints, sw, sh, sw, sh, sw, sh);
 }
 
 static Enesim_Renderer * _eon_surface_renderer_get(Ender_Element *e)

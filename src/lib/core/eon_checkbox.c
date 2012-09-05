@@ -95,7 +95,7 @@ static void _checkbox_layout_child_hints_get(void *ref, void *child,
 
 	thiz = _eon_checkbox_get(e);
 	eon_theme_control_checkbox_size_get(thiz->control->object, &size);
-	eon_hints_values_set(hints, size.width, size.height,
+	eon_hints_sizes_values_set(hints, size.width, size.height,
 			size.width, size.height,
 			size.width, size.height);
 }

@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	/* create the main window */
 	win = eon_stack_new();
 	eon_stack_orientation_set(win, EON_ORIENTATION_HORIZONTAL);
-	ee = eon_window_new(eon_ecore_sdl_new(), win, 640, 480);
+	ee = eon_backend_window_new(eon_ecore_sdl_new(), win, 640, 480);
 	if (!ee)
 	{
 		printf("Can not create the Eon_Window window\n");

@@ -184,7 +184,7 @@ static void _arrow_layout_child_geometry_set(void *ref, void *child,
 
 	/* make the arrow be centered */
 	eon_theme_control_scroll_arrow_size_get(child_thiz->object, &size);
-	eon_hints_values_set(&hints, size.width, size.height, size.width, size.height, size.width, size.height);
+	eon_hints_sizes_values_set(&hints, size.width, size.height, size.width, size.height, size.width, size.height);
 	dst = *g;
 	eon_hints_geometry_align(&hints, &dst, EON_HORIZONTAL_ALIGNMENT_CENTER,
 				EON_VERTICAL_ALIGNMENT_CENTER);

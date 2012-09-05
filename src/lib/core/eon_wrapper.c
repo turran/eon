@@ -83,7 +83,7 @@ static void _eon_wrapper_hints_get(Eon_Element *e, Eon_Hints *hints)
 	thiz = _eon_wrapper_get(e);
 	if (!thiz->wrapped) return;
 	enesim_renderer_destination_boundings(thiz->wrapped, &bounds, 0, 0);
-	eon_hints_values_set(hints, bounds.w, bounds.h, bounds.w, bounds.h, bounds.w, bounds.h);
+	eon_hints_sizes_values_set(hints, bounds.w, bounds.h, bounds.w, bounds.h, bounds.w, bounds.h);
 }
 
 static Eon_Element_Descriptor _descriptor = {
