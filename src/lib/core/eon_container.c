@@ -51,7 +51,6 @@ typedef struct _Eon_Container_Descriptor_Internal
 	Eon_Element_Initialize initialize;
 	Eon_Element_Backend_Added backend_added;
 	Eon_Element_Backend_Removed backend_removed;
-	Eon_Element_Setup setup;
 	Eon_Element_Free free;
 } Eon_Container_Descriptor_Internal;
 
@@ -125,21 +124,6 @@ static void _eon_container_backend_removed(Eon_Element *e, Eon_Backend *b)
 	thiz = _eon_container_get(e);
 	/* iterate over the childs and remove the backend too */	
 	eon_container_internal_child_foreach(e, _child_backend_set_cb, NULL);
-}
-
-/* FIXME We must delete this one */
-static Eina_Bool _eon_container_setup(Ender_Element *e,
-		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
-{
-	Eon_Container *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_container_get(ee);
-	if (thiz->descriptor.setup)
-		return thiz->descriptor.setup(e, state, s, err);
-	return EINA_TRUE;
 }
 
 static void _eon_container_free(Eon_Element *ee)
@@ -242,7 +226,6 @@ Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 	thiz->descriptor.child_remove = descriptor->child_remove;
 	thiz->descriptor.child_foreach = descriptor->child_foreach;
 	thiz->descriptor.child_at = descriptor->child_at;
-	thiz->descriptor.setup = descriptor->setup;
 
 	/* element interface */
 	pdescriptor.initialize = _eon_container_initialize;
@@ -250,8 +233,6 @@ Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 	pdescriptor.backend_removed = _eon_container_backend_removed;
 	pdescriptor.free = _eon_container_free;
 	pdescriptor.name = descriptor->name;
-	pdescriptor.setup = _eon_container_setup;
-	pdescriptor.needs_setup = descriptor->needs_setup;
 	pdescriptor.geometry_set = descriptor->geometry_set;
 	/* widget interface */
 	pdescriptor.hints_get = descriptor->hints_get;

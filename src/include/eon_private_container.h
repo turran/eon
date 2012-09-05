@@ -14,8 +14,6 @@ typedef struct _Eon_Container_Descriptor
 	Eon_Element_Initialize initialize;
 	Eon_Element_Backend_Added backend_added;
 	Eon_Element_Backend_Removed backend_removed;
-	Eon_Element_Setup setup;
-	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Geometry_Set geometry_set;
 	Eon_Element_Free free;
 	const char *name;

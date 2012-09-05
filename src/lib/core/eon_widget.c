@@ -48,8 +48,6 @@ static Ender_Property *EON_WIDGET_ENABLED;
 typedef struct _Eon_Widget_Descriptor_Internal
 {
 	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
-	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Free free;
 	Eon_Element_Geometry_Set geometry_set;
 	Eon_Widget_Hints_Get hints_get;
@@ -173,44 +171,6 @@ static void _eon_widget_hints_get(Eon_Element *e, Eon_Hints *hints)
 	}
 }
 
-#if 0
-static Eina_Bool _eon_widget_needs_setup(Ender_Element *e)
-{
-	Eon_Widget *thiz;
-	Eon_Element *ee;
-	Eina_Bool ret = EINA_FALSE;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_widget_get(ee);
-
-	/* first check if the theme associated with this widget needs a setup */
-	ret = eon_theme_widget_informs_setup(thiz->theme->renderer);
-	if (ret) return ret;
-
-	/* call the change interface */
-	if (thiz->descriptor.needs_setup)
-		return thiz->descriptor.needs_setup(e);
-	return ret;
-}
-
-static Eina_Bool _eon_widget_setup(Ender_Element *e,
-		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
-{
-	Eon_Widget *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_widget_get(ee);
-	enesim_renderer_rop_set(thiz->theme->renderer, ENESIM_BLEND);
-	if (thiz->descriptor.setup)
-		thiz->descriptor.setup(e, state, s, err);
-	eon_theme_widget_setup(thiz->theme->renderer, err);
-
-	return EINA_TRUE;
-}
-#endif
-
 static Enesim_Renderer * _eon_widget_renderer_get(Ender_Element *ender)
 {
 	Eon_Element *ee;
@@ -300,17 +260,13 @@ Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 	thiz->data = data;
 	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.initialize = descriptor->initialize;
-	thiz->descriptor.setup = descriptor->setup;
-	thiz->descriptor.needs_setup = descriptor->needs_setup;
 	thiz->descriptor.geometry_set = descriptor->geometry_set;
 	thiz->descriptor.hints_get = descriptor->hints_get;
 
 	pdescriptor.initialize = _eon_widget_initialize;
 	pdescriptor.backend_added = descriptor->backend_added;
 	pdescriptor.backend_removed = descriptor->backend_removed;
-	pdescriptor.setup = NULL;
 	pdescriptor.renderer_get = _eon_widget_renderer_get;
-	pdescriptor.needs_setup = NULL;
 	pdescriptor.hints_get = _eon_widget_hints_get;
 	pdescriptor.geometry_set = _eon_widget_geometry_set;
 	pdescriptor.is_focusable = _eon_widget_is_focusable;

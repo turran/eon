@@ -299,8 +299,10 @@ static Ender_Element * _eon_scrollview_element_at(Ender_Element *e, double x, do
 	if (child)
 	{
 		Eon_Geometry g;
+		Eon_Element *child_e;
 
-		eon_element_geometry_get(child, &g);
+		child_e = ender_element_object_get(child);
+		eon_element_geometry_get(child_e, &g);
 		if (eon_geometry_is_inside(&g, x, y))
 			return child;
 	}
@@ -419,8 +421,6 @@ static Eon_Bin_Descriptor _eon_scrollbar_descriptor = {
 	/* .initialize 		= */ _eon_scrollview_initialize,
 	/* .backend_added 	= */ NULL,
 	/* .backend_removed 	= */ NULL,
-	/* .setup 		= */ NULL,
-	/* .needs_setup 	= */ NULL,
 	/* .geometry_set 	= */ _eon_scrollview_geometry_set,
 	/* .free		= */ _eon_scrollview_free,
 	/* .name 		= */ "scrollview",

@@ -103,28 +103,6 @@ struct _Eon_Element
 	void *data;
 	Ender_Element *e;
 };
-
-#if 0
-static Eina_Bool _eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
-{
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-
-	if (thiz->descriptor.setup)
-		return thiz->descriptor.setup(e, &thiz->current, s, error);
-	return EINA_TRUE;
-}
-
-static void _eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	Eon_Element *thiz;
-
-	thiz = ender_element_object_get(e);
-	thiz->past = thiz->current;
-	thiz->do_needs_setup = EINA_FALSE;
-}
-#endif
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
  *----------------------------------------------------------------------------*/
@@ -387,27 +365,6 @@ void eon_element_initialize(Ender_Element *e)
 		thiz->descriptor.initialize(e);
 }
 
-#if 0
-Eina_Bool eon_element_setup(Ender_Element *e, Enesim_Surface *s, Enesim_Error **error)
-{
-	Eina_Bool ret;
-
-	ret = _eon_element_setup(e, s, error);
-	if (!ret)
-	{
-		printf("The element_setup() failed");
-		return EINA_FALSE;
-	}
-
-	return ret;
-}
-
-void eon_element_cleanup(Ender_Element *e, Enesim_Surface *s)
-{
-	_eon_element_cleanup(e, s);
-}
-#endif
-
 /* functions to manage the focus/mouse events */
 void eon_element_feed_key_down(Ender_Element *e, Eon_Input *input, Ender_Element *from, Eon_Keyboard_Key *key)
 {
@@ -453,9 +410,7 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 	thiz->descriptor.initialize = descriptor->initialize;
 	thiz->descriptor.backend_added = descriptor->backend_added;
 	thiz->descriptor.backend_removed = descriptor->backend_removed;
-	thiz->descriptor.setup = descriptor->setup;
 	thiz->descriptor.renderer_get = descriptor->renderer_get;
-	thiz->descriptor.needs_setup = descriptor->needs_setup;
 	thiz->descriptor.hints_get = descriptor->hints_get;
 	thiz->descriptor.geometry_set = descriptor->geometry_set;
 	thiz->descriptor.is_focusable = descriptor->is_focusable;
@@ -470,31 +425,6 @@ Eon_Element * eon_element_new(Eon_Element_Descriptor *descriptor,
 void * eon_element_data_get(Eon_Element *thiz)
 {
 	return thiz->data;
-}
-
-/*
- * Check whenever an element needs to do the setup
- * The only property relative to a setup is the size
- */
-Eina_Bool eon_element_needs_setup(Ender_Element *e)
-{
-	Eon_Element *thiz;
-	Eina_Bool ret;
-
-	thiz = ender_element_object_get(e);
-	ret = thiz->do_needs_setup;
-	if (ret)
-	{
-		if (thiz->current.actual_size.width != thiz->past.actual_size.width)
-			ret = EINA_FALSE;
-		if (thiz->current.actual_size.height != thiz->past.actual_size.height)
-			ret = EINA_FALSE;
-	}
-	if (ret) return ret;
-
-	if (thiz->descriptor.needs_setup)
-		ret = thiz->descriptor.needs_setup(e);
-	return ret;
 }
 
 #if 0

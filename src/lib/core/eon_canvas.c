@@ -165,74 +165,6 @@ static void _eon_canvas_free(Eon_Element *ee)
 	thiz = _eon_canvas_get(ee);
 	free(thiz);
 }
-
-static Eina_Bool _eon_canvas_setup(Ender_Element *e,
-		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
-{
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *ech;
-	Eon_Element *ee;
-	Eina_List *l;
-
-	ee = ender_element_object_get(e);
-	eon_widget_property_clear(ee, "child");
-
-	thiz = _eon_canvas_get(ee);
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		Eon_Element *child_e;
-		Enesim_Renderer *child_rr;
-
-		child_e = ender_element_object_get(ech->ender);
-
-		eon_element_real_width_get(ech->ender, &ech->current.width);
-		eon_element_real_height_get(ech->ender, &ech->current.height);
-
-		eon_element_actual_size_set(child_e, ech->current.width, ech->current.height);
-		eon_element_actual_position_set(child_e, ech->current.x, ech->current.y);
-		/* now add the renderer associated with the widget into the theme */
-		eon_element_setup(ech->ender, s, err);
-		child_rr = eon_element_renderer_get(ech->ender);
-		eon_widget_property_add(ee, "child", child_rr, NULL);
-
-		ech->past = ech->current;
-		ech->needs_setup = EINA_FALSE;
-	}
-	thiz->needs_setup = EINA_FALSE;
-
-	return EINA_TRUE;
-}
-
-Eina_Bool _eon_canvas_needs_setup(Ender_Element *e)
-{
-	Eon_Canvas *thiz;
-	Eon_Canvas_Child *ech;
-	Eon_Element *ee;
-	Eina_List *l;
-	Eina_Bool ret = EINA_FALSE;
-
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_canvas_get(ee);
-
-	if (thiz->needs_setup) return EINA_TRUE;
-
-	EINA_LIST_FOREACH (thiz->children, l, ech)
-	{
-		if (ech->needs_setup)
-		{
-			ret = EINA_TRUE;
-			break;
-		}
-		if (eon_element_needs_setup(ech->ender))
-		{
-			ret = EINA_TRUE;
-			break;
-		}
-	}
-	return ret;
-}
 /*----------------------------------------------------------------------------*
  *                         The Eon's layout interface                         *
  *----------------------------------------------------------------------------*/
@@ -291,8 +223,6 @@ static Eon_Layout_Descriptor _descriptor = {
 	.child_add = _eon_canvas_child_add,
 	.child_remove = _eon_canvas_child_remove,
 	.free = _eon_canvas_free,
-	.needs_setup = _eon_canvas_needs_setup,
-	.setup = _eon_canvas_setup,
 	.name = "canvas",
 };
 /*----------------------------------------------------------------------------*

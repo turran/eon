@@ -35,8 +35,6 @@
 typedef struct _Eon_Bin_Descriptor_Internal
 {
 	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
-	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Free free;
 	Eon_Widget_Hints_Get hints_get;
 	Eon_Container_Child_At child_at;
@@ -129,45 +127,6 @@ static void _eon_bin_initialize(Ender_Element *e)
 		thiz->descriptor.initialize(e);
 }
 
-static Eina_Bool _eon_bin_setup(Ender_Element *e,
-		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	Eina_Bool ret = EINA_TRUE;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-	if (thiz->descriptor.setup)
-		ret = thiz->descriptor.setup(e, state, s, err);
-	thiz->changed = EINA_FALSE;
-	return ret;
-}
-
-static Eina_Bool _eon_bin_needs_setup(Ender_Element *e)
-{
-	Eon_Bin *thiz;
-	Eon_Element *ee;
-	Eina_Bool ret;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_bin_get(ee);
-
-	/* check if we have changed */
-	ret = thiz->changed;
-	if (ret) return ret;
-
-	if (thiz->descriptor.needs_setup)
-		ret = thiz->descriptor.needs_setup(e);
-	if (ret) return ret;
-
-	/* check if the content has changed */
-	if (thiz->child)
-		ret = eon_element_needs_setup(thiz->child);
-	return ret;
-}
-
 static Eina_Bool _eon_bin_child_add(Eon_Element *e, Ender_Element *child)
 {
 	Eon_Bin *thiz;
@@ -248,8 +207,6 @@ Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
 	if (!thiz) return NULL;
 	thiz->data = data;
 	thiz->descriptor.initialize = descriptor->initialize;
-	thiz->descriptor.setup = descriptor->setup;
-	thiz->descriptor.needs_setup = descriptor->needs_setup;
 	thiz->descriptor.free = descriptor->free;
 	thiz->descriptor.child_at = descriptor->child_at;
 	thiz->pass_events = descriptor->pass_events;
@@ -257,8 +214,6 @@ Eon_Element * eon_bin_new(Eon_Theme_Instance *theme,
 	pdescriptor.initialize = _eon_bin_initialize;
 	pdescriptor.backend_added = descriptor->backend_added;
 	pdescriptor.backend_removed = descriptor->backend_removed;
-	pdescriptor.setup = _eon_bin_setup;
-	pdescriptor.needs_setup = _eon_bin_needs_setup;
 	pdescriptor.geometry_set = descriptor->geometry_set;
 	pdescriptor.free = _eon_bin_free;
 	pdescriptor.name = descriptor->name;

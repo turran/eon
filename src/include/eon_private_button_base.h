@@ -5,8 +5,6 @@ typedef struct _Eon_Button_Base_Descriptor
 {
 	/* element interface */
 	Eon_Element_Initialize initialize;
-	Eon_Element_Setup setup;
-	Eon_Element_Needs_Setup needs_setup;
 	Eon_Element_Geometry_Set geometry_set;
 	Eon_Element_Free free;
 	const char *name;

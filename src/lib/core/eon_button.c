@@ -205,8 +205,6 @@ static void _eon_button_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 
 static Eon_Button_Base_Descriptor _descriptor = {
 	/* .initialize 		= */ _eon_button_initialize,
-	/* .setup 		= */ NULL,
-	/* .needs_setup 	= */ NULL,
 	/* .geometry_set 	= */ _eon_button_geometry_set,
 	/* .free		= */ _eon_button_free,
 	/* .name 		= */ "button",
