@@ -1,5 +1,4 @@
-MAINTAINERCLEANFILES = \
-Makefile.in
+MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = esvg
 

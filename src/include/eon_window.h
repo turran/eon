@@ -16,19 +16,17 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_TOGGLE_H_
-#define _EON_TOGGLE_H_
+#ifndef _EON_WINDOW_H_
+#define _EON_WINDOW_H_
 
 /**
- * @defgroup Eon_Toggle Toggle
+ * @defgroup Eon_Window Window
  * @ingroup Eon_Container
  * @{
  */
 
-EAPI Ender_Element * eon_toggle_new(void);
-EAPI Ender_Element * eon_toggle_new_with_label(const char *text);
-EAPI void eon_toggle_active_set(Ender_Element *e, Eina_Bool active);
-EAPI void eon_toggle_active_get(Ender_Element *e, Eina_Bool *active);
+EAPI Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *container,
+		unsigned int width, unsigned int height, void *data);
 
 /**
  * @}

@@ -54,7 +54,7 @@ static void _eon_theme_control_checkbox_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_control_checkbox_size_get(Eon_Theme_Widget *t, Eon_Size *size)
+EAPI void eon_theme_control_checkbox_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 {
 	Eon_Theme_Control_Checkbox *thiz;
 
@@ -70,7 +70,7 @@ void eon_theme_control_checkbox_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Eon_Theme_Widget * eon_theme_control_checkbox_new(Eon_Theme_Control_Checkbox_Descriptor *descriptor,
+EAPI Eon_Theme_Widget * eon_theme_control_checkbox_new(Eon_Theme_Control_Checkbox_Descriptor *descriptor,
 		void *data)
 {
 	Eon_Theme_Control_Checkbox *thiz;
@@ -91,7 +91,7 @@ Eon_Theme_Widget * eon_theme_control_checkbox_new(Eon_Theme_Control_Checkbox_Des
 	return eon_theme_widget_new(&pdescriptor, thiz);
 }
 
-void * eon_theme_control_checkbox_data_get(Eon_Theme_Widget *t)
+EAPI void * eon_theme_control_checkbox_data_get(Eon_Theme_Widget *t)
 {
 	Eon_Theme_Control_Checkbox *thiz;
 

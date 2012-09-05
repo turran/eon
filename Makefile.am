@@ -1,4 +1,5 @@
-## Process this file with automake to produce Makefile.in
+
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = data src
 
@@ -24,8 +25,9 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-eon.pc.in
+eon.pc.in \
+m4/efl_attributes \
+m4/efl_compiler.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = eon.pc
-ACLOCAL_AMFLAGS = -I m4

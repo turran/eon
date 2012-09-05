@@ -1,20 +1,21 @@
-MAINTAINERCLEANFILES = \
-Makefile.in
+MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = basic
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
+-I$(top_builddir)/src/include \
 -I$(top_srcdir)/src/include/private \
+-I$(top_builddir)/src/include/private \
 -I$(top_srcdir)/src/include/generated \
+-I$(top_builddir)/src/include/generated \
 -I$(top_srcdir)/src/include/theme \
+-I$(top_builddir)/src/include/theme \
 -I. \
+@EON_BUILD@ \
 @EON_CFLAGS@
 
 lib_LTLIBRARIES = libeon_theme.la
-
-libeon_theme_la_DEPENDENCIES = \
-basic/libtheme_basic.la
 
 libeon_theme_la_LIBADD = \
 basic/libtheme_basic.la \
@@ -50,5 +51,5 @@ eon_theme_scrollbar.c \
 eon_theme_scrollview.c \
 eon_theme_widget.c
 
-libeon_theme_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
+libeon_theme_la_LDFLAGS = -no-undefined -version-info @version_info@
 

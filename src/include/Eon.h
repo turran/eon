@@ -36,8 +36,34 @@
  * @section Design
  */
 
-#include "Enesim.h"
-#include "Ender.h"
+#include <Enesim.h>
+#include <Ender.h>
+
+#ifdef EAPI
+# undef EAPI
+#endif
+
+#ifdef _WIN32
+# ifdef EON_BUILD
+#  ifdef DLL_EXPORT
+#   define EAPI __declspec(dllexport)
+#  else
+#   define EAPI
+#  endif /* ! DLL_EXPORT */
+# else
+#  define EAPI __declspec(dllimport)
+# endif /* ! EFL_EON_BUILD */
+#else
+# ifdef __GNUC__
+#  if __GNUC__ >= 4
+#   define EAPI __attribute__ ((visibility("default")))
+#  else
+#   define EAPI
+#  endif
+# else
+#  define EAPI
+# endif
+#endif
 
 #include "eon_main.h"
 #include "eon_element.h"
@@ -67,6 +93,7 @@
 #include "eon_widget.h"
 #include "eon_backend.h"
 #include "eon_wrapper.h"
+#include "eon_window.h"
 /* the backends */
 #include "eon_ecore_sdl.h"
 #include "eon_ecore_remote.h"

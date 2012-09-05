@@ -53,7 +53,7 @@ void eon_backend_window_delete(Eon_Backend *backend, void *window_data)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *container,
+EAPI Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *container,
 		unsigned int width, unsigned int height)
 {
 	Eon_Element *e;

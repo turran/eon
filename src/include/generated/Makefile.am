@@ -33,3 +33,6 @@ eon_generated_types.c
 
 %.c:	$(top_srcdir)/data/ender/eon_private.ender
 	ender_generator $(top_srcdir)/data/ender/eon_private.ender $(basename $(subst eon_generated_,,$@)) $@
+
+clean-local:
+	rm -rf $(BUILT_SOURCES)

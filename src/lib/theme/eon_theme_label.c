@@ -67,7 +67,7 @@ static void _eon_theme_label_free(Eon_Theme_Widget *t)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_label_size_get(Eon_Theme_Widget *t, Eon_Size *size)
+EAPI void eon_theme_label_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 {
 	Enesim_Rectangle boundings;
 	Enesim_Renderer *r;

@@ -2,8 +2,12 @@ MAINTAINERCLEANFILES = Makefile.in
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
+-I$(top_builddir)/src/include \
 -I$(top_srcdir)/src/include/generated \
+-I$(top_builddir)/src/include/generated \
 -I. \
+-DPACKAGE_DATA_DIR=\"$(pkgdatadir)\" \
+@EON_BUILD@ \
 @EON_CFLAGS@
 
 noinst_LTLIBRARIES = libcore.la
@@ -62,9 +66,6 @@ eon_theme.c \
 eon_window.c
 
 libcore_la_LIBADD = \
-$(top_builddir)/src/lib/theme/libeon_theme.la
-
-libcore_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/theme/libeon_theme.la
 
 libcore_la_LDFLAGS =

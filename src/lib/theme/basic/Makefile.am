@@ -1,12 +1,14 @@
-MAINTAINERCLEANFILES = \
-Makefile.in
+MAINTAINERCLEANFILES = Makefile.in
 
 noinst_LTLIBRARIES = libtheme_basic.la
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
+-I$(top_builddir)/src/include \
 -I$(top_srcdir)/src/include/theme \
+-I$(top_builddir)/src/include/theme \
 -I. \
+@EON_BUILD@ \
 @EON_CFLAGS@
 
 # theme_basic_control_bar.c \

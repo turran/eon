@@ -4,7 +4,9 @@ SUBDIRS = theme core backend extension
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
+-I$(top_builddir)/src/include \
 -I$(top_srcdir)/src/include/generated \
+-I$(top_builddir)/src/include/generated \
 -I. \
 @EON_CFLAGS@
 
@@ -18,9 +20,4 @@ backend/libbackend.la \
 extension/libextension.la \
 @EON_LIBS@
 
-libeon_la_DEPENDENCIES = \
-core/libcore.la \
-backend/libbackend.la \
-extension/libextension.la
-
-libeon_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
+libeon_la_LDFLAGS = -no-undefined -version-info @version_info@

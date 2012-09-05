@@ -15,8 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
 #include "Etex.h"
+#include "Eon.h"
 
 #include "eon_theme_widget.h"
 #include "eon_theme_label.h"
