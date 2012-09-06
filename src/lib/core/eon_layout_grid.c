@@ -94,10 +94,20 @@ static void _eon_layout_grid_geometry_set(void *descriptor, void *ref,
 		d->min_size_get(ref, &min);
 		count = d->child_count_get(ref);
 		/* from the size, calculate the real number of columns and rows */
-		cols = g->width / min.width;
-		rows = (count / cols);
-		if (rows * cols < count)
-			rows++;
+		if (g->width > g->height)
+		{
+			cols = g->width / min.width;
+			rows = (count / cols);
+			if (rows * cols < count)
+				rows++;
+		}
+		else
+		{
+			rows = g->height / min.height;
+			cols = (count / rows);
+			if (rows * cols < count)
+				cols++;
+		}
 		printf("grid: rows %d cols %d elements %d\n", rows, cols, count);
 	}
 	else
