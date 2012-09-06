@@ -57,7 +57,8 @@ typedef struct _Eon_Grid
 	/* layout related data */
 	int rows;
 	int columns;
-	double min_length;
+	Eon_Size min_size;
+	int child_count;
 } Eon_Grid;
 
 static inline Eon_Grid * _eon_grid_get(Eon_Element *ee)
@@ -252,7 +253,39 @@ static void _grid_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb
 	}
 }
 
+static void _grid_layout_min_size_set(void *ref, Eon_Size *min)
+{
+	Eon_Grid *thiz = ref;
+
+	thiz->min_size = *min;
+}
+
+static void _grid_layout_min_size_get(void *ref, Eon_Size *min)
+{
+	Eon_Grid *thiz = ref;
+
+	*min = thiz->min_size;
+}
+
+static void _grid_layout_child_count_set(void *ref, int count)
+{
+	Eon_Grid *thiz = ref;
+
+	thiz->child_count = count;
+}
+
+static int _grid_layout_child_count_get(void *ref)
+{
+	Eon_Grid *thiz = ref;
+
+	return thiz->child_count;
+}
+
 static Eon_Layout_Grid_Descriptor _grid_layout = {
+	/* .min_size_get 	= */ _grid_layout_min_size_get,
+	/* .min_size_set 	= */ _grid_layout_min_size_set,
+	/* .child_count_get 	= */ _grid_layout_child_count_get,
+	/* .child_count_set 	= */ _grid_layout_child_count_set,
 	/* .rows_columns_get 	= */ _grid_layout_rows_columns_get,
 	/* .rows_columns_set 	= */ _grid_layout_rows_columns_set,
 	/* .num_columns_get 	= */ _grid_layout_num_columns_get,

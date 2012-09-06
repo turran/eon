@@ -85,29 +85,38 @@ static void _eon_layout_grid_geometry_set(void *descriptor, void *ref,
 	int rows;
 	int cols;
 
-	data.d = d;
-	data.g.x = g->x;
-	data.g.y = g->y;
-	data.x = g->x;
-
 	num_columns = d->num_columns_get(ref);
 	if (num_columns <= 0)
 	{
-		/* TODO from the size, calculate the real number of columns and rows */
-		//d->child_foreach(ref, _geometry_set_cb, &data);
+		Eon_Size min;
+		int count;
+
+		d->min_size_get(ref, &min);
+		count = d->child_count_get(ref);
+		/* from the size, calculate the real number of columns and rows */
+		cols = g->width / min.width;
+		rows = (count / cols);
+		if (rows * cols < count)
+			rows++;
+		printf("grid: rows %d cols %d elements %d\n", rows, cols, count);
 	}
 	else
 	{
 
 		d->rows_columns_get(ref, &rows, &cols);
 
-		data.g.width = g->width / cols;
-		data.g.height = g->height / rows;
-
-		data.cols = cols;
-		data.current_col = 0;
-		d->child_foreach(ref, _geometry_set_cb, &data);
 	}
+
+	data.d = d;
+	data.g.x = g->x;
+	data.g.y = g->y;
+	data.x = g->x;
+	data.g.width = g->width / cols;
+	data.g.height = g->height / rows;
+	data.cols = cols;
+	data.current_col = 0;
+
+	d->child_foreach(ref, _geometry_set_cb, &data);
 }
 
 static void _eon_layout_grid_hints_get(void *descriptor, void *ref,
@@ -133,6 +142,8 @@ static void _eon_layout_grid_hints_get(void *descriptor, void *ref,
 		hints->type = EON_HINTS_TYPE_DYNAMIC;
 		hints->max.width = hints->min.width * data.count;
 		hints->max.height = hints->min.height * data.count;
+		d->min_size_set(ref, &hints->min);
+		d->child_count_set(ref, data.count);
 	}
 	else
 	{
@@ -145,6 +156,8 @@ static void _eon_layout_grid_hints_get(void *descriptor, void *ref,
 			cols = data.count;
 
 		rows = data.count / cols;
+		if (rows * cols < data.count)
+			rows++;
 
 		printf("grid: rows %d cols %d\n", rows, cols);
 		hints->type = EON_HINTS_TYPE_FIXED;

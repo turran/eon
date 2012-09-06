@@ -3,9 +3,6 @@
 
 typedef Eon_Orientation (*Eon_Layout_List_Orientation_Get)(void *ref);
 typedef Eina_Bool (*Eon_Layout_List_Is_Homogeneous)(void *ref);
-typedef void (*Eon_Layout_List_Min_Length_Set)(void *ref, double min);
-typedef void (*Eon_Layout_List_Min_Length_Get)(void *ref, double *min);;
-typedef int (*Eon_Layout_List_Child_Weight_Get)(void *ref, void *child);
 
 typedef int (*Eon_Layout_List_Child_Count_Get)(void *ref);
 typedef void (*Eon_Layout_List_Child_Count_Set)(void *ref, int count);
