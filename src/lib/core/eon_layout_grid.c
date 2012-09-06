@@ -81,21 +81,33 @@ static void _eon_layout_grid_geometry_set(void *descriptor, void *ref,
 {
 	Eon_Layout_Grid_Geometry_Set_Data data;
 	Eon_Layout_Grid_Descriptor *d = descriptor;
+	int num_columns;
 	int rows;
 	int cols;
 
 	data.d = d;
-	d->rows_columns_get(ref, &rows, &cols);
-
 	data.g.x = g->x;
 	data.g.y = g->y;
-	data.g.width = g->width / cols;
-	data.g.height = g->height / rows;
-
 	data.x = g->x;
-	data.cols = cols;
-	data.current_col = 0;
-	d->child_foreach(ref, _geometry_set_cb, &data);
+
+	num_columns = d->num_columns_get(ref);
+	if (num_columns <= 0)
+	{
+		/* TODO from the size, calculate the real number of columns and rows */
+		//d->child_foreach(ref, _geometry_set_cb, &data);
+	}
+	else
+	{
+
+		d->rows_columns_get(ref, &rows, &cols);
+
+		data.g.width = g->width / cols;
+		data.g.height = g->height / rows;
+
+		data.cols = cols;
+		data.current_col = 0;
+		d->child_foreach(ref, _geometry_set_cb, &data);
+	}
 }
 
 static void _eon_layout_grid_hints_get(void *descriptor, void *ref,
@@ -118,10 +130,16 @@ static void _eon_layout_grid_hints_get(void *descriptor, void *ref,
 	/* FIXME handle the case where the num columns are automatic */
 	if (num_columns <= 0)
 	{
-
+		hints->type = EON_HINTS_TYPE_DYNAMIC;
+		hints->max.width = hints->min.width * data.count;
+		hints->max.height = hints->min.height * data.count;
 	}
 	else
 	{
+		/* in case the number of columns requested is greater
+		 * than the number of elements, just use the number
+		 * of elements
+		 */
 		cols = num_columns;
 		if (cols > data.count)
 			cols = data.count;
@@ -129,9 +147,10 @@ static void _eon_layout_grid_hints_get(void *descriptor, void *ref,
 		rows = data.count / cols;
 
 		printf("grid: rows %d cols %d\n", rows, cols);
+		hints->type = EON_HINTS_TYPE_FIXED;
 		hints->min.width *= cols;
-		hints->preferred.height *= cols;
 		hints->min.height *= rows;
+		hints->preferred.height *= cols;
 		hints->preferred.height *= rows;
 
 	}

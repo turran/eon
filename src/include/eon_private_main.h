@@ -72,8 +72,8 @@ extern int eon_log;
 
 typedef enum _Eon_Hints_Type
 {
-	EON_HINTS_FEATURE_FIXED,
-	EON_HINTS_FEATURE_DYNAMIC,
+	EON_HINTS_TYPE_FIXED,
+	EON_HINTS_TYPE_DYNAMIC,
 } Eon_Hints_Type;
 
 typedef struct _Eon_Hints
