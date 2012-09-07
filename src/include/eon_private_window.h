@@ -16,21 +16,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_WINDOW_H_
-#define _EON_WINDOW_H_
+#ifndef _EON_PRIVATE_WINDOW_H_
+#define _EON_PRIVATE_WINDOW_H_
 
-/**
- * @defgroup Eon_Window Window
- * @ingroup Eon_Container
- * @{
- */
-
-EAPI Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *container,
+Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *container,
 		unsigned int width, unsigned int height, void *data);
-
-/**
- * @}
- */
 
 #endif
 

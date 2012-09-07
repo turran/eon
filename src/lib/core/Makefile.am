@@ -13,7 +13,6 @@ AM_CPPFLAGS = \
 noinst_LTLIBRARIES = libcore.la
 
 #disabled for now until we do the refactor
-# eon_canvas.c \
 # eon_color.c \
 # eon_entry.c \
 # eon_frame.c \
@@ -28,6 +27,7 @@ noinst_LTLIBRARIES = libcore.la
 
 classes = \
 eon_button.c \
+eon_canvas.c \
 eon_checkbox.c \
 eon_grid.c \
 eon_image.c \

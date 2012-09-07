@@ -55,9 +55,12 @@
 #include "eon_private_input.h"
 
 #ifdef BUILD_BACKEND_REMOTE
-#include "eon_ecore_remote.h"
 #include <Ecore.h>
 #include <Eix.h>
+
+#include "eon_ecore_remote.h"
+#include "eon_private_ecore_common.h"
+
 #endif
 /*============================================================================*
  *                                  Local                                     *
@@ -98,10 +101,7 @@ static const char * _renderer_key = "_eon_ecore_remote";
 
 static Eon_Ecore_Remote_Element * _remote_element_ender_from(Ender_Element *e)
 {
-	Enesim_Renderer *r;
-
-	r = ender_element_object_get(e);
-	return enesim_renderer_private_get(r, _renderer_key);
+	return ender_element_data_get(e, _renderer_key);
 }
 
 static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, Ender_Value *v)
@@ -308,7 +308,7 @@ static void _global_constructor_callback(Ender_Element *e, void *data)
 	static int _id = 0;
 
 	r = ender_element_object_get(e);
-	if (!eon_is_element(r))
+	if (!eon_is_element(e))
 	{
 		printf("is not an element\n");
 		return;
@@ -317,7 +317,7 @@ static void _global_constructor_callback(Ender_Element *e, void *data)
 	re = calloc(1, sizeof(Eon_Ecore_Remote_Element));
 	re->id = ++_id;
 	re->e = e;
-	enesim_renderer_private_set(r, _renderer_key, re);
+	ender_element_data_set(e, _renderer_key, re);
 }
 
 static void _client_constructor_callback(Ender_Element *e, void *data)
@@ -416,7 +416,7 @@ static void _remote_window_delete(void *data, void *window_data)
 	ecore_shutdown();
 }
 
-static Eon_Backend_Descriptor _backend = {
+static Eon_Ecore_Backend_Descriptor _backend = {
 	/* .window_new =    */ _remote_window_new,
 	/* .window_delete = */ _remote_window_delete,
 };
@@ -430,7 +430,7 @@ EAPI Eon_Backend * eon_ecore_remote_new(void)
 #ifdef BUILD_BACKEND_REMOTE
 	Eon_Backend *backend;
 
-	backend = eon_backend_new(&_backend, NULL);
+	backend = eon_ecore_backend_new(&_backend, NULL);
 	return backend;
 #else
 	return NULL;

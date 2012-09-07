@@ -37,7 +37,7 @@ struct _Eon_Window
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-EAPI Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *container,
+Eon_Window * eon_window_new(Eon_Backend *backend, Ender_Element *container,
 		unsigned int width, unsigned int height, void *data)
 {
 	Eon_Window *ee;

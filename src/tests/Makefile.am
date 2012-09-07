@@ -1,7 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 # old programs
-# eon_test_canvas \
 # eon_test_color \
 # eon_test_entry \
 # eon_test_frame \
@@ -19,6 +18,7 @@ eon_test_button02 \
 eon_test_button03 \
 eon_test_button04 \
 eon_test_button_image \
+eon_test_canvas \
 eon_test_checkbox \
 eon_test_image \
 eon_test_radio \
@@ -29,9 +29,9 @@ if BUILD_EXTENSION_ESVG
 check_PROGRAMS += eon_test_svg
 endif
 
-#eon_test_canvas_SOURCES = eon_test_canvas.c
-#eon_test_canvas_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
-#eon_test_canvas_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+eon_test_canvas_SOURCES = eon_test_canvas.c
+eon_test_canvas_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_canvas_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 #eon_test_color_SOURCES = eon_test_color.c
 #eon_test_color_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

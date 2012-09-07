@@ -35,7 +35,6 @@ eon_stack.h \
 eon_tab.h \
 eon_toggle.h \
 eon_widget.h \
-eon_window.h \
 eon_wrapper.h \
 eon_ecore_remote.h \
 eon_ecore_sdl.h

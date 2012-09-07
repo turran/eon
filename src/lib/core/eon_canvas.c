@@ -15,8 +15,24 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Eon.h"
-#include "eon_private.h"
+#include "eon_private_main.h"
+
+#include "eon_main.h"
+#include "eon_backend.h"
+#include "eon_input.h"
+#include "eon_element.h"
+#include "eon_widget.h"
+#include "eon_bin.h"
+#include "eon_canvas.h"
+
+#include "eon_private_input.h"
+#include "eon_private_element.h"
+#include "eon_private_theme.h"
+#include "eon_private_widget.h"
+#include "eon_private_container.h"
+
+#include "eon_private_keyboard_proxy.h"
+#include "eon_private_keyboard_proxy_navigation.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -55,6 +71,7 @@ typedef struct _Eon_Canvas_Damage_Data
 typedef struct _Eon_Canvas
 {
 	Eina_List *children;
+	Eon_Input_Proxy *proxy;
 	Eina_Bool needs_setup : 1;
 	Eon_Canvas_State old, curr;
 	Enesim_Renderer_Sw_Fill fill_func;
@@ -64,7 +81,7 @@ static inline Eon_Canvas * _eon_canvas_get(Eon_Element *ee)
 {
 	Eon_Canvas *thiz;
 
-	thiz = eon_layout_data_get(ee);
+	thiz = eon_container_data_get(ee);
 	return thiz;
 }
 
@@ -72,20 +89,12 @@ static Eina_Bool _canvas_child_is_inside(Eon_Canvas_Child *ech, double x, double
 {
 	Eon_Size child_size;
 	Eon_Element *child_e;
-	double child_x, child_y;
+	Eon_Geometry g;
 
-	child_x = x - ech->current.x;
-	if (child_x < 0) return EINA_FALSE;
-	child_y = y - ech->current.y;
-	if (child_y < 0) return EINA_FALSE;
-
-	/* TODO still need the width and height */
 	child_e = ender_element_object_get(ech->ender);
-	eon_element_actual_size_get(child_e, &child_size);
-	if (child_x <= child_size.width && child_y <= child_size.height)
-	{
+	eon_element_geometry_get(child_e, &g);
+	if ((x < g.x + g.width) && (x >= g.x) && (y < g.y + g.height) && (y >= g.y))
 		return EINA_TRUE;
-	}
 	return EINA_FALSE;
 }
 
@@ -156,8 +165,18 @@ static Ender_Element * _canvas_child_down_at(Ender_Element *e, Ender_Element *re
 	return ret;;
 }
 /*----------------------------------------------------------------------------*
- *                         The Eon's element interface                        *
+ *                       The Eon's container interface                        *
  *----------------------------------------------------------------------------*/
+static void _eon_canvas_initialize(Ender_Element *e)
+{
+	Eon_Canvas *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_canvas_get(ee);
+	//thiz->proxy = eon_input_proxy_new(e, &_canvas_proxy_descriptor);
+}
+
 static void _eon_canvas_free(Eon_Element *ee)
 {
 	Eon_Canvas *thiz;
@@ -165,9 +184,7 @@ static void _eon_canvas_free(Eon_Element *ee)
 	thiz = _eon_canvas_get(ee);
 	free(thiz);
 }
-/*----------------------------------------------------------------------------*
- *                         The Eon's layout interface                         *
- *----------------------------------------------------------------------------*/
+
 /* FIXME same code as the stack we cannot share so easily given that the list
  * is part of the private data
  */
@@ -218,12 +235,70 @@ static Eina_Bool _eon_canvas_child_remove(Eon_Element *ee, Ender_Element *child)
 	return EINA_FALSE;
 }
 
-static Eon_Layout_Descriptor _descriptor = {
-	.child_at = _eon_canvas_child_at,
-	.child_add = _eon_canvas_child_add,
-	.child_remove = _eon_canvas_child_remove,
-	.free = _eon_canvas_free,
-	.name = "canvas",
+static void _eon_canvas_child_foreach(Eon_Element *ee, Eon_Container_Child_Foreach_Cb cb, void *user_data)
+{
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *thiz_child;
+	Eina_List *l;
+
+	thiz = _eon_canvas_get(ee);
+	EINA_LIST_FOREACH(thiz->children, l, thiz_child)
+	{
+		cb(ee, thiz_child->ender, user_data);
+	}
+}
+
+static void _eon_canvas_geometry_set(Eon_Element *e, Eon_Geometry *g)
+{
+	Eon_Canvas *thiz;
+	Eon_Canvas_Child *child_thiz;
+	Eina_List *l;
+
+	thiz = _eon_canvas_get(e);
+	EINA_LIST_FOREACH (thiz->children, l, child_thiz)
+	{
+		Eon_Element *child_e;
+		Eon_Hints hints;
+		Eon_Geometry cg;
+
+		child_e = ender_element_object_get(child_thiz->ender);
+		eon_element_hints_get(child_e, &hints);
+		/* FIXME handle the dynamic case */
+		cg.width = hints.preferred.width;
+		if (cg.width < 0)
+			cg.width = hints.min.width;
+		cg.height = hints.preferred.height;
+		if (cg.height < 0)
+			cg.height = hints.min.height;
+		cg.x = g->x + child_thiz->current.x;
+		cg.y = g->y + child_thiz->current.y;
+		eon_element_geometry_set(child_e, &cg);
+	}
+}
+
+static void _eon_canvas_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
+		Eon_Hints *hints)
+{
+	Eon_Canvas *thiz;
+
+	thiz = _eon_canvas_get(e);
+	/* TODO get every child hint and then move them by x, y
+	 * and return the max bounding rectangle
+	 */
+}
+
+static Eon_Container_Descriptor _descriptor = {
+	/* .initialize 		= */ _eon_canvas_initialize,
+	/* .backend_added 	= */ NULL,
+	/* .backend_removed 	= */ NULL,
+	/* .geometry_set 	= */ _eon_canvas_geometry_set,
+	/* .free	 	= */ _eon_canvas_free,
+	/* .name 		= */ "canvas",
+	/* .hints_get	 	= */ _eon_canvas_hints_get,
+	/* .child_add 		= */ _eon_canvas_child_add,
+	/* .child_remove 	= */ _eon_canvas_child_remove,
+	/* .child_foreach 	= */ _eon_canvas_child_foreach,
+	/* .child_at 		= */ NULL,
 };
 /*----------------------------------------------------------------------------*
  *                       The Ender descriptor functions                       *
@@ -232,16 +307,20 @@ static Eon_Element * _eon_canvas_new(void)
 {
 	Eon_Canvas *thiz;
 	Eon_Element *ee;
+	Eon_Theme_Instance *theme;
+
+	theme = eon_theme_instance_new("grid", EINA_TRUE);
+	if (!theme) return NULL;
 
 	thiz = calloc(1, sizeof(Eon_Canvas));
 	if (!thiz) return NULL;
 
-	ee = eon_layout_new(&_descriptor, thiz);
-	if (!ee) goto renderer_err;
+	ee = eon_container_new(theme, &_descriptor, thiz);
+	if (!ee) goto base_err;
 
 	return ee;
 
-renderer_err:
+base_err:
 	free(thiz);
 	return NULL;
 }
