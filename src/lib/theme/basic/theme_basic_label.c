@@ -159,7 +159,7 @@ static Eon_Theme_Label_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eon_Theme_Widget * eon_basic_label_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_label_new(void)
 {
 	Eon_Basic_Label *thiz;
 	Eon_Theme_Widget *t;

@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 #include <math.h>
 #include <float.h>
 /*============================================================================*
@@ -42,7 +42,7 @@ struct _Eon_Basic_Bar
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Eon_Basic_Bar * eon_basic_bar_new(void)
+Eon_Basic_Bar * eon_theme_basic_bar_new(void)
 {
 	Eon_Basic_Bar *thiz;
 	Enesim_Renderer *r;
@@ -100,7 +100,7 @@ bar_background_fill_err:
 	return NULL;
 }
 
-void eon_basic_bar_size_set(Eon_Basic_Bar *thiz, double size, Eon_Orientation orientation)
+void eon_theme_basic_bar_size_set(Eon_Basic_Bar *thiz, double size, Eon_Orientation orientation)
 {
 	Enesim_Matrix bbf_matrix;
 	double bw, bh;
@@ -128,16 +128,16 @@ void eon_basic_bar_size_set(Eon_Basic_Bar *thiz, double size, Eon_Orientation or
 	enesim_renderer_transformation_set(thiz->bar_background_fill, &bbf_matrix);
 }
 
-double eon_basic_bar_max_size_get(Eon_Basic_Bar *thiz)
+double eon_theme_basic_bar_max_size_get(Eon_Basic_Bar *thiz)
 {	return DBL_MAX;
 }
 
-double eon_basic_bar_min_size_get(Eon_Basic_Bar *thiz)
+double eon_theme_basic_bar_min_size_get(Eon_Basic_Bar *thiz)
 {
 	return 20;
 }
 
-void eon_basic_bar_position_set(Eon_Basic_Bar *thiz, double x, double y, Eon_Orientation orientation)
+void eon_theme_basic_bar_position_set(Eon_Basic_Bar *thiz, double x, double y, Eon_Orientation orientation)
 {
 	double bbfx, bbfy;
 
@@ -156,7 +156,7 @@ void eon_basic_bar_position_set(Eon_Basic_Bar *thiz, double x, double y, Eon_Ori
 	enesim_renderer_origin_set(thiz->bar_background_fill, bbfx, bbfy);
 }
 
-void eon_basic_bar_free(Eon_Basic_Bar *thiz)
+void eon_theme_basic_bar_free(Eon_Basic_Bar *thiz)
 {
 	if (thiz->bar)
 		enesim_renderer_unref(thiz->bar);
@@ -169,7 +169,7 @@ void eon_basic_bar_free(Eon_Basic_Bar *thiz)
 	free(thiz);
 }
 
-Enesim_Renderer * eon_basic_bar_renderer_get(Eon_Basic_Bar *thiz)
+Enesim_Renderer * eon_theme_basic_bar_renderer_get(Eon_Basic_Bar *thiz)
 {
 	return thiz->bar;
 }

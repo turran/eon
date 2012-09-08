@@ -160,7 +160,7 @@ static Eon_Theme_Scrollview_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eon_Theme_Widget * eon_basic_scrollview_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_scrollview_new(void)
 {
 	Eon_Theme_Widget *t;
 	Eon_Basic_Scrollview *thiz;

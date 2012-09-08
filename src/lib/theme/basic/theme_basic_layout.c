@@ -128,7 +128,7 @@ static Eon_Theme_Container_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eon_Theme_Widget * eon_basic_layout_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_layout_new(void)
 {
 	Eon_Theme_Widget *t;
 	Theme_Basic_Layout *thiz;
@@ -178,7 +178,7 @@ background_err:
 	return NULL;
 }
 
-EAPI void eon_basic_layout_background_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+EAPI void eon_theme_basic_layout_background_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Theme_Basic_Layout *thiz;
 

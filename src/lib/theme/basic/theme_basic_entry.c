@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -140,7 +140,7 @@ static Eon_Theme_Entry_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_entry_new(void)
+EAPI Enesim_Renderer * eon_theme_basic_entry_new(void)
 {
 	Enesim_Renderer *r;
 	Basic_Entry *thiz;
@@ -187,7 +187,7 @@ background_err:
 	return NULL;
 }
 
-EAPI void eon_basic_entry_border_color_set(Enesim_Renderer *r, Enesim_Color border_color)
+EAPI void eon_theme_basic_entry_border_color_set(Enesim_Renderer *r, Enesim_Color border_color)
 {
 	Basic_Entry *thiz;
 

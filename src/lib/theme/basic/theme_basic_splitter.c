@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 #include <math.h>
 #include <float.h>
 /*============================================================================*
@@ -146,7 +146,7 @@ static Eon_Theme_Splitter_Descriptor _descriptor = {
 /**
  *
  */
-Enesim_Renderer * eon_basic_splitter_new(void)
+Enesim_Renderer * eon_theme_basic_splitter_new(void)
 {
 	Basic_Splitter *thiz;
 	Enesim_Renderer *r;

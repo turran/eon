@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -98,13 +98,13 @@ static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
 	thiz->increment_size.height = (height - 4 - 1) / 2;
 	thiz->increment_position.x = thiz->arrows_position.x + 1;
 	thiz->increment_position.y = thiz->arrows_position.y + 1;
-	eon_basic_control_arrow_setup(thiz->increment_arrow, &thiz->increment_position, &thiz->increment_size, EON_BASIC_CONTROL_ARROW_DIRECTION_TOP);
+	eon_theme_basic_control_arrow_setup(thiz->increment_arrow, &thiz->increment_position, &thiz->increment_size, EON_BASIC_CONTROL_ARROW_DIRECTION_TOP);
 
 	thiz->decrement_position.x = thiz->arrows_position.x + 1;
 	thiz->decrement_position.y = thiz->arrows_position.y + thiz->increment_size.height + 2;
 	thiz->decrement_size.width = thiz->increment_size.width;
 	thiz->decrement_size.height = thiz->increment_size.height;
-	eon_basic_control_arrow_setup(thiz->decrement_arrow, &thiz->decrement_position, &thiz->decrement_size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
+	eon_theme_basic_control_arrow_setup(thiz->decrement_arrow, &thiz->decrement_position, &thiz->decrement_size, EON_BASIC_CONTROL_ARROW_DIRECTION_BOTTOM);
 
 	rr = thiz->arrows_background_shadow;
 	enesim_renderer_origin_set(rr, 0, thiz->arrows_position.y + thiz->increment_size.height + 1);
@@ -185,7 +185,7 @@ static Eon_Theme_Spin_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_spin_new(void)
+EAPI Enesim_Renderer * eon_theme_basic_spin_new(void)
 {
 	Enesim_Renderer *r;
 	Eon_Basic_Control_Arrow *ca;
@@ -213,16 +213,16 @@ EAPI Enesim_Renderer * eon_basic_spin_new(void)
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	thiz->arrows_background = r;
 
-	ca = eon_basic_control_arrow_new();
+	ca = eon_theme_basic_control_arrow_new();
 	thiz->increment_arrow = ca;
 
-	ca = eon_basic_control_arrow_new();
+	ca = eon_theme_basic_control_arrow_new();
 	thiz->decrement_arrow = ca;
 
 	r = enesim_renderer_compound_new();
 	enesim_renderer_compound_layer_add(r, thiz->arrows_background);
-	enesim_renderer_compound_layer_add(r, eon_basic_control_arrow_renderer_get(thiz->increment_arrow));
-	enesim_renderer_compound_layer_add(r, eon_basic_control_arrow_renderer_get(thiz->decrement_arrow));
+	enesim_renderer_compound_layer_add(r, eon_theme_basic_control_arrow_renderer_get(thiz->increment_arrow));
+	enesim_renderer_compound_layer_add(r, eon_theme_basic_control_arrow_renderer_get(thiz->decrement_arrow));
 	thiz->arrows = r;
 
 	r = enesim_renderer_compound_new();

@@ -240,7 +240,7 @@ static Eon_Theme_Checkbox_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Eon_Theme_Widget * eon_basic_checkbox_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_checkbox_new(void)
 {
 	Eon_Theme_Widget *t;
 	Eon_Basic_Checkbox *thiz;
@@ -309,7 +309,7 @@ proxy_default_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_checkbox_background_color_set(Eon_Theme_Widget *t, Enesim_Color background_color)
+EAPI void eon_theme_basic_checkbox_background_color_set(Eon_Theme_Widget *t, Enesim_Color background_color)
 {
 	Eon_Basic_Checkbox *thiz;
 

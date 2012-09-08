@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -142,7 +142,7 @@ static Eon_Theme_Frame_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_frame_new(void)
+EAPI Enesim_Renderer * eon_theme_basic_frame_new(void)
 {
 	Enesim_Renderer *r;
 	Frame *thiz;
@@ -204,7 +204,7 @@ compound_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_frame_foreground_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_frame_foreground_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Frame *thiz;
 
@@ -216,7 +216,7 @@ EAPI void eon_basic_frame_foreground_color_set(Enesim_Renderer *r, Enesim_Color 
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_frame_border_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_frame_border_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Frame *thiz;
 
@@ -228,7 +228,7 @@ EAPI void eon_basic_frame_border_color_set(Enesim_Renderer *r, Enesim_Color colo
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_frame_description_font_set(Enesim_Renderer *r, const char *font)
+EAPI void eon_theme_basic_frame_description_font_set(Enesim_Renderer *r, const char *font)
 {
 	Frame *thiz;
 
@@ -240,7 +240,7 @@ EAPI void eon_basic_frame_description_font_set(Enesim_Renderer *r, const char *f
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_frame_description_size_set(Enesim_Renderer *r, int size)
+EAPI void eon_theme_basic_frame_description_size_set(Enesim_Renderer *r, int size)
 {
 	Frame *thiz;
 

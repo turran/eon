@@ -149,7 +149,7 @@ static Eon_Theme_Image_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eon_Theme_Widget * eon_basic_image_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_image_new(void)
 {
 	Eon_Basic_Image *thiz;
 	Eon_Theme_Widget *t;
@@ -200,7 +200,7 @@ checker_err:
 	return NULL;
 }
 
-EAPI void eon_basic_image_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+EAPI void eon_theme_basic_image_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Eon_Basic_Image *thiz;
 
@@ -208,7 +208,7 @@ EAPI void eon_basic_image_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 	enesim_renderer_color_set(thiz->image, color);
 }
 
-EAPI void eon_basic_image_status_set(Eon_Theme_Widget *t, Eon_Basic_Image_State state)
+EAPI void eon_theme_basic_image_status_set(Eon_Theme_Widget *t, Eon_Basic_Image_State state)
 {
 	Eon_Basic_Image *thiz;
 

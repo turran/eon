@@ -39,7 +39,7 @@ typedef struct _Eon_Basic_Control_Scroll_Thumb
 	Enesim_Renderer *bar_shape;
 } Eon_Basic_Control_Scroll_Thumb;
 
-static inline Eon_Basic_Control_Scroll_Thumb * _eon_basic_control_scroll_thumb_get(Eon_Theme_Widget *t)
+static inline Eon_Basic_Control_Scroll_Thumb * _eon_theme_basic_control_scroll_thumb_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 	thiz = eon_theme_control_scroll_thumb_data_get(t);
@@ -50,7 +50,7 @@ static Enesim_Renderer * _basic_control_scroll_thumb_renderer_get(Eon_Theme_Widg
 {
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	return thiz->bar;
 }
 
@@ -59,7 +59,7 @@ static void _basic_control_scroll_thumb_x_set(Eon_Theme_Widget *t, double x)
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 	double bbfx;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	printf("thumb setting x %g\n", x);
 	enesim_renderer_rectangle_x_set(thiz->bar_shape, x);
 	enesim_renderer_rectangle_x_set(thiz->bar_background, x + 3);
@@ -72,7 +72,7 @@ static void _basic_control_scroll_thumb_y_set(Eon_Theme_Widget *t, double y)
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 	double bbfy;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	printf("thumb setting y %g\n", y);
 	enesim_renderer_rectangle_y_set(thiz->bar_shape, y);
 	enesim_renderer_rectangle_y_set(thiz->bar_background, y + 3);
@@ -85,7 +85,7 @@ static void _basic_control_scroll_thumb_width_set(Eon_Theme_Widget *t, double wi
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 	double bw;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	printf("thumb setting width %g\n", width);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
@@ -112,7 +112,7 @@ static void _basic_control_scroll_thumb_height_set(Eon_Theme_Widget *t, double h
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 	double bw, bh;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	printf("thumb setting height %g\n", height);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
@@ -136,7 +136,7 @@ static void _basic_control_scroll_thumb_free(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	if (thiz->bar)
 		enesim_renderer_unref(thiz->bar);
 	if (thiz->bar_shape)
@@ -152,7 +152,7 @@ static void _basic_control_scroll_thumb_sizes_get(Eon_Theme_Widget *t, Eon_Size 
 {
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	if (thiz->orientation == EON_ORIENTATION_VERTICAL)
 	{
 		min->width = 14;
@@ -173,7 +173,7 @@ static void _basic_control_scroll_thumb_orientation_set(Eon_Theme_Widget *t, Eon
 {
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 
-	thiz = _eon_basic_control_scroll_thumb_get(t);
+	thiz = _eon_theme_basic_control_scroll_thumb_get(t);
 	thiz->orientation = orientation;
 }
 
@@ -193,7 +193,7 @@ static Eon_Theme_Control_Scroll_Thumb_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Eon_Theme_Widget * eon_basic_control_scroll_thumb_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_control_scroll_thumb_new(void)
 {
 	Eon_Basic_Control_Scroll_Thumb *thiz;
 	Enesim_Renderer *r;

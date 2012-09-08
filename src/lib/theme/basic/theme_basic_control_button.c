@@ -73,7 +73,7 @@ static inline void _set_gradient_stops(Eon_Basic_Control_Button *thiz)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Basic_Control_Button * eon_basic_control_button_new(void)
+Eon_Basic_Control_Button * eon_theme_basic_control_button_new(void)
 {
 	Eon_Basic_Control_Button *thiz;
 	Enesim_Renderer *r;
@@ -165,13 +165,13 @@ proxy_default_err:
 	return NULL;
 }
 
-void eon_basic_control_button_fill_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
+void eon_theme_basic_control_button_fill_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->fill_color = color;
 	_set_gradient_stops(thiz);
 }
 
-void eon_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
+void eon_theme_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	Enesim_Renderer *r;
 	thiz->border_color = color;
@@ -180,22 +180,22 @@ void eon_basic_control_button_border_color_set(Eon_Basic_Control_Button *thiz, E
 	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
 }
 
-void eon_basic_control_button_horizontal_padding_set(Eon_Basic_Control_Button *thiz, double padding)
+void eon_theme_basic_control_button_horizontal_padding_set(Eon_Basic_Control_Button *thiz, double padding)
 {
 	thiz->horizontal_padding = padding;
 }
 
-void eon_basic_control_button_vertical_padding_set(Eon_Basic_Control_Button *thiz, double padding)
+void eon_theme_basic_control_button_vertical_padding_set(Eon_Basic_Control_Button *thiz, double padding)
 {
 	thiz->vertical_padding = padding;
 }
 
-void eon_basic_control_button_radius_set(Eon_Basic_Control_Button *thiz, double radius)
+void eon_theme_basic_control_button_radius_set(Eon_Basic_Control_Button *thiz, double radius)
 {
 	thiz->radius = radius;
 }
 
-void eon_basic_control_button_start_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
+void eon_theme_basic_control_button_start_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	Enesim_Renderer *r;
 
@@ -204,7 +204,7 @@ void eon_basic_control_button_start_shadow_set(Eon_Basic_Control_Button *thiz, E
 	enesim_renderer_stripes_odd_color_set(r, thiz->start_shadow);
 }
 
-void eon_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
+void eon_theme_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	Enesim_Renderer *r;
 
@@ -213,19 +213,19 @@ void eon_basic_control_button_end_shadow_set(Eon_Basic_Control_Button *thiz, Ene
 	enesim_renderer_stripes_even_color_set(r, thiz->end_shadow);
 }
 
-void eon_basic_control_button_start_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
+void eon_theme_basic_control_button_start_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->start_bevel = color;
 	_set_gradient_stops(thiz);
 }
 
-void eon_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
+void eon_theme_basic_control_button_end_bevel_set(Eon_Basic_Control_Button *thiz, Enesim_Color color)
 {
 	thiz->end_bevel = color;
 	_set_gradient_stops(thiz);
 }
 
-void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
+void eon_theme_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
 		double x)
 {
 	enesim_renderer_x_origin_set(thiz->background_fill, x);
@@ -235,7 +235,7 @@ void eon_basic_control_button_x_set(Eon_Basic_Control_Button *thiz,
 	enesim_renderer_rectangle_x_set(thiz->shape, x);
 }
 
-void eon_basic_control_button_y_set(Eon_Basic_Control_Button *thiz,
+void eon_theme_basic_control_button_y_set(Eon_Basic_Control_Button *thiz,
 		double y)
 {
 	enesim_renderer_y_origin_set(thiz->background_fill, y);
@@ -245,14 +245,14 @@ void eon_basic_control_button_y_set(Eon_Basic_Control_Button *thiz,
 	thiz->y = y;
 }
 
-void eon_basic_control_button_width_set(Eon_Basic_Control_Button *thiz,
+void eon_theme_basic_control_button_width_set(Eon_Basic_Control_Button *thiz,
 		double width)
 {
 	enesim_renderer_rectangle_width_set(thiz->inner_button, width - (thiz->horizontal_padding * 2));
 	enesim_renderer_rectangle_width_set(thiz->shape, width);
 }
 
-void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
+void eon_theme_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
 		double height)
 {
 	Enesim_Matrix m;
@@ -277,7 +277,7 @@ void eon_basic_control_button_height_set(Eon_Basic_Control_Button *thiz,
 	enesim_renderer_rectangle_height_set(r, height);
 }
 
-void eon_basic_control_button_renderer_content_set(Eon_Basic_Control_Button *thiz,
+void eon_theme_basic_control_button_renderer_content_set(Eon_Basic_Control_Button *thiz,
 		Enesim_Renderer *content)
 {
 	enesim_renderer_proxy_proxied_set(thiz->proxy, content);
@@ -285,19 +285,19 @@ void eon_basic_control_button_renderer_content_set(Eon_Basic_Control_Button *thi
 		enesim_renderer_proxy_proxied_set(thiz->proxy, thiz->proxy_default);
 }
 
-void eon_basic_control_button_renderer_content_get(Eon_Basic_Control_Button *thiz,
+void eon_theme_basic_control_button_renderer_content_get(Eon_Basic_Control_Button *thiz,
 		Enesim_Renderer **content)
 {
 	enesim_renderer_proxy_proxied_get(thiz->proxy, content);
 	if (*content == thiz->proxy_default) *content = NULL;
 }
 
-Enesim_Renderer * eon_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz)
+Enesim_Renderer * eon_theme_basic_control_button_renderer_get(Eon_Basic_Control_Button *thiz)
 {
 	return thiz->shape;
 }
 
-void eon_basic_control_button_free(Eon_Basic_Control_Button *thiz)
+void eon_theme_basic_control_button_free(Eon_Basic_Control_Button *thiz)
 {
 	enesim_renderer_unref(thiz->proxy);
 	enesim_renderer_unref(thiz->proxy_default);

@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 #include <math.h>
 #include <float.h>
 /*============================================================================*
@@ -188,7 +188,7 @@ static Eon_Theme_Progressbar_Descriptor _descriptor = {
 /**
  *
  */
-Enesim_Renderer * eon_basic_progressbar_new(void)
+Enesim_Renderer * eon_theme_basic_progressbar_new(void)
 {
 	Progressbar *thiz;
 	Enesim_Renderer *r;
@@ -284,7 +284,7 @@ bar_content_pattern_err:
 /**
  *
  */
-void eon_basic_progressbar_light_color_set(Enesim_Renderer *r, Enesim_Color color)
+void eon_theme_basic_progressbar_light_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Progressbar *thiz;
 	Enesim_Renderer *r1;
@@ -300,7 +300,7 @@ void eon_basic_progressbar_light_color_set(Enesim_Renderer *r, Enesim_Color colo
 /**
  *
  */
-void eon_basic_progressbar_dark_color_set(Enesim_Renderer *r, Enesim_Color color)
+void eon_theme_basic_progressbar_dark_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Progressbar *thiz;
 	Enesim_Renderer *r1;
@@ -313,7 +313,7 @@ void eon_basic_progressbar_dark_color_set(Enesim_Renderer *r, Enesim_Color color
 /**
  *
  */
-void eon_basic_progressbar_progression_set(Enesim_Renderer *r, double progression)
+void eon_theme_basic_progressbar_progression_set(Enesim_Renderer *r, double progression)
 {
 	Progressbar *thiz;
 

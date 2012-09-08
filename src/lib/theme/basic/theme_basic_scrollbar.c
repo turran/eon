@@ -158,7 +158,7 @@ static Eon_Theme_Scrollbar_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Eon_Theme_Widget * eon_basic_scrollbar_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_scrollbar_new(void)
 {
 	Eon_Theme_Widget *t;
 	Eon_Basic_Scrollbar *thiz;
@@ -202,7 +202,7 @@ background_err:
 	return NULL;
 }
 
-EAPI void eon_basic_scrollbar_background_color_set(Eon_Theme_Widget *t, Enesim_Color c)
+EAPI void eon_theme_basic_scrollbar_background_color_set(Eon_Theme_Widget *t, Enesim_Color c)
 {
 	Eon_Basic_Scrollbar *thiz;
 
@@ -210,7 +210,7 @@ EAPI void eon_basic_scrollbar_background_color_set(Eon_Theme_Widget *t, Enesim_C
 	enesim_renderer_background_color_set(thiz->background, c);
 }
 
-EAPI void eon_basic_scrollbar_border_color_set(Eon_Theme_Widget *t, Enesim_Color c)
+EAPI void eon_theme_basic_scrollbar_border_color_set(Eon_Theme_Widget *t, Enesim_Color c)
 {
 	Eon_Basic_Scrollbar *thiz;
 

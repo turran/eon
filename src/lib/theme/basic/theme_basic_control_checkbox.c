@@ -38,7 +38,7 @@ typedef struct _Eon_Basic_Control_Checkbox
 	Enesim_Renderer *check;
 } Eon_Basic_Control_Checkbox;
 
-EAPI void eon_basic_control_checkbox_size_set(Eon_Theme_Widget *t, unsigned int size);
+EAPI void eon_theme_basic_control_checkbox_size_set(Eon_Theme_Widget *t, unsigned int size);
 
 static inline Eon_Basic_Control_Checkbox * _checkbox_get(Eon_Theme_Widget *t)
 {
@@ -133,7 +133,7 @@ static Eon_Theme_Control_Checkbox_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eon_Theme_Widget * eon_basic_control_checkbox_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_control_checkbox_new(void)
 {
 	Eon_Theme_Widget *t;
 	Eon_Basic_Control_Checkbox *thiz;
@@ -193,7 +193,7 @@ background_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_control_checkbox_selected_set(Eon_Theme_Widget *t, Eina_Bool selected)
+EAPI void eon_theme_basic_control_checkbox_selected_set(Eon_Theme_Widget *t, Eina_Bool selected)
 {
 	Eon_Basic_Control_Checkbox *thiz;
 
@@ -208,7 +208,7 @@ EAPI void eon_basic_control_checkbox_selected_set(Eon_Theme_Widget *t, Eina_Bool
 	}
 }
 
-EAPI void eon_basic_control_checkbox_size_set(Eon_Theme_Widget *t, unsigned int size)
+EAPI void eon_theme_basic_control_checkbox_size_set(Eon_Theme_Widget *t, unsigned int size)
 {
 	Eon_Basic_Control_Checkbox *thiz;
 

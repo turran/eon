@@ -42,7 +42,7 @@ typedef struct _Eon_Basic_Control_Radio
 	Enesim_Renderer *inner_circle;
 } Eon_Basic_Control_Radio;
 
-static inline Eon_Basic_Control_Radio * _eon_basic_control_radio_get(Eon_Theme_Widget *t)
+static inline Eon_Basic_Control_Radio * _eon_theme_basic_control_radio_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Radio *thiz;
 	thiz = eon_theme_control_radio_data_get(t);
@@ -53,7 +53,7 @@ static Enesim_Renderer * _basic_control_radio_renderer_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	return thiz->compound;
 }
 
@@ -61,7 +61,7 @@ static void _basic_control_radio_x_set(Eon_Theme_Widget *t, double x)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 
 	enesim_renderer_circle_x_set(thiz->background_circle, x + thiz->circle_radius);
 
@@ -78,7 +78,7 @@ static void _basic_control_radio_y_set(Eon_Theme_Widget *t, double y)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 
 	enesim_renderer_circle_y_set(thiz->background_circle, y + thiz->circle_radius);
 
@@ -95,7 +95,7 @@ static void _basic_control_radio_free(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	if (thiz->outter_circle)
 		enesim_renderer_unref(thiz->outter_circle);
 	if (thiz->inner_circle)
@@ -107,7 +107,7 @@ static void _basic_control_radio_size_get(Eon_Theme_Widget *t, Eon_Size *size)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	size->width = size->height = thiz->circle_radius;
 }
 
@@ -124,7 +124,7 @@ static Eon_Theme_Control_Radio_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Eon_Theme_Widget * eon_basic_control_radio_new(void)
+EAPI Eon_Theme_Widget * eon_theme_basic_control_radio_new(void)
 {
 	Eon_Basic_Control_Radio *thiz;
 	Enesim_Renderer *r;
@@ -212,41 +212,41 @@ background_fill_err:
 	return NULL;
 }
 
-void eon_basic_control_radio_start_shadow_set(Eon_Theme_Widget *t, Enesim_Color color)
+void eon_theme_basic_control_radio_start_shadow_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Eon_Basic_Control_Radio *thiz;
 	Enesim_Renderer *r;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	thiz->start_shadow = color;
 	r = thiz->background_fill;
 	enesim_renderer_stripes_odd_color_set(r, thiz->start_shadow);
 }
 
-void eon_basic_control_radio_end_shadow_set(Eon_Theme_Widget *t, Enesim_Color color)
+void eon_theme_basic_control_radio_end_shadow_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Eon_Basic_Control_Radio *thiz;
 	Enesim_Renderer *r;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	thiz->end_shadow = color;
 	r = thiz->background_fill;
 	enesim_renderer_stripes_even_color_set(r, thiz->end_shadow);
 }
 
-EAPI void eon_basic_control_radio_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+EAPI void eon_theme_basic_control_radio_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	enesim_renderer_shape_stroke_color_set(thiz->outter_circle, color);
 }
 
-EAPI void eon_basic_control_radio_selected_set(Eon_Theme_Widget *t, Eina_Bool selected)
+EAPI void eon_theme_basic_control_radio_selected_set(Eon_Theme_Widget *t, Eina_Bool selected)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	if (selected)
 	{
 		enesim_renderer_compound_layer_add(thiz->compound, thiz->inner_circle);
@@ -257,10 +257,10 @@ EAPI void eon_basic_control_radio_selected_set(Eon_Theme_Widget *t, Eina_Bool se
 	}
 }
 
-EAPI void eon_basic_control_radio_selected_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+EAPI void eon_theme_basic_control_radio_selected_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Eon_Basic_Control_Radio *thiz;
 
-	thiz = _eon_basic_control_radio_get(t);
+	thiz = _eon_theme_basic_control_radio_get(t);
 	enesim_renderer_shape_fill_color_set(thiz->inner_circle, color);
 }

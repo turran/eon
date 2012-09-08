@@ -18,7 +18,7 @@
 #include "Eon.h"
 #include "Eon_Theme.h"
 #include "Eon_Basic.h"
-#include "eon_basic_private.h"
+#include "eon_theme_basic_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -45,7 +45,7 @@ static void _toggle_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 
 	thiz = _toggle_get(r);
 	eon_theme_container_content_get(r, &content);
-	eon_basic_control_button_margin_get(thiz->cb, content, margin);
+	eon_theme_basic_control_button_margin_get(thiz->cb, content, margin);
 }
 
 static void _toggle_position_get(Enesim_Renderer *r, Eon_Size *size,
@@ -54,7 +54,7 @@ static void _toggle_position_get(Enesim_Renderer *r, Eon_Size *size,
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_position_get(thiz->cb, size, position);
+	eon_theme_basic_control_button_position_get(thiz->cb, size, position);
 }
 
 static Enesim_Renderer * _toggle_renderer_get(Enesim_Renderer *r)
@@ -62,7 +62,7 @@ static Enesim_Renderer * _toggle_renderer_get(Enesim_Renderer *r)
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	return eon_basic_control_button_renderer_get(thiz->cb);
+	return eon_theme_basic_control_button_renderer_get(thiz->cb);
 }
 
 static Eina_Bool _toggle_setup(Enesim_Renderer *r, Enesim_Error **error)
@@ -82,7 +82,7 @@ static Eina_Bool _toggle_setup(Enesim_Renderer *r, Enesim_Error **error)
 	eon_theme_container_content_get(r, &content);
 
 	return EINA_TRUE;
-	//return eon_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
+	//return eon_theme_basic_control_button_setup(thiz->cb, content, x, y, width, height, error);
 }
 
 static void _toggle_free(Enesim_Renderer *r)
@@ -90,7 +90,7 @@ static void _toggle_free(Enesim_Renderer *r)
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_free(thiz->cb);
+	eon_theme_basic_control_button_free(thiz->cb);
 	free(thiz);
 }
 
@@ -108,7 +108,7 @@ static Eon_Theme_Toggle_Descriptor _descriptor = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * eon_basic_toggle_new(void)
+EAPI Enesim_Renderer * eon_theme_basic_toggle_new(void)
 {
 	Enesim_Renderer *r;
 	Eon_Basic_Control_Button *cb;
@@ -117,7 +117,7 @@ EAPI Enesim_Renderer * eon_basic_toggle_new(void)
 	thiz = calloc(1, sizeof(Basic_Toggle));
 	if (!thiz) return NULL;
 
-	cb = eon_basic_control_button_new();
+	cb = eon_theme_basic_control_button_new();
 	thiz->cb = cb;
 
 	r = eon_theme_toggle_new(&_descriptor, thiz);
@@ -133,106 +133,106 @@ renderer_err:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_toggle_fill_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_fill_color_set(thiz->cb, color);
+	eon_theme_basic_control_button_fill_color_set(thiz->cb, color);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_border_color_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_toggle_border_color_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_border_color_set(thiz->cb, color);
+	eon_theme_basic_control_button_border_color_set(thiz->cb, color);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_horizontal_padding_set(Enesim_Renderer *r, double padding)
+EAPI void eon_theme_basic_toggle_horizontal_padding_set(Enesim_Renderer *r, double padding)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_horizontal_padding_set(thiz->cb, padding);
+	eon_theme_basic_control_button_horizontal_padding_set(thiz->cb, padding);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_vertical_padding_set(Enesim_Renderer *r, double padding)
+EAPI void eon_theme_basic_toggle_vertical_padding_set(Enesim_Renderer *r, double padding)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_vertical_padding_set(thiz->cb, padding);
+	eon_theme_basic_control_button_vertical_padding_set(thiz->cb, padding);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_radius_set(Enesim_Renderer *r, double radius)
+EAPI void eon_theme_basic_toggle_radius_set(Enesim_Renderer *r, double radius)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_radius_set(thiz->cb, radius);
+	eon_theme_basic_control_button_radius_set(thiz->cb, radius);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_toggle_start_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_start_shadow_set(thiz->cb, color);
+	eon_theme_basic_control_button_start_shadow_set(thiz->cb, color);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_toggle_end_shadow_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_end_shadow_set(thiz->cb, color);
+	eon_theme_basic_control_button_end_shadow_set(thiz->cb, color);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_toggle_start_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_start_bevel_set(thiz->cb, color);
+	eon_theme_basic_control_button_start_bevel_set(thiz->cb, color);
 }
 
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_basic_toggle_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
+EAPI void eon_theme_basic_toggle_end_bevel_set(Enesim_Renderer *r, Enesim_Color color)
 {
 	Basic_Toggle *thiz;
 
 	thiz = _toggle_get(r);
-	eon_basic_control_button_end_bevel_set(thiz->cb, color);
+	eon_theme_basic_control_button_end_bevel_set(thiz->cb, color);
 }

@@ -42,7 +42,7 @@ typedef struct _Eon_Basic_Control_Scroll_Arrow
 
 static Enesim_Matrix _ms[EON_DIRECTIONS];
 
-static void _eon_basic_control_scroll_arrow_init(void)
+static void _eon_theme_basic_control_scroll_arrow_init(void)
 {
 	Enesim_Matrix m1, m2;
 
@@ -63,7 +63,7 @@ static void _eon_basic_control_scroll_arrow_init(void)
 	enesim_matrix_compose(&m1, &m2, &_ms[EON_DIRECTION_RIGHT]);
 }
 
-static inline Eon_Basic_Control_Scroll_Arrow * _eon_basic_control_scroll_arrow_get(Eon_Theme_Widget *t)
+static inline Eon_Basic_Control_Scroll_Arrow * _eon_theme_basic_control_scroll_arrow_get(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 	thiz = eon_theme_control_scroll_arrow_data_get(t);
@@ -74,7 +74,7 @@ static Enesim_Renderer * _basic_control_scroll_arrow_renderer_get(Eon_Theme_Widg
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	return thiz->shape;
 }
 
@@ -83,7 +83,7 @@ static void _basic_control_scroll_arrow_x_set(Eon_Theme_Widget *t, double x)
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 	Enesim_Matrix m;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	thiz->x = x;
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
 	enesim_matrix_compose(&m, thiz->m, &m);
@@ -95,7 +95,7 @@ static void _basic_control_scroll_arrow_y_set(Eon_Theme_Widget *t, double y)
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 	Enesim_Matrix m;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	thiz->y = y;
 	enesim_matrix_translate(&m, thiz->x, thiz->y);
 	enesim_matrix_compose(&m, thiz->m, &m);
@@ -106,7 +106,7 @@ static void _basic_control_scroll_arrow_free(Eon_Theme_Widget *t)
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	if (thiz->shape)
 		enesim_renderer_unref(thiz->shape);
 	free(thiz);
@@ -116,7 +116,7 @@ static void _basic_control_scroll_arrow_size_get(Eon_Theme_Widget *t, Eon_Size *
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	if (thiz->direction == EON_DIRECTION_TOP || thiz->direction == EON_DIRECTION_BOTTOM)
 	{
 		size->width = 8;
@@ -133,7 +133,7 @@ static void _basic_control_scroll_arrow_direction_set(Eon_Theme_Widget *t, Eon_D
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	thiz->direction = d;
 	thiz->m = &_ms[d];
 }
@@ -153,7 +153,7 @@ static Eon_Theme_Control_Scroll_Arrow_Descriptor _descriptor = {
  *                                   API                                      *
  *============================================================================*/
 
-Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
+Eon_Theme_Widget * eon_theme_basic_control_scroll_arrow_new(void)
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 	Enesim_Color fill_color = 0xff000000;
@@ -162,7 +162,7 @@ Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
 
 	if (!init)
 	{
-		_eon_basic_control_scroll_arrow_init();
+		_eon_theme_basic_control_scroll_arrow_init();
 		init++;
 	}
 
@@ -186,10 +186,10 @@ Eon_Theme_Widget * eon_basic_control_scroll_arrow_new(void)
 	return eon_theme_control_scroll_arrow_new(&_descriptor, thiz);
 }
 
-EAPI void eon_basic_control_scroll_arrow_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+EAPI void eon_theme_basic_control_scroll_arrow_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
 	Eon_Basic_Control_Scroll_Arrow *thiz;
 
-	thiz = _eon_basic_control_scroll_arrow_get(t);
+	thiz = _eon_theme_basic_control_scroll_arrow_get(t);
 	enesim_renderer_shape_fill_color_set(thiz->shape, color);
 }
