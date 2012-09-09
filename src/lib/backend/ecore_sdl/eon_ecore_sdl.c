@@ -448,6 +448,8 @@ static void _sdl_window_delete(void *data, void *window_data)
 static Eon_Ecore_Backend_Descriptor _backend_descriptor = {
 	/* .window_new 		= */ _sdl_window_new,
 	/* .window_delete 	= */ _sdl_window_delete,
+	/* .element_add 	= */ NULL,
+	/* .element_remove 	= */ NULL,
 };
 #endif
 /*============================================================================*

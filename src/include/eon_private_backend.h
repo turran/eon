@@ -14,6 +14,8 @@ typedef void (*Eon_Backend_Run)(void *backend_data);
 typedef void (*Eon_Backend_Quit)(void *backend_data);
 typedef Eina_Bool (*Eon_Backend_Window_New)(void *backend_data, Ender_Element *container, unsigned int width, unsigned int height, void **window_data);
 typedef void (*Eon_Backend_Window_Delete)(void *backend_data, void *window_data);
+typedef void (*Eon_Backend_Element_Add)(void *backend_data, Ender_Element *e);
+typedef void (*Eon_Backend_Element_Remove)(void *backend_data, Ender_Element *e);
 
 typedef struct _Eon_Backend_Descriptor
 {
@@ -28,9 +30,15 @@ typedef struct _Eon_Backend_Descriptor
 	/* window related functions */
 	Eon_Backend_Window_New window_new;
 	Eon_Backend_Window_Delete window_delete;
+	/* element related functions */
+	Eon_Backend_Element_Add element_add;
+	Eon_Backend_Element_Remove element_remove;
 } Eon_Backend_Descriptor;
 
 Eon_Backend * eon_backend_new(Eon_Backend_Descriptor *descriptor, void *data);
+
 void eon_backend_window_delete(Eon_Backend *backend, void *window_data);
+void eon_backend_element_add(Eon_Backend *backend, Ender_Element *e);
+void eon_backend_element_remove(Eon_Backend *backend, Ender_Element *e);
 
 #endif

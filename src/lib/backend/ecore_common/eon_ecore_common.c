@@ -155,6 +155,9 @@ Eon_Backend * eon_ecore_backend_new(Eon_Ecore_Backend_Descriptor *descriptor,
 	pdescriptor.window_new = descriptor->window_new;
 	pdescriptor.window_delete = descriptor->window_delete;
 
+	pdescriptor.element_add = descriptor->element_add;
+	pdescriptor.element_remove = descriptor->element_remove;
+
 	backend = eon_backend_new(&pdescriptor, data);
 	return backend;
 }

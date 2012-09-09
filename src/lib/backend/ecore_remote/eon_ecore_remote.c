@@ -68,9 +68,16 @@
 #ifdef BUILD_BACKEND_REMOTE
 static int _initialized = 0;
 
+typedef struct _Eon_Ecore_Remote_Window
+{
+	/* FIXME what to store here */
+} Eon_Ecore_Remote_Window;
+
 typedef struct _Eon_Ecore_Remote
 {
 	Eix_Server *srv;
+	/* TODO keep track of every window ? */
+	Ender_Element *layout;
 } Eon_Ecore_Remote;
 
 typedef struct _Eon_Ecore_Remote_Element
@@ -78,6 +85,13 @@ typedef struct _Eon_Ecore_Remote_Element
 	Ender_Element *e;
 	int id;
 } Eon_Ecore_Remote_Element;
+
+
+typedef struct _Eon_Ecore_Remote_Property_List_Data
+{
+	Eon_Ecore_Remote_Element *re;
+	Eon_Ecore_Remote *thiz;
+} Eon_Ecore_Remote_Property_List_Data;
 
 /* Looks like this is the way to define unions for eet */
 struct {
@@ -104,12 +118,11 @@ static Eon_Ecore_Remote_Element * _remote_element_ender_from(Ender_Element *e)
 	return ender_element_data_get(e, _renderer_key);
 }
 
-static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, Ender_Value *v)
+static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, const Ender_Value *v)
 {
 	Ender_Container *container;
 	Ender_Value_Type type;
 
-	printf("setting value!!!\n");
 	container = ender_value_container_get(v);
 	type = ender_container_type_get(container);
 
@@ -141,7 +154,6 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 		case ENDER_DOUBLE:
 		data->type = EON_ECORE_REMOTE_DATA_DOUBLE;
 		data->value.ddouble.d = ender_value_double_get(v);
-		printf(">>> setting double %g\n", data->value.ddouble.d);
 		break;
 
 		case ENDER_COLOR:
@@ -166,8 +178,10 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 
 			data->type = EON_ECORE_REMOTE_DATA_UINT32;
 			rel = ender_value_ender_get(v);
+			printf("!!!!! rel = %p\n", rel);
 			if (!rel) return EINA_FALSE;
 			re = _remote_element_ender_from(rel);
+			printf("re = %p\n", re);
 			if (!re) return EINA_FALSE;
 			data->value.duint32.u32 = re->id;
 		}
@@ -181,6 +195,31 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 		break;
 	}
 	return EINA_TRUE;
+}
+
+static void _property_list_cb(Ender_Property *p, void *user_data)
+{
+	Eon_Ecore_Remote_Property_List_Data *data = user_data;
+	Eon_Ecore_Remote_Property_Set evs;
+	Eon_Ecore_Remote_Data rdata;
+	Ender_Value *v = NULL;
+	Eina_Bool ret;
+	const char *name;
+
+	name = ender_property_name_get(p);
+	if (!strcmp(name, "max_width"))
+		return;
+	if (!strcmp(name, "max_height"))
+		return;
+
+	printf("setting property %s\n", name);
+	evs.id = data->re->id;
+	evs.name = name;
+	evs.value = &rdata;
+	ender_element_property_value_get_simple(data->re->e, p, &v);
+	ret = _eon_ecore_remote_data_from_value(&rdata, v);
+	ender_value_unref(v);
+	eix_server_message_send(data->thiz->srv, EON_ECORE_REMOTE_PROPERTY_SET, &evs, 0, 0);
 }
 /*----------------------------------------------------------------------------*
  *                              Encode/Decode                                 *
@@ -299,128 +338,82 @@ static void _element_changed(Ender_Element *e, const char *event_name, void *eve
 	}
 }
 /*----------------------------------------------------------------------------*
- *                               Ender calbacks                               *
- *----------------------------------------------------------------------------*/
-static void _global_constructor_callback(Ender_Element *e, void *data)
-{
-	Eon_Ecore_Remote_Element *re;
-	Enesim_Renderer *r;
-	static int _id = 0;
-
-	r = ender_element_object_get(e);
-	if (!eon_is_element(e))
-	{
-		printf("is not an element\n");
-		return;
-	}
-
-	re = calloc(1, sizeof(Eon_Ecore_Remote_Element));
-	re->id = ++_id;
-	re->e = e;
-	ender_element_data_set(e, _renderer_key, re);
-}
-
-static void _client_constructor_callback(Ender_Element *e, void *data)
-{
-	Eon_Ecore_Remote *thiz;
-	Eon_Ecore_Remote_Element *re;
-	Eon_Ecore_Remote_Element_New new;
-	Eix_Error err;
-	const char *name;
-
-	thiz = data;
-
-	re = _remote_element_ender_from(e);
-	if (!re)
-	{
-		printf("no remote ender found\n");
-		return;
-	}
-
-	name = ender_element_name_get(e);
-	/* send the 'new' event */
-	new.id = re->id;
-	new.name = name;
-	err = eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_ELEMENT_NEW, &new, 0, 0);
-	ender_event_listener_add(e, "Mutation", _element_changed, thiz);
-}
-/*----------------------------------------------------------------------------*
  *                           Eon backend interface                            *
  *----------------------------------------------------------------------------*/
 static Eina_Bool _remote_window_new(void *data, Ender_Element *layout, unsigned int width, unsigned int height, void **window_data)
 {
-	Eix_Server *srv;
 	Eon_Ecore_Remote *thiz;
+	Eon_Ecore_Remote_Window *thiz_win;
 	Eon_Ecore_Remote_Element *re;
 	Eon_Ecore_Remote_Client_New client_new;
 
-	ecore_init();
-	eix_init();
-
-	/* handle the common initializer */
-	if (!_initialized++)
-	{
-		/* register the messages */
-		eon_ecore_remote_init();
-		/* add our ender creator callback */
-		ender_element_new_listener_add(_global_constructor_callback, NULL);
-	}
-
-	/* handle the ipc mechanism */
-	srv = eix_connect("eon-remote", 0);
-	if (!srv)
-	{
-		return EINA_FALSE;
-	}
-	thiz = calloc(1, sizeof(Eon_Ecore_Remote));
+	thiz = data;
+	thiz_win = calloc(1, sizeof(Eon_Ecore_Remote_Window));
 
 	ecore_event_handler_add(EIX_EVENT_SERVER_ADD,
 		handler_server_add, NULL);
 	ecore_event_handler_add(EIX_EVENT_SERVER_DEL,
 		handler_server_del, NULL);
-	/* FIXME something is wrong here as every element created with eon
-	 * will be created on the server too ...
-	 */
-	ender_element_new_listener_add(_client_constructor_callback, thiz);
-	thiz->srv = srv;
 
-	eon_ecore_remote_server_setup(thiz->srv);
-	/* FIXME once the Eon_Window is refactored to be an Ender itself
-	 * or at least be able to set the layout *after* the creation
-	 * we should remove the following lines
-	 */
-	_global_constructor_callback(layout, NULL);
-	_client_constructor_callback(layout, thiz);
 	/* send the size of the client */
+	re = _remote_element_ender_from(layout);
 	client_new.width = width;
 	client_new.height = height;
-	re = _remote_element_ender_from(layout);
 	client_new.layout_id = re->id;
 	eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_CLIENT_NEW, &client_new, 0, 0);
 
-	*window_data = thiz;
+	*window_data = thiz_win;
 
 	return EINA_TRUE;
 }
 
 static void _remote_window_delete(void *data, void *window_data)
 {
-	Eon_Ecore_Remote *thiz = window_data;
+	Eon_Ecore_Remote *thiz = data;
+	Eon_Ecore_Remote_Window *thiz_win = window_data;
+}
 
-	if (_initialized == 1)
-		ender_element_new_listener_remove(_global_constructor_callback, NULL);
-	ender_element_new_listener_remove(_client_constructor_callback, thiz);
-	_initialized--;
+static void _remote_element_add(void *data, Ender_Element *e)
+{
+	Eon_Ecore_Remote_Element *re;
+	Eon_Ecore_Remote *thiz;
+	Eon_Ecore_Remote_Element_New new;
+	Eon_Ecore_Remote_Property_List_Data ldata;
+	Eix_Error err;
+	Ender_Descriptor *descriptor;
+	static int _id = 0;
+	const char *name;
 
-	eix_shutdown();
-	ecore_shutdown();
+	re = calloc(1, sizeof(Eon_Ecore_Remote_Element));
+	re->id = ++_id;
+	re->e = e;
+	ender_element_data_set(e, _renderer_key, re);
+
+	thiz = data;
+	printf(">>>> element added %p\n", e);
+	name = ender_element_name_get(e);
+	/* send the 'new' event */
+	new.id = re->id;
+	new.name = name;
+	err = eix_server_message_send(thiz->srv, EON_ECORE_REMOTE_ELEMENT_NEW, &new, 0, 0);
+	/* for every property set also set it on the other end */
+	descriptor = ender_element_descriptor_get(e);
+	ldata.re = re;
+	ldata.thiz = thiz;
+	ender_descriptor_property_list_recursive(descriptor, _property_list_cb, &ldata);
+	ender_event_listener_add(e, "Mutation", _element_changed, thiz);
+}
+
+static void _remote_element_remove(void *data, Ender_Element *e)
+{
 }
 
 static Eon_Ecore_Backend_Descriptor _backend = {
-	/* .window_new =    */ _remote_window_new,
-	/* .window_delete = */ _remote_window_delete,
+	/* .window_new 		= */ _remote_window_new,
+	/* .window_delete 	= */ _remote_window_delete,
+	/* .element_add		= */ _remote_element_add,
+	/* .element_remove 	= */ _remote_element_remove,
 };
-
 #endif
 /*============================================================================*
  *                                   API                                      *
@@ -429,11 +422,39 @@ EAPI Eon_Backend * eon_ecore_remote_new(void)
 {
 #ifdef BUILD_BACKEND_REMOTE
 	Eon_Backend *backend;
+	Eon_Ecore_Remote *thiz;
+	Eix_Server *srv;
 
-	backend = eon_ecore_backend_new(&_backend, NULL);
+	/* handle the common initializer */
+	if (!_initialized++)
+	{
+		/* register the messages */
+		ecore_init();
+		eix_init();
+		eon_ecore_remote_init();
+	}
+
+	/* handle the ipc mechanism */
+	srv = eix_connect("eon-remote", 0);
+	if (!srv)
+	{
+		return NULL;
+	}
+	thiz = calloc(1, sizeof(Eon_Ecore_Remote));
+	thiz->srv = srv;
+	eon_ecore_remote_server_setup(thiz->srv);
+
+	backend = eon_ecore_backend_new(&_backend, thiz);
 	return backend;
 #else
 	return NULL;
+#endif
+
+#if 0
+	_initialized--;
+
+	eix_shutdown();
+	ecore_shutdown();
 #endif
 }
 

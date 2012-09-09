@@ -684,16 +684,21 @@ Eon_Backend * eon_element_backend_get(Eon_Element *thiz)
 
 void eon_element_backend_set(Eon_Element *thiz, Eon_Backend *backend)
 {
+	Ender_Element *e;
+
+	e = thiz->e;
 	if (thiz->backend)
 	{
 		if (thiz->descriptor.backend_removed)
 			thiz->descriptor.backend_removed(thiz, thiz->backend);
+		eon_backend_element_remove(thiz->backend, e);
 	}
 	thiz->backend = backend;
 	if (thiz->backend)
 	{
 		if (thiz->descriptor.backend_added)
 			thiz->descriptor.backend_added(thiz, thiz->backend);
+		eon_backend_element_add(thiz->backend, e);
 	}
 }
 

@@ -22,6 +22,7 @@
 #include "eon_backend.h"
 
 #include "eon_private_backend.h"
+#include "eon_private_window.h"
 #include "eon_private_element.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -42,6 +43,7 @@ Eon_Backend * eon_backend_new(Eon_Backend_Descriptor *descriptor, void *data)
 	backend->descriptor = *descriptor;
 	backend->data = data;
 
+	printf("backend data = %p\n", data);
 	return backend;
 }
 
@@ -49,6 +51,18 @@ void eon_backend_window_delete(Eon_Backend *backend, void *window_data)
 {
 	if (!backend->descriptor.window_delete) return;
 	backend->descriptor.window_delete(backend->data, window_data);
+}
+
+void eon_backend_element_add(Eon_Backend *backend, Ender_Element *e)
+{
+	if (!backend->descriptor.element_add) return;
+	backend->descriptor.element_add(backend->data, e);
+}
+
+void eon_backend_element_remove(Eon_Backend *backend, Ender_Element *e)
+{
+	if (!backend->descriptor.element_remove) return;
+	backend->descriptor.element_remove(backend->data, e);
 }
 /*============================================================================*
  *                                   API                                      *
@@ -64,12 +78,16 @@ EAPI Eon_Window * eon_backend_window_new(Eon_Backend *backend, Ender_Element *co
 	if (!eon_is_container(container)) return NULL;
 
 	if (!backend->descriptor.window_new) return NULL;
-	if (!backend->descriptor.window_new(backend->data, container, width, height, &data))
-		return NULL;
 
 	e = ender_element_object_get(container);
 	eon_element_backend_set(e, backend);
-	return eon_window_new(backend, width, height, data);
+	if (!backend->descriptor.window_new(backend->data, container, width, height, &data))
+	{
+		eon_element_backend_set(e, NULL);
+		return NULL;
+	}
+
+	return eon_window_new(backend, container, width, height, data);
 }
 
 EAPI void eon_backend_idler_add(Eon_Backend *backend, Eon_Backend_Task cb, void *data)
@@ -101,4 +119,3 @@ EAPI void eon_backend_quit(Eon_Backend *backend)
 	if (!backend->descriptor.quit) return;
 	backend->descriptor.quit(backend->data);
 }
-
