@@ -84,6 +84,14 @@ static Eina_Bool _child_clear_cb(Eon_Element *e, Ender_Element *child, void *dat
 	return EINA_TRUE;
 }
 
+static Eina_Bool _child_get_cb(Eon_Element *e, Ender_Element *child, void *data)
+{
+	Eina_List **l = data;
+
+	*l = eina_list_append(*l, child);
+	return EINA_TRUE;
+}
+
 static Eina_Bool _child_backend_set_cb(Eon_Element *e, Ender_Element *child, void *data)
 {
 	Eon_Backend *backend = data;
@@ -200,6 +208,11 @@ static void _eon_container_child_set(Eon_Element *ee, Eina_List *childs)
 	}
 }
 
+static void _eon_container_child_get(Eon_Element *ee, Eina_List **childs)
+{
+	eon_container_internal_child_foreach(ee, _child_get_cb, childs);
+}
+
 static void _eon_container_child_clear(Eon_Element *e)
 {
 	eon_container_internal_child_foreach(e, _child_clear_cb, NULL);
@@ -265,7 +278,6 @@ void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Child_Fo
 }
 
 #define _eon_container_delete NULL
-#define _eon_container_child_get NULL
 #include "eon_generated_container.c"
 /*============================================================================*
  *                                   API                                      *

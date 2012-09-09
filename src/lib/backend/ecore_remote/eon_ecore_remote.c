@@ -118,6 +118,18 @@ static Eon_Ecore_Remote_Element * _remote_element_ender_from(Ender_Element *e)
 	return ender_element_data_get(e, _renderer_key);
 }
 
+static inline void _eon_ecore_remote_data_uint32_from(Eon_Ecore_Remote_Data *data, uint32_t v)
+{
+	data->type = EON_ECORE_REMOTE_DATA_UINT32;
+	data->value.duint32.u32 = v;
+}
+
+static inline void _eon_ecore_remote_data_double_from(Eon_Ecore_Remote_Data *data, double v)
+{
+	data->type = EON_ECORE_REMOTE_DATA_DOUBLE;
+	data->value.ddouble.d = v;
+}
+
 static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, const Ender_Value *v)
 {
 	Ender_Container *container;
@@ -200,9 +212,9 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 static void _property_list_cb(Ender_Property *p, void *user_data)
 {
 	Eon_Ecore_Remote_Property_List_Data *data = user_data;
-	Eon_Ecore_Remote_Property_Set evs;
 	Eon_Ecore_Remote_Data rdata;
 	Ender_Value *v = NULL;
+	Ender_Container *container;
 	Eina_Bool ret;
 	const char *name;
 
@@ -213,13 +225,61 @@ static void _property_list_cb(Ender_Property *p, void *user_data)
 		return;
 
 	printf("setting property %s\n", name);
-	evs.id = data->re->id;
-	evs.name = name;
-	evs.value = &rdata;
+
 	ender_element_property_value_get_simple(data->re->e, p, &v);
-	ret = _eon_ecore_remote_data_from_value(&rdata, v);
-	ender_value_unref(v);
-	eix_server_message_send(data->thiz->srv, EON_ECORE_REMOTE_PROPERTY_SET, &evs, 0, 0);
+	container = ender_property_container_get(p);
+	if (ender_container_is_compound(container))
+	{
+		Ender_Value_Type type;
+		Ender_Container *sub;
+		const Eina_List *list, *l;
+		void *ptr;
+
+		type = ender_container_type_get(container);
+		if (type != ENDER_LIST)
+		{
+			printf("no structs or unions yet\n");
+			return;
+		}
+		/* call the add on each */
+		sub = ender_container_compound_get(container, 0);
+		list = ender_value_list_get(v);
+		printf("list = %p\n", list);
+		EINA_LIST_FOREACH(list, l, ptr)
+		{
+			Ender_Element *rel = ptr;
+			Eon_Ecore_Remote_Element *re;
+			Eon_Ecore_Remote_Property_Add evs;
+
+			printf("!!!!! rel = %p\n", rel);
+			re = _remote_element_ender_from(rel);
+			printf("re = %p\n", re);
+			if (!re) return;
+
+			rdata.type = EON_ECORE_REMOTE_DATA_UINT32;
+			rdata.value.duint32.u32 = re->id;
+			printf("adding value\n");
+
+			evs.id = data->re->id;
+			evs.name = name;
+			evs.value = &rdata;
+			eix_server_message_send(data->thiz->srv, EON_ECORE_REMOTE_PROPERTY_ADD, &evs, 0, 0);
+		}
+		printf("compound!!\n");
+		return;
+	}
+	else
+	{
+		Eon_Ecore_Remote_Property_Set evs;
+
+		evs.id = data->re->id;
+		evs.name = name;
+		evs.value = &rdata;
+
+		ret = _eon_ecore_remote_data_from_value(&rdata, v);
+		ender_value_unref(v);
+		eix_server_message_send(data->thiz->srv, EON_ECORE_REMOTE_PROPERTY_SET, &evs, 0, 0);
+	}
 }
 /*----------------------------------------------------------------------------*
  *                              Encode/Decode                                 *
