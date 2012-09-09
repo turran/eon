@@ -589,6 +589,7 @@ Enesim_Renderer * eon_element_renderer_get(Ender_Element *e)
 /* this function should be called before setting a geometry. When we set a geometry
  * we need to take into account the last time the min/max/preferred sizes
  * where calculated
+ * TODO export this?
  */
 void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 {
@@ -622,6 +623,10 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 
 		hints->preferred = ihints.preferred;
 	}
+	printf("1 '%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name,
+			hints->min.width, hints->min.height,
+			hints->max.width, hints->max.height,
+			hints->preferred.width, hints->preferred.height);
 	/* now use the user provided width/height */
 	if (thiz->size.width != -1)
 	{
@@ -632,6 +637,7 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 		if (w > hints->max.width)
 			w = hints->max.width;
 
+		printf("had width %g\n", thiz->size.width);
 		hints->min.width = hints->max.width = hints->preferred.width = w;
 	}
 	if (thiz->size.height != -1)
@@ -643,11 +649,12 @@ void eon_element_hints_get(Eon_Element *thiz, Eon_Hints *hints)
 		if (h > hints->max.height)
 			h = hints->max.height;
 
+		printf("had height %g\n", thiz->size.height);
 		hints->min.height = hints->max.height = hints->preferred.height = h;
 	}
 
 	thiz->last_hints = *hints;
-	printf("'%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name,
+	printf("2 '%s' hints are min: %g %g max: %g %g preferred: %g %g\n", thiz->descriptor.name,
 			hints->min.width, hints->min.height,
 			hints->max.width, hints->max.height,
 			hints->preferred.width, hints->preferred.height);

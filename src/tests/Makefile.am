@@ -9,8 +9,7 @@ MAINTAINERCLEANFILES = Makefile.in
 # eon_test_progressbar \
 # eon_test_splitter \
 # eon_test_spin \
-# eon_test_toggle \
-# eon_test_wrapper
+# eon_test_toggle
 
 check_PROGRAMS = \
 eon_test_button01 \
@@ -23,7 +22,8 @@ eon_test_checkbox \
 eon_test_image \
 eon_test_radio \
 eon_test_scrollbar \
-eon_test_scrollview
+eon_test_scrollview \
+eon_test_wrapper
 
 if BUILD_EXTENSION_ESVG
 check_PROGRAMS += eon_test_svg
@@ -69,9 +69,9 @@ eon_test_canvas_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 #eon_test_toggle_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
 #eon_test_toggle_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
-#eon_test_wrapper_SOURCES = eon_test_wrapper.c
-#eon_test_wrapper_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
-#eon_test_wrapper_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
+eon_test_wrapper_SOURCES = eon_test_wrapper.c
+eon_test_wrapper_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@
+eon_test_wrapper_LDADD = $(top_builddir)/src/lib/libeon.la @EON_LIBS@
 
 eon_test_svg_SOURCES = eon_test_svg.c
 eon_test_svg_CPPFLAGS = -I. -I$(top_srcdir)/src/include @EON_CFLAGS@

@@ -26,8 +26,8 @@
  */
 
 EAPI Ender_Element * eon_wrapper_new(void);
-EAPI void eon_wrapper_wrapped_set(Ender_Element *e, Ender_Element *wrapped);
-EAPI void eon_wrapper_wrapped_get(Ender_Element *e, Ender_Element **wrapped);
+EAPI void eon_wrapper_wrapped_set(Ender_Element *e, Enesim_Renderer *r);
+EAPI void eon_wrapper_wrapped_get(Ender_Element *e, Enesim_Renderer **wrapped);
 
 /**
  * @}

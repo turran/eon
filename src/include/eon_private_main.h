@@ -115,55 +115,6 @@ static inline void eon_hints_sanitize(Eon_Hints *h)
 		h->preferred.height = h->min.height;
 }
 
-static inline void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, Eon_Horizontal_Alignment halign, Eon_Vertical_Alignment valign)
-{
-	/* check the geometry against the last hints */
-	if (g->width > hints->max.width)
-	{
-		double w = hints->preferred.width;
-		double x = 0;
-
-		if (w < 0) w = hints->max.width;
-		switch (halign)
-		{
-			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
-			x = g->width - w;
-			break;
-
-			case EON_HORIZONTAL_ALIGNMENT_CENTER:
-			x = (g->width / 2) - (w / 2);
-			break;
-
-			default:
-			break;
-		}
-		g->x += x;
-		g->width = w;
-	}
-	if (g->height > hints->max.height)
-	{
-		double h = hints->preferred.height;
-		double y = 0;
-
-		if (h < 0) h = hints->max.height;
-		switch (valign)
-		{
-			case EON_VERTICAL_ALIGNMENT_BOTTOM:
-			y = g->height - h;
-			break;
-
-			case EON_VERTICAL_ALIGNMENT_CENTER:
-			y = (g->height / 2) - (h / 2);
-			break;
-
-			default:
-			break;
-		}
-		g->y += y;
-		g->height = h;
-	}
-}
-
 static inline Eina_Bool eon_geometry_is_inside(Eon_Geometry *g, double x, double y)
 {
 	if (x >= g->x && x < g->x + g->width && y >= g->y && y < g->y + g->height)
@@ -171,5 +122,7 @@ static inline Eina_Bool eon_geometry_is_inside(Eon_Geometry *g, double x, double
 	else
 		return EINA_FALSE;
 }
+
+void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, Eon_Horizontal_Alignment halign, Eon_Vertical_Alignment valign);
 
 #endif

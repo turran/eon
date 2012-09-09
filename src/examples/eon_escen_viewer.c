@@ -39,7 +39,7 @@ typedef struct _Escen_Viewer_Damages
 
 static void help(void)
 {
-	printf("Usage escen_viewer WIDTH HEIGHT ESCEN_FILE\n");
+	printf("Usage escen_viewer [ENGINE] WIDTH HEIGHT ESCEN_FILE\n");
 }
 
 static Eina_Bool _damages_cb(Enesim_Renderer *r, const Eina_Rectangle *area, Eina_Bool past, void *data)
@@ -258,12 +258,12 @@ static void draw_ui(Escen_Viewer *thiz)
 	populate_states(thiz, thiz->states_stack, thiz->current_escen_ender);
 }
 
-Escen_Viewer * escen_viewer_new(int width, int height, const char *file)
+Escen_Viewer * escen_viewer_new(const char *engine, int width, int height, const char *file)
 {
 	Escen_Viewer *thiz;
 	Escen *escen;
 	Ender_Element *e;
-	Eon_Backend *backend;
+	Eon_Backend *backend = NULL;
 	Eon_Window *win;
 
 	/* load the escen file */
@@ -285,7 +285,13 @@ Escen_Viewer * escen_viewer_new(int width, int height, const char *file)
 	eon_stack_orientation_set(e, EON_ORIENTATION_HORIZONTAL);
 	thiz->container = e;
 
-	backend = eon_ecore_sdl_new();
+	if (!strcmp(engine, "remote"))
+		backend = eon_ecore_remote_new();
+	else if (!strcmp(engine, "sdl"))
+		backend = eon_ecore_sdl_new();
+
+	if (!backend)
+		backend = eon_ecore_sdl_new();
 	thiz->backend = backend;
 
 	/* FIXME the win must be created on the _new function, but we are having issues with the propagation */
@@ -314,21 +320,34 @@ int main(int argc, char **argv)
 	int width;
 	int height;
 	char *file;
+	const char *engine;
 
 	if (argc < 4)
 	{
 		help();
 		return 0;
 	}
+	if (argc > 4)
+	{
+		engine = argv[1];
+		width = strtol(argv[2], NULL, 10);
+		height = strtol(argv[3], NULL, 10);
+		file = argv[4];
+		
+	}
+	else
+	{
+		width = strtol(argv[1], NULL, 10);
+		height = strtol(argv[2], NULL, 10);
+		file = argv[3];
+		engine = "sdl";
+	}
 
 	eon_init();
 	escen_init();
 
-	width = strtol(argv[1], NULL, 10);
-	height = strtol(argv[2], NULL, 10);
-	file = argv[3];
 
-	thiz = escen_viewer_new(width, height, file);
+	thiz = escen_viewer_new(engine, width, height, file);
 	if (!thiz) return -1;
 
 	draw_ui(thiz);

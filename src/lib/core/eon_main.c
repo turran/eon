@@ -105,6 +105,57 @@ static void _register_enders(void)
  *============================================================================*/
 int eon_log = -1;
 
+void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, Eon_Horizontal_Alignment halign, Eon_Vertical_Alignment valign)
+{
+	/* check the geometry against the last hints */
+	if (g->width > hints->max.width)
+	{
+		double w = hints->preferred.width;
+		double x = 0;
+
+		printf("aligning width %g %g %g\n", g->width, hints->max.width, w);
+		if (w < 0) w = hints->max.width;
+		switch (halign)
+		{
+			case EON_HORIZONTAL_ALIGNMENT_RIGHT:
+			x = g->width - w;
+			break;
+
+			case EON_HORIZONTAL_ALIGNMENT_CENTER:
+			x = (g->width / 2) - (w / 2);
+			break;
+
+			default:
+			break;
+		}
+		g->x += x;
+		g->width = w;
+	}
+	if (g->height > hints->max.height)
+	{
+		double h = hints->preferred.height;
+		double y = 0;
+
+		printf("aligning height %g %g %g\n", g->height, hints->max.height, h);
+		if (h < 0) h = hints->max.height;
+		switch (valign)
+		{
+			case EON_VERTICAL_ALIGNMENT_BOTTOM:
+			y = g->height - h;
+			break;
+
+			case EON_VERTICAL_ALIGNMENT_CENTER:
+			y = (g->height / 2) - (h / 2);
+			break;
+
+			default:
+			break;
+		}
+		g->y += y;
+		g->height = h;
+	}
+}
+
 Ender_Namespace * eon_namespace_get(void)
 {
 	static Ender_Namespace *namespace = NULL;

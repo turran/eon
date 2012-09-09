@@ -6,7 +6,7 @@
 	int main(int argc, char **argv)						\
 	{									\
 		Ender_Element *container;					\
-		Eon_Backend *backend;						\
+		Eon_Backend *backend = NULL;					\
 		Eon_Window *win;						\
 		eon_init();							\
 										\

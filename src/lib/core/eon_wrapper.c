@@ -21,6 +21,7 @@
 #include "eon_backend.h"
 #include "eon_input.h"
 #include "eon_element.h"
+#include "eon_wrapper.h"
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"

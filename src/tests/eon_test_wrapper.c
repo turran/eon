@@ -1,4 +1,5 @@
 #include "Eon.h"
+#include "eon_test_main.h"
 
 static Enesim_Color _color[2] = { 0xff0000ff, 0xff00ffff};
 static int _color_selected = 0;
@@ -11,25 +12,17 @@ static void _wrapper_clicked(Ender_Element *e, const char *event_name, void *eve
 	ender_element_value_set(rectangle, "fill_color", _color[_color_selected], NULL);
 }
 
-int main(int argc, char **argv)
+Ender_Element * eon_test_wrapper(int argc, char **argv)
 {
 	Eon_Window *win;
-	Ender_Element *layout;
+	Enesim_Renderer *r;
+	Ender_Element *container;
 	Ender_Element *wrapper;
 	Ender_Element *rectangle;
-	Eon_Backend *backend;
-	int i;
 
-	eon_init();
-	ecore_init();
 
-	//layout = eon_canvas_new();
-	layout = eon_stack_new();
-
-	eon_stack_orientation_set(layout, EON_STACK_ORIENTATION_VERTICAL);
-
-	backend = eon_ecore_sdl_new();
-	win = eon_window_new(backend, layout, 320, 240);
+	container = eon_stack_new();
+	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);
 
 	/* create an external ender */
 	rectangle = ender_element_new("rectangle");
@@ -43,14 +36,11 @@ int main(int argc, char **argv)
 	wrapper = eon_wrapper_new();
 	ender_event_listener_add(wrapper, "MouseClick", _wrapper_clicked, rectangle);
 	eon_wrapper_wrapped_set(wrapper, rectangle);
-	eon_layout_child_add(layout, wrapper);
-	//eon_canvas_child_x_set(layout, wrapper, 50);
-	//eon_canvas_child_y_set(layout, wrapper, 50);
+	eon_container_child_add(container, wrapper);
+	//eon_canvas_child_x_set(container, wrapper, 50);
+	//eon_canvas_child_y_set(container, wrapper, 50);
 
-	ecore_main_loop_begin();
-	ecore_shutdown();
-	eon_shutdown();
-
-	return 0;
+	return container;
 }
 
+EXAMPLE(wrapper)

@@ -1,3 +1,4 @@
++ Remove the wrapper element
 + We need to create some common code for widgets that are in fact compound widgets, like the color_button for example.
   Basically we need to create some kind of wrapper of the theme ender element which will just add the same properties
   the theme of the widgets that are used by the new widget has, or at least what it exposes. this way the theme editor

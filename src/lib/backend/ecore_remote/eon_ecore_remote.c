@@ -166,6 +166,7 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 		case ENDER_DOUBLE:
 		data->type = EON_ECORE_REMOTE_DATA_DOUBLE;
 		data->value.ddouble.d = ender_value_double_get(v);
+		printf("setting double %g\n", data->value.ddouble.d);
 		break;
 
 		case ENDER_COLOR:
@@ -573,7 +574,7 @@ EAPI void eon_ecore_remote_init(void)
 	/* list of datas */
 	eet_eina_stream_data_descriptor_class_set(&eddc, sizeof(eddc), "Eon_Ecore_Remote_Data_List", sizeof(Eon_Ecore_Remote_Data_List));
 	edd = eet_data_descriptor_stream_new(&eddc);
-	_ddescriptors[EON_ECORE_REMOTE_DATA_DOUBLE] = edd;
+	_ddescriptors[EON_ECORE_REMOTE_DATA_LIST] = edd;
 	EET_DATA_DESCRIPTOR_ADD_LIST(edd, Eon_Ecore_Remote_Data_List, "list", list, _data);
 
 	EET_DATA_DESCRIPTOR_ADD_MAPPING(_unified, "Eon_Ecore_Remote_Data_Uint32", _ddescriptors[EON_ECORE_REMOTE_DATA_UINT32]);
