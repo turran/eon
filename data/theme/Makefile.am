@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-themedir = @PACKAGE_DATA_DIR@/themes/
+themedir = $(pkgdatadir)/themes/
 theme_DATA = \
 basic.escen
 
