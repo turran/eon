@@ -97,11 +97,11 @@ static Eina_Bool _eon_svg_idler(void *user_data)
 	data.areas = NULL;
 	data.thiz = thiz;
 
-	esvg_element_setup(thiz->svg, NULL);
-	esvg_renderable_damages_get(thiz->svg, _eon_svg_damages_cb, &data);
+	esvg_svg_setup(thiz->svg, NULL);
+	esvg_svg_damages_get(thiz->svg, _eon_svg_damages_cb, &data);
 	if (!data.areas) goto done;
 
-	esvg_renderable_draw_list(thiz->svg, thiz->s, data.areas, 0, 0, NULL);
+	esvg_svg_draw_list(thiz->svg, thiz->s, data.areas, 0, 0, NULL);
 	EINA_LIST_FREE (data.areas, area)
 		free(area);
 
@@ -188,8 +188,8 @@ static void _eon_svg_geometry_set(Eon_Element *e, Eon_Geometry *g)
 
 	if (thiz->iw != iw || thiz->ih != ih)
 	{
-		esvg_renderable_container_width_set(thiz->svg, g->width);
-		esvg_renderable_container_height_set(thiz->svg, g->height);
+		esvg_svg_container_width_set(thiz->svg, g->width);
+		esvg_svg_container_height_set(thiz->svg, g->height);
 
 		/* TODO create the surface using the eon way */
 		if (thiz->relative)
