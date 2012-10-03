@@ -72,7 +72,7 @@ EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
 ## Esvg
 
 build_extension_esvg="no"
-PKG_CHECK_MODULES(ESVG, [esvg >= 0.0.1], [have_esvg="yes"], [have_esvg="no"])
+PKG_CHECK_MODULES(ESVG, [esvg >= 0.0.18], [have_esvg="yes"], [have_esvg="no"])
 if test "x$have_esvg" = "xyes" ; then
 	build_extension_esvg="yes"
 	AC_DEFINE([BUILD_EXTENSION_ESVG], [1], [Build support for Esvg extension])

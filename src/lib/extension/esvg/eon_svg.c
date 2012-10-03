@@ -237,7 +237,7 @@ static void _eon_svg_hints_get(Eon_Element *e, Eon_Hints *hints)
 		}
 		if (thiz->file)
 		{
-			thiz->svg = esvg_parser_load(thiz->file, NULL, NULL);
+			thiz->svg = esvg_parser_load(thiz->file);
 		}
 		thiz->changed = EINA_FALSE;
 	}
