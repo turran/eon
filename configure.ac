@@ -64,7 +64,7 @@ AC_SUBST([pkgconfig_requires_private])
 ### Checks for libraries
 
 AC_SUBST([requirements_eon])
-requirements_eon="ecore >= 1.0.0 escen >= 0.0.1 ender >= 0.0.6 etex >= 0.0.15 emage >= 0.0.15 enesim >= 0.0.15 eina >= 1.0.0"
+requirements_eon="ecore >= 1.0.0 escen >= 0.0.1 ender >= 0.0.6 etex >= 0.0.16 emage >= 0.0.16 enesim >= 0.0.16 eina >= 1.0.0"
 PKG_CHECK_MODULES([EON], [${requirements_eon}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
