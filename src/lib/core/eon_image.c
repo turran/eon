@@ -117,7 +117,7 @@ static void _eon_image_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 
 	if (thiz->state == EON_IMAGE_STATE_FILE_CHANGED)
 	{
-		emage_info_load(thiz->file, &thiz->original_width,
+		emage_file_info_load(thiz->file, &thiz->original_width,
 				&thiz->original_height, NULL);
 		if (thiz->surface)
 		{
