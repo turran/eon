@@ -61,7 +61,7 @@
 	} while(0)
 
 
-#define EON_ELEMENT_NEW(name) ender_element_new_namespace_from(name, eon_namespace_get());
+#define EON_ELEMENT_NEW(name) ender_namespace_element_new(eon_namespace_get(), name);
 Ender_Namespace * eon_namespace_get(void);
 
 /* The debugging facility */

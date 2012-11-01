@@ -1,4 +1,5 @@
 escen {
+	namespace = "eon_theme";
 	basic_label "label" {
 		default {
 			set { color = 0xff888888; };

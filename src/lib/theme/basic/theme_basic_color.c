@@ -115,7 +115,7 @@ EAPI Enesim_Renderer * eon_theme_basic_color_new(void)
 	enesim_renderer_compound_layer_add(r, thiz->content_fill_color);
 	thiz->content_fill = r;
 
-	e = ender_element_new("rectangle");
+	e = ender_element_new_with_namespace("rectangle", "enesim", 0);
 	r = ender_element_object_get(e);
 	enesim_renderer_rectangle_size_set(r, 20.0, 20.0);
 	enesim_renderer_rectangle_corner_radius_set(r, 3);

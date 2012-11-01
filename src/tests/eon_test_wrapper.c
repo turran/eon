@@ -25,7 +25,7 @@ Ender_Element * eon_test_wrapper(int argc, char **argv)
 	eon_stack_orientation_set(container, EON_ORIENTATION_VERTICAL);
 
 	/* create an external ender */
-	rectangle = ender_element_new("rectangle");
+	rectangle = ender_element_new_with_namespace("rectangle", "enesim", 0);
 	ender_element_value_set(rectangle, "fill_color", _color[0], NULL);
 	ender_element_value_set(rectangle, "stroke_color", 0xffff0000, NULL);
 	ender_element_value_set(rectangle, "stroke_weight", 2.0, NULL);
