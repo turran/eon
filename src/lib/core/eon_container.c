@@ -22,6 +22,7 @@
 #include "eon_input.h"
 #include "eon_element.h"
 #include "eon_container.h"
+#include "eon_widget.h"
 
 #include "eon_private_input.h"
 #include "eon_private_element.h"

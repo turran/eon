@@ -18,6 +18,7 @@
 #include "eon_private_main.h"
 
 #include "eon_main.h"
+#include "eon_element.h"
 /**
  * @todo
  * Add our own image loader for escen based files, which should use a common

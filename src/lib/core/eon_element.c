@@ -25,6 +25,8 @@
 #include "eon_private_input.h"
 #include "eon_private_keyboard_proxy.h"
 #include "eon_private_element.h"
+#include "eon_private_backend.h"
+
 /**
  * @todo
  * - All this "changed" is not completely correct, same thing happens with the force_redraw

@@ -28,6 +28,9 @@
 #include "eon_private_element.h"
 #include "eon_private_theme.h"
 #include "eon_private_widget.h"
+
+#include "theme/eon_theme_widget.h"
+#include "theme/eon_theme_label.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

@@ -37,6 +37,11 @@
 #include "eon_private_layout.h"
 #include "eon_private_layout_stack.h"
 #include "eon_private_layout_frame.h"
+
+#include "theme/eon_theme_widget.h"
+#include "theme/eon_theme_container.h"
+#include "theme/eon_theme_bin.h"
+#include "theme/eon_theme_checkbox.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

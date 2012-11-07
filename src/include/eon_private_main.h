@@ -125,4 +125,29 @@ static inline Eina_Bool eon_geometry_is_inside(Eon_Geometry *g, double x, double
 
 void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, Eon_Horizontal_Alignment halign, Eon_Vertical_Alignment valign);
 
+
+/* generated inits */
+void eon_types_init(void);
+void eon_element_init(void);
+void eon_widget_init(void);
+void eon_wrapper_init(void);
+void eon_surface_init(void);
+void eon_container_init(void);
+void eon_image_init(void);
+void eon_label_init(void);
+void eon_scrollbar_init(void);
+void eon_bin_init(void);
+void eon_stack_init(void);
+void eon_list_init(void);
+void eon_grid_init(void);
+void eon_canvas_init(void);
+void eon_button_base_init(void);
+void eon_scrollview_init(void);
+void eon_button_init(void);
+void eon_radio_init(void);
+void eon_checkbox_init(void);
+#if BUILD_EXTENSION_ESVG
+void eon_svg_init(void);
+#endif
+
 #endif
