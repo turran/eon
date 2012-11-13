@@ -129,11 +129,21 @@ base_err:
 	free(thiz);
 	return NULL;
 }
+
+#define _eon_surface_delete NULL
+#include "eon_generated_surface.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_surface_delete NULL
-#include "eon_generated_surface.c"
+void eon_surface_init(void)
+{
+	_eon_surface_init();
+}
+
+void eon_surface_shutdown(void)
+{
+	_eon_surface_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

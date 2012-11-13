@@ -158,11 +158,21 @@ static void _eon_wrapper_wrapped_get(Eon_Element *ee, Ender_Element **wrapped)
 	thiz = _eon_wrapper_get(ee);
 	*wrapped = thiz->wrapped;
 }
+
+#define _eon_wrapper_delete NULL
+#include "eon_generated_wrapper.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_wrapper_delete NULL
-#include "eon_generated_wrapper.c"
+void eon_wrapper_init(void)
+{
+	_eon_wrapper_init();
+}
+
+void eon_wrapper_shutdown(void)
+{
+	_eon_wrapper_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

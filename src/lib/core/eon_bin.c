@@ -187,6 +187,16 @@ static void _eon_bin_free(Eon_Element *ee)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_bin_init(void)
+{
+	_eon_bin_init();
+}
+
+void eon_bin_shutdown(void)
+{
+	_eon_bin_shutdown();
+}
+
 void * eon_bin_data_get(Eon_Element *ee)
 {
 	Eon_Bin *thiz;

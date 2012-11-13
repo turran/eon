@@ -111,9 +111,23 @@ static void _eon_button_base_free(Eon_Element *ee)
 		thiz->free(ee);
 	free(thiz);
 }
+
+
+#define _eon_button_base_delete NULL
+#include "eon_generated_button_base.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_button_base_init(void)
+{
+	_eon_button_base_init();
+}
+
+void eon_button_base_shutdown(void)
+{
+	_eon_button_base_shutdown();
+}
+
 void * eon_button_base_data_get(Eon_Element *ee)
 {
 	Eon_Button_Base *thiz;
@@ -157,9 +171,6 @@ renderer_err:
 	free(thiz);
 	return NULL;
 }
-
-#define _eon_button_base_delete NULL
-#include "eon_generated_button_base.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

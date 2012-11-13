@@ -440,11 +440,21 @@ base_err:
 	free(thiz);
 	return NULL;
 }
+
+#define _eon_grid_delete NULL
+#include "eon_generated_grid.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_grid_delete NULL
-#include "eon_generated_grid.c"
+void eon_grid_init(void)
+{
+	_eon_grid_init();
+}
+
+void eon_grid_shutdown(void)
+{
+	_eon_grid_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

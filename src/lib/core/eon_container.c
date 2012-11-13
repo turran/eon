@@ -219,9 +219,21 @@ static void _eon_container_child_clear(Eon_Element *e)
 	eon_container_internal_child_foreach(e, _child_clear_cb, NULL);
 }
 
+#define _eon_container_delete NULL
+#include "eon_generated_container.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_container_init(void)
+{
+	_eon_container_init();
+}
+
+void eon_container_shutdown(void)
+{
+	_eon_container_shutdown();
+}
+
 Eon_Element * eon_container_new(Eon_Theme_Instance *theme,
 		Eon_Container_Descriptor *descriptor, void *data)
 {
@@ -278,8 +290,6 @@ void eon_container_internal_child_foreach(Eon_Element *e, Eon_Container_Child_Fo
 		thiz->descriptor.child_foreach(e, cb, user_data);
 }
 
-#define _eon_container_delete NULL
-#include "eon_generated_container.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

@@ -348,11 +348,21 @@ static void _eon_svg_file_get(Eon_Element *e, const char **file)
 	thiz = _eon_svg_get(e);
 	*file = thiz->file;
 }
+
+#define _eon_svg_delete NULL
+#include "eon_generated_svg.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_svg_delete NULL
-#include "eon_generated_svg.c"
+void eon_svg_init(void)
+{
+	_eon_svg_init();
+}
+
+void eon_svg_shutdown(void)
+{
+	_eon_svg_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

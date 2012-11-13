@@ -201,11 +201,21 @@ static void _eon_image_file_get(Eon_Element *ee, const char **file)
 	thiz = _eon_image_get(ee);
 	*file = thiz->file;
 }
+
+#define _eon_image_delete NULL
+#include "eon_generated_image.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_image_delete NULL
-#include "eon_generated_image.c"
+void eon_image_init(void)
+{
+	_eon_image_init();
+}
+
+void eon_image_shutdown(void)
+{
+	_eon_image_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

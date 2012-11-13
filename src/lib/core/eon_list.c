@@ -403,11 +403,20 @@ static void _eon_list_orientation_get(Eon_Element *e, Eon_Orientation *orientati
 	if (orientation) *orientation = thiz->orientation;
 }
 
+#define _eon_list_delete NULL
+#include "eon_generated_list.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_list_delete NULL
-#include "eon_generated_list.c"
+void eon_list_init(void)
+{
+	_eon_list_init();
+}
+
+void eon_list_shutdown(void)
+{
+	_eon_list_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

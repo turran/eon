@@ -246,11 +246,21 @@ base_err:
 	free(thiz);
 	return NULL;
 }
+
+#define _eon_button_delete NULL
+#include "eon_generated_button.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_button_delete NULL
-#include "eon_generated_button.c"
+void eon_button_init(void)
+{
+	_eon_button_init();
+}
+
+void eon_button_shutdown(void)
+{
+	_eon_button_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

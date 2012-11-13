@@ -177,11 +177,21 @@ static void _eon_label_ellipsize_get(Eon_Element *ee, Eina_Bool *enabled)
 	thiz = _eon_label_get(ee);
 	*enabled = thiz->ellipsize;
 }
+
+#define _eon_label_delete NULL
+#include "eon_generated_label.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_label_delete NULL
-#include "eon_generated_label.c"
+void eon_label_init(void)
+{
+	_eon_label_init();
+}
+
+void eon_label_shutdown(void)
+{
+	_eon_label_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

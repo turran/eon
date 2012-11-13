@@ -515,11 +515,20 @@ static void _eon_radio_selected_set(Eon_Element *ee, Eina_Bool selected)
 	}
 }
 
+#define _eon_radio_delete NULL
+#include "eon_generated_radio.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_radio_delete NULL
-#include "eon_generated_radio.c"
+void eon_radio_init(void)
+{
+	_eon_radio_init();
+}
+
+void eon_radio_shutdown(void)
+{
+	_eon_radio_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

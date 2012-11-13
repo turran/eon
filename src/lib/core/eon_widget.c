@@ -233,13 +233,22 @@ static void _eon_widget_enabled_get(Eon_Element *ee, Eina_Bool *enabled)
 	*enabled = thiz->enabled;
 }
 
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
 #define _eon_widget_delete NULL
 #define _eon_widget_theme_set NULL
 #define _eon_widget_theme_get NULL
 #include "eon_generated_widget.c"
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+void eon_widget_init(void)
+{
+	_eon_widget_init();
+}
+
+void eon_widget_shutdown(void)
+{
+	_eon_widget_shutdown();
+}
 
 Eon_Element * eon_widget_new(Eon_Theme_Instance *theme,
 		Eon_Widget_Descriptor *descriptor, void *data)

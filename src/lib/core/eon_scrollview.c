@@ -519,11 +519,21 @@ static void _eon_scrollview_y_position_get(Eon_Element *ee, double *y)
 	thiz = _eon_scrollview_get(ee);
 	*y = thiz->current.offset.y;
 }
+
+#define _eon_scrollview_delete NULL
+#include "eon_generated_scrollview.c"
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-#define _eon_scrollview_delete NULL
-#include "eon_generated_scrollview.c"
+void eon_scrollview_init(void)
+{
+	_eon_scrollview_init();
+}
+
+void eon_scrollview_shutdown(void)
+{
+	_eon_scrollview_shutdown();
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

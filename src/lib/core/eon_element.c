@@ -353,6 +353,16 @@ static void _eon_element_real_height_get(Eon_Element *thiz, double *height)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_element_init(void)
+{
+	_eon_element_init();
+}
+
+void eon_element_shutdown(void)
+{
+	_eon_element_shutdown();
+}
+
 void eon_element_initialize(Ender_Element *e)
 {
 	Eon_Element *thiz;
