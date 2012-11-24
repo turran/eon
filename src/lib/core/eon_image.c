@@ -32,6 +32,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_image_log
+
+static int _eon_image_log = -1;
+
 static Ender_Property *EON_IMAGE_FILE;
 
 typedef enum _Eon_Image_State
@@ -209,12 +213,22 @@ static void _eon_image_file_get(Eon_Element *ee, const char **file)
  *============================================================================*/
 void eon_image_init(void)
 {
+	_eon_image_log = eina_log_domain_register("eon_image", EON_LOG_COLOR_DEFAULT);
+	if (_eon_image_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_image_init();
 }
 
 void eon_image_shutdown(void)
 {
+	if (_eon_image_log < 0)
+		return;
 	_eon_image_shutdown();
+	eina_log_domain_unregister(_eon_image_log);
+	_eon_image_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

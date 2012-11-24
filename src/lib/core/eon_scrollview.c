@@ -52,6 +52,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_scrollview_log
+
+static int _eon_scrollview_log = -1;
+
 static Ender_Property *EON_SCROLLVIEW_X_POSITION;
 static Ender_Property *EON_SCROLLVIEW_Y_POSITION;
 
@@ -527,12 +531,22 @@ static void _eon_scrollview_y_position_get(Eon_Element *ee, double *y)
  *============================================================================*/
 void eon_scrollview_init(void)
 {
+	_eon_scrollview_log = eina_log_domain_register("eon_scrollview", EON_LOG_COLOR_DEFAULT);
+	if (_eon_scrollview_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_scrollview_init();
 }
 
 void eon_scrollview_shutdown(void)
 {
+	if (_eon_scrollview_log < 0)
+		return;
 	_eon_scrollview_shutdown();
+	eina_log_domain_unregister(_eon_scrollview_log);
+	_eon_scrollview_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

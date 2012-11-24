@@ -42,6 +42,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_button_log
+
+static int _eon_button_log = -1;
+
 typedef struct _Eon_Button
 {
 	/* properties */
@@ -254,12 +258,22 @@ base_err:
  *============================================================================*/
 void eon_button_init(void)
 {
+	_eon_button_log = eina_log_domain_register("eon_button", EON_LOG_COLOR_DEFAULT);
+	if (_eon_button_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_button_init();
 }
 
 void eon_button_shutdown(void)
 {
+	if (_eon_button_log < 0)
+		return;
 	_eon_button_shutdown();
+	eina_log_domain_unregister(_eon_button_log);
+	_eon_button_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

@@ -22,13 +22,17 @@
 /**
  * @todo
  * Add our own image loader for escen based files, which should use a common
- * implementation found on eon_image_loader.c?
+ * implementation found on eon_image_loader.c ?
  * For some reason the eon_init is being called twice, this might be related
  * to escen loading eon and initializing it twice :-/
  */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_main_log
+
+static int _eon_main_log = -1;
+
 static int _init_count = 0;
 
 void eon_types_init(void);
@@ -92,7 +96,6 @@ static void _register_enders(void)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-int eon_log = -1;
 
 void eon_hints_geometry_align(Eon_Hints *hints, Eon_Geometry *g, Eon_Horizontal_Alignment halign, Eon_Vertical_Alignment valign)
 {
@@ -171,7 +174,7 @@ EAPI int eon_init(void)
 	if (_init_count == 1)
 	{
 		eina_init();
-		eon_log = eina_log_domain_register("eon", NULL);
+		_eon_main_log = eina_log_domain_register("eon", EON_LOG_COLOR_DEFAULT);
 		enesim_init();
 		ender_init(NULL, NULL);
 		_register_enders();
@@ -182,7 +185,7 @@ EAPI int eon_init(void)
 			escen_shutdown();
 			ender_shutdown();
 			enesim_shutdown();
-			eina_log_domain_unregister(eon_log);
+			eina_log_domain_unregister(_eon_main_log);
 			eina_shutdown();
 
 			return --_init_count;
@@ -201,7 +204,8 @@ EAPI void eon_shutdown(void)
 		escen_shutdown();
 		ender_shutdown();
 		enesim_shutdown();
-		eina_log_domain_unregister(eon_log);
+		eina_log_domain_unregister(_eon_main_log);
+		_eon_main_log = -1;
 		eina_shutdown();
 	}
 	_init_count--;

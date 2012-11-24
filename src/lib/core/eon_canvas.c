@@ -36,6 +36,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_canvas_log
+
+static int _eon_canvas_log = -1;
+
 static Ender_Property *EON_CANVAS_CHILD_Y;
 static Ender_Property *EON_CANVAS_CHILD_X;
 
@@ -369,15 +373,24 @@ static void _eon_canvas_child_y_set(Eon_Element *ee, Ender_Element *child, doubl
 #include "eon_generated_canvas.c"
 /*============================================================================*
  *                                 Global                                     *
- *============================================================================*/
-void eon_canvas_init(void)
+ *============================================================================*/void eon_canvas_init(void)
 {
+	_eon_canvas_log = eina_log_domain_register("eon_canvas", EON_LOG_COLOR_DEFAULT);
+	if (_eon_canvas_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_canvas_init();
 }
 
 void eon_canvas_shutdown(void)
 {
+	if (_eon_canvas_log < 0)
+		return;
 	_eon_canvas_shutdown();
+	eina_log_domain_unregister(_eon_canvas_log);
+	_eon_canvas_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

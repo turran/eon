@@ -49,6 +49,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_radio_log
+
+static int _eon_radio_log = -1;
+
 static Ender_Property *EON_RADIO_GROUP_NAME;
 static Ender_Property *EON_RADIO_SELECTED;
 
@@ -522,12 +526,22 @@ static void _eon_radio_selected_set(Eon_Element *ee, Eina_Bool selected)
  *============================================================================*/
 void eon_radio_init(void)
 {
+	_eon_radio_log = eina_log_domain_register("eon_radio", EON_LOG_COLOR_DEFAULT);
+	if (_eon_radio_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_radio_init();
 }
 
 void eon_radio_shutdown(void)
 {
+	if (_eon_radio_log < 0)
+		return;
 	_eon_radio_shutdown();
+	eina_log_domain_unregister(_eon_radio_log);
+	_eon_radio_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

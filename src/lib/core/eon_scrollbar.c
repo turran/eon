@@ -46,6 +46,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_scrollbar_log
+
+static int _eon_scrollbar_log = -1;
+
 static Ender_Property *EON_SCROLLBAR_MAX;
 static Ender_Property *EON_SCROLLBAR_MIN;
 static Ender_Property *EON_SCROLLBAR_VALUE;
@@ -876,12 +880,22 @@ static void _eon_scrollbar_value_get(Eon_Element *ee, double *value)
  *============================================================================*/
 void eon_scrollbar_init(void)
 {
+	_eon_scrollbar_log = eina_log_domain_register("eon_scrollbar", EON_LOG_COLOR_DEFAULT);
+	if (_eon_scrollbar_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_scrollbar_init();
 }
 
 void eon_scrollbar_shutdown(void)
 {
+	if (_eon_scrollbar_log < 0)
+		return;
 	_eon_scrollbar_shutdown();
+	eina_log_domain_unregister(_eon_scrollbar_log);
+	_eon_scrollbar_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

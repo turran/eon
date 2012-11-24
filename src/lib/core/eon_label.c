@@ -34,6 +34,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_label_log
+
+static int _eon_label_log = -1;
+
 static Ender_Property *EON_LABEL_ELLIPSIZE;
 static Ender_Property *EON_LABEL_TEXT;
 
@@ -185,12 +189,22 @@ static void _eon_label_ellipsize_get(Eon_Element *ee, Eina_Bool *enabled)
  *============================================================================*/
 void eon_label_init(void)
 {
+	_eon_label_log = eina_log_domain_register("eon_label", EON_LOG_COLOR_DEFAULT);
+	if (_eon_label_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_label_init();
 }
 
 void eon_label_shutdown(void)
 {
+	if (_eon_label_log < 0)
+		return;
 	_eon_label_shutdown();
+	eina_log_domain_unregister(_eon_label_log);
+	_eon_label_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

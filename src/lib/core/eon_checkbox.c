@@ -45,6 +45,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_checkbox_log
+
+static int _eon_checkbox_log = -1;
+
 static Ender_Property *EON_CHECKBOX_SELECTED;
 
 typedef struct _Eon_Checkbox
@@ -441,12 +445,22 @@ static void _eon_checkbox_selected_set(Eon_Element *ee, Eina_Bool selected)
  *============================================================================*/
 void eon_checkbox_init(void)
 {
+	_eon_checkbox_log = eina_log_domain_register("eon_checkbox", EON_LOG_COLOR_DEFAULT);
+	if (_eon_checkbox_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_checkbox_init();
 }
 
 void eon_checkbox_shutdown(void)
 {
+	if (_eon_checkbox_log < 0)
+		return;
 	_eon_checkbox_shutdown();
+	eina_log_domain_unregister(_eon_checkbox_log);
+	_eon_checkbox_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *

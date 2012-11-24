@@ -14,10 +14,27 @@
 #include <float.h>
 
 /* The debugging facility */
-#define ERR(...) EINA_LOG_DOM_ERR(eon_log, __VA_ARGS__)
-#define WRN(...) EINA_LOG_DOM_WARN(eon_log, __VA_ARGS__)
-#define DBG(...) EINA_LOG_DOM_DBG(eon_log, __VA_ARGS__)
-extern int eon_log;
+#define EON_LOG_COLOR_DEFAULT EINA_COLOR_LIGHTBLUE
+
+#ifdef ERR
+# undef ERR
+#endif
+#define ERR(...) EINA_LOG_DOM_ERR(EON_LOG_DEFAULT, __VA_ARGS__)
+
+#ifdef WARN
+# undef WARN
+#endif
+#define WARN(...) EINA_LOG_DOM_WARN(EON_LOG_DEFAULT, __VA_ARGS__)
+
+#ifdef INFO
+# undef INFO
+#endif
+#define INFO(...) EINA_LOG_DOM_INFO(EON_LOG_DEFAULT, __VA_ARGS__)
+
+#ifdef DBG
+# undef DBG
+#endif
+#define DBG(...) EINA_LOG_DOM_DBG(EON_LOG_DEFAULT, __VA_ARGS__)
 
 #define EON_ELEMENT_NEW(name) ender_namespace_element_new(eon_namespace_get(), name);
 

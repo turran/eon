@@ -39,6 +39,10 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define EON_LOG_DEFAULT _eon_grid_log
+
+static int _eon_grid_log = -1;
+
 static Ender_Property *EON_GRID_NUM_COLUMNS;
 
 typedef struct _Eon_Grid_Child
@@ -448,12 +452,22 @@ base_err:
  *============================================================================*/
 void eon_grid_init(void)
 {
+	_eon_grid_log = eina_log_domain_register("eon_grid", EON_LOG_COLOR_DEFAULT);
+	if (_eon_grid_log < 0)
+	{
+		EINA_LOG_ERR("Can not create log domain.");
+		return;
+	}
 	_eon_grid_init();
 }
 
 void eon_grid_shutdown(void)
 {
+	if (_eon_grid_log < 0)
+		return;
 	_eon_grid_shutdown();
+	eina_log_domain_unregister(_eon_grid_log);
+	_eon_grid_log = -1;
 }
 /*============================================================================*
  *                                   API                                      *
