@@ -4,8 +4,8 @@ namespace "eon" : 0 {
 	struct "geometry" {
 		double "x";
 		double "y";
-		double "w";
-		double "h";
+		double "width";
+		double "height";
 	};
 
 	struct "area" {

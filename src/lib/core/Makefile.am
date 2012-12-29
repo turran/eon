@@ -49,6 +49,7 @@ eon_widget.c
 
 libcore_la_SOURCES = $(classes) $(abstracts) \
 eon_backend.c \
+eon_geometry.c \
 eon_input.c \
 eon_input_proxy.c \
 eon_keyboard_proxy.c \

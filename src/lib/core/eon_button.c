@@ -225,9 +225,13 @@ static Eon_Element * _eon_button_new(void)
 	Eon_Element *e;
 	Eon_Theme_Instance *theme;
 	Ender_Container *ec;
+	Ender_Namespace *ns;
+	Ender_Descriptor *d;
 
 	/* get the needed containers */
-	ec = ender_container_find("area");
+	ns = eon_namespace_get();
+	d = ender_namespace_descriptor_find(ns, "geometry");
+	ec = ender_container_struct_new(d);
 	if (!ec) return NULL;
 
 	theme = eon_theme_instance_new("button", EINA_FALSE);
