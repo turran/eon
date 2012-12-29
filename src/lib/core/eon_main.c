@@ -35,8 +35,6 @@ static int _eon_main_log = -1;
 
 static int _init_count = 0;
 
-void eon_types_init(void);
-
 static void _namespace_constructor_callback(Ender_Element *e, void *data)
 {
 	if (!eon_is_element(e))
@@ -49,7 +47,6 @@ static void _register_enders(void)
 	/* register the dependency */
 	ender_loader_load("enesim");
 	/* core */
-	eon_types_init();
 	eon_element_init();
 	/* element inheritance */
 	eon_widget_init();
@@ -161,7 +158,6 @@ Ender_Namespace * eon_namespace_get(void)
 	return namespace;
 }
 
-#include "eon_generated_types.c"
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -176,7 +172,7 @@ EAPI int eon_init(void)
 		eina_init();
 		_eon_main_log = eina_log_domain_register("eon", EON_LOG_COLOR_DEFAULT);
 		enesim_init();
-		ender_init(NULL, NULL);
+		ender_init();
 		_register_enders();
 		escen_init();
 		/* initialize the theme */

@@ -28,8 +28,7 @@ eon_generated_toggle.c \
 eon_generated_color.c \
 eon_generated_spin.c \
 eon_generated_svg.c \
-eon_generated_tab.c \
-eon_generated_types.c
+eon_generated_tab.c
 
 %.c:	$(top_srcdir)/data/ender/eon_private.ender
 	ender_generator $(top_srcdir)/data/ender/eon_private.ender $(basename $(subst eon_generated_,,$@)) $@

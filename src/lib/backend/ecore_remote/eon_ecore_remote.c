@@ -200,9 +200,7 @@ static Eina_Bool _eon_ecore_remote_data_from_value(Eon_Ecore_Remote_Data *data, 
 		}
 		break;
 
-		case ENDER_MATRIX:
 		case ENDER_OBJECT:
-		case ENDER_SURFACE:
 		case ENDER_POINTER:
 		default:
 		break;
@@ -243,7 +241,7 @@ static void _property_list_cb(Ender_Property *p, void *user_data)
 			return;
 		}
 		/* call the add on each */
-		sub = ender_container_compound_get(container, 0);
+		sub = ender_container_compound_get(container, 0, NULL);
 		list = ender_value_list_get(v);
 		printf("list = %p\n", list);
 		EINA_LIST_FOREACH(list, l, ptr)
