@@ -172,6 +172,7 @@ EAPI int eon_init(void)
 		eina_init();
 		_eon_main_log = eina_log_domain_register("eon", EON_LOG_COLOR_DEFAULT);
 		enesim_init();
+		emage_init();
 		ender_init();
 		_register_enders();
 		escen_init();
@@ -199,6 +200,7 @@ EAPI void eon_shutdown(void)
 	{
 		escen_shutdown();
 		ender_shutdown();
+		emage_shutdown();
 		enesim_shutdown();
 		eina_log_domain_unregister(_eon_main_log);
 		_eon_main_log = -1;
