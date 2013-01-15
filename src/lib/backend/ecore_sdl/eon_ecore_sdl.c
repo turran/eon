@@ -131,7 +131,7 @@ static void _sdl_setup_buffers(Eon_Ecore_SDL_Window *thiz)
 	buffer_data.rgb888.plane0_stride = thiz->native_surface->pitch;
 	buffer_data.rgb888.plane0 = thiz->native_surface->pixels;
 	thiz->buffer = enesim_buffer_new_data_from(ENESIM_BUFFER_FORMAT_BGR888,
-			thiz->width, thiz->height, EINA_FALSE, &buffer_data);
+			thiz->width, thiz->height, EINA_FALSE, &buffer_data, NULL, NULL);
 	thiz->surface = enesim_surface_new(ENESIM_FORMAT_ARGB8888,
 			thiz->width, thiz->height);
 }
