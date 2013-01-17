@@ -67,7 +67,7 @@ static void _basic_label_text_get(Eon_Theme_Widget *t, const char **str)
 	Eon_Basic_Label *thiz;
 
 	thiz = _label_get(t);
-	etex_span_text_get(thiz->text, str);
+	enesim_text_span_text_get(thiz->text, str);
 }
 
 static void _basic_label_text_set(Eon_Theme_Widget *t, const char *str)
@@ -75,7 +75,7 @@ static void _basic_label_text_set(Eon_Theme_Widget *t, const char *str)
 	Eon_Basic_Label *thiz;
 
 	thiz = _label_get(t);
-	etex_span_text_set(thiz->text, str);
+	enesim_text_span_text_set(thiz->text, str);
 }
 
 static void _basic_label_font_size_get(Eon_Theme_Widget *t, int *size)
@@ -83,7 +83,7 @@ static void _basic_label_font_size_get(Eon_Theme_Widget *t, int *size)
 	Eon_Basic_Label *thiz;
 
 	thiz = _label_get(t);
-	etex_base_size_get(thiz->text, size);
+	enesim_text_base_size_get(thiz->text, size);
 }
 
 static void _basic_label_font_size_set(Eon_Theme_Widget *t, int size)
@@ -91,7 +91,7 @@ static void _basic_label_font_size_set(Eon_Theme_Widget *t, int size)
 	Eon_Basic_Label *thiz;
 
 	thiz = _label_get(t);
-	etex_base_size_set(thiz->text, size);
+	enesim_text_base_size_set(thiz->text, size);
 }
 
 static void _basic_label_free(Eon_Theme_Widget *t)
@@ -108,7 +108,7 @@ static void _basic_label_font_get(Eon_Theme_Widget *t, const char **str)
 	Eon_Basic_Label *thiz;
 
 	thiz = _label_get(t);
-	etex_base_font_name_get(thiz->text, str);
+	enesim_text_base_font_name_get(thiz->text, str);
 }
 
 static void _basic_label_font_set(Eon_Theme_Widget *t, const char *str)
@@ -116,7 +116,7 @@ static void _basic_label_font_set(Eon_Theme_Widget *t, const char *str)
 	Eon_Basic_Label *thiz;
 
 	thiz = _label_get(t);
-	etex_base_font_name_set(thiz->text, str);
+	enesim_text_base_font_name_set(thiz->text, str);
 }
 
 static void _basic_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color)
@@ -167,9 +167,9 @@ EAPI Eon_Theme_Widget * eon_theme_basic_label_new(void)
 
 	thiz = calloc(1, sizeof(Eon_Basic_Label));
 
-	r = etex_span_new();
+	r = enesim_text_span_new();
 	if (!r) goto span_err;
-	thiz->text = etex_span_new();
+	thiz->text = enesim_text_span_new();
 	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
 
 	t = eon_theme_label_new(&_descriptor, thiz);

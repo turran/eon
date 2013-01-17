@@ -70,13 +70,13 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 
 	thiz = _eon_theme_label_get(ee);
 	if (!thiz->text)
-		thiz->text = etex_span_new();
+		thiz->text = enesim_text_span_new();
 	eon_theme_label_font_get(ee, &font);
 	eon_theme_label_font_size_get(ee, &size);
 	eon_theme_label_text_get(ee, &text);
-	etex_base_font_name_set(thiz->text, font);
-	etex_base_size_set(thiz->text, size);
-	etex_span_text_set(thiz->text, text);
+	enesim_text_base_font_name_set(thiz->text, font);
+	enesim_text_base_size_set(thiz->text, size);
+	enesim_text_span_text_set(thiz->text, text);
 	enesim_renderer_boundings(thiz->text, &boundings);
 	min_width = boundings.w;
 
@@ -87,7 +87,7 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 	ellipsized_text[0] = text[0];
 	ellipsized_text[1] = ellipsized_text[2] = ellipsized_text[3] = '.';
 	ellipsized_text[4] = '\0';
-	etex_span_text_set(thiz->text, ellipsized_text);
+	enesim_text_span_text_set(thiz->text, ellipsized_text);
 	enesim_renderer_boundings(thiz->text, &boundings);
 	free(ellipsized_text);
 
@@ -278,7 +278,7 @@ EAPI void eon_label_ellipsize_get(Ender_Element *e, Eina_Bool *enable)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_label_text_orientation_set(Ender_Element *e, Etex_Direction orientation)
+EAPI void eon_label_text_orientation_set(Ender_Element *e, Enesim_Text_Direction orientation)
 {
 	Eon_Label *thiz;
 
@@ -290,7 +290,7 @@ EAPI void eon_label_text_orientation_set(Ender_Element *e, Etex_Direction orient
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eon_label_text_orientation_get(Ender_Element *e, Etex_Direction *orientation)
+EAPI void eon_label_text_orientation_get(Ender_Element *e, Enesim_Text_Direction *orientation)
 {
 	Eon_Label *thiz;
 

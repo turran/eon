@@ -54,7 +54,7 @@ static void _frame_margin_get(Enesim_Renderer *r, Eon_Margin *margin)
 
 	thiz = _frame_get(r);
 	eon_theme_frame_description_get(r, &description);
-	etex_span_text_set(thiz->description, description);
+	enesim_text_span_text_set(thiz->description, description);
 	enesim_renderer_boundings(thiz->description, &description_boundings);
 	margin->left = description_area_left_margin;
 	margin->right = 0;
@@ -93,7 +93,7 @@ static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Error **error)
 		return EINA_FALSE;
 	}
 	eon_theme_frame_description_get(r, &description);
-	etex_span_text_set(thiz->description, description);
+	enesim_text_span_text_set(thiz->description, description);
 	enesim_renderer_boundings(thiz->description, &description_boundings);
 	if (thiz->content != content)
 	{
@@ -165,7 +165,7 @@ EAPI Enesim_Renderer * eon_theme_basic_frame_new(void)
 	enesim_renderer_rectangle_corners_set(r, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
 
-	r = etex_span_new();
+	r = enesim_text_span_new();
 	if (!r) goto description_err;
 	thiz->description = r;
 	enesim_renderer_rop_set(r, ENESIM_BLEND);
@@ -233,7 +233,7 @@ EAPI void eon_theme_basic_frame_description_font_set(Enesim_Renderer *r, const c
 	Frame *thiz;
 
 	thiz = _frame_get(r);
-	etex_base_font_name_set(thiz->description, font);
+	enesim_text_base_font_name_set(thiz->description, font);
 }
 
 /**
@@ -245,7 +245,7 @@ EAPI void eon_theme_basic_frame_description_size_set(Enesim_Renderer *r, int siz
 	Frame *thiz;
 
 	thiz = _frame_get(r);
-	etex_base_size_set(thiz->description, size);
+	enesim_text_base_size_set(thiz->description, size);
 
 }
 

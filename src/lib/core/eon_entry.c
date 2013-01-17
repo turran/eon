@@ -34,7 +34,7 @@ typedef struct _Eon_Entry
 	Eina_Bool enabled;
 	/* private */
 	Ender_Element *label;
-	Etex_Buffer *buffer;
+	Enesim_Text_Buffer *buffer;
 	int num_entries;
 } Eon_Entry;
 
@@ -66,7 +66,7 @@ static void _eon_entry_key_down(Ender_Element *e, const char *event_name, void *
 	printf("entry key down! %s\n", ev->key->name);
 	theme_r = eon_widget_theme_renderer_get(ee);
 	/* TODO get the position of the cursor */
-	etex_buffer_string_insert(thiz->buffer, ev->key->name, -1, 0);
+	enesim_text_buffer_string_insert(thiz->buffer, ev->key->name, -1, 0);
 	/* TODO inform the position of the cursor */
 	eon_theme_entry_buffer_needs_setup(theme_r);
 }
@@ -218,7 +218,7 @@ static void _eon_entry_text_set(Eon_Element *ee, char *text)
 	Enesim_Renderer *theme_r;
 
 	thiz = _eon_entry_get(ee);
-	etex_buffer_string_set(thiz->buffer, text, -1);
+	enesim_text_buffer_string_set(thiz->buffer, text, -1);
 	theme_r = eon_widget_theme_renderer_get(ee);
 	eon_theme_entry_buffer_needs_setup(theme_r);
 }

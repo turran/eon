@@ -21,7 +21,7 @@
 #include "eon_theme_private.h"
 /*
  * Instead of using the boundings box of the text renderer use
- * add maxdescent/maxascent properties to etex_base, this way we
+ * add maxdescent/maxascent properties to enesim_text_base, this way we
  * can calculate this without having a string set
  */
 /*============================================================================*
@@ -118,8 +118,8 @@ void eon_theme_entry_min_height_get(Enesim_Renderer *r, double *height)
 	thiz = _eon_theme_entry_get(r);
 	if (!thiz) return;
 
-	etex_base_max_ascent_get(thiz->text, &max);
-	etex_base_max_descent_get(thiz->text, &min);
+	enesim_text_base_max_ascent_get(thiz->text, &max);
+	enesim_text_base_max_descent_get(thiz->text, &min);
 	h = max + min;
 
 	if (thiz->margin_get)
@@ -142,15 +142,15 @@ void eon_theme_entry_preferred_width_get(Enesim_Renderer *r, double *width)
 	 */
 }
 
-Etex_Buffer * eon_theme_entry_buffer_get(Enesim_Renderer *r)
+Enesim_Text_Buffer * eon_theme_entry_buffer_get(Enesim_Renderer *r)
 {
 	Eon_Theme_Entry *thiz;
-	Etex_Buffer *b;
+	Enesim_Text_Buffer *b;
 
 	thiz = _eon_theme_entry_get(r);
 	if (!thiz) return NULL;
 
-	etex_span_buffer_get(thiz->text, &b);
+	enesim_text_span_buffer_get(thiz->text, &b);
 	return b;
 }
 
@@ -178,7 +178,7 @@ EAPI Enesim_Renderer * eon_theme_entry_new(Eon_Theme_Entry_Descriptor *descripto
 	thiz = calloc(1, sizeof(Eon_Theme_Entry));
 	if (!thiz) return NULL;
 
-	r = etex_span_new();
+	r = enesim_text_span_new();
 	if (!r) goto text_err;
 	thiz->text = r;
 
@@ -236,7 +236,7 @@ EAPI void eon_theme_entry_font_get(Enesim_Renderer *r, const char **str)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
-	etex_base_font_name_get(thiz->text, str);
+	enesim_text_base_font_name_get(thiz->text, str);
 }
 
 /**
@@ -248,7 +248,7 @@ EAPI void eon_theme_entry_font_set(Enesim_Renderer *r, const char *str)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
-	etex_base_font_name_set(thiz->text, str);
+	enesim_text_base_font_name_set(thiz->text, str);
 }
 
 /**
@@ -260,7 +260,7 @@ EAPI void eon_theme_entry_size_get(Enesim_Renderer *r, int *size)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
-	etex_base_size_get(thiz->text, size);
+	enesim_text_base_size_get(thiz->text, size);
 }
 
 /**
@@ -272,7 +272,7 @@ EAPI void eon_theme_entry_size_set(Enesim_Renderer *r, int size)
 	Eon_Theme_Entry *thiz;
 
 	thiz = _eon_theme_entry_get(r);
-	etex_base_size_set(thiz->text, size);
+	enesim_text_base_size_set(thiz->text, size);
 }
 
 /**
