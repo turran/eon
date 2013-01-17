@@ -105,7 +105,7 @@ static void _eon_image_geometry_set(Eon_Element *e, Eon_Geometry *g)
 
 		theme = eon_widget_theme_instance_get(e);
 		eon_theme_instance_state_set(theme, "loading", EINA_FALSE);
-		emage_file_load_async(thiz->file, thiz->surface, ENESIM_FORMAT_ARGB8888, NULL, _image_load_async_cb,
+		enesim_image_file_load_async(thiz->file, thiz->surface, ENESIM_FORMAT_ARGB8888, NULL, _image_load_async_cb,
 				e, NULL);
 		thiz->state = EON_IMAGE_STATE_LOADING;
 	}
@@ -121,7 +121,7 @@ static void _eon_image_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
 
 	if (thiz->state == EON_IMAGE_STATE_FILE_CHANGED)
 	{
-		emage_file_info_load(thiz->file, &thiz->original_width,
+		enesim_image_file_info_load(thiz->file, &thiz->original_width,
 				&thiz->original_height, NULL);
 		if (thiz->surface)
 		{

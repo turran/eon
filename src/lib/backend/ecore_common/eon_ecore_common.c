@@ -95,7 +95,7 @@ static Eina_Bool _global_idler_cb(void *data)
 	/* we must call this before the window idlers
 	 * basically we process the emage events here
 	 */
-	emage_dispatch();
+	enesim_image_dispatch();
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
