@@ -60,7 +60,7 @@ static Enesim_Renderer * _entry_renderer_get(Enesim_Renderer *r, Enesim_Renderer
 }
 
 static Eina_Bool _entry_setup(Enesim_Renderer *r, Enesim_Renderer *text,
-		Eon_Horizontal_Alignment alignment, Enesim_Error **error)
+		Eon_Horizontal_Alignment alignment, Enesim_Log **error)
 {
 	Basic_Entry *thiz;
 	Enesim_Rectangle boundings;

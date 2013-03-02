@@ -65,7 +65,7 @@ static Enesim_Renderer * _toggle_renderer_get(Enesim_Renderer *r)
 	return eon_theme_basic_control_button_renderer_get(thiz->cb);
 }
 
-static Eina_Bool _toggle_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _toggle_setup(Enesim_Renderer *r, Enesim_Log **error)
 {
 	Basic_Toggle *thiz;
 	Enesim_Renderer *content;

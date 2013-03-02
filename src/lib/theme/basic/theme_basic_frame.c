@@ -70,7 +70,7 @@ static Enesim_Renderer * _frame_renderer_get(Enesim_Renderer *r)
 	return thiz->compound;
 }
 
-static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _frame_setup(Enesim_Renderer *r, Enesim_Log **error)
 {
 	Frame *thiz;
 	Enesim_Renderer *content;

@@ -70,7 +70,7 @@ static const char * _eon_theme_splitter_name(Enesim_Renderer *r)
 static Eina_Bool _eon_theme_splitter_setup(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
+		Enesim_Log **error)
 {
 	Eon_Theme_Splitter *thiz;
 

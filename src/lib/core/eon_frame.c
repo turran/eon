@@ -45,7 +45,7 @@ static Eina_Bool _eon_frame_content_relayout(Ender_Element *content,
 		double aw,
 		double ah,
 		Enesim_Surface *s,
-		Enesim_Error **err)
+		Enesim_Log **err)
 {
 	Eon_Margin margin;
 	Eon_Element *content_e;
@@ -77,7 +77,7 @@ static void _eon_frame_free(Eon_Element *ee)
 static Eina_Bool _eon_frame_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		const Eon_Container_State *cstate,
-		Enesim_Surface *s, Enesim_Error **err)
+		Enesim_Surface *s, Enesim_Log **err)
 {
 	Eon_Frame *thiz;
 	Eon_Element *ee;

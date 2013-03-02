@@ -120,7 +120,7 @@ static Enesim_Renderer * _basic_progressbar_renderer_get(Enesim_Renderer *r)
 	return thiz->widget.rectangle;
 }
 
-static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _setup(Enesim_Renderer *r, Enesim_Log **error)
 {
 	Progressbar *thiz;
 	Enesim_Matrix matrix;

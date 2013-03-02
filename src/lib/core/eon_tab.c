@@ -68,7 +68,7 @@ static void _eon_tab_initialize(Ender_Element *e)
 
 static Eina_Bool _eon_tab_setup(Ender_Element *e,
 		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
+		Enesim_Surface *s, Enesim_Log **err)
 {
 	Eon_Tab *thiz;
 	Eon_Tab_Child *ech;

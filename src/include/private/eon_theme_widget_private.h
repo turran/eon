@@ -17,6 +17,6 @@ Eina_Bool eon_theme_widget_has_changed(Enesim_Renderer *r);
 void * eon_theme_widget_data_get(Enesim_Renderer *r);
 Eina_Bool eon_theme_widget_informs_setup(Enesim_Renderer *r);
 Enesim_Renderer * eon_theme_widget_renderer_get(Enesim_Renderer *r);
-Eina_Bool eon_theme_widget_setup(Enesim_Renderer *r, Enesim_Error **error);
+Eina_Bool eon_theme_widget_setup(Enesim_Renderer *r, Enesim_Log **error);
 
 #endif

@@ -34,7 +34,7 @@ typedef Eina_Bool (*Eon_Theme_Splitter_Setup)(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Splitter_State *sstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error);
+		Enesim_Log **error);
 
 typedef double (*Eon_Theme_Splitter_Min_Length_Get)(Enesim_Renderer *r);
 typedef double (*Eon_Theme_Splitter_Thickness_Get)(Enesim_Renderer *r);

@@ -63,7 +63,7 @@ static Enesim_Renderer * _spin_renderer_get(Enesim_Renderer *r)
 	return thiz->compound;
 }
 
-static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Eina_Bool _spin_setup(Enesim_Renderer *r, Enesim_Log **error)
 {
 	Basic_Spin *thiz;
 	Enesim_Matrix m;

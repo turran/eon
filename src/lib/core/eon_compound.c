@@ -65,7 +65,7 @@ static void _eon_compound_initialize(Ender_Element *e)
 
 static Eina_Bool _eon_compound_setup(Ender_Element *e,
 		const Eon_Element_State *state,
-		Enesim_Surface *s, Enesim_Error **err)
+		Enesim_Surface *s, Enesim_Log **err)
 {
 	Eon_Compound *thiz;
 	Eon_Element *ee;

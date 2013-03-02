@@ -69,7 +69,7 @@ static Eina_Bool _basic_splitter_setup(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Splitter_State *sstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
+		Enesim_Log **error)
 {
 	Basic_Splitter *thiz;
 	const Eon_Theme_Splitter_State *css = sstates[ENESIM_STATE_CURRENT];

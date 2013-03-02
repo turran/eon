@@ -369,7 +369,7 @@ static void _eon_splitter_initialize(Ender_Element *e)
 static Eina_Bool _eon_splitter_setup(Ender_Element *e,
 		const Eon_Element_State *state,
 		const Eon_Container_State *cstate,
-		Enesim_Surface *s, Enesim_Error **err)
+		Enesim_Surface *s, Enesim_Log **err)
 {
 	Eon_Splitter *thiz;
 	Eon_Element *ee;

@@ -59,7 +59,7 @@ static void _color_content_color_set(Enesim_Renderer *r, Enesim_Color color)
 static Eina_Bool _color_setup(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
+		Enesim_Log **error)
 {
 	Basic_Color *thiz;
 

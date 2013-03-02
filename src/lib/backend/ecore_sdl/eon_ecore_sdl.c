@@ -294,7 +294,7 @@ static Eina_Bool _idler_cb(void *data)
 	Eon_Ecore_SDL_Window *thiz = data;
 	Enesim_Renderer *r;
 	Eon_Element *e;
-	Enesim_Error *error = NULL;
+	Enesim_Log *error = NULL;
 	Eina_List *redraws = NULL;
 	Eina_Bool full = EINA_FALSE;
 	//Eina_List *l;
@@ -352,7 +352,7 @@ all:
 	start = get_time();
 	if (!enesim_renderer_draw_list(r, thiz->surface, redraws, 0, 0, &error))
 	{
-		enesim_error_dump(error);
+		enesim_log_dump(error);
 		goto done;
 	}
 	/* call the flush on the backend of such rectangles */

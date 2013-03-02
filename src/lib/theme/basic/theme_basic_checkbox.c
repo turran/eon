@@ -74,7 +74,7 @@ static Enesim_Renderer * _checkbox_renderer_get(Enesim_Renderer *r)
 static Eina_Bool  _checkbox_setup(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
 		const Eon_Theme_Container_State *cstates[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
+		Enesim_Log **error)
 {
 	Eon_Basic_Checkbox *thiz;
 	Enesim_Renderer *content;

@@ -53,7 +53,7 @@ static Enesim_Renderer * _eon_theme_compound_renderer_get(Enesim_Renderer *r)
 
 static Eina_Bool _eon_theme_compound_setup(Enesim_Renderer *r,
 		const Eon_Theme_Widget_State *states[ENESIM_RENDERER_STATES],
-		Enesim_Error **error)
+		Enesim_Log **error)
 {
 	Eon_Theme_Compound *thiz;
 

@@ -35,7 +35,7 @@ static inline Template * _template_get(Enesim_Renderer *r)
 /*----------------------------------------------------------------------------*
  *                      The Enesim's renderer interface                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _template_setup(Enesim_Renderer *r, Enesim_Error **error)
+static Enesim_Renderer * _template_setup(Enesim_Renderer *r, Enesim_Log **error)
 {
 	Template *thiz;
 
