@@ -29,7 +29,6 @@
  * - Enesim
  * - Ender
  * - Escen
- * - Emage
  * @section optional_dependencies Optional Dependencies
  * @section backends Backends
  * - Ecore_SDL

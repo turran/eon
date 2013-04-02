@@ -2,7 +2,6 @@
 #define _EON_BASIC_H_
 
 #include "Enesim.h"
-#include "Etex.h"
 
 /* checkbox */
 EAPI Enesim_Renderer * eon_basic_checkbox_new(void);
