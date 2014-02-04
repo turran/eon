@@ -5,7 +5,8 @@ includedir=@includedir@
 
 Name: Eon
 Description: Eon
-@pkgconfig_requires_private@: @requirements_eon@
+Requires.private: @eon_requirements_private@
+Requires: @eon_requirements@
 Version: @VERSION@
 Libs: -L${libdir} -leon
 Cflags: -I${includedir} -I${includedir}/eon

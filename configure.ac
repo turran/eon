@@ -63,9 +63,14 @@ AC_SUBST([pkgconfig_requires_private])
 
 ### Checks for libraries
 
+EINA_VERSION="1.0.99"
+ENESIM_VERSION="0.0.20"
+EGUEB_DOM_VERSION="0.0.23"
+
 AC_SUBST([requirements_eon])
-requirements_eon="ecore >= 1.0.0 escen >= 0.0.1 ender >= 0.0.7 enesim >= 0.0.17 eina >= 1.0.0"
-PKG_CHECK_MODULES([EON], [${requirements_eon}])
+eon_requirements="egueb-dom >= ${EGUEB_DOM_VERSION}"
+eon_requirements_private="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION}"
+PKG_CHECK_MODULES([EON], [${eon_requirements} ${eon_requirements_private}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
 
