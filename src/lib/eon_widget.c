@@ -16,54 +16,50 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
-
+#include "eon_main.h"
+#include "eon_widget_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Document
-{
-} Eon_Document;
 /*----------------------------------------------------------------------------*
- *                     The exernal document interface                         *
+ *                             Element interface                              *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
-		void *data, const char *name)
+static void _eon_element_init(Eon_Element *e)
 {
-	return NULL;
+	Eon_Widget *thiz;
+
+	thiz = EON_WIDGET(e);
+	/* instantiate the theme element */
 }
 
-static void _eon_document_init(Egueb_Dom_Node *n, void *data)
+/*----------------------------------------------------------------------------*
+ *                              Object interface                              *
+ *----------------------------------------------------------------------------*/
+ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EON_ELEMENT_DESCRIPTOR, Eon_Widget,
+		Eon_Widget_Class, eon_widget);
+
+static void _eon_widget_class_init(void *k)
+{
+	Eon_Element_Class *klass = EON_ELEMENT_CLASS(k);
+
+	klass->init = _eon_element_init;
+}
+
+static void _eon_widget_instance_init(void *o)
 {
 }
 
-static void _eon_document_deinit(Egueb_Dom_Node *n, void *data)
+static void _eon_widget_instance_deinit(void *o)
 {
-	Eon_Document *thiz = data;
-	free(thiz);
+	Eon_Widget *thiz;
+
+	thiz = EON_WIDGET(o);
+	if (thiz->theme)
+		egueb_dom_node_unref(thiz->theme);
 }
-
-static void _eon_document_process(Egueb_Dom_Node *n, void *data)
-{
-
-}
-
-static Egueb_Dom_Document_External_Descriptor _descriptor = {
-	/* init 		= */ _eon_document_init,
-	/* deinit 		= */ _eon_document_deinit,
-	/* element_create	= */ _eon_document_element_create,
-	/* process 		= */ _eon_document_process,
-	/* needs process 	= */ NULL,
-};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * eon_document_new(void)
-{
-	Eon_Document *thiz;
-
-	thiz = calloc(1, sizeof(Eon_Document));
-	return egueb_dom_document_external_new(&_descriptor, thiz);
-}

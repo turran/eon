@@ -11,7 +11,9 @@ lib_LTLIBRARIES = libeon.la
 
 libeon_la_SOURCES = \
 eon_document.c \
-eon_element.c
+eon_element.c \
+eon_main.c \
+eon_widget.c
 
 libeon_la_LIBADD = \
 @EON_LIBS@

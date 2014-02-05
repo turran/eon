@@ -16,15 +16,33 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EON_PRIVATE_H_
-#define EON_PRIVATE_H_
+#ifndef EON_WIDGET_PRIVATE_H_
+#define EON_WIDGET_PRIVATE_H_
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "eon_element_private.h"
 
-#include "Egueb_Dom.h"
-#include "Ender.h"
+#define EON_WIDGET_DESCRIPTOR eon_widget_descriptor_get()
+Enesim_Object_Descriptor * eon_widget_descriptor_get(void);
+
+#define EON_WIDGET_CLASS_GET(o) EON_WIDGET_CLASS(				\
+		(ENESIM_OBJECT_INSTANCE(o))->klass)
+#define EON_WIDGET_CLASS(k) ENESIM_OBJECT_CLASS_CHECK(k,			\
+		Eon_Widget_Class, EON_WIDGET_DESCRIPTOR)
+#define EON_WIDGET(o) ENESIM_OBJECT_INSTANCE_CHECK(o,				\
+		Eon_Widget, EON_WIDGET_DESCRIPTOR)
+
+typedef struct _Eon_Widget
+{
+	Eon_Element base;
+	/* attributes */
+	/* private */
+	Egueb_Dom_Node *theme;
+} Eon_Widget;
+
+typedef struct _Eon_Widget_Class
+{
+	Eon_Element_Class base;
+} Eon_Widget_Class;
 
 #endif
 

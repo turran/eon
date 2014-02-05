@@ -16,54 +16,20 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
-
+#include "eon_widget_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Document
-{
-} Eon_Document;
 /*----------------------------------------------------------------------------*
- *                     The exernal document interface                         *
+ *                              Widget interface                              *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
-		void *data, const char *name)
-{
-	return NULL;
-}
-
-static void _eon_document_init(Egueb_Dom_Node *n, void *data)
-{
-}
-
-static void _eon_document_deinit(Egueb_Dom_Node *n, void *data)
-{
-	Eon_Document *thiz = data;
-	free(thiz);
-}
-
-static void _eon_document_process(Egueb_Dom_Node *n, void *data)
-{
-
-}
-
-static Egueb_Dom_Document_External_Descriptor _descriptor = {
-	/* init 		= */ _eon_document_init,
-	/* deinit 		= */ _eon_document_deinit,
-	/* element_create	= */ _eon_document_element_create,
-	/* process 		= */ _eon_document_process,
-	/* needs process 	= */ NULL,
-};
+/*----------------------------------------------------------------------------*
+ *                              Object interface                              *
+ *----------------------------------------------------------------------------*/
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * eon_document_new(void)
-{
-	Eon_Document *thiz;
 
-	thiz = calloc(1, sizeof(Eon_Document));
-	return egueb_dom_document_external_new(&_descriptor, thiz);
-}

@@ -16,6 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
+#include "eon_main.h"
 #include "eon_element_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -36,18 +37,56 @@ static void _eon_element_instance_init(void *o)
 
 static void _eon_element_instance_deinit(void *o)
 {
-
 }
 /*----------------------------------------------------------------------------*
  *                      The exernal element interface                         *
  *----------------------------------------------------------------------------*/
-static void * _eon_element_init(Egueb_Dom_Node *n)
+static void _eon_element_init(Egueb_Dom_Node *n, void *data)
 {
-	return NULL;
+	Eon_Element *thiz = data;
+	Eon_Element_Class *klass;
+
+	/* add the attributes */
+	thiz->min_width = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_MIN_WIDTH), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->min_width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	thiz->min_height = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_MIN_HEIGHT), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->min_height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	thiz->max_width = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_MAX_WIDTH), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->max_width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	thiz->max_height = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_MAX_HEIGHT), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->max_height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	thiz->width = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_WIDTH), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	thiz->height = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_HEIGHT), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	klass = EON_ELEMENT_CLASS_GET(data);
+
+	if (klass->init)
+		klass->init(thiz);
 }
 
 static void _eon_element_deinit(Egueb_Dom_Node *n, void *data)
 {
+	Eon_Element *thiz = data;
+
+	egueb_dom_node_unref(thiz->min_width);
+	egueb_dom_node_unref(thiz->min_height);
+	egueb_dom_node_unref(thiz->max_width);
+	egueb_dom_node_unref(thiz->max_height);
+	egueb_dom_node_unref(thiz->width);
+	egueb_dom_node_unref(thiz->height);
 	enesim_object_instance_free(data);
 }
 
@@ -59,19 +98,29 @@ static Egueb_Dom_String * _eon_element_tag_name_get(
 
 	klass = EON_ELEMENT_CLASS_GET(data);
 	if (klass->tag_name_get)
-		return klass->tag_name_get(thiz->n, data);
+		return klass->tag_name_get(thiz);
 }
 
 static Eina_Bool _eon_element_child_appendable(Egueb_Dom_Node *n,
 		void *data, Egueb_Dom_Node *child)
 {
+	Eon_Element *thiz = data;
+	Eon_Element_Class *klass;
+
+	klass = EON_ELEMENT_CLASS_GET(data);
+	if (klass->child_appendable)
+		return klass->child_appendable(thiz, child);
 }
 
 static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 {
+	Eon_Element *thiz = data;
+	Eon_Element_Class *klass;
 
+	klass = EON_ELEMENT_CLASS_GET(data);
+	if (klass->child_appendable)
+		return klass->process(thiz);
 }
-	
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
 	/* init 		= */ _eon_element_init,
@@ -91,8 +140,7 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	void *object;
 
 	thiz = enesim_object_descriptor_instance_new(descriptor, klass);
-	n = egueb_dom_element_external_new(&_descriptor);
-	egueb_dom_element_external_data_set(n, object);
+	n = egueb_dom_element_external_new(&_descriptor, thiz);
 	/* finally initialize */
 	thiz->n = n;
 

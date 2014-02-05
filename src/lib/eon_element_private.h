@@ -32,25 +32,28 @@ Enesim_Object_Descriptor * eon_element_descriptor_get(void);
 typedef struct _Eon_Element
 {
 	Enesim_Object_Instance base;
+	/* attributes */
+	Egueb_Dom_Node *visibility;
+	Egueb_Dom_Node *min_width;
+	Egueb_Dom_Node *min_height;
+	Egueb_Dom_Node *max_width;
+	Egueb_Dom_Node *max_height;
+	Egueb_Dom_Node *width;
+	Egueb_Dom_Node *height;
+	/* private */
 	Egueb_Dom_Node *n;
 } Eon_Element;
 
-typedef void * (*Eon_Element_Init)(Egueb_Dom_Node *node);
-typedef void (*Eon_Element_Deinit)(
-		Egueb_Dom_Node *node, void *data);
+typedef void (*Eon_Element_Init)(Eon_Element *thiz);
 typedef Egueb_Dom_String * (*Eon_Element_Tag_Name_Get)(
-		Egueb_Dom_Node *node, void *data);
-typedef Eina_Bool (*Eon_Element_Process)(Egueb_Dom_Node *node,
-		void *data);
-typedef Eina_Bool (*Eon_Element_Child_Appendable)(Egueb_Dom_Node *node,
-		void *data, Egueb_Dom_Node *child);
-
+		Eon_Element *thiz);
+typedef Eina_Bool (*Eon_Element_Process)(Eon_Element *thiz);
+typedef Eina_Bool (*Eon_Element_Child_Appendable)(Eon_Element *thiz, Egueb_Dom_Node *child);
 
 typedef struct _Eon_Element_Class
 {
 	Enesim_Object_Class base;
 	Eon_Element_Init init;
-	Eon_Element_Deinit deinit;
 	Eon_Element_Tag_Name_Get tag_name_get;
 	Eon_Element_Child_Appendable child_appendable;
 	Eon_Element_Process process;
