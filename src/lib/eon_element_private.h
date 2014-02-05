@@ -32,22 +32,20 @@ Enesim_Object_Descriptor * eon_element_descriptor_get(void);
 typedef struct _Eon_Element
 {
 	Enesim_Object_Instance base;
-	/* attributes */
-	Egueb_Dom_Node *visibility;
-	Egueb_Dom_Node *min_width;
-	Egueb_Dom_Node *min_height;
-	Egueb_Dom_Node *max_width;
-	Egueb_Dom_Node *max_height;
-	Egueb_Dom_Node *width;
-	Egueb_Dom_Node *height;
 	/* private */
 	Egueb_Dom_Node *n;
 } Eon_Element;
 
+/* Initialize the element. In this moment the element already has the private
+ * node
+ */
 typedef void (*Eon_Element_Init)(Eon_Element *thiz);
+/* Get the tag name */
 typedef Egueb_Dom_String * (*Eon_Element_Tag_Name_Get)(
 		Eon_Element *thiz);
+/* Process the node */
 typedef Eina_Bool (*Eon_Element_Process)(Eon_Element *thiz);
+/* Check if a node is appendable */
 typedef Eina_Bool (*Eon_Element_Child_Appendable)(Eon_Element *thiz, Egueb_Dom_Node *child);
 
 typedef struct _Eon_Element_Class

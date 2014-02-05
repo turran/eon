@@ -43,50 +43,10 @@ static void _eon_element_instance_deinit(void *o)
  *----------------------------------------------------------------------------*/
 static void _eon_element_init(Egueb_Dom_Node *n, void *data)
 {
-	Eon_Element *thiz = data;
-	Eon_Element_Class *klass;
-
-	/* add the attributes */
-	thiz->min_width = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MIN_WIDTH), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->min_width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->min_height = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MIN_HEIGHT), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->min_height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->max_width = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MAX_WIDTH), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->max_width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->max_height = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MAX_HEIGHT), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->max_height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->width = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_WIDTH), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->height = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_HEIGHT), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	klass = EON_ELEMENT_CLASS_GET(data);
-
-	if (klass->init)
-		klass->init(thiz);
 }
 
 static void _eon_element_deinit(Egueb_Dom_Node *n, void *data)
 {
-	Eon_Element *thiz = data;
-
-	egueb_dom_node_unref(thiz->min_width);
-	egueb_dom_node_unref(thiz->min_height);
-	egueb_dom_node_unref(thiz->max_width);
-	egueb_dom_node_unref(thiz->max_height);
-	egueb_dom_node_unref(thiz->width);
-	egueb_dom_node_unref(thiz->height);
 	enesim_object_instance_free(data);
 }
 
@@ -135,14 +95,19 @@ static Egueb_Dom_Element_External_Descriptor _descriptor = {
 Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 		Enesim_Object_Class *klass)
 {
-	Egueb_Dom_Node *n;
 	Eon_Element *thiz;
+	Eon_Element_Class *k;
+	Egueb_Dom_Node *n;
 	void *object;
 
 	thiz = enesim_object_descriptor_instance_new(descriptor, klass);
 	n = egueb_dom_element_external_new(&_descriptor, thiz);
-	/* finally initialize */
 	thiz->n = n;
+
+	/* finally initialize */
+	k = EON_ELEMENT_CLASS_GET(thiz);
+	if (k->init)
+		k->init(thiz);
 
 	return n;
 }

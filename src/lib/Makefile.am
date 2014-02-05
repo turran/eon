@@ -13,6 +13,7 @@ libeon_la_SOURCES = \
 eon_document.c \
 eon_element.c \
 eon_main.c \
+eon_renderable.c \
 eon_widget.c
 
 libeon_la_LIBADD = \
