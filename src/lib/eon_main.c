@@ -17,6 +17,7 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_main_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -25,12 +26,14 @@ static int _init_count = 0;
 
 static void _strings_init(void)
 {
-	EON_MIN_WIDTH = egueb_dom_string_new_with_string("min-width");
-	EON_MIN_HEIGHT = egueb_dom_string_new_with_string("min-height");
-	EON_MAX_WIDTH = egueb_dom_string_new_with_string("max-width");
-	EON_MAX_HEIGHT = egueb_dom_string_new_with_string("max-height");
-	EON_WIDTH = egueb_dom_string_new_with_string("width");
-	EON_HEIGHT = egueb_dom_string_new_with_string("height");
+	EON_MIN_WIDTH = egueb_dom_string_new_with_static_string("min-width");
+	EON_MIN_HEIGHT = egueb_dom_string_new_with_static_string("min-height");
+	EON_MAX_WIDTH = egueb_dom_string_new_with_static_string("max-width");
+	EON_MAX_HEIGHT = egueb_dom_string_new_with_static_string("max-height");
+	EON_WIDTH = egueb_dom_string_new_with_static_string("width");
+	EON_HEIGHT = egueb_dom_string_new_with_static_string("height");
+
+	EON_EVENT_GEOMETRY = egueb_dom_string_new_with_static_string("EONGeometry");
 }
 
 static void _strings_shutdown(void)
@@ -41,10 +44,13 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_MAX_HEIGHT);
 	egueb_dom_string_unref(EON_WIDTH);
 	egueb_dom_string_unref(EON_HEIGHT);
+
+	egueb_dom_string_unref(EON_EVENT_GEOMETRY);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Egueb_Dom_String *EON_EVENT_GEOMETRY;
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

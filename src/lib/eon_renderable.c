@@ -17,10 +17,31 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_event_geometry_private.h"
 #include "eon_renderable_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Eina_Bool _eon_renderable_geometry_request(Eon_Renderable *thiz,
+		Eina_Rectangle *geometry)
+{
+	Eon_Element *e;
+	Egueb_Dom_Event *ev;
+	Eina_Bool ret = EINA_TRUE;
+
+	e = EON_ELEMENT(thiz);
+	ev = eon_event_geometry_new();
+	egueb_dom_event_dispatch(e->n, ev, NULL, NULL);
+
+	ret = eon_event_geometry_geometry_get(ev, geometry);
+
+	return ret;
+}
+
+static void _eon_renderable_geometry_cb(Egueb_Dom_Event *ev, void *data)
+{
+	/* check that we are in the capture phase */
+} 
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -28,6 +49,7 @@ static void _eon_renderable_init(Eon_Element *e)
 {
 	Eon_Renderable *thiz;
 	Eon_Renderable_Class *klass;
+	Egueb_Dom_Node *n;
 
  	thiz = EON_RENDERABLE(e);
 	/* add the attributes */
@@ -56,13 +78,41 @@ static void _eon_renderable_init(Eon_Element *e)
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
 
+	n = e->n;
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->min_width), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->min_height), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->max_width), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->max_height), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->width), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->height), NULL);
+
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->init)
 		klass->init(thiz);
 }
 
+/* a process is called whenever we want to set a new geometry */
 static Eina_Bool _eon_renderable_process(Eon_Element *e)
 {
+	Eon_Renderable *thiz;
+	Egueb_Dom_Node *n = e->n;
+
+	thiz = EON_RENDERABLE(e);
+
+	/* process whatever needs to be process before setting the geometry */
+	/* pre_setup() */
+	/* in case the element is enqueued, that is, the element has changed, request
+	 * the geometry upstream
+	 */
+	if (egueb_dom_element_is_enqueued(n))
+	{
+		/* request the geometry */
+		if (!_eon_renderable_geometry_request(thiz, &thiz->geometry))
+			return EINA_FALSE;
+	}
+	/* set the geometry */
+	/* setup() */
+
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
