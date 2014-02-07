@@ -52,6 +52,8 @@ extern "C" {
 #endif
 
 #include "eon_main.h"
+#include "eon_document.h"
+#include "eon_element_eon.h"
 
 #ifdef __cplusplus
 }

@@ -26,5 +26,27 @@
 #include "Egueb_Dom.h"
 #include "Ender.h"
 
+#ifdef ERR
+# undef ERR
+#endif
+#define ERR(...) EINA_LOG_DOM_ERR(eon_main_log, __VA_ARGS__)
+
+#ifdef WARN
+# undef WARN
+#endif
+#define WARN(...) EINA_LOG_DOM_WARN(eon_main_log, __VA_ARGS__)
+
+#ifdef INFO
+# undef INFO
+#endif
+#define INFO(...) EINA_LOG_DOM_INFO(eon_main_log, __VA_ARGS__)
+
+#ifdef DBG
+# undef DBG
+#endif
+#define DBG(...) EINA_LOG_DOM_DBG(eon_main_log, __VA_ARGS__)
+
+extern int eon_main_log;
+
 #endif
 

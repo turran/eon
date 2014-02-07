@@ -15,25 +15,12 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_MAIN_H_
-#define _EON_MAIN_H_
+#ifndef _EON_ELEMENT_EON_H_
+#define _EON_ELEMENT_EON_H_
 
-typedef struct _Eon_Size
-{
-	int width;
-	int height;
-} Eon_Size;
+EAPI Egueb_Dom_Node * eon_element_eon_new(void);
+EAPI void eon_element_eon_size_set(Egueb_Dom_Node *n, Eon_Size *size);
+EAPI void eon_element_eon_size_get(Egueb_Dom_Node *n, Eon_Size *size);
 
-EAPI int eon_init(void);
-EAPI int eon_shutdown(void);
-
-EAPI extern Egueb_Dom_String *EON_MIN_WIDTH;
-EAPI extern Egueb_Dom_String *EON_MIN_HEIGHT;
-EAPI extern Egueb_Dom_String *EON_MAX_WIDTH;
-EAPI extern Egueb_Dom_String *EON_MAX_HEIGHT;
-EAPI extern Egueb_Dom_String *EON_WIDTH;
-EAPI extern Egueb_Dom_String *EON_HEIGHT;
-
-EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
 
 #endif

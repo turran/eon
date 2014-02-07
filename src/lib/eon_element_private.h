@@ -29,6 +29,9 @@ Enesim_Object_Descriptor * eon_element_descriptor_get(void);
 #define EON_ELEMENT(o) ENESIM_OBJECT_INSTANCE_CHECK(o,				\
 		Eon_Element, EON_ELEMENT_DESCRIPTOR)
 
+#define EON_ELEMENT_NEW(prefix) eon_element_new(prefix##_descriptor_get(),	\
+				(Enesim_Object_Class *)&prefix##_klass)
+
 typedef struct _Eon_Element
 {
 	Enesim_Object_Instance base;
@@ -56,5 +59,8 @@ typedef struct _Eon_Element_Class
 	Eon_Element_Child_Appendable child_appendable;
 	Eon_Element_Process process;
 } Eon_Element_Class;
+
+Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
+		Enesim_Object_Class *klass);
 
 #endif

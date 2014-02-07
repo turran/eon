@@ -31,9 +31,9 @@ static Eina_Bool _eon_renderable_geometry_request(Eon_Renderable *thiz,
 
 	e = EON_ELEMENT(thiz);
 	ev = eon_event_geometry_new();
-	egueb_dom_event_dispatch(e->n, ev, NULL, NULL);
+	egueb_dom_node_event_dispatch(e->n, ev, NULL, NULL);
 
-	ret = eon_event_geometry_geometry_get(ev, geometry);
+	ret = eon_event_geometry_get(ev, geometry);
 
 	return ret;
 }
@@ -146,6 +146,19 @@ static void _eon_renderable_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eina_Bool eon_is_renderable(Egueb_Dom_Node *n)
+{
+	void *data;
+
+	if (!n) return EINA_FALSE;
+	if (!egueb_dom_element_is_external(n))
+		return EINA_FALSE;
+	data = egueb_dom_element_external_data_get(n);
+	if (!enesim_object_instance_inherits(ENESIM_OBJECT_INSTANCE(data),
+			EON_RENDERABLE_DESCRIPTOR))
+		return EINA_FALSE;
+	return EINA_TRUE;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

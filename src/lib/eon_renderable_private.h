@@ -31,12 +31,6 @@ Enesim_Object_Descriptor * eon_renderable_descriptor_get(void);
 #define EON_RENDERABLE(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
 		Eon_Renderable, EON_RENDERABLE_DESCRIPTOR)
 
-typedef struct _Eon_Size
-{
-	int width;
-	int height;
-} Eon_Size;
-
 typedef enum _Eon_Size_Hints
 {
 	EON_SIZE_HINT_MIN_MAX,
@@ -83,6 +77,8 @@ typedef struct _Eon_Renderable_Class
 	Eon_Renderable_Geometry_Set geometry_set;
 	Eon_Renderable_Renderer_Get renderer_get;
 } Eon_Renderable_Class;
+
+Eina_Bool eon_is_renderable(Egueb_Dom_Node *n);
 
 #endif
 

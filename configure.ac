@@ -14,7 +14,7 @@ AC_INIT([eon], [v_ver], [enesim-devel@googlegroups.com])
 AC_PREREQ([2.60])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([src/include/config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([1.6 dist-bzip2])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -64,12 +64,13 @@ AC_SUBST([pkgconfig_requires_private])
 ### Checks for libraries
 
 EINA_VERSION="1.0.99"
+ENDER_VERSION="0.0.10"
 ENESIM_VERSION="0.0.20"
 EGUEB_DOM_VERSION="0.0.23"
 
 AC_SUBST([requirements_eon])
 eon_requirements="egueb-dom >= ${EGUEB_DOM_VERSION}"
-eon_requirements_private="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION}"
+eon_requirements_private="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} ender >= ${ENDER_VERSION}"
 PKG_CHECK_MODULES([EON], [${eon_requirements} ${eon_requirements_private}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
@@ -154,6 +155,7 @@ data/Makefile
 data/ender/Makefile
 data/theme/Makefile
 src/Makefile
+src/bin/Makefile
 src/lib/Makefile
 src/lib/core/Makefile
 src/lib/backend/Makefile

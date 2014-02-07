@@ -16,7 +16,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
-
+#include "eon_main.h"
+#include "eon_document.h"
+#include "eon_element_eon.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -29,7 +31,12 @@ typedef struct _Eon_Document
 static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		void *data, const char *name)
 {
-	return NULL;
+	Egueb_Dom_Node *ret = NULL;
+
+	printf("creating element %s\n", name);
+	if (!strcmp(name, "eon"))
+		ret = eon_element_eon_new();
+	return ret;
 }
 
 static void _eon_document_init(Egueb_Dom_Node *n, void *data)
