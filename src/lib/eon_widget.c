@@ -22,27 +22,42 @@
  *                                  Local                                     *
  *============================================================================*/
 /*----------------------------------------------------------------------------*
+ *                           Renderable interface                             *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_widget_renderer_get(Eon_Renderable *r)
+{
+	Eon_Widget *thiz;
+
+	thiz = EON_WIDGET(r);
+	return enesim_renderer_ref(thiz->proxy);
+}
+/*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
-static void _eon_element_init(Eon_Element *e)
+static void _eon_widget_init(Eon_Element *e)
 {
 	Eon_Widget *thiz;
 
 	thiz = EON_WIDGET(e);
 	/* instantiate the theme element */
+	thiz->proxy = enesim_renderer_proxy_new();
 }
 
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EON_ELEMENT_DESCRIPTOR, Eon_Widget,
+ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EON_RENDERABLE_DESCRIPTOR, Eon_Widget,
 		Eon_Widget_Class, eon_widget);
 
 static void _eon_widget_class_init(void *k)
 {
 	Eon_Element_Class *klass = EON_ELEMENT_CLASS(k);
+	Eon_Renderable_Class *r_klass;
 
-	klass->init = _eon_element_init;
+	klass->init = _eon_widget_init;
+
+	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->renderer_get = _eon_widget_renderer_get;
 }
 
 static void _eon_widget_instance_init(void *o)
@@ -56,6 +71,8 @@ static void _eon_widget_instance_deinit(void *o)
 	thiz = EON_WIDGET(o);
 	if (thiz->theme)
 		egueb_dom_node_unref(thiz->theme);
+	if (thiz->proxy)
+		enesim_renderer_unref(thiz->proxy);
 }
 /*============================================================================*
  *                                 Global                                     *

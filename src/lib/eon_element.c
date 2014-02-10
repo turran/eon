@@ -78,6 +78,7 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 	Eon_Element_Class *klass;
 
 	klass = EON_ELEMENT_CLASS_GET(data);
+	printf("processing\n");
 	if (klass->child_appendable)
 		return klass->process(thiz);
 }

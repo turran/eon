@@ -13,6 +13,7 @@ libeon_la_SOURCES = \
 eon_document.c \
 eon_element.c \
 eon_element_eon.c \
+eon_element_button.c \
 eon_event_geometry.c \
 eon_main.c \
 eon_renderable.c \

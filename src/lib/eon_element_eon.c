@@ -18,6 +18,7 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_element_private.h"
+#include "eon_renderable_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -34,6 +35,9 @@ typedef struct _Eon_Element_Eon
 	Eon_Element base;
 	Enesim_Renderer *r;
 	Eon_Size size;
+	/* the theme system */
+	Egueb_Dom_Node *theme;
+	Eina_List *extra_themes;
 } Eon_Element_Eon;
 
 typedef struct _Eon_Element_Eon_Class
@@ -88,12 +92,23 @@ static Eina_Bool _eon_element_eon_child_appendable(Eon_Element *e, Egueb_Dom_Nod
 static Eina_Bool _eon_element_eon_process(Eon_Element *e)
 {
 	Eon_Element_Eon *thiz;
+	Eon_Renderable_Size size;
 	Egueb_Dom_Node *n = e->n;
+	Egueb_Dom_Node *child;
+	int size_hints;
 
 	thiz = EON_ELEMENT_EON(e);
+	child = egueb_dom_element_child_first_get(n);
+	if (!child) return EINA_TRUE;
+
 	/* request the hints on every renderable object */
-	/* set the geometry on every renderable */
-	/* we only accept one child */
+	size_hints = eon_renderable_size_hints_get(child, &size);
+	if (size_hints)
+	{
+		/* set the geometry on every renderable */
+		printf("set the geometry\n");
+	}
+	egueb_dom_node_unref(child);
 
 	return EINA_TRUE;
 }
@@ -127,6 +142,15 @@ static void _eon_element_eon_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#if 0
+void eon_element_eon_theme_add(Egueb_Dom_Node *n, Egueb_Dom_Node *theme)
+{
+	Eon_Element_Eon *thiz;
+
+	thiz = egueb_dom_element_external_data_get(n);
+	thiz->extra_themes = eina_list_append(thiz->extra_themes, theme);
+}
+#endif
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -164,3 +188,42 @@ EAPI Eina_Bool eon_element_eon_draw(Egueb_Dom_Node *n,
 	thiz = egueb_dom_element_external_data_get(n);
 	return enesim_renderer_draw(thiz->r, s, rop, clip, x, y, error);
 }
+
+EAPI void eon_element_eon_theme_tick(Egueb_Dom_Node *n)
+{
+	Eon_Element_Eon *thiz;
+	Egueb_Dom_Node *theme;
+	Eina_List *l;
+
+	thiz = egueb_dom_element_external_data_get(n);
+	ender_document_tick(thiz->theme);
+	EINA_LIST_FOREACH(thiz->extra_themes, l, theme)
+	{
+		ender_document_tick(theme);
+	}
+}
+
+#if 0
+EAPI void eon_element_eon_theme_set(Egueb_Dom_Node *n, Egueb_Dom_String *theme)
+{
+	
+}
+
+EAPI void eon_document_theme_set_from_document(Egueb_Dom_Node *n, Egueb_Dom_Node *theme)
+{
+	/* iterate over every widget, check if the theme set is NULL, if so
+	 * update the instance
+	 */
+}
+
+EAPI void eon_document_theme_set_from_stream(Egueb_Dom_Node *n, Enesim_Stream *s)
+{
+	Egueb_Dom_Node *theme;
+
+	theme = ender_document_new();
+	egueb_dom_parser_parse(stream, theme);
+	enesim_stream_unref(stream);
+
+	eon_document_theme_set_from_document(n, theme);
+}
+#endif

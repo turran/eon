@@ -19,12 +19,14 @@
 #include "eon_main.h"
 #include "eon_document.h"
 #include "eon_element_eon.h"
+#include "eon_element_button.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 typedef struct _Eon_Document
 {
 } Eon_Document;
+
 /*----------------------------------------------------------------------------*
  *                     The exernal document interface                         *
  *----------------------------------------------------------------------------*/
@@ -36,6 +38,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 	printf("creating element %s\n", name);
 	if (!strcmp(name, "eon"))
 		ret = eon_element_eon_new();
+	else if (!strcmp(name, "button"))
+		ret = eon_element_button_new();
 	return ret;
 }
 
@@ -49,17 +53,10 @@ static void _eon_document_deinit(Egueb_Dom_Node *n, void *data)
 	free(thiz);
 }
 
-static void _eon_document_process(Egueb_Dom_Node *n, void *data)
-{
-
-}
-
 static Egueb_Dom_Document_External_Descriptor _descriptor = {
 	/* init 		= */ _eon_document_init,
 	/* deinit 		= */ _eon_document_deinit,
 	/* element_create	= */ _eon_document_element_create,
-	/* process 		= */ _eon_document_process,
-	/* needs process 	= */ NULL,
 };
 /*============================================================================*
  *                                 Global                                     *

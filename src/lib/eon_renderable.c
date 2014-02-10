@@ -159,6 +159,42 @@ Eina_Bool eon_is_renderable(Egueb_Dom_Node *n)
 		return EINA_FALSE;
 	return EINA_TRUE;
 }
+
+int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
+{
+	Eon_Renderable *thiz;
+	int ret = 0;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	/* in case the element is not enqueued just return the chached hints */
+	if (egueb_dom_element_is_enqueued(n))
+	{
+		Eon_Renderable_Class *klass;
+
+		klass = EON_RENDERABLE_CLASS_GET(thiz);
+		if (klass->size_hints_get)
+		{
+	 		ret = klass->size_hints_get(thiz, size);
+		}
+	}
+	else
+	{
+		ret = thiz->size_hints;
+		*size = thiz->size;
+	}
+	return ret;
+}
+
+void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
+{
+	Eon_Renderable *thiz;
+	Eon_Renderable_Class *klass;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	klass = EON_RENDERABLE_CLASS_GET(thiz);
+	if (klass->geometry_set)
+		klass->geometry_set(thiz, geometry);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

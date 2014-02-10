@@ -22,5 +22,4 @@ EAPI Egueb_Dom_Node * eon_element_eon_new(void);
 EAPI void eon_element_eon_size_set(Egueb_Dom_Node *n, Eon_Size *size);
 EAPI void eon_element_eon_size_get(Egueb_Dom_Node *n, Eon_Size *size);
 
-
 #endif

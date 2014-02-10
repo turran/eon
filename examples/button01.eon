@@ -1,10 +1,5 @@
 <eon>
-  <stack direction="1">
-    <button id="button01">
-      <label>My very own label</label>
-    </button>
-    <button id="button01">
-      <label>My second button</label>
-    </button>
-  </stack>
+  <button id="button01">
+    <label>My very own label</label>
+  </button>
 </eon>

@@ -19,7 +19,7 @@
 #ifndef EON_WIDGET_PRIVATE_H_
 #define EON_WIDGET_PRIVATE_H_
 
-#include "eon_element_private.h"
+#include "eon_renderable_private.h"
 
 #define EON_WIDGET_DESCRIPTOR eon_widget_descriptor_get()
 Enesim_Object_Descriptor * eon_widget_descriptor_get(void);
@@ -33,15 +33,16 @@ Enesim_Object_Descriptor * eon_widget_descriptor_get(void);
 
 typedef struct _Eon_Widget
 {
-	Eon_Element base;
+	Eon_Renderable base;
 	/* attributes */
 	/* private */
 	Egueb_Dom_Node *theme;
+	Enesim_Renderer *proxy;
 } Eon_Widget;
 
 typedef struct _Eon_Widget_Class
 {
-	Eon_Element_Class base;
+	Eon_Renderable_Class base;
 } Eon_Widget_Class;
 
 #endif

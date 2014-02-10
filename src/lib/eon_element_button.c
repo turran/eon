@@ -17,7 +17,7 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
-#include "eon_renderable_private.h"
+#include "eon_widget_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -65,7 +65,7 @@ static Eina_Bool _eon_element_button_process(Eon_Element *e)
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_RENDERABLE_DESCRIPTOR, Eon_Element_Button,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Button,
 		Eon_Element_Button_Class, eon_element_button);
 
 static void _eon_element_button_class_init(void *k)
