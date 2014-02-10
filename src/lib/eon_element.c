@@ -76,10 +76,17 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 {
 	Eon_Element *thiz = data;
 	Eon_Element_Class *klass;
+	Egueb_Dom_Node *rel;
 
 	klass = EON_ELEMENT_CLASS_GET(data);
-	printf("processing\n");
-	if (klass->child_appendable)
+
+	/* process the inheritable attributes */
+	rel = egueb_dom_node_parent_get(n);
+	if (rel)
+	{
+		egueb_dom_attr_inheritable_process(thiz->theme, rel);
+	}
+	if (klass->process)
 		return klass->process(thiz);
 }
 
@@ -99,6 +106,8 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	Eon_Element *thiz;
 	Eon_Element_Class *k;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_String *theme;
+	char *default_theme;
 	void *object;
 
 	thiz = enesim_object_descriptor_instance_new(descriptor, klass);
@@ -109,6 +118,17 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	k = EON_ELEMENT_CLASS_GET(thiz);
 	if (k->init)
 		k->init(thiz);
+	/* add the attributes */
+	default_theme = getenv("EON_THEME");
+	if (!default_theme)
+	{
+		default_theme = "basic";
+	}
+	theme = egueb_dom_string_new_with_static_string(default_theme);
+	/* TODO make it inheritable */
+	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
+			theme);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->theme), NULL);
 
 	return n;
 }

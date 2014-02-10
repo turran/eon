@@ -33,6 +33,7 @@ EAPI extern Egueb_Dom_String *EON_MAX_WIDTH;
 EAPI extern Egueb_Dom_String *EON_MAX_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_WIDTH;
 EAPI extern Egueb_Dom_String *EON_HEIGHT;
+EAPI extern Egueb_Dom_String *EON_THEME;
 
 EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON;

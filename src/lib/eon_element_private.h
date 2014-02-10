@@ -35,6 +35,8 @@ Enesim_Object_Descriptor * eon_element_descriptor_get(void);
 typedef struct _Eon_Element
 {
 	Enesim_Object_Instance base;
+	/* attributes */
+	Egueb_Dom_Node *theme;
 	/* private */
 	Egueb_Dom_Node *n;
 } Eon_Element;
