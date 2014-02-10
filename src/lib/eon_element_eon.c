@@ -108,6 +108,7 @@ static Eina_Bool _eon_element_eon_process(Eon_Element *e)
 		/* set the geometry on every renderable */
 		printf("set the geometry\n");
 	}
+	egueb_dom_element_process(child);
 	egueb_dom_node_unref(child);
 
 	return EINA_TRUE;

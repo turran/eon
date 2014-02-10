@@ -85,6 +85,7 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 	if (rel)
 	{
 		egueb_dom_attr_inheritable_process(thiz->theme, rel);
+		egueb_dom_node_unref(rel);
 	}
 	if (klass->process)
 		return klass->process(thiz);

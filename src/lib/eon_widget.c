@@ -31,6 +31,17 @@ static Enesim_Renderer * _eon_widget_renderer_get(Eon_Renderable *r)
 	thiz = EON_WIDGET(r);
 	return enesim_renderer_ref(thiz->proxy);
 }
+
+static Eina_Bool _eon_widget_pre_setup(Eon_Renderable *r)
+{
+
+}
+
+static Eina_Bool _eon_widget_setup(Eon_Renderable *r)
+{
+
+}
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/

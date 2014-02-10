@@ -95,12 +95,15 @@ static void _eon_renderable_init(Eon_Element *e)
 static Eina_Bool _eon_renderable_process(Eon_Element *e)
 {
 	Eon_Renderable *thiz;
+	Eon_Renderable_Class *klass;
 	Egueb_Dom_Node *n = e->n;
 
 	thiz = EON_RENDERABLE(e);
 
 	/* process whatever needs to be process before setting the geometry */
 	/* pre_setup() */
+#if 0
+	/* TODO for later */
 	/* in case the element is enqueued, that is, the element has changed, request
 	 * the geometry upstream
 	 */
@@ -110,6 +113,7 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 		if (!_eon_renderable_geometry_request(thiz, &thiz->geometry))
 			return EINA_FALSE;
 	}
+#endif
 	/* set the geometry */
 	/* setup() */
 

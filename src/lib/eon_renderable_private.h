@@ -74,6 +74,8 @@ typedef int (*Eon_Renderable_Width_For_Height)(Eon_Renderable *thiz, int height)
 typedef int (*Eon_Renderable_Height_For_Width)(Eon_Renderable *thiz, int width);
 typedef void (*Eon_Renderable_Geometry_Set)(Eon_Renderable *thiz, Eina_Rectangle *geom);
 typedef Enesim_Renderer * (*Eon_Renderable_Renderer_Get)(Eon_Renderable *thiz);
+typedef Eina_Bool (*Eon_Renderable_Pre_Setup)(Eon_Renderable *thiz);
+typedef Eina_Bool (*Eon_Renderable_Setup)(Eon_Renderable *thiz);
 
 typedef struct _Eon_Renderable_Class
 {
@@ -84,6 +86,8 @@ typedef struct _Eon_Renderable_Class
 	Eon_Renderable_Height_For_Width height_for_width;
 	Eon_Renderable_Geometry_Set geometry_set;
 	Eon_Renderable_Renderer_Get renderer_get;
+	Eon_Renderable_Pre_Setup pre_setup;
+	Eon_Renderable_Setup setup;
 } Eon_Renderable_Class;
 
 Eina_Bool eon_is_renderable(Egueb_Dom_Node *n);

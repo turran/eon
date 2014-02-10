@@ -73,7 +73,6 @@ static void _eon_element_button_class_init(void *k)
 	Eon_Element_Class *klass = k;
 
 	klass->init = _eon_element_button_init;
-	klass->process = _eon_element_button_process;
 	klass->tag_name_get = _eon_element_button_tag_name_get;
 }
 
