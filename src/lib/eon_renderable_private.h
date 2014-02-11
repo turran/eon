@@ -56,10 +56,6 @@ typedef struct _Eon_Renderable
 	Eon_Element base;
 	/* attributes */
 	Egueb_Dom_Node *visibility;
-	Egueb_Dom_Node *min_width;
-	Egueb_Dom_Node *min_height;
-	Egueb_Dom_Node *max_width;
-	Egueb_Dom_Node *max_height;
 	Egueb_Dom_Node *width;
 	Egueb_Dom_Node *height;
 	/* private */

@@ -53,22 +53,6 @@ static void _eon_renderable_init(Eon_Element *e)
 
  	thiz = EON_RENDERABLE(e);
 	/* add the attributes */
-	thiz->min_width = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MIN_WIDTH), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->min_width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->min_height = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MIN_HEIGHT), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->min_height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->max_width = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MAX_WIDTH), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->max_width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->max_height = egueb_dom_attr_int_new(
-			egueb_dom_string_ref(EON_MAX_HEIGHT), EINA_FALSE,
-			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->max_height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
 	thiz->width = egueb_dom_attr_int_new(
 			egueb_dom_string_ref(EON_WIDTH), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
@@ -79,10 +63,6 @@ static void _eon_renderable_init(Eon_Element *e)
 	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
 
 	n = e->n;
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->min_width), NULL);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->min_height), NULL);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->max_width), NULL);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->max_height), NULL);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->width), NULL);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->height), NULL);
 
@@ -99,9 +79,9 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 	Egueb_Dom_Node *n = e->n;
 
 	thiz = EON_RENDERABLE(e);
+	klass = EON_RENDERABLE_CLASS_GET(e);
 
-	/* process whatever needs to be process before setting the geometry */
-	/* pre_setup() */
+	/* process whatever needs to be processed before setting the geometry */
 #if 0
 	/* TODO for later */
 	/* in case the element is enqueued, that is, the element has changed, request
@@ -122,12 +102,13 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_ABSTRACT_BOILERPLATE(ENESIM_OBJECT_DESCRIPTOR, Eon_Renderable,
+ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EON_ELEMENT_DESCRIPTOR, Eon_Renderable,
 		Eon_Renderable_Class, eon_renderable);
 
 static void _eon_renderable_class_init(void *k)
 {
 	Eon_Element_Class *klass = k;
+
 	klass->init = _eon_renderable_init;
 	klass->process = _eon_renderable_process;
 }
@@ -140,10 +121,6 @@ static void _eon_renderable_instance_deinit(void *o)
 {
 	Eon_Renderable *thiz = o;
 
-	egueb_dom_node_unref(thiz->min_width);
-	egueb_dom_node_unref(thiz->min_height);
-	egueb_dom_node_unref(thiz->max_width);
-	egueb_dom_node_unref(thiz->max_height);
 	egueb_dom_node_unref(thiz->width);
 	egueb_dom_node_unref(thiz->height);
 }
@@ -170,7 +147,9 @@ int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
 	int ret = 0;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	/* in case the element is not enqueued just return the chached hints */
+	/* in case the element is not enqueued just return the chached hints
+	 * otherwise ask the implementation for the hints
+	 */
 	if (egueb_dom_element_is_enqueued(n))
 	{
 		Eon_Renderable_Class *klass;

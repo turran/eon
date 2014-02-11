@@ -21,6 +21,41 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
+{
+	Eon_Element *e;
+	Egueb_Dom_String *theme = NULL;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *parent;
+
+	e = EON_ELEMENT(thiz);
+
+	n = e->n;
+	parent = egueb_dom_node_parent_get(n);
+	if (parent)
+	{
+		Eon_Element *other;
+
+		other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
+		egueb_dom_attr_inheritable_process(e->theme, other->theme);
+		egueb_dom_node_unref(parent);
+	}
+
+	egueb_dom_attr_final_get(e->theme, &theme);
+	/* check if the theme has changed, if so, request a new theme */
+	if (!egueb_dom_string_is_equal(theme, thiz->last_theme))
+	{
+		if (thiz->last_theme)
+		{
+			egueb_dom_string_unref(thiz->last_theme);
+		}
+		/* ask for the theme */
+		/* get the tag name and fetch the instance from it */
+		printf("theme is %s\n", egueb_dom_string_string_get(theme));
+		thiz->last_theme = egueb_dom_string_ref(theme);
+	}
+	egueb_dom_string_unref(theme);
+}
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -34,26 +69,28 @@ static Enesim_Renderer * _eon_widget_renderer_get(Eon_Renderable *r)
 
 static Eina_Bool _eon_widget_pre_setup(Eon_Renderable *r)
 {
-
+	/* in case the theme has changed, request the new one */
+	return EINA_TRUE;
 }
 
-static Eina_Bool _eon_widget_setup(Eon_Renderable *r)
+static int _eon_widget_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
 {
+	Eon_Widget *thiz;
+	Eon_Widget_Class *klass;
 
+	thiz = EON_WIDGET(r);
+	/* when requesting the size hints be sure to load the theme instance */
+	_eon_widget_load_theme(thiz);
+	klass = EON_WIDGET_CLASS_GET(thiz);
+
+	if (klass->size_hints_get)
+		return klass->size_hints_get(thiz, size);
+	return 0;
 }
 
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
-static void _eon_widget_init(Eon_Element *e)
-{
-	Eon_Widget *thiz;
-
-	thiz = EON_WIDGET(e);
-	/* instantiate the theme element */
-	thiz->proxy = enesim_renderer_proxy_new();
-}
-
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
@@ -65,14 +102,18 @@ static void _eon_widget_class_init(void *k)
 	Eon_Element_Class *klass = EON_ELEMENT_CLASS(k);
 	Eon_Renderable_Class *r_klass;
 
-	klass->init = _eon_widget_init;
-
 	r_klass = EON_RENDERABLE_CLASS(k);
 	r_klass->renderer_get = _eon_widget_renderer_get;
+	r_klass->size_hints_get = _eon_widget_size_hints_get;
 }
 
 static void _eon_widget_instance_init(void *o)
 {
+	Eon_Widget *thiz;
+
+	thiz = EON_WIDGET(o);
+	/* instantiate the theme element */
+	thiz->proxy = enesim_renderer_proxy_new();
 }
 
 static void _eon_widget_instance_deinit(void *o)
@@ -80,8 +121,8 @@ static void _eon_widget_instance_deinit(void *o)
 	Eon_Widget *thiz;
 
 	thiz = EON_WIDGET(o);
-	if (thiz->theme)
-		egueb_dom_node_unref(thiz->theme);
+	if (thiz->last_theme)
+		egueb_dom_string_unref(thiz->last_theme);
 	if (thiz->proxy)
 		enesim_renderer_unref(thiz->proxy);
 }

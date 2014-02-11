@@ -37,6 +37,10 @@ static void _eon_element_instance_init(void *o)
 
 static void _eon_element_instance_deinit(void *o)
 {
+	Eon_Element *thiz = o;
+
+	if (thiz->theme)
+		egueb_dom_node_unref(thiz->theme);
 }
 /*----------------------------------------------------------------------------*
  *                      The exernal element interface                         *
@@ -84,7 +88,10 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 	rel = egueb_dom_node_parent_get(n);
 	if (rel)
 	{
-		egueb_dom_attr_inheritable_process(thiz->theme, rel);
+		Eon_Element *other;
+
+		other = EON_ELEMENT(egueb_dom_element_external_data_get(n));
+		egueb_dom_attr_inheritable_process(thiz->theme, other->theme);
 		egueb_dom_node_unref(rel);
 	}
 	if (klass->process)
@@ -117,6 +124,7 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 
 	/* finally initialize */
 	k = EON_ELEMENT_CLASS_GET(thiz);
+
 	if (k->init)
 		k->init(thiz);
 	/* add the attributes */
@@ -128,7 +136,7 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	theme = egueb_dom_string_new_with_static_string(default_theme);
 	/* TODO make it inheritable */
 	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
-			theme);
+			theme, EINA_FALSE, EINA_FALSE, EINA_TRUE);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->theme), NULL);
 
 	return n;

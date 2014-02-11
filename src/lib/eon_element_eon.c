@@ -105,10 +105,14 @@ static Eina_Bool _eon_element_eon_process(Eon_Element *e)
 	size_hints = eon_renderable_size_hints_get(child, &size);
 	if (size_hints)
 	{
+		Eina_Rectangle geom;
+
+		/* check the hints */
 		/* set the geometry on every renderable */
 		printf("set the geometry\n");
+		eon_renderable_geometry_set(child, &geom);
+		egueb_dom_element_process(child);
 	}
-	egueb_dom_element_process(child);
 	egueb_dom_node_unref(child);
 
 	return EINA_TRUE;

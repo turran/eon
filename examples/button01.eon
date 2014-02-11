@@ -1,4 +1,4 @@
-<eon>
+<eon theme="foo">
   <button id="button01">
     <label>My very own label</label>
   </button>

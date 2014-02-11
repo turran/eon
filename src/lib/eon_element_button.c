@@ -37,16 +37,21 @@ typedef struct _Eon_Element_Button_Class
 	Eon_Widget_Class base;
 } Eon_Element_Button_Class;
 /*----------------------------------------------------------------------------*
+ *                             Widget interface                               *
+ *----------------------------------------------------------------------------*/
+static int _eon_element_button_size_hints_get(Eon_Widget *w,
+		Eon_Renderable_Size *size)
+{
+	printf("size hints get\n");
+	/* in case it has a child get the size hints of the content */
+	/* otherwise get it from the theme */
+}
+/*----------------------------------------------------------------------------*
+ *                           Renderable interface                             *
+ *----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
-static void _eon_element_button_init(Eon_Element *e)
-{
-	Eon_Element_Button *thiz;
-	Egueb_Dom_Node *n;
-
-	thiz = EON_ELEMENT_BUTTON(e);
-}
-
 static Egueb_Dom_String * _eon_element_button_tag_name_get(Eon_Element *e)
 {
 	return egueb_dom_string_ref(EON_ELEMENT_BUTTON);
@@ -70,10 +75,17 @@ ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Button,
 
 static void _eon_element_button_class_init(void *k)
 {
-	Eon_Element_Class *klass = k;
+	Eon_Element_Class *klass;
+	Eon_Renderable_Class *r_klass;
+	Eon_Widget_Class *w_klass;
 
-	klass->init = _eon_element_button_init;
+	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_button_tag_name_get;
+
+	r_klass = EON_RENDERABLE_CLASS(k);
+
+	w_klass = EON_WIDGET_CLASS(k);
+	w_klass->size_hints_get = _eon_element_button_size_hints_get;
 }
 
 static void _eon_element_button_instance_init(void *o)
