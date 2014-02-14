@@ -144,4 +144,9 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+EAPI void eon_element_theme_set(Egueb_Dom_Node *n, Egueb_Dom_String *theme)
+{
+	
+}
+
 

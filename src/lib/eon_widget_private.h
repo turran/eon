@@ -36,10 +36,12 @@ typedef struct _Eon_Widget
 	Eon_Renderable base;
 	/* attributes */
 	/* private */
-	Egueb_Dom_String *last_theme;
 	Egueb_Dom_Node *theme_document;
 	Egueb_Dom_Node *theme_instance;
 	Enesim_Renderer *proxy;
+	Egueb_Dom_String *last_theme;
+	Egueb_Dom_String *last_parent_theme;
+	Eina_Bool theme_changed;
 } Eon_Widget;
 
 typedef int (*Eon_Widget_Size_Hints_Get)(Eon_Widget *thiz, Eon_Renderable_Size *size);

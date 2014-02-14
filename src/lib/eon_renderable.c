@@ -19,29 +19,33 @@
 #include "eon_main.h"
 #include "eon_event_geometry_private.h"
 #include "eon_renderable_private.h"
+/* Whenever a mutation and a process event comes from a child (bubbling) check
+ * if the geometry is invalidated, if so, check the class "depends_child_geometry"
+ * flag to see if we should mark the geometry as invalidated too
+ * That requires to modify the dom event interface and add a prev target for bubbling
+ * and a next target for capturing phases
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static Eina_Bool _eon_renderable_geometry_request(Eon_Renderable *thiz,
-		Eina_Rectangle *geometry)
+static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
+		void *data)
 {
-	Eon_Element *e;
-	Egueb_Dom_Event *ev;
-	Eina_Bool ret = EINA_TRUE;
+	Eon_Renderable *thiz = EON_RENDERABLE(data);
+	Egueb_Dom_Node *attr;
 
-	e = EON_ELEMENT(thiz);
-	ev = eon_event_geometry_new();
-	egueb_dom_node_event_dispatch(e->n, ev, NULL, NULL);
+	/* check if we are at the target */
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
 
-	ret = eon_event_geometry_get(ev, geometry);
-
-	return ret;
+	/* check if the attribute is the width or the height */
+	attr = egueb_dom_event_mutation_related_get(ev);
+	if ((thiz->width == attr) || (thiz->height == attr))
+	{
+		ERR("Renderable attr modified");
+		eon_renderable_invalidate_geometry(thiz);
+	}
 }
-
-static void _eon_renderable_geometry_cb(Egueb_Dom_Event *ev, void *data)
-{
-	/* check that we are in the capture phase */
-} 
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -66,6 +70,13 @@ static void _eon_renderable_init(Eon_Element *e)
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->width), NULL);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->height), NULL);
 
+	/* in case the attribute width or height has changed be sure to invalidate
+	 * the geometry
+	 */
+	egueb_dom_node_event_listener_add(n,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_renderable_attr_modified_cb, EINA_FALSE, thiz);
+
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->init)
 		klass->init(thiz);
@@ -81,21 +92,34 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 	thiz = EON_RENDERABLE(e);
 	klass = EON_RENDERABLE_CLASS_GET(e);
 
-	/* process whatever needs to be processed before setting the geometry */
-#if 0
-	/* TODO for later */
-	/* in case the element is enqueued, that is, the element has changed, request
-	 * the geometry upstream
-	 */
-	if (egueb_dom_element_is_enqueued(n))
+	if (klass->pre_process)
 	{
-		/* request the geometry */
-		if (!_eon_renderable_geometry_request(thiz, &thiz->geometry))
+		if (!klass->pre_process(thiz))
+		{
+			ERR("The pre process failed");
 			return EINA_FALSE;
+		}
 	}
-#endif
-	/* set the geometry */
-	/* setup() */
+
+	printf("RENDERABLE process (needs geometry: %d size hints cached: %d)\n",
+			thiz->needs_geometry, thiz->size_hints_cached);
+	if (thiz->needs_geometry)
+	{
+		Egueb_Dom_Event *ev;
+
+		/* request a geometry upstream */
+		ev = eon_event_geometry_new();
+		egueb_dom_node_event_dispatch(n, ev, NULL, NULL);
+		/* check if the parent has set a geometry */
+		if (thiz->needs_geometry)
+		{
+			ERR("Parent does not set a geometry");
+			return EINA_FALSE;
+		}
+	}
+	/* process ourselves */
+	if (klass->process)
+		return klass->process(thiz);
 
 	return EINA_TRUE;
 }
@@ -115,6 +139,10 @@ static void _eon_renderable_class_init(void *k)
 
 static void _eon_renderable_instance_init(void *o)
 {
+	Eon_Renderable *thiz = o;
+
+	thiz->needs_geometry = EINA_TRUE;
+	thiz->size_hints_cached = EINA_FALSE;
 }
 
 static void _eon_renderable_instance_deinit(void *o)
@@ -147,10 +175,8 @@ int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
 	int ret = 0;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	/* in case the element is not enqueued just return the chached hints
-	 * otherwise ask the implementation for the hints
-	 */
-	if (egueb_dom_element_is_enqueued(n))
+	/* Check if the size hints are already cached */
+	if (!thiz->size_hints_cached)
 	{
 		Eon_Renderable_Class *klass;
 
@@ -158,6 +184,10 @@ int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
 		if (klass->size_hints_get)
 		{
 	 		ret = klass->size_hints_get(thiz, size);
+			/* cache it */
+			thiz->size = *size;
+			thiz->size_hints = ret;
+			thiz->size_hints_cached = EINA_TRUE;
 		}
 	}
 	else
@@ -176,7 +206,16 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->geometry_set)
+	{
 		klass->geometry_set(thiz, geometry);
+		thiz->needs_geometry = EINA_FALSE;
+	}
+}
+
+void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
+{
+	thiz->size_hints_cached = EINA_FALSE;
+	thiz->needs_geometry = EINA_TRUE;
 }
 /*============================================================================*
  *                                   API                                      *

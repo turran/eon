@@ -209,11 +209,6 @@ EAPI void eon_element_eon_theme_tick(Egueb_Dom_Node *n)
 }
 
 #if 0
-EAPI void eon_element_eon_theme_set(Egueb_Dom_Node *n, Egueb_Dom_String *theme)
-{
-	
-}
-
 EAPI void eon_document_theme_set_from_document(Egueb_Dom_Node *n, Egueb_Dom_Node *theme)
 {
 	/* iterate over every widget, check if the theme set is NULL, if so
