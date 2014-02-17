@@ -27,4 +27,9 @@ libeon_la_LIBADD = \
 #backend/libbackend.la \
 #extension/libextension.la
 
+if BUILD_STATIC_MODULE_DRAWER_BASIC
+libeon_la_LIBADD += $(top_builddir)/src/modules/basic.la
+endif
+
+
 libeon_la_LDFLAGS = -no-undefined -version-info @version_info@
