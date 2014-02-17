@@ -87,6 +87,7 @@ typedef struct _Eon_Renderable_Class
 	Eon_Renderable_Renderer_Get renderer_get;
 	Eon_Renderable_Pre_Process pre_process;
 	Eon_Renderable_Process process;
+	Eina_Bool child_size_dependant;
 } Eon_Renderable_Class;
 
 Eina_Bool eon_is_renderable(Egueb_Dom_Node *n);

@@ -17,34 +17,70 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_renderable.h"
 #include "eon_event_geometry_private.h"
 #include "eon_renderable_private.h"
-/* Whenever a mutation and a process event comes from a child (bubbling) check
- * if the geometry is invalidated, if so, check the class "depends_child_geometry"
- * flag to see if we should mark the geometry as invalidated too
- * That requires to modify the dom event interface and add a prev target for bubbling
- * and a next target for capturing phases
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static void _eon_renderable_check_child_dependency(Eon_Renderable *thiz,
+		Egueb_Dom_Node *child)
+{
+	/* The idea is that if a direct child is being enqueued we should be
+	 * enqueued first and not our child.
+	 * In case we are not enqueued for processing and the child
+	 * geometry is being invalidated and it is enqueued for processing
+	 * also add ourselves.
+	 */
+	printf("checking for node\n");
+}
+
 static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
 	Eon_Renderable *thiz = EON_RENDERABLE(data);
+	Egueb_Dom_Event_Phase phase;
 	Egueb_Dom_Node *attr;
 
 	/* check if we are at the target */
-	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
-		return;
 
-	/* check if the attribute is the width or the height */
-	attr = egueb_dom_event_mutation_related_get(ev);
-	if ((thiz->width == attr) || (thiz->height == attr))
+	phase = egueb_dom_event_phase_get(ev);
+	if (phase == EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 	{
-		ERR("Renderable attr modified");
-		eon_renderable_invalidate_geometry(thiz);
+		/* check if the attribute is the width or the height */
+		attr = egueb_dom_event_mutation_related_get(ev);
+		if ((thiz->width == attr) || (thiz->height == attr))
+		{
+			ERR("Renderable attr modified");
+			eon_renderable_invalidate_geometry(thiz);
+		}
 	}
+	else if (phase == EGUEB_DOM_EVENT_PHASE_BUBBLING)
+	{
+		Egueb_Dom_Node *child;
+		Eon_Renderable_Class *klass;
+
+		klass = EON_RENDERABLE_CLASS_GET(thiz);
+		if (!klass->child_size_dependant)
+			return;
+
+		child = egueb_dom_event_relative_get(ev);
+		_eon_renderable_check_child_dependency(thiz, child);
+		egueb_dom_node_unref(child);
+	}
+}
+
+static void _eon_renderable_child_node_changed_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Renderable *thiz = EON_RENDERABLE(data);
+	Egueb_Dom_Node *child;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
+		return;
+	child = egueb_dom_event_relative_get(ev);
+	_eon_renderable_check_child_dependency(thiz, child);
+	egueb_dom_node_unref(child);
 }
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
@@ -78,6 +114,25 @@ static void _eon_renderable_init(Eon_Element *e)
 			_eon_renderable_attr_modified_cb, EINA_FALSE, thiz);
 
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
+	printf("1 rklass %p\n", klass);
+	if (klass->child_size_dependant)
+	{
+		/* in case this is dependent on the child size, be sure to
+		 * register some events in order to process this node
+		 * whenever our child requires a process
+		 */
+		printf("child size dependant\n");
+		egueb_dom_node_event_listener_add(n,
+				EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+				_eon_renderable_child_node_changed_cb, EINA_FALSE, thiz);
+		egueb_dom_node_event_listener_add(n,
+				EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+				_eon_renderable_child_node_changed_cb, EINA_FALSE, thiz);
+		egueb_dom_node_event_listener_add(n,
+				EGUEB_DOM_EVENT_PROCESS,
+				_eon_renderable_child_node_changed_cb, EINA_FALSE, thiz);
+	}
+
 	if (klass->init)
 		klass->init(thiz);
 }
@@ -217,6 +272,32 @@ void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 	thiz->size_hints_cached = EINA_FALSE;
 	thiz->needs_geometry = EINA_TRUE;
 }
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+/**
+ * Sets the width of a renderable
+ * @param[in] n The renderable node to set the width
+ * @param[in] w The width to set
+ */
+EAPI void eon_renderable_width_set(Egueb_Dom_Node *n, int w)
+{
+	Eon_Renderable *thiz;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_set(thiz->width, EGUEB_DOM_ATTR_TYPE_BASE, w);
+}
+
+/**
+ * Sets the height of a renderable
+ * @param[in] n The renderable node to set the height
+ * @param[in] h The height to set
+ */
+EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h)
+{
+	Eon_Renderable *thiz;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_BASE, h);
+}
