@@ -1,7 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-#SUBDIRS = basic
-
 AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/lib \
