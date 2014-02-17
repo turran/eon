@@ -23,18 +23,6 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static void _eon_renderable_check_child_dependency(Eon_Renderable *thiz,
-		Egueb_Dom_Node *child)
-{
-	/* The idea is that if a direct child is being enqueued we should be
-	 * enqueued first and not our child.
-	 * In case we are not enqueued for processing and the child
-	 * geometry is being invalidated and it is enqueued for processing
-	 * also add ourselves.
-	 */
-	printf("checking for node\n");
-}
-
 static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
@@ -43,43 +31,56 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 	Egueb_Dom_Node *attr;
 
 	/* check if we are at the target */
-
 	phase = egueb_dom_event_phase_get(ev);
-	if (phase == EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+	if (phase != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* check if the attribute is the width or the height */
+	attr = egueb_dom_event_mutation_related_get(ev);
+	if ((thiz->width == attr) || (thiz->height == attr))
 	{
-		/* check if the attribute is the width or the height */
-		attr = egueb_dom_event_mutation_related_get(ev);
-		if ((thiz->width == attr) || (thiz->height == attr))
-		{
-			ERR("Renderable attr modified");
-			eon_renderable_invalidate_geometry(thiz);
-		}
-	}
-	else if (phase == EGUEB_DOM_EVENT_PHASE_BUBBLING)
-	{
-		Egueb_Dom_Node *child;
-		Eon_Renderable_Class *klass;
-
-		klass = EON_RENDERABLE_CLASS_GET(thiz);
-		if (!klass->child_size_dependant)
-			return;
-
-		child = egueb_dom_event_relative_get(ev);
-		_eon_renderable_check_child_dependency(thiz, child);
-		egueb_dom_node_unref(child);
+		ERR("Renderable attr modified");
+		eon_renderable_invalidate_geometry(thiz);
 	}
 }
 
-static void _eon_renderable_child_node_changed_cb(Egueb_Dom_Event *ev,
+static void _eon_renderable_mutation_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
 	Eon_Renderable *thiz = EON_RENDERABLE(data);
+	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 
 	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
 		return;
 	child = egueb_dom_event_relative_get(ev);
-	_eon_renderable_check_child_dependency(thiz, child);
+	if (egueb_dom_element_is_enqueued(child))
+		egueb_dom_element_dequeue(egueb_dom_node_ref(child));
+
+	egueb_dom_event_mutation_process_prevent(ev);
+	n = egueb_dom_event_target_current_get(ev);
+	egueb_dom_element_enqueue(n);
+	egueb_dom_node_unref(child);
+}
+
+/* The idea is that if a direct child is being enqueued we should be
+ * enqueued first and not our child.
+ */
+static void _eon_renderable_process_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Renderable *thiz = EON_RENDERABLE(data);
+	Egueb_Dom_Node *child;
+	Egueb_Dom_Node *n;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
+		return;
+	child = egueb_dom_event_relative_get(ev);
+	if (egueb_dom_element_is_enqueued(child))
+		egueb_dom_element_dequeue(egueb_dom_node_ref(child));
+
+	n = egueb_dom_event_target_current_get(ev);
+	egueb_dom_element_enqueue(n);
+	egueb_dom_node_unref(n);
 	egueb_dom_node_unref(child);
 }
 /*----------------------------------------------------------------------------*
@@ -114,7 +115,6 @@ static void _eon_renderable_init(Eon_Element *e)
 			_eon_renderable_attr_modified_cb, EINA_FALSE, thiz);
 
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
-	printf("1 rklass %p\n", klass);
 	if (klass->child_size_dependant)
 	{
 		/* in case this is dependent on the child size, be sure to
@@ -123,14 +123,17 @@ static void _eon_renderable_init(Eon_Element *e)
 		 */
 		printf("child size dependant\n");
 		egueb_dom_node_event_listener_add(n,
+				EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
+		egueb_dom_node_event_listener_add(n,
 				EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
-				_eon_renderable_child_node_changed_cb, EINA_FALSE, thiz);
+				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
 		egueb_dom_node_event_listener_add(n,
 				EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
-				_eon_renderable_child_node_changed_cb, EINA_FALSE, thiz);
+				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
 		egueb_dom_node_event_listener_add(n,
 				EGUEB_DOM_EVENT_PROCESS,
-				_eon_renderable_child_node_changed_cb, EINA_FALSE, thiz);
+				_eon_renderable_process_cb, EINA_FALSE, thiz);
 	}
 
 	if (klass->init)
