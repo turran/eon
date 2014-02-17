@@ -69,6 +69,46 @@ static inline void _set_gradient_stops(Eon_Basic_Drawer_Button *thiz)
 	enesim_renderer_gradient_stop_add(r, &stop);
 }
 
+
+/*----------------------------------------------------------------------------*
+ *                              Button interface                              *
+ *----------------------------------------------------------------------------*/
+static void _eon_basic_drawer_button_content_set(Eon_Drawer_Widget *w,
+		void *data, Enesim_Renderer *r)
+{
+
+}
+
+static void _eon_basic_drawer_button_min_size_get(Eon_Drawer_Widget *w,
+		void *data, Eon_Size *min)
+{
+
+}
+
+static Enesim_Renderer * _eon_basic_drawer_button_renderer_get(
+		Eon_Drawer_Widget *w, void *data)
+{
+
+}
+
+static void _eon_basic_drawer_button_geometry_set(Eon_Drawer_Widget *w,
+		void *data, Eina_Rectangle *geom)
+{
+
+}
+
+static void _eon_basic_drawer_button_free(Eon_Drawer_Widget *w, void *data)
+{
+
+}
+
+Eon_Drawer_Button_Descriptor _descriptor = {
+	/* .content_set		= */ _eon_basic_drawer_button_content_set,
+	/* .min_size_get 	= */ _eon_basic_drawer_button_min_size_get,
+	/* .renderer_get 	= */ _eon_basic_drawer_button_renderer_get,
+	/* .geometry_set 	= */ _eon_basic_drawer_button_geometry_set,
+	/* .free 		= */ _eon_basic_drawer_button_free,
+};
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
