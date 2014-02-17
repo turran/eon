@@ -1,5 +1,4 @@
-
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I common/m4
 
 SUBDIRS = data src
 

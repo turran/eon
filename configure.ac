@@ -28,6 +28,8 @@ AC_DEFINE_UNQUOTED([VERSION_MAJOR], [v_maj], [Major version])
 AC_DEFINE_UNQUOTED([VERSION_MINOR], [v_min], [Minor version])
 AC_DEFINE_UNQUOTED([VERSION_MICRO], [v_mic], [Micro version])
 
+## Add parameters for aclocal (keep in sync with Makefile.am)
+AC_SUBST(ACLOCAL_AMFLAGS, "-I m4 -I common/m4")
 
 ### Needed information
 
@@ -145,6 +147,7 @@ AC_SUBST([lt_enable_auto_import])
 
 ### Checks for library functions
 
+ENS_MODULE([Drawer_basic], [static], [yes])
 
 ## Make the debug preprocessor configurable
 
@@ -193,6 +196,9 @@ echo
 echo "Backends:"
 echo "SDL: .....................: $build_backend_sdl"
 echo "Remote: ..................: $build_backend_remote"
+echo
+echo "Drawers:"
+echo "Basic: ...................: ${build_module_drawer_basic}"
 echo
 echo "Installation Path.........: $prefix"
 echo

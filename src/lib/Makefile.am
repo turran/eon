@@ -28,7 +28,7 @@ libeon_la_LIBADD = \
 #extension/libextension.la
 
 if BUILD_STATIC_MODULE_DRAWER_BASIC
-libeon_la_LIBADD += $(top_builddir)/src/modules/basic.la
+libeon_la_LIBADD += $(top_builddir)/src/modules/basic/libbasic.la
 endif
 
 

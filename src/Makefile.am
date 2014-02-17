@@ -1,4 +1,4 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS = lib bin modules
+SUBDIRS = modules lib bin
