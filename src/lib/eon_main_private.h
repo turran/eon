@@ -18,6 +18,4 @@
 #ifndef _EON_MAIN_PRIVATE_H_
 #define _EON_MAIN_PRIVATE_H_
 
-extern Egueb_Dom_String *EON_EVENT_GEOMETRY;
-
 #endif

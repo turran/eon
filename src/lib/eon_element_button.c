@@ -45,6 +45,7 @@ static int _eon_element_button_size_hints_get(Eon_Widget *w,
 	printf("size hints get\n");
 	/* in case it has a child get the size hints of the content */
 	/* otherwise get it from the theme */
+	return 0;
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *

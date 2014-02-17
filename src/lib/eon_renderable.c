@@ -17,8 +17,6 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
-#include "eon_renderable.h"
-#include "eon_event_geometry_private.h"
 #include "eon_renderable_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -163,17 +161,8 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 			thiz->needs_geometry, thiz->size_hints_cached);
 	if (thiz->needs_geometry)
 	{
-		Egueb_Dom_Event *ev;
-
-		/* request a geometry upstream */
-		ev = eon_event_geometry_new();
-		egueb_dom_node_event_dispatch(n, ev, NULL, NULL);
-		/* check if the parent has set a geometry */
-		if (thiz->needs_geometry)
-		{
-			ERR("Parent does not set a geometry");
-			return EINA_FALSE;
-		}
+		ERR("Parent does not set a geometry");
+		return EINA_FALSE;
 	}
 	/* process ourselves */
 	if (klass->process)
@@ -227,35 +216,6 @@ Eina_Bool eon_is_renderable(Egueb_Dom_Node *n)
 	return EINA_TRUE;
 }
 
-int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
-{
-	Eon_Renderable *thiz;
-	int ret = 0;
-
-	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	/* Check if the size hints are already cached */
-	if (!thiz->size_hints_cached)
-	{
-		Eon_Renderable_Class *klass;
-
-		klass = EON_RENDERABLE_CLASS_GET(thiz);
-		if (klass->size_hints_get)
-		{
-	 		ret = klass->size_hints_get(thiz, size);
-			/* cache it */
-			thiz->size = *size;
-			thiz->size_hints = ret;
-			thiz->size_hints_cached = EINA_TRUE;
-		}
-	}
-	else
-	{
-		ret = thiz->size_hints;
-		*size = thiz->size;
-	}
-	return ret;
-}
-
 void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 {
 	Eon_Renderable *thiz;
@@ -292,6 +252,16 @@ EAPI void eon_renderable_width_set(Egueb_Dom_Node *n, int w)
 	egueb_dom_attr_set(thiz->width, EGUEB_DOM_ATTR_TYPE_BASE, w);
 }
 
+EAPI int eon_renderable_width_get(Egueb_Dom_Node *n)
+{
+	Eon_Renderable *thiz;
+	int ret;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_final_get(thiz->width, &ret);
+	return ret;
+}
+
 /**
  * Sets the height of a renderable
  * @param[in] n The renderable node to set the height
@@ -303,4 +273,50 @@ EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h)
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
 	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_BASE, h);
+}
+
+EAPI int eon_renderable_height_get(Egueb_Dom_Node *n)
+{
+	Eon_Renderable *thiz;
+	int ret;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_final_get(thiz->height, &ret);
+	return ret;
+}
+
+
+/**
+ * @brief Get the size hints of a renderable
+ * @param[in] n The renderable node to get the size hints from
+ * @param[out] size The pointer to write the size hints 
+ * @return The size hints mask
+ */
+int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
+{
+	Eon_Renderable *thiz;
+	int ret = 0;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	/* Check if the size hints are already cached */
+	if (!thiz->size_hints_cached)
+	{
+		Eon_Renderable_Class *klass;
+
+		klass = EON_RENDERABLE_CLASS_GET(thiz);
+		if (klass->size_hints_get)
+		{
+	 		ret = klass->size_hints_get(thiz, size);
+			/* cache it */
+			thiz->size = *size;
+			thiz->size_hints = ret;
+			thiz->size_hints_cached = EINA_TRUE;
+		}
+	}
+	else
+	{
+		ret = thiz->size_hints;
+		*size = thiz->size;
+	}
+	return ret;
 }

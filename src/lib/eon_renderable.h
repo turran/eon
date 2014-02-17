@@ -18,8 +18,31 @@
 #ifndef _EON_RENDERABLE_H_
 #define _EON_RENDERABLE_H_
 
+typedef enum _Eon_Renderable_Size_Hints
+{
+	EON_SIZE_HINT_MIN_MAX 		= 1 << 0,
+	EON_SIZE_HINT_PREFERRED 	= 1 << 1,
+	EON_SIZE_HINT_HEIGHT_FOR_WIDTH 	= 1 << 2,
+	EON_SIZE_HINT_WIDTH_FOR_HEIGHT 	= 1 << 3,
+} Eon_Renderable_Size_Hints;
+
+typedef struct _Eon_Renderable_Size
+{
+	/* for the min/max hint */
+	int min_width;
+	int min_height;
+	int max_width;
+	int max_height;
+	/* fot the preferred hint */
+	int pref_width;
+	int pref_height;
+} Eon_Renderable_Size;
+
 EAPI void eon_renderable_width_set(Egueb_Dom_Node *n, int w);
+EAPI int eon_renderable_width_get(Egueb_Dom_Node *n);
 EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h);
+EAPI int eon_renderable_height_get(Egueb_Dom_Node *n);
+int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
 
 #endif
 

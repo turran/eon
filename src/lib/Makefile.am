@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS = 
+SUBDIRS = drawer 
 #theme core backend extension
 
 AM_CPPFLAGS = \

@@ -17,7 +17,9 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_renderable.h"
 #include "eon_renderable_private.h"
+#include "eon_event_geometry_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -33,7 +35,6 @@ typedef struct _Eon_Element_Eon
 {
 	Eon_Renderable base;
 	Enesim_Renderer *r;
-	Eon_Size size;
 	/* the theme system */
 	Egueb_Dom_Node *theme;
 	Eina_List *extra_themes;
@@ -70,11 +71,21 @@ static void _eon_element_eon_geometry_set(Eon_Renderable *r, Eina_Rectangle *geo
 
 static int _eon_element_eon_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
 {
-	Eon_Element_Eon *thiz;
+	Eon_Element *e;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *child;
+	int ret;
 
-	thiz = EON_ELEMENT_EON(r);
+	e = EON_ELEMENT(r);
+	n = e->n;
 	/* get the hints from our child */
 	printf("EON size hints get\n");
+	child = egueb_dom_element_child_first_get(n);
+	if (!child) return 0;
+
+	ret = eon_renderable_size_hints_get(child, size);
+	egueb_dom_node_unref(child);
+	return ret;
 }
 
 static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *r)
@@ -83,14 +94,35 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *r)
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
 	Eina_Rectangle geom;
+	int w;
+	int h;
 
 	thiz = EON_ELEMENT_EON(r);
 	e = EON_ELEMENT(r);
+	n = e->n;
 
 	/* set the size based on the user provided size */
 	printf("EON pre process\n");
-	eina_rectangle_coords_from(&geom, 0, 0, thiz->size.width, thiz->size.height);
-	eon_renderable_geometry_set(e->n, &geom);
+
+	w = eon_renderable_width_get(n);
+	h = eon_renderable_height_get(n);
+	if (w <= 0 || h <= 0)
+	{
+		Egueb_Dom_Event *ev;
+
+		/* request a geometry upstream */
+		ev = eon_event_geometry_new();
+		egueb_dom_node_event_dispatch(n, ev, NULL, NULL);
+		/* check if the parent has set a geometry */
+		if (w <= 0 || h <= 0)
+		{
+			ERR("Application does not set a geometry");
+			return EINA_FALSE;
+		}
+	}
+	eina_rectangle_coords_from(&geom, 0, 0, w, h);
+	eon_renderable_geometry_set(n, &geom);
+	return EINA_TRUE;
 }
 
 /* a process is called whenever we want to set a new geometry */
@@ -142,7 +174,7 @@ static Eina_Bool _eon_element_eon_child_appendable(Eon_Element *e, Egueb_Dom_Nod
 
 	/* check if we already have one child */
 	n = e->n;
-	our_child = egueb_dom_node_child_first_get(n);
+	our_child = egueb_dom_element_child_first_get(n);
 	if (our_child)
 	{
 		WARN("Only one child supported");
@@ -207,23 +239,6 @@ EAPI Egueb_Dom_Node * eon_element_eon_new(void)
 	Egueb_Dom_Node *n;
 	n = EON_ELEMENT_NEW(eon_element_eon);
 	return n;
-}
-
-EAPI void eon_element_eon_size_set(Egueb_Dom_Node *n, Eon_Size *size)
-{
-	Eon_Element_Eon *thiz;
-
-	thiz = egueb_dom_element_external_data_get(n);
-	thiz->size = *size;
-	egueb_dom_element_request_process(n);
-}
-
-EAPI void eon_element_eon_size_get(Egueb_Dom_Node *n, Eon_Size *size)
-{
-	Eon_Element_Eon *thiz;
-
-	thiz = egueb_dom_element_external_data_get(n);
-	*size = thiz->size;
 }
 
 EAPI Eina_Bool eon_element_eon_draw(Egueb_Dom_Node *n,

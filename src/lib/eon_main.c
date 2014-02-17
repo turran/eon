@@ -59,7 +59,6 @@ static void _strings_shutdown(void)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Egueb_Dom_String *EON_EVENT_GEOMETRY;
 int eon_main_log = -1;
 /*============================================================================*
  *                                   API                                      *
@@ -72,9 +71,11 @@ Egueb_Dom_String *EON_MAX_HEIGHT;
 Egueb_Dom_String *EON_WIDTH;
 Egueb_Dom_String *EON_HEIGHT;
 Egueb_Dom_String *EON_THEME;
-
+/* elements */
 Egueb_Dom_String *EON_ELEMENT_EON;
 Egueb_Dom_String *EON_ELEMENT_BUTTON;
+/* events */
+Egueb_Dom_String *EON_EVENT_GEOMETRY;
 
 /**
  *

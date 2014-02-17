@@ -15,9 +15,11 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_ELEMENT_EON_H_
-#define _EON_ELEMENT_EON_H_
 
-EAPI Egueb_Dom_Node * eon_element_eon_new(void);
+#ifndef _EON_DRAWER_H_
+#define _EON_DRAWER_H_
+
+#include "eon_drawer_widget.h"
+#include "eon_drawer_button.h"
 
 #endif

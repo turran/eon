@@ -20,6 +20,7 @@
 #define EON_RENDERABLE_PRIVATE_H_
 
 #include "eon_element_private.h"
+#include "eon_renderable.h"
 
 #define EON_RENDERABLE_DESCRIPTOR eon_renderable_descriptor_get()
 Enesim_Object_Descriptor * eon_renderable_descriptor_get(void);
@@ -30,26 +31,6 @@ Enesim_Object_Descriptor * eon_renderable_descriptor_get(void);
 		Eon_Renderable_Class, EON_RENDERABLE_DESCRIPTOR)
 #define EON_RENDERABLE(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
 		Eon_Renderable, EON_RENDERABLE_DESCRIPTOR)
-
-typedef enum _Eon_Renderable_Size_Hints
-{
-	EON_SIZE_HINT_MIN_MAX 		= 1 << 0,
-	EON_SIZE_HINT_PREFERRED 	= 1 << 1,
-	EON_SIZE_HINT_HEIGHT_FOR_WIDTH 	= 1 << 2,
-	EON_SIZE_HINT_WIDTH_FOR_HEIGHT 	= 1 << 3,
-} Eon_Renderable_Size_Hints;
-
-typedef struct _Eon_Renderable_Size
-{
-	/* for the min/max hint */
-	int min_width;
-	int min_height;
-	int max_width;
-	int max_height;
-	/* fot the preferred hint */
-	int pref_width;
-	int pref_height;
-} Eon_Renderable_Size;
 
 typedef struct _Eon_Renderable
 {
@@ -91,7 +72,6 @@ typedef struct _Eon_Renderable_Class
 } Eon_Renderable_Class;
 
 Eina_Bool eon_is_renderable(Egueb_Dom_Node *n);
-int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
 void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry);
 void eon_renderable_invalidate_geometry(Eon_Renderable *thiz);
 

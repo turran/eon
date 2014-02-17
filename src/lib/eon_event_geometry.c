@@ -16,7 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
-#include "eon_main_private.h"
+#include "eon_main.h"
 #include "eon_event_geometry_private.h"
 /*============================================================================*
  *                                  Local                                     *

@@ -157,6 +157,7 @@ data/theme/Makefile
 src/Makefile
 src/bin/Makefile
 src/lib/Makefile
+src/lib/drawer/Makefile
 src/lib/core/Makefile
 src/lib/backend/Makefile
 src/lib/backend/ecore_common/Makefile

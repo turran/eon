@@ -1,4 +1,7 @@
 #include <Eon.h>
+
+static Eon_Size size = { 0, 0 };
+static Eina_Bool size_set = EINA_FALSE;
 /*----------------------------------------------------------------------------*
  *                                 Helpers                                    *
  *----------------------------------------------------------------------------*/
@@ -8,9 +11,19 @@ static void help(void)
 	printf("Where width and height defines the size of the destination image\n");
 }
 
+static void request_geometry_cb(Egueb_Dom_Event *ev, void *data)
+{
+	Egueb_Dom_Node *eon = data;
+	Eon_Renderable_Size renderable_size;
+	int size_hints;
+
+	printf("requesting geometry\n");
+	size_hints = eon_renderable_size_hints_get(eon, &renderable_size);
+	printf("size hints %08x\n", size_hints);
+}
+
 int main(int argc, char *argv[])
 {
-	Eon_Size size = { 640, 480 };
 	Egueb_Dom_Node *doc = NULL;
 	Egueb_Dom_Node *eon = NULL;
 	Enesim_Surface *s;
@@ -33,6 +46,7 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		size.height = atoi(argv[4]);
+		size_set = EINA_TRUE;
 	}
 
 	if (!eon_init())
@@ -57,10 +71,27 @@ int main(int argc, char *argv[])
 		goto shutdown_eon;
 	}
 
-	/* set the final image size as the container size */
-	eon_element_eon_size_set(eon, &size);
+	/* set the final image size in case the user has set it, otherwise
+	 * wait for the request geometry event
+	 */
+	if (size_set)
+	{
+		eon_renderable_width_set(eon, size.width);
+		eon_renderable_height_set(eon, size.height);
+	}
+	else
+	{
+		egueb_dom_node_event_listener_add(eon, EON_EVENT_GEOMETRY,
+				request_geometry_cb, EINA_FALSE, eon);
+	}
 	/* now process the document */
 	egueb_dom_document_process(doc);
+
+	if (!size_set)
+	{
+		printf("Size is not set, nothing to do\n");
+		goto shutdown_eon;
+	}
 	/* finally draw */
 	s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, size.width, size.height);
 	eon_element_eon_draw(eon, s, ENESIM_ROP_FILL, NULL, 0, 0, &err);
