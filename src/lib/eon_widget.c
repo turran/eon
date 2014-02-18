@@ -18,11 +18,11 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_widget_private.h"
+#include "eon_element_eon_private.h"
 
+#include "eon_drawer_widget_private.h"
 /* TODO
- * - When processing a widget we need to also process the theme instance
- *   associated with it
- *
+ * - Add a callback on the request_process function of the theme
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -33,11 +33,26 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 	Egueb_Dom_String *theme = NULL;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *parent;
+	Egueb_Dom_Node *doc;
+	Egueb_Dom_Node *topmost;
+	Eina_Bool ret = EINA_TRUE;
 
 	if (!thiz->theme_changed)
-		return;
+		return EINA_TRUE;
 
 	e = EON_ELEMENT(thiz);
+	if (thiz->theme_instance)
+	{
+		egueb_dom_node_unref(thiz->theme_instance);
+		thiz->theme_instance = NULL;
+	}
+
+	if (thiz->theme_document)
+	{
+		egueb_dom_node_unref(thiz->theme_document);
+		thiz->theme_document = NULL;
+	}
+	thiz->theme_widget = NULL;
 
 	n = e->n;
 	parent = egueb_dom_node_parent_get(n);
@@ -47,6 +62,11 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 
 		other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
 		egueb_dom_attr_inheritable_process(e->theme, other->theme);
+		if (thiz->last_parent_theme)
+			egueb_dom_string_unref(thiz->last_parent_theme);
+		egueb_dom_attr_final_get(other->theme, &theme);
+		thiz->last_parent_theme = egueb_dom_string_dup(theme);
+		// FIX this egueb_dom_string_unref(theme);
 		egueb_dom_node_unref(parent);
 	}
 
@@ -57,16 +77,72 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 	if (!egueb_dom_string_is_equal(theme, thiz->last_theme))
 	{
 		if (thiz->last_theme)
-		{
 			egueb_dom_string_unref(thiz->last_theme);
-		}
 		/* ask for the theme */
 		/* get the tag name and fetch the instance from it */
 		printf("theme is %s\n", egueb_dom_string_string_get(theme));
-		thiz->last_theme = egueb_dom_string_ref(theme);
+		thiz->last_theme = egueb_dom_string_dup(theme);
 	}
+	// FIX this egueb_dom_string_unref(theme);
+
+	/* load the theme */
+	doc = egueb_dom_node_document_get(n);
+	if (!doc)
+	{
+		ret = EINA_FALSE;
+		goto no_document;
+	}
+
+	topmost = egueb_dom_document_element_get(doc);
+	if (!topmost)
+	{
+		ret = EINA_FALSE;
+		goto no_topmost;
+	}
+
+	printf("loading theme\n");
+	thiz->theme_document = eon_element_eon_theme_load(topmost, theme);
+	if (thiz->theme_document)
+	{
+		Egueb_Dom_String *tag_name;
+
+		tag_name = egueb_dom_element_tag_name_get(n);
+		thiz->theme_instance = ender_document_instance_new(
+				thiz->theme_document,
+				egueb_dom_string_string_get(tag_name),
+				NULL);
+		if (thiz->theme_instance)
+		{
+			Enesim_Renderer *r;
+
+			printf("theme loaded %p %p\n", thiz->theme_document, thiz->theme_instance);
+			/* get the drawer widget */
+			thiz->theme_widget = ender_element_instance_object_get(thiz->theme_instance);
+			/* set the renderer */
+			r = eon_drawer_widget_renderer_get(thiz->theme_widget);
+			enesim_renderer_proxy_proxied_set(thiz->proxy, r);
+		}
+		else
+		{
+			ret = EINA_FALSE;
+			goto no_theme;
+		}
+	}
+	else
+	{
+		ret = EINA_FALSE;
+		goto no_theme;
+	}
+
+no_theme:
+	egueb_dom_node_unref(topmost);
+no_topmost:
+	egueb_dom_node_unref(doc);
+no_document:
 	egueb_dom_string_unref(theme);
 	thiz->theme_changed = EINA_FALSE;
+
+	return ret;
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
@@ -81,7 +157,16 @@ static Enesim_Renderer * _eon_widget_renderer_get(Eon_Renderable *r)
 
 static void _eon_widget_geometry_set(Eon_Renderable *r, Eina_Rectangle *geometry)
 {
+	Eon_Widget *thiz;
+
+	thiz = EON_WIDGET(r);
+	if (!thiz->theme_widget)
+		return;
+	
+	/* set the geometry on the theme instance */
 	printf("WIDGET geometry set\n");
+	eon_drawer_widget_geometry_set(thiz->theme_widget, geometry);
+	
 }
 
 static int _eon_widget_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
@@ -91,7 +176,12 @@ static int _eon_widget_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *si
 
 	thiz = EON_WIDGET(r);
 	klass = EON_WIDGET_CLASS_GET(thiz);
-	_eon_widget_load_theme(thiz);
+	if (!_eon_widget_load_theme(thiz))
+	{
+		printf("failed to load the theme\n");
+		return 0;
+	}
+
 	if (klass->size_hints_get)
 		return klass->size_hints_get(thiz, size);
 	return 0;
@@ -117,7 +207,7 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 		return;
 	}
 	/* in case the parent's theme is different than the previous
-	 * theme, incalidate it too
+	 * theme, invalidate it too
 	 */
 	n = e->n;
 	parent = egueb_dom_node_parent_get(n);
@@ -130,11 +220,14 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 		egueb_dom_attr_final_get(other->theme, &theme);
 		if (!egueb_dom_string_is_equal(theme, thiz->last_parent_theme))
 		{
-			ERR("Parent's theme is different than last one");
+			if (thiz->last_parent_theme)
+				egueb_dom_string_unref(thiz->last_parent_theme);
+			thiz->last_parent_theme = egueb_dom_string_dup(theme);
 			thiz->theme_changed = EINA_TRUE;
 			eon_renderable_invalidate_geometry(r);
+			ERR("Parent's theme is different than last one");
 		}
-		egueb_dom_string_unref(theme);
+		// FIX this egueb_dom_string_unref(theme);
 		egueb_dom_node_unref(parent);
 	}
 }
@@ -145,8 +238,13 @@ static Eina_Bool _eon_widget_process(Eon_Renderable *r)
 
 	thiz = EON_WIDGET(r);
 	printf("WIDGET process\n");
-	_eon_widget_load_theme(thiz);
+	if (!_eon_widget_load_theme(thiz))
+	{
+		printf("failed to load the theme\n");
+		return EINA_FALSE;
+	}
 	/* propagate the geometry on the theme */
+ 	/* process the theme instance too */
 }
 
 /*----------------------------------------------------------------------------*
@@ -178,6 +276,7 @@ static void _eon_widget_instance_init(void *o)
 	thiz = EON_WIDGET(o);
 	/* instantiate the theme element */
 	thiz->proxy = enesim_renderer_proxy_new();
+	thiz->theme_changed = EINA_TRUE;
 }
 
 static void _eon_widget_instance_deinit(void *o)
@@ -191,6 +290,10 @@ static void _eon_widget_instance_deinit(void *o)
 		egueb_dom_string_unref(thiz->last_parent_theme);
 	if (thiz->proxy)
 		enesim_renderer_unref(thiz->proxy);
+	if (thiz->theme_instance)
+		egueb_dom_node_unref(thiz->theme_instance);
+	if (thiz->theme_document)
+		egueb_dom_node_unref(thiz->theme_document);
 }
 /*============================================================================*
  *                                 Global                                     *

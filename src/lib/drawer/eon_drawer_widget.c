@@ -68,6 +68,25 @@ Enesim_Renderer * eon_drawer_widget_renderer_get(Eon_Drawer_Widget *thiz)
 	return NULL;
 }
 
+void eon_drawer_widget_ender_populate(Egueb_Dom_Node *n, Eon_Drawer_Widget *thiz)
+{
+	Eon_Drawer_Widget_Class *klass;
+
+	klass = EON_DRAWER_WIDGET_CLASS_GET(thiz);
+	if (klass->ender_populate)
+		klass->ender_populate(thiz, n);
+}
+
+Eina_Bool eon_drawer_widget_ender_process(Egueb_Dom_Node *n, Eon_Drawer_Widget *thiz)
+{
+	Eon_Drawer_Widget_Class *klass;
+
+	klass = EON_DRAWER_WIDGET_CLASS_GET(thiz);
+	if (klass->ender_process)
+		klass->ender_process(thiz, n);
+	return EINA_TRUE;
+}
+
 #if 0
 void eon_drawer_widget_size_changed_cb_set(Eon_Drawer_Widget *thiz, Eon_Drawer_Widget_Size_Changed_Cb cb, void *data)
 {
@@ -78,6 +97,11 @@ void eon_drawer_widget_size_changed_cb_set(Eon_Drawer_Widget *thiz, Eon_Drawer_W
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+EAPI void eon_drawer_widget_free(Eon_Drawer_Widget *thiz)
+{
+	enesim_object_instance_free(ENESIM_OBJECT_INSTANCE(thiz));
+}
+
 /**
  * To be documented
  * FIXME: To be fixed
@@ -89,5 +113,3 @@ EAPI void eon_drawer_widget_request_process(Eon_Drawer_Widget *thiz)
 		return thiz->size_changed(thiz->size_changed_data);
 #endif
 }
-
-

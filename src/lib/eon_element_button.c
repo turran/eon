@@ -18,6 +18,8 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_widget_private.h"
+
+#include "eon_drawer_button_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -42,10 +44,30 @@ typedef struct _Eon_Element_Button_Class
 static int _eon_element_button_size_hints_get(Eon_Widget *w,
 		Eon_Renderable_Size *size)
 {
-	printf("size hints get\n");
-	/* in case it has a child get the size hints of the content */
-	/* otherwise get it from the theme */
-	return 0;
+	Eon_Size min;
+	Egueb_Dom_Node *child;
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(w))->n;
+	child = egueb_dom_element_child_first_get(n);
+	
+	if (child)
+	{
+		/* in case it has a child get the size hints of the content */
+		egueb_dom_node_unref(child);
+		return 0;
+	}
+	else
+	{
+		/* otherwise get the min size from the theme */
+		eon_drawer_button_min_size_get(w->theme_widget, &min);
+		size->min_width = min.width;
+		size->min_height = min.height;
+		size->max_width = -1;
+		size->max_height = -1;
+
+		return EON_SIZE_HINT_MIN_MAX;
+	}
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *

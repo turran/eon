@@ -56,6 +56,7 @@ extern "C" {
 #include "eon_element_eon.h"
 #include "eon_element_button.h"
 #include "eon_renderable.h"
+#include "eon_event_geometry.h"
 
 #ifdef __cplusplus
 }

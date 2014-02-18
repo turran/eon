@@ -21,6 +21,11 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#if BUILD_STATIC_MODULE_DRAWER_BASIC
+Eina_Bool eon_basic_init(void);
+void eon_basic_shutdown(void);
+#endif
+
 static int _init_count = 0;
 
 static void _strings_init(void)
@@ -90,6 +95,9 @@ EAPI int eon_init(void)
 		ender_init();
 		egueb_dom_init();
 		_strings_init();
+#if BUILD_STATIC_MODULE_DRAWER_BASIC
+		eon_basic_init();
+#endif
 	}
 	return _init_count;
 }
@@ -102,6 +110,9 @@ EAPI int eon_shutdown(void)
 	if (--_init_count != 0)
 		return _init_count;
 
+#if BUILD_STATIC_MODULE_DRAWER_BASIC
+	eon_basic_shutdown();
+#endif
 	_strings_shutdown();
 	egueb_dom_shutdown();
 	ender_shutdown();

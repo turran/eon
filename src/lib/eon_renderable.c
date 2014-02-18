@@ -170,6 +170,7 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 
 	return EINA_TRUE;
 }
+
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
@@ -225,13 +226,26 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->geometry_set)
 	{
+		printf("Setting geometry %" EINA_RECTANGLE_FORMAT "\n", EINA_RECTANGLE_ARGS(geometry));
 		klass->geometry_set(thiz, geometry);
+		thiz->geometry = *geometry;
 		thiz->needs_geometry = EINA_FALSE;
 	}
 }
 
+Enesim_Renderer * eon_renderable_renderer_get(Eon_Renderable *thiz)
+{
+	Eon_Renderable_Class *klass;
+
+	klass = EON_RENDERABLE_CLASS_GET(thiz);
+	if (klass->renderer_get)
+		return klass->renderer_get(thiz);
+	return NULL;
+}
+
 void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 {
+	printf("invalidating geometry\n");
 	thiz->size_hints_cached = EINA_FALSE;
 	thiz->needs_geometry = EINA_TRUE;
 }

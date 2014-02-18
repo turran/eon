@@ -20,6 +20,7 @@
 #define EON_WIDGET_PRIVATE_H_
 
 #include "eon_renderable_private.h"
+#include "eon_drawer_widget.h"
 
 #define EON_WIDGET_DESCRIPTOR eon_widget_descriptor_get()
 Enesim_Object_Descriptor * eon_widget_descriptor_get(void);
@@ -38,6 +39,7 @@ typedef struct _Eon_Widget
 	/* private */
 	Egueb_Dom_Node *theme_document;
 	Egueb_Dom_Node *theme_instance;
+	Eon_Drawer_Widget *theme_widget;
 	Enesim_Renderer *proxy;
 	Egueb_Dom_String *last_theme;
 	Egueb_Dom_String *last_parent_theme;

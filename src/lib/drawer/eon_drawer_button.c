@@ -63,6 +63,26 @@ static void _eon_drawer_widget_geometry_set(Eon_Drawer_Widget *w, Eina_Rectangle
 		thiz->d->geometry_set(w, thiz->data, geom);
 }
 
+static void _eon_drawer_widget_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
+{
+	Eon_Drawer_Button *thiz;
+
+	thiz = EON_DRAWER_BUTTON(w);
+	printf(">>> ender populate!!!\n");
+	if (thiz->d->ender_populate)
+		thiz->d->ender_populate(w, thiz->data, n);
+}
+
+static Eina_Bool _eon_drawer_widget_ender_process(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
+{
+	Eon_Drawer_Button *thiz;
+
+	thiz = EON_DRAWER_BUTTON(w);
+	printf(">>> ender process!!!\n");
+	if (thiz->d->ender_process)
+		return thiz->d->ender_process(w, thiz->data, n);
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
@@ -76,6 +96,8 @@ static void _eon_drawer_button_class_init(void *k)
 	klass = EON_DRAWER_WIDGET_CLASS(k);
 	klass->renderer_get = _eon_drawer_widget_renderer_get;
 	klass->geometry_set = _eon_drawer_widget_geometry_set;
+	klass->ender_populate = _eon_drawer_widget_ender_populate;
+	klass->ender_process = _eon_drawer_widget_ender_process;
 }
 
 static void _eon_drawer_button_instance_init(void *o)
@@ -93,6 +115,24 @@ static void _eon_drawer_button_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_drawer_button_min_size_get(Eon_Drawer_Widget *w, Eon_Size *min)
+{
+	Eon_Drawer_Button *thiz;
+
+	thiz = EON_DRAWER_BUTTON(w);
+	if (thiz->d->min_size_get)
+		thiz->d->min_size_get(w, thiz->data, min);
+}
+
+void eon_drawer_button_content_set(Eon_Drawer_Widget *w, Enesim_Renderer *r)
+{
+	Eon_Drawer_Button *thiz;
+
+	thiz = EON_DRAWER_BUTTON(w);
+	if (thiz->d->content_set)
+		thiz->d->content_set(w, thiz->data, r);
+}
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -124,4 +164,20 @@ EAPI void * eon_drawer_button_data_get(Eon_Drawer_Widget *w)
 
 	thiz = EON_DRAWER_BUTTON(w);
 	return thiz->data;
+}
+
+EAPI void eon_drawer_button_ender_register(Ender_Namespace *ns,
+		Ender_Instance_Descriptor_Ctor ctor)
+{
+	Ender_Instance_Descriptor d;
+
+	d.ctor = ctor;
+	d.dtor = ENDER_INSTANCE_DESCRIPTOR_DTOR(eon_drawer_widget_free);
+	d.populate = ENDER_INSTANCE_DESCRIPTOR_POPULATE(eon_drawer_widget_ender_populate);
+	d.process = ENDER_INSTANCE_DESCRIPTOR_PROCESS(eon_drawer_widget_ender_process);
+	d.child_appendable = NULL;
+	d.child_added = NULL;
+	d.child_removed = NULL;
+
+	ender_namespace_instance_register(ns, &d, "button");
 }

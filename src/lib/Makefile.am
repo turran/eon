@@ -5,6 +5,7 @@ SUBDIRS = drawer
 
 AM_CPPFLAGS = \
 -I. \
+-I$(top_srcdir)/src/lib/drawer \
 @EON_BUILD@ \
 @EON_CFLAGS@
 
@@ -21,6 +22,7 @@ eon_renderable.c \
 eon_widget.c
 
 libeon_la_LIBADD = \
+$(top_builddir)/src/lib/drawer/libeon_drawer.la \
 @EON_LIBS@
 
 #core/libcore.la \

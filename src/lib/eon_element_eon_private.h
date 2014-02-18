@@ -16,14 +16,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
+#ifndef EON_ELEMENT_EON_PRIVATE_H_
+#define EON_ELEMENT_EON_PRIVATE_H_
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "Eon.h" 
-#include "Ender.h"
+Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String *theme_name);
 
 #endif

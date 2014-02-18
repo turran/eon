@@ -15,15 +15,9 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _EON_EVENT_GEOMETRY_H_
+#define _EON_EVENT_GEOMETRY_H_
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "Eon.h" 
-#include "Ender.h"
+EAPI void eon_event_geometry_set(Egueb_Dom_Event *e, Eina_Rectangle *geom);
 
 #endif

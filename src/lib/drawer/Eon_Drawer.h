@@ -19,6 +19,8 @@
 #ifndef _EON_DRAWER_H_
 #define _EON_DRAWER_H_
 
+#include "Ender.h"
+
 #include "eon_drawer_widget.h"
 #include "eon_drawer_button.h"
 

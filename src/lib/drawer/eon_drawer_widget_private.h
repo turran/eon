@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2011 Jorge Luis Zapata
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,12 +39,16 @@ struct _Eon_Drawer_Widget
 
 typedef Enesim_Renderer * (*Eon_Drawer_Widget_Renderer_Get)(Eon_Drawer_Widget *w); 
 typedef void (*Eon_Drawer_Widget_Geometry_Set)(Eon_Drawer_Widget *w, Eina_Rectangle *geom);
+typedef void (*Eon_Drawer_Widget_Ender_Populate)(Eon_Drawer_Widget *w, Egueb_Dom_Node *n);
+typedef Eina_Bool (*Eon_Drawer_Widget_Ender_Process)(Eon_Drawer_Widget *w, Egueb_Dom_Node *n);
 
 typedef struct _Eon_Drawer_Widget_Class
 {
 	Enesim_Object_Class base;
 	Eon_Drawer_Widget_Renderer_Get renderer_get;
 	Eon_Drawer_Widget_Geometry_Set geometry_set;
+	Eon_Drawer_Widget_Ender_Populate ender_populate;
+	Eon_Drawer_Widget_Ender_Process ender_process;
 } Eon_Drawer_Widget_Class;
 
 /*
@@ -61,5 +65,7 @@ typedef struct _Eon_Drawer_Widget_Class
  */
 Enesim_Renderer * eon_drawer_widget_renderer_get(Eon_Drawer_Widget *thiz);
 void eon_drawer_widget_geometry_set(Eon_Drawer_Widget *thiz, Eina_Rectangle *geom);
+void eon_drawer_widget_ender_populate(Egueb_Dom_Node *n, Eon_Drawer_Widget *thiz);
+Eina_Bool eon_drawer_widget_ender_process(Egueb_Dom_Node *n, Eon_Drawer_Widget *thiz);
 
 #endif

@@ -17,7 +17,13 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+
+#include "eon_event_geometry.h"
 #include "eon_event_geometry_private.h"
+
+/* TODO
+ * - Move the event name here
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -40,16 +46,6 @@ Egueb_Dom_Event * eon_event_geometry_new(void)
 			EGUEB_DOM_EVENT_DIRECTION_BUBBLE_CAPTURE, thiz, free);
 }
 
-void eon_event_geometry_set(Egueb_Dom_Event *e, Eina_Rectangle *geom)
-{
-	Eon_Event_Geometry *thiz;
-
-	if (!e) return;
-	thiz = egueb_dom_event_external_data_get(e);
-	thiz->geometry = *geom;
-	thiz->set = EINA_TRUE;
-}
-
 Eina_Bool eon_event_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom)
 {
 	Eon_Event_Geometry *thiz;
@@ -66,3 +62,12 @@ Eina_Bool eon_event_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+EAPI void eon_event_geometry_set(Egueb_Dom_Event *e, Eina_Rectangle *geom)
+{
+	Eon_Event_Geometry *thiz;
+
+	if (!e) return;
+	thiz = egueb_dom_event_external_data_get(e);
+	thiz->geometry = *geom;
+	thiz->set = EINA_TRUE;
+}

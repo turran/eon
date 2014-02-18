@@ -1,0 +1,9 @@
+<ender>
+  <scene>
+    <object ns="eon_basic" name="button" id="button">
+      <states>
+        <state name="default">
+        </state>
+      </states>
+    </object>
+</ender>

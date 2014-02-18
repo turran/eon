@@ -27,8 +27,11 @@ typedef struct _Eon_Drawer_Widget Eon_Drawer_Widget;
 /* widget descriptor functions */
 typedef Enesim_Renderer * (*Eon_Drawer_Widget_Descriptor_Renderer_Get)(Eon_Drawer_Widget *w, void *data); 
 typedef void (*Eon_Drawer_Widget_Descriptor_Geometry_Set)(Eon_Drawer_Widget *w, void *data, Eina_Rectangle *geom);
+typedef Eina_Bool (*Eon_Drawer_Widget_Descriptor_Ender_Process)(Eon_Drawer_Widget *w, void *data, Egueb_Dom_Node *n);
+typedef void (*Eon_Drawer_Widget_Descriptor_Ender_Populate)(Eon_Drawer_Widget *w, void *data, Egueb_Dom_Node *n);
 typedef void (*Eon_Drawer_Widget_Descriptor_Free)(Eon_Drawer_Widget *w, void *data);
 
+EAPI void eon_drawer_widget_free(Eon_Drawer_Widget *thiz);
 EAPI void eon_drawer_widget_request_process(Eon_Drawer_Widget *thiz);
 
 /**

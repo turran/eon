@@ -4,7 +4,7 @@ eon_basic.c
 
 if BUILD_STATIC_MODULE_DRAWER_BASIC
 
-lib_LTLIBRARIES = libbasic.la
+noinst_LTLIBRARIES = libbasic.la
 libbasic_la_SOURCES = $(SOURCES)
 libbasic_la_CPPFLAGS = -I. -I$(top_srcdir)/src/lib -I$(top_srcdir)/src/lib/drawer @EON_CFLAGS@
 
