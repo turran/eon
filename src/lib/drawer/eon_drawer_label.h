@@ -16,11 +16,21 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_LABEL_H_
-#define _EON_THEME_LABEL_H_
+#ifndef _EON_DRAWER_LABEL_H_
+#define _EON_DRAWER_LABEL_H_
 
 /**
  * @{
+ */
+
+/*
+ * TODO add functions to:
+ * 1. Set the font size from the control
+ * 2. Set the font color from the control
+ * 3. Set the font size from the control
+ * At the end we need all of the css font attributes
+ * Set the geometry
+ * Get the text font?
  */
 
 typedef void (*Eon_Theme_Label_Text_Set)(Eon_Theme_Widget *t, const char *str);

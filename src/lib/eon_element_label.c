@@ -107,6 +107,7 @@ static Eina_Bool _eon_element_label_process(Eon_Widget *w)
 	Eon_Element_Label *thiz;
 
 	thiz = EON_ELEMENT_LABEL(w);
+	/* set the correct text buffer */
 	printf("process label\n");
 
 	return EINA_TRUE;
@@ -117,6 +118,27 @@ static Eina_Bool _eon_element_label_process(Eon_Widget *w)
 static Egueb_Dom_String * _eon_element_label_tag_name_get(Eon_Element *e)
 {
 	return egueb_dom_string_ref(EON_ELEMENT_LABEL);
+}
+
+static Eina_Bool _eon_element_label_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)
+{
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *our_child;
+
+	/* only accept one child and of type text */
+	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_TEXT_NODE)
+		return EINA_FALSE;
+
+	/* check if we already have one child */
+	n = e->n;
+	our_child = egueb_dom_element_child_first_get(n);
+	if (our_child)
+	{
+		WARN_ELEMENT(n, "Only one child supported");
+		egueb_dom_node_unref(our_child);
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
@@ -132,6 +154,7 @@ static void _eon_element_label_class_init(void *k)
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_label_tag_name_get;
+	klass->child_appendable = _eon_element_label_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
 

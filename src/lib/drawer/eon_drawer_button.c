@@ -24,8 +24,6 @@
  *                                  Local                                     *
  *============================================================================*/
 #define EON_DRAWER_BUTTON_DESCRIPTOR eon_drawer_button_descriptor_get()
-#define EON_DRAWER_BUTTON_CLASS(k) ENESIM_OBJECT_CLASS_CHECK(k,		\
-		Eon_Drawer_Button_Class, EON_DRAWER_BUTTON_DESCRIPTOR)
 #define EON_DRAWER_BUTTON(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
 		Eon_Drawer_Button, EON_DRAWER_BUTTON_DESCRIPTOR)
 
@@ -68,7 +66,6 @@ static void _eon_drawer_widget_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_No
 	Eon_Drawer_Button *thiz;
 
 	thiz = EON_DRAWER_BUTTON(w);
-	printf(">>> ender populate!!!\n");
 	if (thiz->d->ender_populate)
 		thiz->d->ender_populate(w, thiz->data, n);
 }
@@ -78,7 +75,6 @@ static Eina_Bool _eon_drawer_widget_ender_process(Eon_Drawer_Widget *w, Egueb_Do
 	Eon_Drawer_Button *thiz;
 
 	thiz = EON_DRAWER_BUTTON(w);
-	printf(">>> ender process!!!\n");
 	if (thiz->d->ender_process)
 		return thiz->d->ender_process(w, thiz->data, n);
 	return EINA_TRUE;
@@ -137,8 +133,9 @@ void eon_drawer_button_content_set(Eon_Drawer_Widget *w, Enesim_Renderer *r)
  *                                   API                                      *
  *============================================================================*/
 /**
- * To be documented
- * FIXME: To be fixed
+ * Creates a new button drawer
+ * @param d The set of functions the drawer implemenation must implement
+ * @param data The private data passed in on the descriptor functions 
  */
 EAPI Eon_Drawer_Widget * eon_drawer_button_new(
 		const Eon_Drawer_Button_Descriptor *d, void *data)
@@ -155,8 +152,9 @@ EAPI Eon_Drawer_Widget * eon_drawer_button_new(
 }
 
 /**
- * To be documented
- * FIXME: To be fixed
+ * Gets the private data of a button
+ * @param w The button to get the data from
+ * @return The private data
  */
 EAPI void * eon_drawer_button_data_get(Eon_Drawer_Widget *w)
 {
@@ -166,6 +164,11 @@ EAPI void * eon_drawer_button_data_get(Eon_Drawer_Widget *w)
 	return thiz->data;
 }
 
+/**
+ * @brief Register the button implementation on the ender namespace
+ * @param ns The ender namespace registered on the drawer imeplementation
+ * @param ctor The function used to create a drawer implementation button
+ */
 EAPI void eon_drawer_button_ender_register(Ender_Namespace *ns,
 		Ender_Instance_Descriptor_Ctor ctor)
 {

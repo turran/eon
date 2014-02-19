@@ -54,9 +54,12 @@ static int _eon_element_button_size_hints_get(Eon_Widget *w,
 	
 	if (child)
 	{
+		int ret;
+
 		/* in case it has a child get the size hints of the content */
+		ret = eon_renderable_size_hints_get(child, size);
 		egueb_dom_node_unref(child);
-		return 0;
+		return ret;
 	}
 	else
 	{

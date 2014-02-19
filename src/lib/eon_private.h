@@ -46,6 +46,27 @@
 #endif
 #define DBG(...) EINA_LOG_DOM_DBG(eon_main_log, __VA_ARGS__)
 
+/* Element based logs */
+#ifdef ERR_ELEMENT
+# undef ERR_ELEMENT
+#endif
+#define ERR_ELEMENT(n, ...) EGUEB_DOM_ELEMENT_LOG_DOM_ERR(n, eon_main_log, __VA_ARGS__)
+
+#ifdef WARN_ELEMENT
+# undef WARN_ELEMENT
+#endif
+#define WARN_ELEMENT(n, ...) EGUEB_DOM_ELEMENT_LOG_DOM_WARN(n, eon_main_log, __VA_ARGS__)
+
+#ifdef INFO_ELEMENT
+# undef INFO_ELEMENT
+#endif
+#define INFO_ELEMENT(n, ...) EGUEB_DOM_ELEMENT_LOG_DOM_INFO(n, eon_main_log, __VA_ARGS__)
+
+#ifdef DBG_ELEMENT
+# undef DBG_ELEMENT
+#endif
+#define DBG_ELEMENT(n, ...) EGUEB_DOM_ELEMENT_LOG_DOM_DBG(n, eon_main_log, __VA_ARGS__)
+
 extern int eon_main_log;
 
 #endif

@@ -36,7 +36,7 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 	attr = egueb_dom_event_mutation_related_get(ev);
 	if ((thiz->width == attr) || (thiz->height == attr))
 	{
-		ERR("Renderable attr modified");
+		ERR_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
 		eon_renderable_invalidate_geometry(thiz);
 	}
 }
@@ -119,7 +119,6 @@ static void _eon_renderable_init(Eon_Element *e)
 		 * register some events in order to process this node
 		 * whenever our child requires a process
 		 */
-		printf("child size dependant\n");
 		egueb_dom_node_event_listener_add(n,
 				EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
@@ -148,20 +147,20 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 	thiz = EON_RENDERABLE(e);
 	klass = EON_RENDERABLE_CLASS_GET(e);
 
+	DBG_ELEMENT(e->n, "Processing renderable (needs geometry: %d size hints cached: %d)",
+			thiz->needs_geometry, thiz->size_hints_cached);
 	if (klass->pre_process)
 	{
 		if (!klass->pre_process(thiz))
 		{
-			ERR("The pre process failed");
+			ERR_ELEMENT(e->n, "The pre process failed");
 			return EINA_FALSE;
 		}
 	}
 
-	printf("RENDERABLE process (needs geometry: %d size hints cached: %d)\n",
-			thiz->needs_geometry, thiz->size_hints_cached);
 	if (thiz->needs_geometry)
 	{
-		ERR("Parent does not set a geometry");
+		ERR_ELEMENT(e->n, "Parent does not set a geometry");
 		return EINA_FALSE;
 	}
 	/* process ourselves */
@@ -226,7 +225,8 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->geometry_set)
 	{
-		printf("Setting geometry %" EINA_RECTANGLE_FORMAT "\n", EINA_RECTANGLE_ARGS(geometry));
+		DBG_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
+				EINA_RECTANGLE_ARGS(geometry));
 		klass->geometry_set(thiz, geometry);
 		thiz->geometry = *geometry;
 		thiz->needs_geometry = EINA_FALSE;
@@ -245,7 +245,7 @@ Enesim_Renderer * eon_renderable_renderer_get(Eon_Renderable *thiz)
 
 void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 {
-	printf("invalidating geometry\n");
+	DBG_ELEMENT(((EON_ELEMENT(thiz))->n), "Invalidating geometry");
 	thiz->size_hints_cached = EINA_FALSE;
 	thiz->needs_geometry = EINA_TRUE;
 }
