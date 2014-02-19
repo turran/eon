@@ -17,8 +17,9 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
-#include "eon_widget_private.h"
+#include "eon_element_button.h"
 
+#include "eon_widget_private.h"
 #include "eon_drawer_button_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -69,6 +70,26 @@ static int _eon_element_button_size_hints_get(Eon_Widget *w,
 		return EON_SIZE_HINT_MIN_MAX;
 	}
 }
+
+static Eina_Bool _eon_element_button_process(Eon_Widget *w)
+{
+	Eon_Element_Button *thiz;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *child;
+
+	n = (EON_ELEMENT(w))->n;
+	child = egueb_dom_element_child_first_get(n);
+	if (!child) return EINA_TRUE;
+
+	thiz = EON_ELEMENT_BUTTON(w);
+	printf("processing>>>>\n");
+	/* Se tthe geometry and process */
+	eon_renderable_geometry_set(child, &((EON_RENDERABLE(w)))->geometry);
+	egueb_dom_element_process(child);
+	egueb_dom_node_unref(child);
+	
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -80,14 +101,24 @@ static Egueb_Dom_String * _eon_element_button_tag_name_get(Eon_Element *e)
 	return egueb_dom_string_ref(EON_ELEMENT_BUTTON);
 }
 
-/* a process is called whenever we want to set a new geometry */
-static Eina_Bool _eon_element_button_process(Eon_Element *e)
+static Eina_Bool _eon_element_button_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)
 {
-	Eon_Element_Button *thiz;
-	Egueb_Dom_Node *n = e->n;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *our_child;
 
-	thiz = EON_ELEMENT_BUTTON(e);
+	/* only accept one child */
+	if (!eon_is_renderable(child))
+		return EINA_FALSE;
 
+	/* check if we already have one child */
+	n = e->n;
+	our_child = egueb_dom_element_child_first_get(n);
+	if (our_child)
+	{
+		WARN("Only one child supported");
+		egueb_dom_node_unref(our_child);
+		return EINA_FALSE;
+	}
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
@@ -104,11 +135,13 @@ static void _eon_element_button_class_init(void *k)
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_button_tag_name_get;
+	klass->child_appendable = _eon_element_button_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
 
 	w_klass = EON_WIDGET_CLASS(k);
 	w_klass->size_hints_get = _eon_element_button_size_hints_get;
+	w_klass->process = _eon_element_button_process;
 }
 
 static void _eon_element_button_instance_init(void *o)

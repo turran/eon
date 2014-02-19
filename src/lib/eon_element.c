@@ -74,6 +74,7 @@ static Eina_Bool _eon_element_child_appendable(Egueb_Dom_Node *n,
 	klass = EON_ELEMENT_CLASS_GET(data);
 	if (klass->child_appendable)
 		return klass->child_appendable(thiz, child);
+	return EINA_FALSE;
 }
 
 static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
@@ -90,12 +91,13 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 	{
 		Eon_Element *other;
 
-		other = EON_ELEMENT(egueb_dom_element_external_data_get(n));
+		other = EON_ELEMENT(egueb_dom_element_external_data_get(rel));
 		egueb_dom_attr_inheritable_process(thiz->theme, other->theme);
 		egueb_dom_node_unref(rel);
 	}
 	if (klass->process)
 		return klass->process(thiz);
+	return EINA_TRUE;
 }
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {

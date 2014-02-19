@@ -41,6 +41,7 @@ static void _strings_init(void)
 	/* elements */
 	EON_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
+	EON_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
 	/* events */
 	EON_EVENT_GEOMETRY = egueb_dom_string_new_with_static_string("EONGeometry");
 }
@@ -58,6 +59,7 @@ static void _strings_shutdown(void)
 	/* elements */
 	egueb_dom_string_unref(EON_ELEMENT_EON);
 	egueb_dom_string_unref(EON_ELEMENT_BUTTON);
+	egueb_dom_string_unref(EON_ELEMENT_LABEL);
 	/* events */
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY);
 }
@@ -79,6 +81,7 @@ Egueb_Dom_String *EON_THEME;
 /* elements */
 Egueb_Dom_String *EON_ELEMENT_EON;
 Egueb_Dom_String *EON_ELEMENT_BUTTON;
+Egueb_Dom_String *EON_ELEMENT_LABEL;
 /* events */
 Egueb_Dom_String *EON_EVENT_GEOMETRY;
 

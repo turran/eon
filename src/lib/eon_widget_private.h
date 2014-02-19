@@ -47,11 +47,13 @@ typedef struct _Eon_Widget
 } Eon_Widget;
 
 typedef int (*Eon_Widget_Size_Hints_Get)(Eon_Widget *thiz, Eon_Renderable_Size *size);
+typedef Eina_Bool (*Eon_Widget_Process)(Eon_Widget *thiz);
 
 typedef struct _Eon_Widget_Class
 {
 	Eon_Renderable_Class base;
 	Eon_Widget_Size_Hints_Get size_hints_get;
+	Eon_Widget_Process process;
 } Eon_Widget_Class;
 
 #endif

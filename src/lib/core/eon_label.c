@@ -41,12 +41,6 @@ static int _eon_label_log = -1;
 static Ender_Property *EON_LABEL_ELLIPSIZE;
 static Ender_Property *EON_LABEL_TEXT;
 
-typedef struct _Eon_Label
-{
-	/* properties */
-	Eina_Bool ellipsize;
-} Eon_Label;
-
 static inline Eon_Label * _eon_label_get(Eon_Element *ee)
 {
 	Eon_Label *thiz;
@@ -57,55 +51,6 @@ static inline Eon_Label * _eon_label_get(Eon_Element *ee)
 /*----------------------------------------------------------------------------*
  *                         The Eon's widget interface                         *
  *----------------------------------------------------------------------------*/
-#if 0
-static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
-{
-	Enesim_Rectangle boundings;
-	Eon_Theme_Label *thiz;
-	const char *font;
-	const char *text;
-	char *ellipsized_text;
-	int size;
-	double min_width;
-
-	thiz = _eon_theme_label_get(ee);
-	if (!thiz->text)
-		thiz->text = enesim_text_span_new();
-	eon_theme_label_font_get(ee, &font);
-	eon_theme_label_font_size_get(ee, &size);
-	eon_theme_label_text_get(ee, &text);
-	enesim_text_base_font_name_set(thiz->text, font);
-	enesim_text_base_size_set(thiz->text, size);
-	enesim_text_span_text_set(thiz->text, text);
-	enesim_renderer_boundings(thiz->text, &boundings);
-	min_width = boundings.w;
-
-	/* set first letter and ellipsis "E..." as the minimum height
-	 * if it is smaller than the text itself, use that
-	 */
-	ellipsized_text = malloc(sizeof(char) * 5);
-	ellipsized_text[0] = text[0];
-	ellipsized_text[1] = ellipsized_text[2] = ellipsized_text[3] = '.';
-	ellipsized_text[4] = '\0';
-	enesim_text_span_text_set(thiz->text, ellipsized_text);
-	enesim_renderer_boundings(thiz->text, &boundings);
-	free(ellipsized_text);
-
-	return min_width < boundings.w ? min_width : boundings.w;
-}
-#endif
-
-static void _eon_label_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
-		Eon_Hints *hints)
-{
-	Eon_Size size;
-
-	eon_theme_label_size_get(theme->object, &size);
-	hints->min = size;
-	hints->max = size;
-	hints->preferred = size;
-}
-
 static void _eon_label_free(Eon_Element *e)
 {
 	Eon_Label *thiz;

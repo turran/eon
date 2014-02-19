@@ -235,6 +235,7 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 static Eina_Bool _eon_widget_process(Eon_Renderable *r)
 {
 	Eon_Widget *thiz;
+	Eon_Widget_Class *klass;
 
 	thiz = EON_WIDGET(r);
 	printf("WIDGET process\n");
@@ -243,8 +244,15 @@ static Eina_Bool _eon_widget_process(Eon_Renderable *r)
 		printf("failed to load the theme\n");
 		return EINA_FALSE;
 	}
-	/* propagate the geometry on the theme */
+
+	klass = EON_WIDGET_CLASS_GET(r);
+	if (klass->process)
+	{
+		if (!klass->process(thiz))
+			return EINA_FALSE;
+	}
  	/* process the theme instance too */
+
 }
 
 /*----------------------------------------------------------------------------*

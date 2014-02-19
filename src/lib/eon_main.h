@@ -37,6 +37,7 @@ EAPI extern Egueb_Dom_String *EON_THEME;
 
 EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON;
+EAPI extern Egueb_Dom_String *EON_ELEMENT_LABEL;
 
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY;
 

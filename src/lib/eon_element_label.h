@@ -16,8 +16,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_LABEL_H_
-#define _EON_LABEL_H_
+#ifndef _EON_ELEMENT_LABEL_H_
+#define _EON_ELEMENT_LABEL_H_
 
 /**
  * @defgroup Eon_Label Label
@@ -25,10 +25,7 @@
  * @{
  */
 
-EAPI Ender_Element * eon_label_new(void);
-EAPI Ender_Element * eon_label_new_with_text(const char *text);
-EAPI void eon_label_text_set(Ender_Element *e, const char *text);
-EAPI void eon_label_text_get(Ender_Element *e, const char **text);
+EAPI Egueb_Dom_Node * eon_element_label_new(void);
 
 /**
  * @}

@@ -20,6 +20,7 @@
 #include "eon_document.h"
 #include "eon_element_eon.h"
 #include "eon_element_button.h"
+#include "eon_element_label.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -40,6 +41,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_eon_new();
 	else if (!strcmp(name, "button"))
 		ret = eon_element_button_new();
+	else if (!strcmp(name, "label"))
+		ret = eon_element_label_new();
 	return ret;
 }
 
