@@ -34,12 +34,33 @@ typedef struct _Eon_Element_Label
 	Eon_Widget base;
 	/* properties */
 	Egueb_Dom_Node *ellipsize;
+	Eina_Bool text_changed;
 } Eon_Element_Label;
 
 typedef struct _Eon_Element_Label_Class
 {
 	Eon_Widget_Class base;
 } Eon_Element_Label_Class;
+
+static void _eon_element_label_tree_modified_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Label *thiz = data;
+	Egueb_Dom_Node *related = NULL;
+	Egueb_Dom_Node *target = NULL;
+	Egueb_Dom_Node *n;
+
+	/* check that the parent is ourself */
+	n = (EON_ELEMENT(thiz))->n;
+	related = egueb_dom_event_mutation_related_get(e);
+	if (related != n)
+	{
+		egueb_dom_node_unref(related);
+		return;
+	}
+	egueb_dom_node_unref(related);
+	thiz->text_changed = EINA_TRUE;
+}
 
 #if 0
 static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
@@ -93,6 +114,9 @@ static int _eon_element_label_size_hints_get(Eon_Widget *w,
 	 * width and always the font line height. Otherwise use the text node
 	 * directly. Do not forget the text buffer to be shared
 	 */
+	/* Check if we have any font property set, if so, we need to pass it
+	 * to the theme somehow
+	 */
 #if 0
 	eon_theme_label_size_get(theme->object, &size);
 	hints->min = size;
@@ -107,10 +131,27 @@ static Eina_Bool _eon_element_label_process(Eon_Widget *w)
 	Eon_Element_Label *thiz;
 
 	thiz = EON_ELEMENT_LABEL(w);
-	/* set the correct text buffer */
+	/* set the correct text buffer, text font, text color */
 	printf("process label\n");
 
 	return EINA_TRUE;
+}
+/*----------------------------------------------------------------------------*
+ *                            Renderable interface                            *
+ *----------------------------------------------------------------------------*/
+static void _eon_element_label_init(Eon_Renderable *r)
+{
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(r))->n;
+	egueb_dom_node_event_listener_add(n,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+			_eon_element_label_tree_modified_cb,
+			EINA_FALSE, r);
+	egueb_dom_node_event_listener_add(n,
+			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+			_eon_element_label_tree_modified_cb,
+			EINA_FALSE, r);
 }
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
@@ -157,6 +198,7 @@ static void _eon_element_label_class_init(void *k)
 	klass->child_appendable = _eon_element_label_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->init = _eon_element_label_init;
 
 	w_klass = EON_WIDGET_CLASS(k);
 	w_klass->size_hints_get = _eon_element_label_size_hints_get;

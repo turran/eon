@@ -86,20 +86,18 @@ static void _eon_element_eon_tree_modified_cb(Egueb_Dom_Event *e,
  *----------------------------------------------------------------------------*/
 static void _eon_element_eon_init(Eon_Renderable *r)
 {
-	Eon_Element_Eon *thiz;
 	Egueb_Dom_Node *n;
 
-	thiz = EON_ELEMENT_EON(r);
 	/* check that the parent is ourself */
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_eon_tree_modified_cb,
-			EINA_FALSE, thiz);
+			EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_tree_modified_cb,
-			EINA_FALSE, thiz);
+			EINA_FALSE, r);
 }
 
 static Enesim_Renderer * _eon_element_eon_renderer_get(Eon_Renderable *r)
