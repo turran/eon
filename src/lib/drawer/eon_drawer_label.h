@@ -33,47 +33,28 @@
  * Get the text font?
  */
 
-typedef void (*Eon_Theme_Label_Text_Set)(Eon_Theme_Widget *t, const char *str);
-typedef void (*Eon_Theme_Label_Text_Get)(Eon_Theme_Widget *t, const char **str);
-typedef void (*Eon_Theme_Label_Font_Set)(Eon_Theme_Widget *t, const char *str);
-typedef void (*Eon_Theme_Label_Font_Get)(Eon_Theme_Widget *t, const char **str);
-typedef void (*Eon_Theme_Label_Font_Size_Set)(Eon_Theme_Widget *t, int str);
-typedef void (*Eon_Theme_Label_Font_Size_Get)(Eon_Theme_Widget *t, int *str);
-typedef void (*Eon_Theme_Label_Color_Get)(Eon_Theme_Widget *t, Enesim_Color *color);
-typedef void (*Eon_Theme_Label_Color_Set)(Eon_Theme_Widget *t, Enesim_Color color);
+typedef void (*Eon_Drawer_Label_Descriptor_Text_Buffer_Set)(Eon_Drawer_Widget *t, void *data, Enesim_Text_Buffer *tf);
+typedef void (*Eon_Drawer_Label_Descriptor_Text_Font_Set)(Eon_Drawer_Widget *t, void *data, Enesim_Text_Font *tf);
+typedef void (*Eon_Drawer_Label_Descriptor_Text_Color_Set)(Eon_Drawer_Widget *t, void *data, Enesim_Color color);
 
-typedef struct _Eon_Theme_Label_Descriptor
+typedef struct _Eon_Drawer_Label_Descriptor
 {
+	Eon_Drawer_Label_Descriptor_Text_Buffer_Set text_buffer_set;
+	Eon_Drawer_Label_Descriptor_Text_Font_Set text_font_set;
+	Eon_Drawer_Label_Descriptor_Text_Color_Set text_color_set;
 	/* widget descriptor */
-	Eon_Theme_Widget_Renderer_Get renderer_get;
-	Eon_Theme_Widget_X_Set x_set;
-	Eon_Theme_Widget_Y_Set y_set;
-	Eon_Theme_Widget_Width_Set width_set;
-	Eon_Theme_Widget_Height_Set height_set;
-	Eon_Theme_Widget_Free free;
-	/* the label needed functions */
-	Eon_Theme_Label_Text_Set text_set;
-	Eon_Theme_Label_Text_Get text_get;
-	Eon_Theme_Label_Font_Size_Get font_size_get;
-	Eon_Theme_Label_Font_Size_Set font_size_set;
-	Eon_Theme_Label_Font_Get font_get;
-	Eon_Theme_Label_Font_Set font_set;
-	Eon_Theme_Label_Color_Get color_get;
-	Eon_Theme_Label_Color_Set color_set;
-} Eon_Theme_Label_Descriptor;
+	Eon_Drawer_Widget_Descriptor_Renderer_Get renderer_get;
+	Eon_Drawer_Widget_Descriptor_Geometry_Set geometry_set;
+	Eon_Drawer_Widget_Descriptor_Ender_Populate ender_populate;
+	Eon_Drawer_Widget_Descriptor_Ender_Process ender_process;
+	Eon_Drawer_Widget_Descriptor_Free free;
+} Eon_Drawer_Label_Descriptor;
 
-EAPI Eon_Theme_Widget * eon_theme_label_new(Eon_Theme_Label_Descriptor *descriptor,
-		void *data);
-EAPI Eina_Bool eon_is_theme_label(Eon_Theme_Widget *t);
-EAPI void * eon_theme_label_data_get(Eon_Theme_Widget *t);
-EAPI void eon_theme_label_font_set(Eon_Theme_Widget *t, const char *str);
-EAPI void eon_theme_label_font_get(Eon_Theme_Widget *t, const char **str);
-EAPI void eon_theme_label_font_size_set(Eon_Theme_Widget *t, int size);
-EAPI void eon_theme_label_font_size_get(Eon_Theme_Widget *t, int *size);
-EAPI void eon_theme_label_text_set(Eon_Theme_Widget *t, const char *text);
-EAPI void eon_theme_label_text_get(Eon_Theme_Widget *t, const char **text);
-EAPI void eon_theme_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color);
-EAPI void eon_theme_label_color_set(Eon_Theme_Widget *t, Enesim_Color color);
+EAPI Eon_Drawer_Widget * eon_drawer_label_new(
+		const Eon_Drawer_Label_Descriptor *d, void *data);
+EAPI void * eon_drawer_label_data_get(Eon_Drawer_Widget *w);
+EAPI void eon_drawer_label_ender_register(Ender_Namespace *ns,
+		Ender_Instance_Descriptor_Ctor ctor);
 
 /**
  * @}

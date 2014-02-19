@@ -1,5 +1,6 @@
 SOURCES = \
 eon_basic_drawer_button.c \
+eon_basic_drawer_label.c \
 eon_basic.c
 
 if BUILD_STATIC_MODULE_DRAWER_BASIC

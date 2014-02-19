@@ -57,8 +57,8 @@ static void _eon_drawer_widget_geometry_set(Eon_Drawer_Widget *w, Eina_Rectangle
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
-	if (thiz->d->position_set)
-		thiz->d->position_set(w, thiz->data, min);
+	if (thiz->d->geometry_set)
+		thiz->d->geometry_set(w, thiz->data, geom);
 }
 
 static void _eon_drawer_widget_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
@@ -66,6 +66,7 @@ static void _eon_drawer_widget_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_No
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
+	/* add the font properties */
 	if (thiz->d->ender_populate)
 		thiz->d->ender_populate(w, thiz->data, n);
 }
@@ -75,6 +76,7 @@ static Eina_Bool _eon_drawer_widget_ender_process(Eon_Drawer_Widget *w, Egueb_Do
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
+	/* FIXME The control should get the font but is the common drawer that returns it */
 	if (thiz->d->ender_process)
 		return thiz->d->ender_process(w, thiz->data, n);
 	return EINA_TRUE;
@@ -111,13 +113,31 @@ static void _eon_drawer_label_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_drawer_label_text_buffer_set(Eon_Drawer_Widget *w, Enesim_Tex_Butffer *tb)
+void eon_drawer_label_text_buffer_set(Eon_Drawer_Widget *w, Enesim_Text_Buffer *tb)
 {
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
 	if (thiz->d->text_buffer_set)
 		thiz->d->text_buffer_set(w, thiz->data, tb);
+}
+
+void eon_drawer_label_text_font_set(Eon_Drawer_Widget *w, Enesim_Text_Font *tf)
+{
+	Eon_Drawer_Label *thiz;
+
+	thiz = EON_DRAWER_LABEL(w);
+	if (thiz->d->text_font_set)
+		thiz->d->text_font_set(w, thiz->data, tf);
+}
+
+void eon_drawer_label_text_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
+{
+	Eon_Drawer_Label *thiz;
+
+	thiz = EON_DRAWER_LABEL(w);
+	if (thiz->d->text_color_set)
+		thiz->d->text_color_set(w, thiz->data, color);
 }
 /*============================================================================*
  *                                   API                                      *

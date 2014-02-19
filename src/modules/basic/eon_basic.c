@@ -39,6 +39,8 @@ static Eina_Bool eon_basic_init(void)
 	_eon_basic_namespace = ender_namespace_register("eon_basic");
 	eon_drawer_button_ender_register(_eon_basic_namespace,
 			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_basic_drawer_button_new));
+	eon_drawer_label_ender_register(_eon_basic_namespace,
+			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_basic_drawer_label_new));
 	if (!_eon_basic_namespace)
 		return EINA_FALSE;
 	return EINA_TRUE;

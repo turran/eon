@@ -6,4 +6,10 @@
         </state>
       </states>
     </object>
+    <object ns="eon_basic" name="label" id="label">
+      <states>
+        <state name="default">
+        </state>
+      </states>
+    </object>
 </ender>

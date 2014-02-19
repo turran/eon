@@ -26,6 +26,7 @@ libeon_drawer_la_LIBADD = \
 
 libeon_drawer_la_SOURCES = \
 eon_drawer_button.c \
+eon_drawer_label.c \
 eon_drawer_widget.c
 
 libeon_drawer_la_LDFLAGS = -no-undefined -version-info @version_info@

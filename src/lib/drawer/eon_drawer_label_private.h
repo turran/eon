@@ -15,10 +15,13 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_BASIC_H_
-#define _EON_BASIC_H_
 
-Eon_Drawer_Widget * eon_basic_drawer_button_new(void);
-Eon_Drawer_Widget * eon_basic_drawer_label_new(void);
+#ifndef _EON_DRAWER_LABEL_PRIVATE_H_
+#define _EON_DRAWER_LABEL_PRIVATE_H_
+
+void eon_drawer_label_text_buffer_set(Eon_Drawer_Widget *w, Enesim_Text_Buffer *tb);
+void eon_drawer_label_text_font_set(Eon_Drawer_Widget *w, Enesim_Text_Font *tf);
+void eon_drawer_label_text_color_set(Eon_Drawer_Widget *w, Enesim_Color color);
 
 #endif
+

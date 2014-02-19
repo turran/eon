@@ -247,7 +247,7 @@ static void _eon_basic_drawer_button_free(Eon_Drawer_Widget *w, void *data)
 
 }
 
-Eon_Drawer_Button_Descriptor _descriptor = {
+static Eon_Drawer_Button_Descriptor _descriptor = {
 	/* .content_set		= */ _eon_basic_drawer_button_content_set,
 	/* .min_size_get 	= */ _eon_basic_drawer_button_min_size_get,
 	/* .renderer_get 	= */ _eon_basic_drawer_button_renderer_get,

@@ -16,119 +16,94 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
-
-#include "eon_theme_widget.h"
-#include "eon_theme_label.h"
+#include "Eon_Drawer.h"
+#include "eon_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Basic_Label
+typedef struct _Eon_Basic_Drawer_Label
 {
 	Enesim_Renderer *text;
-} Eon_Basic_Label;
+} Eon_Basic_Drawer_Label;
 
-static inline Eon_Basic_Label * _label_get(Eon_Theme_Widget *t)
-{
-	Eon_Basic_Label *thiz;
-
-	thiz = eon_theme_label_data_get(t);
-	return thiz;
-}
 /*----------------------------------------------------------------------------*
  *                      The Eon's theme label interface                       *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _basic_label_renderer_get(Eon_Theme_Widget *t)
+#if 0
+static Enesim_Renderer * _basic_drawer_label_renderer_get(Eon_Theme_Widget *t)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	return thiz->text;
 }
 
-static void _basic_label_x_set(Eon_Theme_Widget *t, double x)
+static void _basic_drawer_label_x_set(Eon_Theme_Widget *t, double x)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
-	enesim_renderer_x_origin_set(thiz->text, x);
 }
 
-static void _basic_label_y_set(Eon_Theme_Widget *t, double y)
+static void _basic_drawer_label_text_get(Eon_Theme_Widget *t, const char **str)
 {
-	Eon_Basic_Label *thiz;
-
-	thiz = _label_get(t);
-	enesim_renderer_y_origin_set(thiz->text, y);
-}
-
-static void _basic_label_text_get(Eon_Theme_Widget *t, const char **str)
-{
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_text_span_text_get(thiz->text, str);
 }
 
-static void _basic_label_text_set(Eon_Theme_Widget *t, const char *str)
+static void _basic_drawer_label_text_set(Eon_Theme_Widget *t, const char *str)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_text_span_text_set(thiz->text, str);
 }
 
-static void _basic_label_font_size_get(Eon_Theme_Widget *t, int *size)
+static void _basic_drawer_label_font_size_get(Eon_Theme_Widget *t, int *size)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_text_base_size_get(thiz->text, size);
 }
 
-static void _basic_label_font_size_set(Eon_Theme_Widget *t, int size)
+static void _basic_drawer_label_font_size_set(Eon_Theme_Widget *t, int size)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_text_base_size_set(thiz->text, size);
 }
 
-static void _basic_label_free(Eon_Theme_Widget *t)
+static void _basic_drawer_label_font_get(Eon_Theme_Widget *t, const char **str)
 {
-	Eon_Basic_Label *thiz;
-
-	thiz = _label_get(t);
-	enesim_renderer_unref(thiz->text);
-	free(thiz);
-}
-
-static void _basic_label_font_get(Eon_Theme_Widget *t, const char **str)
-{
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_text_base_font_name_get(thiz->text, str);
 }
 
-static void _basic_label_font_set(Eon_Theme_Widget *t, const char *str)
+static void _basic_drawer_label_font_set(Eon_Theme_Widget *t, const char *str)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_text_base_font_name_set(thiz->text, str);
 }
 
-static void _basic_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color)
+static void _basic_drawer_label_color_get(Eon_Theme_Widget *t, Enesim_Color *color)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_renderer_color_get(thiz->text, color);
 }
 
-static void _basic_label_color_set(Eon_Theme_Widget *t, Enesim_Color color)
+static void _basic_drawer_label_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 {
-	Eon_Basic_Label *thiz;
+	Eon_Basic_Drawer_Label *thiz;
 
 	thiz = _label_get(t);
 	enesim_renderer_color_set(thiz->text, color);
@@ -136,49 +111,92 @@ static void _basic_label_color_set(Eon_Theme_Widget *t, Enesim_Color color)
 
 
 static Eon_Theme_Label_Descriptor _descriptor = {
-	/* .renderer_get 	= */ _basic_label_renderer_get,
-	/* .x_set 		= */ _basic_label_x_set,
-	/* .y_set 		= */ _basic_label_y_set,
+	/* .renderer_get 	= */ _basic_drawer_label_renderer_get,
+	/* .x_set 		= */ _basic_drawer_label_x_set,
+	/* .y_set 		= */ _basic_drawer_label_y_set,
 	/* .width_set 		= */ NULL,
 	/* .height_set		= */ NULL,
-	/* .free		= */ _basic_label_free,
-	/* .text_set 		= */ _basic_label_text_set,
-	/* .text_get		= */ _basic_label_text_get,
-	/* .font_size_get 	= */ _basic_label_font_size_get,
-	/* .font_size_set	= */ _basic_label_font_size_set,
-	/* .font_get 		= */ _basic_label_font_get,
-	/* .font_set 		= */ _basic_label_font_set,
-	/* .color_get 		= */ _basic_label_color_get,
-	/* .color_set 		= */ _basic_label_color_set,
+	/* .free		= */ _basic_drawer_label_free,
+	/* .text_set 		= */ _basic_drawer_label_text_set,
+	/* .text_get		= */ _basic_drawer_label_text_get,
+	/* .font_size_get 	= */ _basic_drawer_label_font_size_get,
+	/* .font_size_set	= */ _basic_drawer_label_font_size_set,
+	/* .font_get 		= */ _basic_drawer_label_font_get,
+	/* .font_set 		= */ _basic_drawer_label_font_set,
+	/* .color_get 		= */ _basic_drawer_label_color_get,
+	/* .color_set 		= */ _basic_drawer_label_color_set,
 };
+#endif
+/*----------------------------------------------------------------------------*
+ *                               Label interface                              *
+ *----------------------------------------------------------------------------*/
+static void _eon_basic_drawer_label_text_buffer_set(Eon_Drawer_Widget *w,
+		void *data, Enesim_Text_Buffer *tb)
+{
+	Eon_Basic_Drawer_Label *thiz = data;
+	enesim_renderer_text_span_real_buffer_set(thiz->text, tb);
+}
+
+static void _eon_basic_drawer_label_text_font_set(Eon_Drawer_Widget *w,
+		void *data, Enesim_Text_Font *tf)
+{
+	Eon_Basic_Drawer_Label *thiz = data;
+	enesim_renderer_text_span_font_set(thiz->text, tf);
+}
+
+static void _eon_basic_drawer_label_text_color_set(Eon_Drawer_Widget *w,
+		void *data, Enesim_Color color)
+{
+	Eon_Basic_Drawer_Label *thiz = data;
+	enesim_renderer_color_set(thiz->text, color);
+}
+
+static Enesim_Renderer * _eon_basic_drawer_label_renderer_get(
+		Eon_Drawer_Widget *w, void *data)
+{
+	Eon_Basic_Drawer_Label *thiz = data;
+	return enesim_renderer_ref(thiz->text);
+}
+
+static void _eon_basic_drawer_label_geometry_set(Eon_Drawer_Widget *w,
+		void *data, Eina_Rectangle *geom)
+{
+	Eon_Basic_Drawer_Label *thiz = data;
+	enesim_renderer_x_origin_set(thiz->text, geom->x);
+	enesim_renderer_y_origin_set(thiz->text, geom->y);
+}
+
+static void _eon_basic_drawer_label_free(Eon_Drawer_Widget *w, void *data)
+{
+	Eon_Basic_Drawer_Label *thiz = data;
+
+	enesim_renderer_unref(thiz->text);
+	free(thiz);
+}
+
+static Eon_Drawer_Label_Descriptor _descriptor = {
+	/* .text_buffer_set	= */ _eon_basic_drawer_label_text_buffer_set,
+	/* .text_font_set	= */ _eon_basic_drawer_label_text_font_set,
+	/* .text_color_set	= */ _eon_basic_drawer_label_text_color_set,
+	/* .renderer_get 	= */ _eon_basic_drawer_label_renderer_get,
+	/* .geometry_set 	= */ _eon_basic_drawer_label_geometry_set,
+	/* .ender_populate	= */ NULL,
+	/* .ender_process	= */ NULL,
+	/* .free 		= */ _eon_basic_drawer_label_free,
+};
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+Eon_Drawer_Widget * eon_basic_drawer_label_new(void)
+{
+	Eon_Basic_Drawer_Label *thiz;
+	Enesim_Renderer *r;
+
+	thiz = calloc(1, sizeof(Eon_Basic_Drawer_Label));
+	thiz->text = enesim_renderer_text_span_new();
+
+	return eon_drawer_label_new(&_descriptor, thiz);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI Eon_Theme_Widget * eon_theme_basic_label_new(void)
-{
-	Eon_Basic_Label *thiz;
-	Eon_Theme_Widget *t;
-	Enesim_Renderer *r;
-
-	thiz = calloc(1, sizeof(Eon_Basic_Label));
-
-	r = enesim_text_span_new();
-	if (!r) goto span_err;
-	thiz->text = enesim_text_span_new();
-	enesim_renderer_rop_set(thiz->text, ENESIM_BLEND);
-
-	t = eon_theme_label_new(&_descriptor, thiz);
-	if (!t) goto base_err;
-
-	return t;
-
-base_err:
-	enesim_renderer_unref(thiz->text);
-span_err:
-	free(thiz);
-	return NULL;
-}

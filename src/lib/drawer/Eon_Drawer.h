@@ -23,5 +23,6 @@
 
 #include "eon_drawer_widget.h"
 #include "eon_drawer_button.h"
+#include "eon_drawer_label.h"
 
 #endif
