@@ -20,10 +20,10 @@
 
 typedef enum _Eon_Renderable_Size_Hints
 {
-	EON_SIZE_HINT_MIN_MAX 		= 1 << 0,
-	EON_SIZE_HINT_PREFERRED 	= 1 << 1,
-	EON_SIZE_HINT_HEIGHT_FOR_WIDTH 	= 1 << 2,
-	EON_SIZE_HINT_WIDTH_FOR_HEIGHT 	= 1 << 3,
+	EON_RENDERABLE_HINT_MIN_MAX 		= 1 << 0,
+	EON_RENDERABLE_HINT_PREFERRED 		= 1 << 1,
+	EON_RENDERABLE_HINT_HEIGHT_FOR_WIDTH 	= 1 << 2,
+	EON_RENDERABLE_HINT_WIDTH_FOR_HEIGHT 	= 1 << 3,
 } Eon_Renderable_Size_Hints;
 
 typedef struct _Eon_Renderable_Size

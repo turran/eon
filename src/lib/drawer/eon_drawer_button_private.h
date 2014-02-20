@@ -19,7 +19,7 @@
 #ifndef _EON_DRAWER_BUTTON_PRIVATE_H_
 #define _EON_DRAWER_BUTTON_PRIVATE_H_
 
-void eon_drawer_button_min_size_get(Eon_Drawer_Widget *w, Eon_Size *min);
+void eon_drawer_button_padding_get(Eon_Drawer_Widget *w, Eon_Box *padding);
 void eon_drawer_button_content_set(Eon_Drawer_Widget *w, Enesim_Renderer *r);
 
 #endif

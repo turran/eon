@@ -25,7 +25,7 @@ static void request_geometry_cb(Egueb_Dom_Event *ev, void *data)
 
 		size_hints = eon_renderable_size_hints_get(eon, &renderable_size);
 		printf("size hints %08x\n", size_hints);
-		if (size_hints & EON_SIZE_HINT_MIN_MAX)
+		if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
 		{
 			/* TODO set the min size for now */
 			size.width = renderable_size.min_width;

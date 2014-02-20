@@ -43,15 +43,20 @@ typedef struct _Eon_Widget
 	Enesim_Renderer *proxy;
 	Egueb_Dom_String *last_theme;
 	Egueb_Dom_String *last_parent_theme;
+	/* Whenever the parent's theme attr changed or the
+	 * widget's theme attr changed this flag will be set
+	 */
 	Eina_Bool theme_changed;
 } Eon_Widget;
 
 typedef int (*Eon_Widget_Size_Hints_Get)(Eon_Widget *thiz, Eon_Renderable_Size *size);
 typedef Eina_Bool (*Eon_Widget_Process)(Eon_Widget *thiz);
+typedef void (*Eon_Widget_Theme_Created)(Eon_Widget *thiz);
 
 typedef struct _Eon_Widget_Class
 {
 	Eon_Renderable_Class base;
+	Eon_Widget_Theme_Created theme_created;
 	Eon_Widget_Size_Hints_Get size_hints_get;
 	Eon_Widget_Process process;
 } Eon_Widget_Class;

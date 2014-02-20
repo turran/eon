@@ -20,6 +20,7 @@
 #include "eon_drawer_widget.h"
 #include "eon_drawer_label.h"
 #include "eon_drawer_widget_private.h"
+#include "eon_drawer_label_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -32,6 +33,16 @@ typedef struct _Eon_Drawer_Label
 	Eon_Drawer_Widget base;
 	const Eon_Drawer_Label_Descriptor *d;
 	void *data;
+	/* attributes set from the control */
+	Enesim_Color control_color;
+	Eina_Bool control_color_set;
+	/* attributes populated */
+	Enesim_Color color;
+	/* our generated attributes */
+	Enesim_Text_Font *tf;
+	Enesim_Color final_color;
+	Eina_Bool font_changed;
+	Eina_Bool color_changed;
 } Eon_Drawer_Label;
 
 typedef struct _Eon_Drawer_Label_Class
@@ -39,10 +50,50 @@ typedef struct _Eon_Drawer_Label_Class
 	Eon_Drawer_Widget_Class base;
 } Eon_Drawer_Label_Class;
 
+
+static Eina_Bool _eon_drawer_label_generate_font(Eon_Drawer_Label *thiz)
+{
+	if (thiz->font_changed)
+	{
+		Enesim_Text_Engine *e;
+		Enesim_Renderer *r;
+
+		r = eon_drawer_label_text_renderer_get(EON_DRAWER_WIDGET(thiz));
+		if (!r)
+		{
+			return EINA_FALSE;
+		}
+
+		/* TODO generate a text font based on the attributes */
+		e = enesim_text_engine_default_get();
+		thiz->tf = enesim_text_font_new_description_from(e, "Sans:style=Regular", 16);
+		thiz->font_changed = EINA_FALSE;
+		enesim_text_engine_unref(e);
+
+		enesim_renderer_text_span_font_set(r, thiz->tf);
+		enesim_renderer_unref(r);
+	}
+	return EINA_TRUE;
+}
+
+static void _eon_drawer_label_generate_color(Eon_Drawer_Label *thiz)
+{
+	if (thiz->color_changed)
+	{
+		if (thiz->control_color_set)
+			thiz->final_color = thiz->control_color;
+		//else
+		//	thiz->final_color = thiz->color;
+		thiz->color_changed;
+		if (thiz->d->text_color_set)
+			thiz->d->text_color_set(EON_DRAWER_WIDGET(thiz), thiz->data, thiz->final_color);
+	}
+}
+
 /*----------------------------------------------------------------------------*
  *                              Widget interface                              *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_drawer_widget_renderer_get(Eon_Drawer_Widget *w)
+static Enesim_Renderer * _eon_drawer_label_renderer_get(Eon_Drawer_Widget *w)
 {
 	Eon_Drawer_Label *thiz;
 
@@ -52,7 +103,7 @@ static Enesim_Renderer * _eon_drawer_widget_renderer_get(Eon_Drawer_Widget *w)
 	return NULL;
 }
 
-static void _eon_drawer_widget_geometry_set(Eon_Drawer_Widget *w, Eina_Rectangle *geom)
+static void _eon_drawer_label_geometry_set(Eon_Drawer_Widget *w, Eina_Rectangle *geom)
 {
 	Eon_Drawer_Label *thiz;
 
@@ -61,22 +112,25 @@ static void _eon_drawer_widget_geometry_set(Eon_Drawer_Widget *w, Eina_Rectangle
 		thiz->d->geometry_set(w, thiz->data, geom);
 }
 
-static void _eon_drawer_widget_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
+static void _eon_drawer_label_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
 {
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
-	/* add the font properties */
+	/* add the font attributes */
 	if (thiz->d->ender_populate)
 		thiz->d->ender_populate(w, thiz->data, n);
 }
 
-static Eina_Bool _eon_drawer_widget_ender_process(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
+static Eina_Bool _eon_drawer_label_ender_process(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
 {
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
-	/* FIXME The control should get the font but is the common drawer that returns it */
+	if (!_eon_drawer_label_generate_font(thiz))
+		return EINA_FALSE;
+	_eon_drawer_label_generate_color(thiz);
+
 	if (thiz->d->ender_process)
 		return thiz->d->ender_process(w, thiz->data, n);
 	return EINA_TRUE;
@@ -92,10 +146,10 @@ static void _eon_drawer_label_class_init(void *k)
 	Eon_Drawer_Widget_Class *klass;
 
 	klass = EON_DRAWER_WIDGET_CLASS(k);
-	klass->renderer_get = _eon_drawer_widget_renderer_get;
-	klass->geometry_set = _eon_drawer_widget_geometry_set;
-	klass->ender_populate = _eon_drawer_widget_ender_populate;
-	klass->ender_process = _eon_drawer_widget_ender_process;
+	klass->renderer_get = _eon_drawer_label_renderer_get;
+	klass->geometry_set = _eon_drawer_label_geometry_set;
+	klass->ender_populate = _eon_drawer_label_ender_populate;
+	klass->ender_process = _eon_drawer_label_ender_process;
 }
 
 static void _eon_drawer_label_instance_init(void *o)
@@ -113,22 +167,24 @@ static void _eon_drawer_label_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_drawer_label_text_buffer_set(Eon_Drawer_Widget *w, Enesim_Text_Buffer *tb)
+Enesim_Text_Font * eon_drawer_label_text_font_get(Eon_Drawer_Widget *w)
 {
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
-	if (thiz->d->text_buffer_set)
-		thiz->d->text_buffer_set(w, thiz->data, tb);
+	if (!_eon_drawer_label_generate_font(thiz))
+		return NULL;
+	return enesim_text_font_ref(thiz->tf);
 }
 
-void eon_drawer_label_text_font_set(Eon_Drawer_Widget *w, Enesim_Text_Font *tf)
+Enesim_Renderer * eon_drawer_label_text_renderer_get(Eon_Drawer_Widget *w)
 {
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
-	if (thiz->d->text_font_set)
-		thiz->d->text_font_set(w, thiz->data, tf);
+	if (thiz->d->text_renderer_get)
+		return thiz->d->text_renderer_get(w, thiz->data);
+	return NULL;
 }
 
 void eon_drawer_label_text_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
@@ -136,8 +192,18 @@ void eon_drawer_label_text_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
 	Eon_Drawer_Label *thiz;
 
 	thiz = EON_DRAWER_LABEL(w);
-	if (thiz->d->text_color_set)
-		thiz->d->text_color_set(w, thiz->data, color);
+	thiz->control_color = color;
+	thiz->control_color_set = EINA_TRUE;
+	thiz->color_changed = EINA_TRUE;
+}
+
+void eon_drawer_label_text_color_unset(Eon_Drawer_Widget *w)
+{
+	Eon_Drawer_Label *thiz;
+
+	thiz = EON_DRAWER_LABEL(w);
+	thiz->control_color_set = EINA_FALSE;
+	thiz->color_changed = EINA_TRUE;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -157,6 +223,7 @@ EAPI Eon_Drawer_Widget * eon_drawer_label_new(
 	thiz = EON_DRAWER_LABEL(w);
 	thiz->d = d;
 	thiz->data = data;
+	thiz->font_changed = EINA_TRUE;
 
 	return w;	
 }

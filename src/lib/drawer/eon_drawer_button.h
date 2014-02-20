@@ -24,11 +24,11 @@
  */
 
 typedef void (*Eon_Drawer_Button_Descriptor_Content_Set)(Eon_Drawer_Widget *w, void *data, Enesim_Renderer *r);
-typedef void (*Eon_Drawer_Button_Descriptor_Min_Size_Get)(Eon_Drawer_Widget *w, void *data, Eon_Size *min);
+typedef void (*Eon_Drawer_Button_Descriptor_Padding_Get)(Eon_Drawer_Widget *w, void *data, Eon_Box *padding);
 
 typedef struct _Eon_Drawer_Button_Descriptor {
 	Eon_Drawer_Button_Descriptor_Content_Set content_set;
-	Eon_Drawer_Button_Descriptor_Min_Size_Get min_size_get;
+	Eon_Drawer_Button_Descriptor_Padding_Get padding_get;
 	Eon_Drawer_Widget_Descriptor_Renderer_Get renderer_get;
 	Eon_Drawer_Widget_Descriptor_Geometry_Set geometry_set;
 	Eon_Drawer_Widget_Descriptor_Ender_Populate ender_populate;

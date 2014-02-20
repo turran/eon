@@ -130,18 +130,12 @@ static Eon_Theme_Label_Descriptor _descriptor = {
 /*----------------------------------------------------------------------------*
  *                               Label interface                              *
  *----------------------------------------------------------------------------*/
-static void _eon_basic_drawer_label_text_buffer_set(Eon_Drawer_Widget *w,
-		void *data, Enesim_Text_Buffer *tb)
+static Enesim_Renderer * _eon_basic_drawer_label_text_renderer_get(Eon_Drawer_Widget *w,
+		void *data)
 {
 	Eon_Basic_Drawer_Label *thiz = data;
-	enesim_renderer_text_span_real_buffer_set(thiz->text, tb);
-}
 
-static void _eon_basic_drawer_label_text_font_set(Eon_Drawer_Widget *w,
-		void *data, Enesim_Text_Font *tf)
-{
-	Eon_Basic_Drawer_Label *thiz = data;
-	enesim_renderer_text_span_font_set(thiz->text, tf);
+	return enesim_renderer_ref(thiz->text);	
 }
 
 static void _eon_basic_drawer_label_text_color_set(Eon_Drawer_Widget *w,
@@ -175,8 +169,7 @@ static void _eon_basic_drawer_label_free(Eon_Drawer_Widget *w, void *data)
 }
 
 static Eon_Drawer_Label_Descriptor _descriptor = {
-	/* .text_buffer_set	= */ _eon_basic_drawer_label_text_buffer_set,
-	/* .text_font_set	= */ _eon_basic_drawer_label_text_font_set,
+	/* .text_renderer_get	= */ _eon_basic_drawer_label_text_renderer_get,
 	/* .text_color_set	= */ _eon_basic_drawer_label_text_color_set,
 	/* .renderer_get 	= */ _eon_basic_drawer_label_renderer_get,
 	/* .geometry_set 	= */ _eon_basic_drawer_label_geometry_set,

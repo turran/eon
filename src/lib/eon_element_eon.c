@@ -200,12 +200,10 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 	if (thiz->renderable_changed)
 	{
 		Enesim_Renderer_Compound_Layer *l;
-		Eon_Renderable *other;
 
 		enesim_renderer_compound_layer_clear(thiz->r);
 		l = enesim_renderer_compound_layer_new();
-		other = EON_RENDERABLE(egueb_dom_element_external_data_get(child));
-		enesim_renderer_compound_layer_renderer_set(l, eon_renderable_renderer_get(other));
+		enesim_renderer_compound_layer_renderer_set(l, eon_renderable_renderer_get(child));
 		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
 		enesim_renderer_compound_layer_add(thiz->r, l);
 		thiz->renderable_changed = EINA_FALSE;

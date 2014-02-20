@@ -23,24 +23,12 @@
  * @{
  */
 
-/*
- * TODO add functions to:
- * 1. Set the font size from the control
- * 2. Set the font color from the control
- * 3. Set the font size from the control
- * At the end we need all of the css font attributes
- * Set the geometry
- * Get the text font?
- */
-
-typedef void (*Eon_Drawer_Label_Descriptor_Text_Buffer_Set)(Eon_Drawer_Widget *t, void *data, Enesim_Text_Buffer *tf);
-typedef void (*Eon_Drawer_Label_Descriptor_Text_Font_Set)(Eon_Drawer_Widget *t, void *data, Enesim_Text_Font *tf);
+typedef Enesim_Renderer * (*Eon_Drawer_Label_Descriptor_Text_Renderer_Get)(Eon_Drawer_Widget *t, void *data);
 typedef void (*Eon_Drawer_Label_Descriptor_Text_Color_Set)(Eon_Drawer_Widget *t, void *data, Enesim_Color color);
 
 typedef struct _Eon_Drawer_Label_Descriptor
 {
-	Eon_Drawer_Label_Descriptor_Text_Buffer_Set text_buffer_set;
-	Eon_Drawer_Label_Descriptor_Text_Font_Set text_font_set;
+	Eon_Drawer_Label_Descriptor_Text_Renderer_Get text_renderer_get;
 	Eon_Drawer_Label_Descriptor_Text_Color_Set text_color_set;
 	/* widget descriptor */
 	Eon_Drawer_Widget_Descriptor_Renderer_Get renderer_get;

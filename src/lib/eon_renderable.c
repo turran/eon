@@ -233,10 +233,12 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	}
 }
 
-Enesim_Renderer * eon_renderable_renderer_get(Eon_Renderable *thiz)
+Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n)
 {
+	Eon_Renderable *thiz;
 	Eon_Renderable_Class *klass;
 
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->renderer_get)
 		return klass->renderer_get(thiz);

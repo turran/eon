@@ -19,9 +19,10 @@
 #ifndef _EON_DRAWER_LABEL_PRIVATE_H_
 #define _EON_DRAWER_LABEL_PRIVATE_H_
 
-void eon_drawer_label_text_buffer_set(Eon_Drawer_Widget *w, Enesim_Text_Buffer *tb);
-void eon_drawer_label_text_font_set(Eon_Drawer_Widget *w, Enesim_Text_Font *tf);
+Enesim_Renderer * eon_drawer_label_text_renderer_get(Eon_Drawer_Widget *w);
+Enesim_Text_Font * eon_drawer_label_text_font_get(Eon_Drawer_Widget *w);
 void eon_drawer_label_text_color_set(Eon_Drawer_Widget *w, Enesim_Color color);
+void eon_drawer_label_text_color_unset(Eon_Drawer_Widget *w);
 
 #endif
 

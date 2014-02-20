@@ -114,6 +114,7 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 				NULL);
 		if (thiz->theme_instance)
 		{
+			Eon_Widget_Class *klass;
 			Enesim_Renderer *r;
 
 			INFO_ELEMENT(e->n, "Instance fetched correctly");
@@ -122,6 +123,10 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 			/* set the renderer */
 			r = eon_drawer_widget_renderer_get(thiz->theme_widget);
 			enesim_renderer_proxy_proxied_set(thiz->proxy, r);
+			/* call the class method */
+			klass = EON_WIDGET_CLASS_GET(thiz);
+			if (klass->theme_created)
+				klass->theme_created(thiz);
 		}
 		else
 		{
@@ -172,6 +177,7 @@ static int _eon_widget_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *si
 {
 	Eon_Widget *thiz;
 	Eon_Widget_Class *klass;
+	int ret = 0;
 
 	thiz = EON_WIDGET(r);
 	klass = EON_WIDGET_CLASS_GET(thiz);
@@ -182,8 +188,8 @@ static int _eon_widget_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *si
 	}
 
 	if (klass->size_hints_get)
-		return klass->size_hints_get(thiz, size);
-	return 0;
+		ret = klass->size_hints_get(thiz, size);
+	return ret;
 }
 
 static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
@@ -201,7 +207,7 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 		DBG_ELEMENT(e->n, "Widget's theme is different");
 		thiz->theme_changed = EINA_TRUE;
 		eon_renderable_invalidate_geometry(r);
-		return;
+		return EINA_TRUE;
 	}
 	/* in case the parent's theme is different than the previous
 	 * theme, invalidate it too
@@ -227,6 +233,7 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 		// FIX this egueb_dom_string_unref(theme);
 		egueb_dom_node_unref(parent);
 	}
+	return EINA_TRUE;
 }
 
 static Eina_Bool _eon_widget_process(Eon_Renderable *r)

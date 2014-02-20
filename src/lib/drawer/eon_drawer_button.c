@@ -111,13 +111,13 @@ static void _eon_drawer_button_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_drawer_button_min_size_get(Eon_Drawer_Widget *w, Eon_Size *min)
+void eon_drawer_button_padding_get(Eon_Drawer_Widget *w, Eon_Box *padding)
 {
 	Eon_Drawer_Button *thiz;
 
 	thiz = EON_DRAWER_BUTTON(w);
-	if (thiz->d->min_size_get)
-		thiz->d->min_size_get(w, thiz->data, min);
+	if (thiz->d->padding_get)
+		thiz->d->padding_get(w, thiz->data, padding);
 }
 
 void eon_drawer_button_content_set(Eon_Drawer_Widget *w, Enesim_Renderer *r)

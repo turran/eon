@@ -150,12 +150,16 @@ static void _eon_basic_drawer_button_content_set(Eon_Drawer_Widget *w,
 				enesim_renderer_ref(thiz->proxy_default));
 }
 
-static void _eon_basic_drawer_button_min_size_get(Eon_Drawer_Widget *w,
-		void *data, Eon_Size *min)
+static void _eon_basic_drawer_button_padding_get(Eon_Drawer_Widget *w,
+		void *data, Eon_Box *padding)
 {
-	printf("[basic] min size get\n");
-	min->width = 50;
-	min->height = 50;
+	Eon_Basic_Drawer_Button *thiz = data;
+
+	printf("[basic] padding get\n");
+	padding->top = thiz->vertical_padding + thiz->radius;
+	padding->bottom = thiz->vertical_padding + thiz->radius;
+	padding->left = thiz->horizontal_padding + thiz->radius;
+	padding->right = thiz->horizontal_padding + thiz->radius;
 }
 
 static Enesim_Renderer * _eon_basic_drawer_button_renderer_get(
@@ -249,7 +253,7 @@ static void _eon_basic_drawer_button_free(Eon_Drawer_Widget *w, void *data)
 
 static Eon_Drawer_Button_Descriptor _descriptor = {
 	/* .content_set		= */ _eon_basic_drawer_button_content_set,
-	/* .min_size_get 	= */ _eon_basic_drawer_button_min_size_get,
+	/* .padding_get 	= */ _eon_basic_drawer_button_padding_get,
 	/* .renderer_get 	= */ _eon_basic_drawer_button_renderer_get,
 	/* .geometry_set 	= */ _eon_basic_drawer_button_geometry_set,
 	/* .ender_populate	= */ _eon_basic_drawer_button_ender_populate,

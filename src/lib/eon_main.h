@@ -24,6 +24,14 @@ typedef struct _Eon_Size
 	int height;
 } Eon_Size;
 
+typedef struct _Eon_Box
+{
+	int top;
+	int left;
+	int right;
+	int bottom;
+} Eon_Box;
+
 EAPI int eon_init(void);
 EAPI int eon_shutdown(void);
 
@@ -34,6 +42,7 @@ EAPI extern Egueb_Dom_String *EON_MAX_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_WIDTH;
 EAPI extern Egueb_Dom_String *EON_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_THEME;
+EAPI extern Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
 
 EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON;
