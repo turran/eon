@@ -314,6 +314,8 @@ int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
 	int ret = 0;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	DBG_ELEMENT(n, "Getting size hints (needs geometry: %d size hints cached: %d)",
+			thiz->needs_geometry, thiz->size_hints_cached);
 	/* Check if the size hints are already cached */
 	if (!thiz->size_hints_cached)
 	{
