@@ -18,6 +18,8 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_renderable_private.h"
+#include "eon_vertical_align_private.h"
+#include "eon_horizontal_align_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -101,9 +103,17 @@ static void _eon_renderable_init(Eon_Element *e)
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
 
+	thiz->valign = eon_vertical_align_attr_new();
+	egueb_dom_attr_set(thiz->valign, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_VERTICAL_ALIGN_MIDDLE);
+
+	thiz->halign = eon_horizontal_align_attr_new();
+	egueb_dom_attr_set(thiz->halign, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_HORIZONTAL_ALIGN_CENTER);
+
 	n = e->n;
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->width), NULL);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->height), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->valign), NULL);
+	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->halign), NULL);
 
 	/* in case the attribute width or height has changed be sure to invalidate
 	 * the geometry
@@ -198,6 +208,8 @@ static void _eon_renderable_instance_deinit(void *o)
 
 	egueb_dom_node_unref(thiz->width);
 	egueb_dom_node_unref(thiz->height);
+	egueb_dom_node_unref(thiz->valign);
+	egueb_dom_node_unref(thiz->halign);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -301,6 +313,51 @@ EAPI int eon_renderable_height_get(Egueb_Dom_Node *n)
 	return ret;
 }
 
+/**
+ * Sets the vertical align of a renderable
+ * @param[in] n The renderable node to set the vertical align
+ * @param[in] valign The vertical align to set
+ */
+EAPI void eon_renderable_valign_set(Egueb_Dom_Node *n, Eon_Vertical_Align valign)
+{
+	Eon_Renderable *thiz;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_set(thiz->valign, EGUEB_DOM_ATTR_TYPE_BASE, valign);
+}
+
+EAPI Eon_Vertical_Align eon_renderable_valign_get(Egueb_Dom_Node *n)
+{
+	Eon_Renderable *thiz;
+	Eon_Vertical_Align ret;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_final_get(thiz->valign, &ret);
+	return ret;
+}
+
+/**
+ * Sets the horizontal align of a renderable
+ * @param[in] n The renderable node to set the horizontal align
+ * @param[in] halign The horizontal align to set
+ */
+EAPI void eon_renderable_halign_set(Egueb_Dom_Node *n, Eon_Horizontal_Align halign)
+{
+	Eon_Renderable *thiz;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_set(thiz->halign, EGUEB_DOM_ATTR_TYPE_BASE, halign);
+}
+
+EAPI Eon_Horizontal_Align eon_renderable_halign_get(Egueb_Dom_Node *n)
+{
+	Eon_Renderable *thiz;
+	Eon_Horizontal_Align ret;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_final_get(thiz->halign, &ret);
+	return ret;
+}
 
 /**
  * @brief Get the size hints of a renderable
@@ -308,7 +365,7 @@ EAPI int eon_renderable_height_get(Egueb_Dom_Node *n)
  * @param[out] size The pointer to write the size hints 
  * @return The size hints mask
  */
-int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
+EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size)
 {
 	Eon_Renderable *thiz;
 	int ret = 0;

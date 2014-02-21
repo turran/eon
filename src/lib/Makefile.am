@@ -20,6 +20,8 @@ eon_element_label.c \
 eon_event_geometry.c \
 eon_main.c \
 eon_renderable.c \
+eon_horizontal_align.c \
+eon_vertical_align.c \
 eon_widget.c
 
 libeon_la_LIBADD = \

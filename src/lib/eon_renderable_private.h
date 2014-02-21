@@ -36,9 +36,10 @@ typedef struct _Eon_Renderable
 {
 	Eon_Element base;
 	/* attributes */
-	Egueb_Dom_Node *visibility;
 	Egueb_Dom_Node *width;
 	Egueb_Dom_Node *height;
+	Egueb_Dom_Node *valign;
+	Egueb_Dom_Node *halign;
 	/* private */
 	Eon_Renderable_Size size;
 	int size_hints;

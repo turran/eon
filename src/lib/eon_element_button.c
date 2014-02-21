@@ -42,7 +42,10 @@ typedef struct _Eon_Element_Button_Class
 
 /* TODO handle the expand, padding, margin or whatever other attr we decide to add */
 static void _eon_element_button_child_solver(Eina_Rectangle *fs,
-		Eon_Renderable_Size *size, int size_hints, Eina_Rectangle *out)
+		Eon_Renderable_Size *size, int size_hints,
+		Eon_Vertical_Align valign,
+		Eon_Horizontal_Align halign,
+		Eina_Rectangle *out)
 {
 	int w = -1, h = -1;
 	Eina_Bool w_set = EINA_FALSE;
@@ -80,10 +83,34 @@ static void _eon_element_button_child_solver(Eina_Rectangle *fs,
 		}
 	}
 
-	/* TODO handle halign, valign */
-	/* for now center it */
-	out->x = fs->x + ((fs->w - w) / 2);
-	out->y = fs->y + ((fs->h - h) / 2);
+	/* handle halign, valign */
+	switch (halign)
+	{
+		case EON_HORIZONTAL_ALIGN_LEFT:
+		out->x = fs->x;
+		break;
+
+		case EON_HORIZONTAL_ALIGN_CENTER:
+		out->x = fs->x + ((fs->w - w) / 2);
+		break;
+
+		case EON_HORIZONTAL_ALIGN_RIGHT:
+		out->x = fs->x + (fs->w - w);
+	}
+	switch (valign)
+	{
+		case EON_VERTICAL_ALIGN_TOP:
+		out->y = fs->y;
+		break;
+
+		case EON_VERTICAL_ALIGN_MIDDLE:
+		out->y = fs->y + ((fs->h - h) / 2);
+		break;
+
+		case EON_VERTICAL_ALIGN_BOTTOM:
+		out->y = fs->y + (fs->h - h);
+		break;
+	}
 	out->w = w;
 	out->h = h;
 }
@@ -153,6 +180,8 @@ static Eina_Bool _eon_element_button_process(Eon_Widget *w)
 	Eon_Element_Button *thiz;
 	Eon_Renderable_Size size;
 	Eon_Box padding;
+	Eon_Vertical_Align valign;
+	Eon_Horizontal_Align halign;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	Enesim_Renderer *r;
@@ -175,13 +204,15 @@ static Eina_Bool _eon_element_button_process(Eon_Widget *w)
 	free_space.x += padding.left;
 	free_space.y += padding.top;
 	free_space.w -= padding.left + padding.right;
-	free_space.h -= padding.bottom;
+	free_space.h -= padding.bottom + padding.top;
 
 	ERR_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
 	size_hints = eon_renderable_size_hints_get(child, &size);
 
 	/* Our basic frame layout algorithm */
-	_eon_element_button_child_solver(&free_space, &size, size_hints, &geometry);
+	valign = eon_renderable_valign_get(child);
+	halign = eon_renderable_halign_get(child);
+	_eon_element_button_child_solver(&free_space, &size, size_hints, valign, halign, &geometry);
 	eon_renderable_geometry_set(child, &geometry);
 	
 	/* Set the content renderer */

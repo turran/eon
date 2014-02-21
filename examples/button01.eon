@@ -1,5 +1,5 @@
 <eon>
   <button id="button01">
-    <label ellipsize="true">My very own label</label>
+    <label valign="top" halign="right" ellipsize="true">My very own label</label>
   </button>
 </eon>

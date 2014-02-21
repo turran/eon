@@ -127,6 +127,8 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 			klass = EON_WIDGET_CLASS_GET(thiz);
 			if (klass->theme_created)
 				klass->theme_created(thiz);
+			/* Set the default state first */
+			ender_element_instance_state_set(thiz->theme_instance, "default", NULL);
 		}
 		else
 		{

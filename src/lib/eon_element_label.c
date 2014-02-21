@@ -194,6 +194,7 @@ static int _eon_element_label_size_hints_get(Eon_Widget *w,
 		return 0;
 	}
 
+	enesim_text_font_unref(tf);
 	enesim_renderer_shape_geometry_get(thiz->r, &geom);
 	size->min_width = geom.w;
 	size->min_height = geom.h;

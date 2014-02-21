@@ -42,7 +42,11 @@ EAPI void eon_renderable_width_set(Egueb_Dom_Node *n, int w);
 EAPI int eon_renderable_width_get(Egueb_Dom_Node *n);
 EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h);
 EAPI int eon_renderable_height_get(Egueb_Dom_Node *n);
-int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
+EAPI void eon_renderable_valign_set(Egueb_Dom_Node *n, Eon_Vertical_Align valign);
+EAPI Eon_Vertical_Align eon_renderable_valign_get(Egueb_Dom_Node *n);
+EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
+
+
 
 #endif
 

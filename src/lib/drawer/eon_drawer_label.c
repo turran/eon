@@ -82,14 +82,34 @@ static void _eon_drawer_label_generate_color(Eon_Drawer_Label *thiz)
 	{
 		if (thiz->control_color_set)
 			thiz->final_color = thiz->control_color;
-		//else
-		//	thiz->final_color = thiz->color;
-		thiz->color_changed;
+		else
+			thiz->final_color = thiz->color;
 		if (thiz->d->text_color_set)
 			thiz->d->text_color_set(EON_DRAWER_WIDGET(thiz), thiz->data, thiz->final_color);
+		thiz->color_changed = EINA_FALSE;
 	}
 }
 
+/*----------------------------------------------------------------------------*
+ *                         Attribute setters/getters                           *
+ *----------------------------------------------------------------------------*/
+static void _eon_drawer_label_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
+{
+	Eon_Drawer_Label *thiz;
+
+	thiz = EON_DRAWER_LABEL(w);
+	thiz->color = color;
+	thiz->color_changed = EINA_TRUE;
+	_eon_drawer_label_generate_color(thiz);
+}
+
+static Enesim_Color _eon_drawer_label_color_get(Eon_Drawer_Widget *w)
+{
+	Eon_Drawer_Label *thiz;
+
+	thiz = EON_DRAWER_LABEL(w);
+	return thiz->final_color;
+}
 /*----------------------------------------------------------------------------*
  *                              Widget interface                              *
  *----------------------------------------------------------------------------*/
@@ -115,9 +135,15 @@ static void _eon_drawer_label_geometry_set(Eon_Drawer_Widget *w, Eina_Rectangle 
 static void _eon_drawer_label_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Node *n)
 {
 	Eon_Drawer_Label *thiz;
+	Egueb_Dom_Node *attr;
 
 	thiz = EON_DRAWER_LABEL(w);
 	/* add the font attributes */
+	attr = ender_attr_int_new("color",
+			ENDER_ATTR_INT_GET(_eon_drawer_label_color_get),
+			ENDER_ATTR_INT_SET(_eon_drawer_label_color_set));
+	egueb_dom_element_attribute_add(n, attr, NULL);
+
 	if (thiz->d->ender_populate)
 		thiz->d->ender_populate(w, thiz->data, n);
 }
