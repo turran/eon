@@ -3,15 +3,15 @@
     <object ns="eon_basic" name="button" id="button">
       <states>
         <state name="default">
-          <set attributeName="border-color" to="4283782485"/>
-          <set attributeName="fill-color" to="4294901760"/>
+          <set attributeName="border-color" to="0xcccccc"/>
+          <set attributeName="fill-color" to="0x555555"/>
         </state>
       </states>
     </object>
     <object ns="eon_basic" name="label" id="label">
       <states>
         <state name="default">
-          <set attributeName="color" to="4283123141"/>
+          <set attributeName="color" to="gray"/>
         </state>
       </states>
     </object>

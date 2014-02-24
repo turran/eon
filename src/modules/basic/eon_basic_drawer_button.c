@@ -251,13 +251,13 @@ static void _eon_basic_drawer_button_ender_populate(Eon_Drawer_Widget *w,
 
 	/* add our own attributes */
 	printf("[basic] ender populate\n");
-	attr = ender_attr_int_new("border-color",
-			ENDER_ATTR_INT_GET(_eon_basic_drawer_button_border_color_get),
-			ENDER_ATTR_INT_SET(_eon_basic_drawer_button_border_color_set));
+	attr = ender_attr_enesim_color_new("border-color",
+			ENDER_ATTR_ENESIM_COLOR_GET(_eon_basic_drawer_button_border_color_get),
+			ENDER_ATTR_ENESIM_COLOR_SET(_eon_basic_drawer_button_border_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
-	attr = ender_attr_int_new("fill-color",
-			ENDER_ATTR_INT_GET(_eon_basic_drawer_button_fill_color_get),
-			ENDER_ATTR_INT_SET(_eon_basic_drawer_button_fill_color_set));
+	attr = ender_attr_enesim_color_new("fill-color",
+			ENDER_ATTR_ENESIM_COLOR_GET(_eon_basic_drawer_button_fill_color_get),
+			ENDER_ATTR_ENESIM_COLOR_SET(_eon_basic_drawer_button_fill_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
 }
 
