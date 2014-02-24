@@ -170,8 +170,6 @@ src/lib/backend/ecore_sdl/Makefile
 src/lib/backend/ecore_remote/Makefile
 src/lib/extension/Makefile
 src/lib/extension/esvg/Makefile
-src/lib/theme/Makefile
-src/lib/theme/basic/Makefile
 src/include/Makefile
 src/include/generated/Makefile
 src/tests/Makefile
