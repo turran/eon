@@ -328,7 +328,7 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		if (!s) return NULL;
 
 		doc = ender_document_new();
-		egueb_dom_parser_parse(s, doc);
+		egueb_dom_parser_parse(s, &doc);
 		enesim_stream_unref(s);
 
 		theme = calloc(1, sizeof(Eon_Element_Eon_Theme));
