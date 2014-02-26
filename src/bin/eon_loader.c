@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	/* create the document */
 	doc = eon_document_new();
 
-	egueb_dom_parser_parse(stream, doc);
+	egueb_dom_parser_parse(stream, &doc);
 	enesim_stream_unref(stream);
 
 	eon = egueb_dom_document_element_get(doc);
