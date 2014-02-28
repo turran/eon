@@ -3,8 +3,8 @@
     <object ns="eon_basic" name="button" id="button">
       <states>
         <state name="default">
-          <set attributeName="border-color" to="#cccccc"/>
-          <set attributeName="fill-color" to="#555555"/>
+          <set attributeName="border-color" to="#555555"/>
+          <set attributeName="fill-color" to="#cccccc"/>
         </state>
       </states>
     </object>

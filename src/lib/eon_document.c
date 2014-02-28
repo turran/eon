@@ -78,7 +78,6 @@ static void _eon_document_node_inserted_cb(Egueb_Dom_Event *ev,
 	Egueb_Dom_Node *target;
 
 	parent = egueb_dom_event_mutation_related_get(ev);
-	printf("node inserted!!!\n");
 
 	if (parent != n)
 	{
