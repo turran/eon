@@ -34,6 +34,9 @@ include src/modules/drawer/basic/Makefile.mk
 include src/modules/enesim_image/Makefile.mk
 include src/modules/egueb_source/Makefile.mk
 
+### Themes
+include data/theme/Makefile.mk
+
 EXTRA_DIST += \
 AUTHORS \
 COPYING \
