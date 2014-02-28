@@ -88,7 +88,6 @@ static void _eon_element_eon_init(Eon_Renderable *r)
 {
 	Egueb_Dom_Node *n;
 
-	/* check that the parent is ourself */
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,

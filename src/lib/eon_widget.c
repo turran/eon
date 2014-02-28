@@ -38,7 +38,14 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 	Eina_Bool ret = EINA_TRUE;
 
 	if (!thiz->theme_changed)
+	{
+		if (!thiz->theme_widget)
+		{
+			ERR_ELEMENT((EON_ELEMENT(thiz))->n, "Theme does not exist");
+			return EINA_FALSE;
+		}
 		return EINA_TRUE;
+	}
 
 	e = EON_ELEMENT(thiz);
 	if (thiz->theme_instance)

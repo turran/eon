@@ -198,7 +198,7 @@ static int _eon_element_label_size_hints_get(Eon_Widget *w,
 	enesim_renderer_shape_geometry_get(thiz->r, &geom);
 	size->min_width = geom.w;
 	size->min_height = geom.h;
-	size->min_width = geom.w;
+	size->max_width = geom.w;
 	size->max_height = geom.h;
 	size->pref_width = geom.w;
 	size->pref_height = geom.h;

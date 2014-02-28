@@ -62,7 +62,6 @@ else
 fi
 AC_SUBST([pkgconfig_requires_private])
 
-
 ### Checks for libraries
 
 EINA_VERSION="1.0.99"
@@ -117,6 +116,12 @@ fi
 
 AM_CONDITIONAL([BUILD_BACKEND_REMOTE], [test "x${build_backend_remote}" = "xyes"])
 
+ENESIM_MODULE_IMAGE_DIR=`${PKG_CONFIG} --variable=moduleimagedir enesim`
+AC_SUBST([ENESIM_MODULE_IMAGE_DIR])
+
+EGUEB_MODULE_SOURCE_DIR=`${PKG_CONFIG} --variable=modulesourcedir egueb-dom`
+AC_SUBST([EGUEB_MODULE_SOURCE_DIR])
+
 ### Checks for header files
 
 
@@ -151,32 +156,12 @@ ENS_MODULE([Drawer_basic], [static], [yes])
 
 ## Make the debug preprocessor configurable
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 eon.pc
-data/Makefile
-data/ender/Makefile
-data/theme/Makefile
-src/Makefile
-src/bin/Makefile
-src/lib/Makefile
-src/modules/Makefile
-src/modules/basic/Makefile
-src/lib/drawer/Makefile
-src/lib/core/Makefile
-src/lib/backend/Makefile
-src/lib/backend/ecore_common/Makefile
-src/lib/backend/ecore_sdl/Makefile
-src/lib/backend/ecore_remote/Makefile
-src/lib/extension/Makefile
-src/lib/extension/esvg/Makefile
-src/include/Makefile
-src/include/generated/Makefile
-src/tests/Makefile
-src/examples/Makefile
-],[
 ])
 
+AC_OUTPUT
 
 #####################################################################
 ## Info

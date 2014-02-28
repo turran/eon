@@ -1,6 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = -I m4 -I common/m4
-
-SUBDIRS = data src
 
 MAINTAINERCLEANFILES = \
 Makefile.in \
@@ -23,7 +22,19 @@ m4/ltoptions.m4 \
 m4/ltsugar.m4 \
 m4/ltversion.m4
 
-EXTRA_DIST = \
+EXTRA_DIST = 
+CLEAN_LOCAL = eon.pc
+
+### Library
+include src/lib/Makefile.mk
+include src/lib/drawer/Makefile.mk
+
+### Modules
+include src/modules/drawer/basic/Makefile.mk
+include src/modules/enesim_image/Makefile.mk
+include src/modules/egueb_source/Makefile.mk
+
+EXTRA_DIST += \
 AUTHORS \
 COPYING \
 gendoc \

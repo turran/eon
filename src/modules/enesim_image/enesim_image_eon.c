@@ -34,7 +34,7 @@ static const char * _enesim_image_eon_data_from(Enesim_Stream *data)
 		if (buf[i] == '<' && i + 4 < count)
 		{
 			/* check for the <svg tag */
-			if (!strncmp(&buf[i], "<svg", 4))
+			if (!strncmp(&buf[i], "<eon", 4))
 			{
 				ret = "application/eon+xml";
 				break;
