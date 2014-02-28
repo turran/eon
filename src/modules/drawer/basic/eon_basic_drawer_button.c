@@ -235,7 +235,7 @@ static void _eon_basic_drawer_button_geometry_set(Eon_Drawer_Widget *w,
 
 	/* the gradient stops */
 	r = thiz->inner_button_fill;
-	enesim_renderer_gradient_linear_y1_set(r, thiz->y + (height - (thiz->radius - 1)));
+	enesim_renderer_gradient_linear_y1_set(r, y + height - 1);
 	_set_gradient_stops(thiz);
 
 	r = thiz->inner_button;
