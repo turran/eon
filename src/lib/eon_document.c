@@ -60,6 +60,11 @@ static void _eon_document_request_geometry_cb(Egueb_Dom_Event *ev, void *data)
 		size.width = renderable_size.min_width;
 		size.height = renderable_size.min_height;
 	}
+	else
+	{
+		size.width = 0;
+		size.height = 0;
+	}
 	eina_rectangle_coords_from(&geometry, 0, 0, size.width, size.height);
 	eon_event_geometry_set(ev, &geometry);
 	egueb_dom_node_unref(eon);
