@@ -42,18 +42,18 @@ static void _eon_document_request_geometry_cb(Egueb_Dom_Event *ev, void *data)
 	Eina_Rectangle geometry;
 	int size_hints;
 
-	printf("requesting geometry\n");
+	DBG("Rquesting main geometry");
 	eon = egueb_dom_document_element_get(n);
 	if (!eon)
 	{
-		printf("no eon?\n");
+		ERR("No topmost element found");
 		return;
 	}
 
 	eina_rectangle_coords_from(&geometry, 0, 0, 0, 0);
 
 	size_hints = eon_renderable_size_hints_get(eon, &renderable_size);
-	printf("size hints %08x\n", size_hints);
+	DBG("Main hints are %08x", size_hints);
 	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
 	{
 		/* TODO set the min size for now */
@@ -118,6 +118,9 @@ static void _eon_document_node_removed_cb(Egueb_Dom_Event *ev,
 	egueb_dom_node_unref(target);
 }
 
+/*----------------------------------------------------------------------------*
+ *                      Aniamtion feature interface                           *
+ *----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*
  *                        Window feature interface                            *
  *----------------------------------------------------------------------------*/
@@ -184,7 +187,7 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 {
 	Egueb_Dom_Node *ret = NULL;
 
-	printf("creating element %s\n", name);
+	DBG("Creating element '%s'", name);
 	if (!strcmp(name, "eon"))
 		ret = eon_element_eon_new();
 	else if (!strcmp(name, "button"))

@@ -109,7 +109,6 @@ static Enesim_Renderer * _eon_element_eon_renderer_get(Eon_Renderable *r)
 
 static void _eon_element_eon_geometry_set(Eon_Renderable *r, Eina_Rectangle *geometry)
 {
-	printf("EON geometry set\n");
 }
 
 static int _eon_element_eon_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
@@ -122,7 +121,6 @@ static int _eon_element_eon_size_hints_get(Eon_Renderable *r, Eon_Renderable_Siz
 	e = EON_ELEMENT(r);
 	n = e->n;
 	/* get the hints from our child */
-	printf("EON size hints get\n");
 	child = egueb_dom_element_child_first_get(n);
 	if (!child) return 0;
 
@@ -142,7 +140,6 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *r)
 	n = e->n;
 
 	/* set the size based on the user provided size */
-	printf("EON pre process\n");
 
 	if (r->needs_geometry)
 	{
@@ -322,7 +319,7 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 			theme_path = "/usr/local/share/eon/themes";
 		}
 		snprintf(path, PATH_MAX, "%s/%s.ender", theme_path, egueb_dom_string_string_get(theme_name));
-		printf("loading theme at %s\n", path);
+		DBG("Loading theme at '%s'", path);
 		s = enesim_stream_file_new(path, "r");
 		if (!s) return NULL;
 
