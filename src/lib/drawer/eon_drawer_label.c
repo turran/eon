@@ -38,6 +38,7 @@ typedef struct _Eon_Drawer_Label
 	Eina_Bool control_color_set;
 	/* attributes populated */
 	Enesim_Color color;
+	Egueb_Css_Font font;
 	/* our generated attributes */
 	Enesim_Text_Font *tf;
 	Enesim_Color final_color;
@@ -57,6 +58,8 @@ static Eina_Bool _eon_drawer_label_generate_font(Eon_Drawer_Label *thiz)
 	{
 		Enesim_Text_Engine *e;
 		Enesim_Renderer *r;
+		char *f;
+		Eina_List *l;
 
 		r = eon_drawer_label_text_renderer_get(EON_DRAWER_WIDGET(thiz));
 		if (!r)
@@ -66,9 +69,20 @@ static Eina_Bool _eon_drawer_label_generate_font(Eon_Drawer_Label *thiz)
 
 		/* TODO generate a text font based on the attributes */
 		e = enesim_text_engine_default_get();
-		thiz->tf = enesim_text_font_new_description_from(e, "Sans:style=Regular", 16);
-		thiz->font_changed = EINA_FALSE;
+		EINA_LIST_FOREACH(thiz->font.families, l, f)
+		{
+			/* TODO still missing the font size, convert the variants into fontconfig information, etc */
+			thiz->tf = enesim_text_font_new_description_from(e, f, 16);
+			if (thiz->tf)
+				break;
+		}
+		if (!thiz->tf)
+		{
+			printf("Impossible to load any font, using default one");
+			thiz->tf = enesim_text_font_new_description_from(e, "Sans:style=Regular", 16);
+		}
 		enesim_text_engine_unref(e);
+		thiz->font_changed = EINA_FALSE;
 
 		enesim_renderer_text_span_font_set(r, thiz->tf);
 		enesim_renderer_unref(r);
@@ -110,6 +124,26 @@ static Enesim_Color _eon_drawer_label_color_get(Eon_Drawer_Widget *w)
 	thiz = EON_DRAWER_LABEL(w);
 	return thiz->final_color;
 }
+
+static void _eon_drawer_label_font_set(Eon_Drawer_Widget *w, Egueb_Css_Font *font)
+{
+	Eon_Drawer_Label *thiz;
+	char *f;
+
+	thiz = EON_DRAWER_LABEL(w);
+	EINA_LIST_FREE(thiz->font.families, f)
+		free(f);
+	thiz->font = *font;
+	thiz->font_changed = EINA_TRUE;
+}
+
+static void _eon_drawer_label_font_get(Eon_Drawer_Widget *w, Egueb_Css_Font *font)
+{
+	Eon_Drawer_Label *thiz;
+
+	thiz = EON_DRAWER_LABEL(w);
+	*font = thiz->font;
+}
 /*----------------------------------------------------------------------------*
  *                              Widget interface                              *
  *----------------------------------------------------------------------------*/
@@ -136,12 +170,19 @@ static void _eon_drawer_label_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Nod
 {
 	Eon_Drawer_Label *thiz;
 	Egueb_Dom_Node *attr;
+	Egueb_Dom_String *s;
 
 	thiz = EON_DRAWER_LABEL(w);
 	/* add the font attributes */
 	attr = ender_attr_enesim_color_new("color",
 			ENDER_ATTR_ENESIM_COLOR_GET(_eon_drawer_label_color_get),
 			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_label_color_set));
+	egueb_dom_element_attribute_add(n, attr, NULL);
+
+	attr = ender_attr_font_new("font",
+			ENDER_ATTR_FONT_GET(_eon_drawer_label_font_get),
+			ENDER_ATTR_FONT_SET(_eon_drawer_label_font_set));
+	/* set the default font */
 	egueb_dom_element_attribute_add(n, attr, NULL);
 
 	if (thiz->d->ender_populate)

@@ -29,6 +29,7 @@ Eina_Bool eon_basic_init(void);
 void eon_basic_shutdown(void);
 #endif
 
+static Egueb_Dom_String * _eon_mime;
 static int _init_count = 0;
 
 /*----------------------------------------------------------------------------*
@@ -46,24 +47,25 @@ static Egueb_Dom_Implementation_Descriptor _impl_descriptor = {
 /*----------------------------------------------------------------------------*
  *                    Implementation source interface                         *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_Implementation * _impl_source_get_by_mime(
-		Egueb_Dom_String *mime)
+static Egueb_Dom_Implementation * _impl_source_implementation_get(void)
 {
-	const char *str;
+	return egueb_dom_implementation_new(&_impl_descriptor);
+}
 
-	str = egueb_dom_string_string_get(mime);
-	if (!strcmp(str, "application/eon+xml"))
-		return egueb_dom_implementation_new(&_impl_descriptor);
-	else
-		return NULL;
+static Egueb_Dom_String * _impl_source_mime_get(void)
+{
+	return egueb_dom_string_ref(_eon_mime);
 }
 
 static Egueb_Dom_Implementation_Source_Descriptor _impl_source_descriptor = {
-	/* .implementation_get_by_mime 	= */ _impl_source_get_by_mime,
+	/* .implementation_get 	= */ _impl_source_implementation_get,
+	/* .mime_get 		= */ _impl_source_mime_get,
 };
 
 static void _strings_init(void)
 {
+	/* mime */
+	_eon_mime = egueb_dom_string_new_with_static_string("application/eon+xml");
 	/* attributes */
 	EON_MIN_WIDTH = egueb_dom_string_new_with_static_string("min-width");
 	EON_MIN_HEIGHT = egueb_dom_string_new_with_static_string("min-height");
@@ -85,6 +87,8 @@ static void _strings_init(void)
 
 static void _strings_shutdown(void)
 {
+	/* mime */
+	egueb_dom_string_unref(_eon_mime);
 	/* attributes */
 	egueb_dom_string_unref(EON_MIN_WIDTH);
 	egueb_dom_string_unref(EON_MIN_HEIGHT);
