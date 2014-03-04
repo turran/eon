@@ -132,7 +132,8 @@ static void _eon_drawer_label_font_set(Eon_Drawer_Widget *w, Egueb_Css_Font *fon
 
 	thiz = EON_DRAWER_LABEL(w);
 	EINA_LIST_FREE(thiz->font.families, f)
-		free(f);
+		//free(f);
+	thiz->font.families = NULL;
 	thiz->font = *font;
 	thiz->font_changed = EINA_TRUE;
 }

@@ -43,6 +43,7 @@ typedef struct _Eon_Element_Eon
 	Eon_Renderable base;
 	Enesim_Renderer *r;
 	Eina_Bool renderable_changed;
+	Etch *etch;
 	/* the theme system */
 	Eina_List *themes;
 } Eon_Element_Eon;
@@ -51,6 +52,18 @@ typedef struct _Eon_Element_Eon_Class
 {
 	Eon_Renderable_Class base;
 } Eon_Element_Eon_Class;
+
+static void _eon_element_eon_etch_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Eon *thiz = data;
+	Egueb_Dom_Node *n;
+
+	n = egueb_dom_event_target_get(e);
+	DBG("Ender document requesting an etch on %p", n);
+	egueb_dom_node_unref(n);
+	egueb_smil_event_etch_set(e, thiz->etch);
+}
 
 static void _eon_element_eon_tree_modified_cb(Egueb_Dom_Event *e,
 		void *data)
@@ -266,6 +279,7 @@ static void _eon_element_eon_instance_init(void *o)
 
 	thiz = EON_ELEMENT_EON(o);
 	thiz->r = enesim_renderer_compound_new();
+	thiz->etch = etch_new();
 }
 
 static void _eon_element_eon_instance_deinit(void *o)
@@ -281,6 +295,7 @@ static void _eon_element_eon_instance_deinit(void *o)
 		free(theme);
 	}
 	enesim_renderer_unref(thiz->r);
+	etch_delete(thiz->etch);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -324,6 +339,8 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		if (!s) return NULL;
 
 		doc = ender_document_new();
+		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_ETCH,
+				_eon_element_eon_etch_cb, EINA_TRUE, thiz);
 		egueb_dom_parser_parse(s, &doc);
 		enesim_stream_unref(s);
 
@@ -337,6 +354,14 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 
 	return ret;
 
+}
+
+Etch * eon_element_eon_etch_get(Egueb_Dom_Node *n)
+{
+	Eon_Element_Eon *thiz;
+
+	thiz = EON_ELEMENT_EON(egueb_dom_element_external_data_get(n));
+	return thiz->etch;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -357,19 +382,6 @@ EAPI Eina_Bool eon_element_eon_draw(Egueb_Dom_Node *n,
 
 	thiz = egueb_dom_element_external_data_get(n);
 	return enesim_renderer_draw(thiz->r, s, rop, clip, x, y, error);
-}
-
-EAPI void eon_element_eon_theme_tick(Egueb_Dom_Node *n)
-{
-	Eon_Element_Eon *thiz;
-	Eon_Element_Eon_Theme *theme;
-	Eina_List *l;
-
-	thiz = egueb_dom_element_external_data_get(n);
-	EINA_LIST_FOREACH(thiz->themes, l, theme)
-	{
-		ender_document_tick(theme->doc);
-	}
 }
 
 #if 0

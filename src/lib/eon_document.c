@@ -23,6 +23,7 @@
 #include "eon_element_label.h"
 
 #include "eon_renderable_private.h"
+#include "eon_element_eon_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -121,6 +122,23 @@ static void _eon_document_node_removed_cb(Egueb_Dom_Event *ev,
 /*----------------------------------------------------------------------------*
  *                      Aniamtion feature interface                           *
  *----------------------------------------------------------------------------*/
+static Etch * _eon_document_animation_etch_get(Egueb_Dom_Node *n)
+{
+	Egueb_Dom_Node *topmost;
+	Etch *ret;
+
+	topmost = egueb_dom_document_element_get(n);
+	if (!topmost) return NULL;
+
+	ret = eon_element_eon_etch_get(topmost);
+	egueb_dom_node_unref(topmost);
+	return ret;
+}
+
+static Egueb_Dom_Feature_Animation_Descriptor 
+_eon_document_animation_descriptor = {
+	/* .etch_get 	= */ _eon_document_animation_etch_get,
+};
 /*----------------------------------------------------------------------------*
  *                        Window feature interface                            *
  *----------------------------------------------------------------------------*/
@@ -216,6 +234,8 @@ static void _eon_document_init(Egueb_Dom_Node *n, void *data)
 			&_eon_document_window_descriptor);
 	egueb_dom_feature_render_add(n,
 			&_eon_document_render_descriptor);
+	egueb_dom_feature_animation_add(n,
+			&_eon_document_animation_descriptor);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_document_node_inserted_cb,

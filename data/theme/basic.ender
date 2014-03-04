@@ -4,8 +4,7 @@
       <states>
         <state name="default">
           <set attributeName="border-color" to="#555555"/>
-          <set attributeName="fill-color" to="#cccccc"/>
-          <animate attributeName="fill-color" from="blue" to="green" dur="5s" repeatCount="indefinite" />
+          <animate attributeName="fill-color" from="#555555" to="#cccccc" dur="0.8s" repeatCount="indefinite" />
         </state>
       </states>
     </object>

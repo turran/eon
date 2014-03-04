@@ -67,11 +67,11 @@ AC_SUBST([pkgconfig_requires_private])
 EINA_VERSION="1.0.99"
 ENDER_VERSION="0.0.10"
 ENESIM_VERSION="0.0.20"
-EGUEB_DOM_VERSION="0.0.23"
+EGUEB_VERSION="0.0.23"
 
 AC_SUBST([requirements_eon])
-eon_requirements="egueb-dom >= ${EGUEB_DOM_VERSION}"
-eon_requirements_private="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} ender >= ${ENDER_VERSION}"
+eon_requirements="egueb-dom >= ${EGUEB_VERSION}"
+eon_requirements_private="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} ender >= ${ENDER_VERSION} egueb-smil >= ${EGUEB_VERSION}"
 PKG_CHECK_MODULES([EON], [${eon_requirements} ${eon_requirements_private}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
