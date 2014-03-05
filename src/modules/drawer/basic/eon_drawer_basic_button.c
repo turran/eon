@@ -17,11 +17,11 @@
  */
 #include "Eon.h"
 #include "Eon_Drawer.h"
-#include "eon_basic.h"
+#include "eon_drawer_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Basic_Drawer_Button
+typedef struct _Eon_Drawer_Basic_Button
 {
 	/* properties */
 	Enesim_Color start_shadow;
@@ -47,9 +47,9 @@ typedef struct _Eon_Basic_Drawer_Button
 	/* last properties set */
 	double y;
 	double height;
-} Eon_Basic_Drawer_Button;
+} Eon_Drawer_Basic_Button;
 
-static inline void _set_gradient_stops(Eon_Basic_Drawer_Button *thiz)
+static inline void _set_gradient_stops(Eon_Drawer_Basic_Button *thiz)
 {
 	Enesim_Renderer_Gradient_Stop stop;
 	Enesim_Renderer *r;
@@ -72,17 +72,17 @@ static inline void _set_gradient_stops(Eon_Basic_Drawer_Button *thiz)
 
 
 #if 0
-static void eon_basic_drawer_button_horizontal_padding_set(Eon_Basic_Drawer_Button *thiz, double padding)
+static void eon_drawer_basic_button_horizontal_padding_set(Eon_Drawer_Basic_Button *thiz, double padding)
 {
 	thiz->horizontal_padding = padding;
 }
 
-static void eon_basic_drawer_button_vertical_padding_set(Eon_Basic_Drawer_Button *thiz, double padding)
+static void eon_drawer_basic_button_vertical_padding_set(Eon_Drawer_Basic_Button *thiz, double padding)
 {
 	thiz->vertical_padding = padding;
 }
 
-static void eon_basic_drawer_button_radius_set(Eon_Basic_Drawer_Button *thiz, double radius)
+static void eon_drawer_basic_button_radius_set(Eon_Drawer_Basic_Button *thiz, double radius)
 {
 	thiz->radius = radius;
 }
@@ -91,9 +91,9 @@ static void eon_basic_drawer_button_radius_set(Eon_Basic_Drawer_Button *thiz, do
 /*----------------------------------------------------------------------------*
  *                         Attribute setters/getters                           *
  *----------------------------------------------------------------------------*/
-static void _eon_basic_drawer_button_border_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
+static void _eon_drawer_basic_button_border_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
 {
-	Eon_Basic_Drawer_Button *thiz;
+	Eon_Drawer_Basic_Button *thiz;
 	Enesim_Renderer *r;
 
 	thiz = eon_drawer_button_data_get(w);
@@ -102,32 +102,32 @@ static void _eon_basic_drawer_button_border_color_set(Eon_Drawer_Widget *w, Enes
 	enesim_renderer_shape_stroke_color_set(r, thiz->border_color);
 }
 
-static Enesim_Color _eon_basic_drawer_button_border_color_get(Eon_Drawer_Widget *w)
+static Enesim_Color _eon_drawer_basic_button_border_color_get(Eon_Drawer_Widget *w)
 {
-	Eon_Basic_Drawer_Button *thiz;
+	Eon_Drawer_Basic_Button *thiz;
 
 	thiz = eon_drawer_button_data_get(w);
 	return thiz->border_color;
 }
 
-static void _eon_basic_drawer_button_fill_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
+static void _eon_drawer_basic_button_fill_color_set(Eon_Drawer_Widget *w, Enesim_Color color)
 {
-	Eon_Basic_Drawer_Button *thiz;
+	Eon_Drawer_Basic_Button *thiz;
 
 	thiz = eon_drawer_button_data_get(w);
 	thiz->fill_color = color;
 	_set_gradient_stops(thiz);
 }
 
-static Enesim_Color _eon_basic_drawer_button_fill_color_get(Eon_Drawer_Widget *w)
+static Enesim_Color _eon_drawer_basic_button_fill_color_get(Eon_Drawer_Widget *w)
 {
-	Eon_Basic_Drawer_Button *thiz;
+	Eon_Drawer_Basic_Button *thiz;
 
 	thiz = eon_drawer_button_data_get(w);
 	return thiz->fill_color;
 }
 
-static void eon_basic_drawer_button_start_shadow_set(Eon_Basic_Drawer_Button *thiz, Enesim_Color color)
+static void eon_drawer_basic_button_start_shadow_set(Eon_Drawer_Basic_Button *thiz, Enesim_Color color)
 {
 	Enesim_Renderer *r;
 
@@ -136,7 +136,7 @@ static void eon_basic_drawer_button_start_shadow_set(Eon_Basic_Drawer_Button *th
 	enesim_renderer_stripes_odd_color_set(r, thiz->start_shadow);
 }
 
-static void eon_basic_drawer_button_end_shadow_set(Eon_Basic_Drawer_Button *thiz, Enesim_Color color)
+static void eon_drawer_basic_button_end_shadow_set(Eon_Drawer_Basic_Button *thiz, Enesim_Color color)
 {
 	Enesim_Renderer *r;
 
@@ -145,13 +145,13 @@ static void eon_basic_drawer_button_end_shadow_set(Eon_Basic_Drawer_Button *thiz
 	enesim_renderer_stripes_even_color_set(r, thiz->end_shadow);
 }
 
-void eon_basic_drawer_button_start_bevel_set(Eon_Basic_Drawer_Button *thiz, Enesim_Color color)
+void eon_drawer_basic_button_start_bevel_set(Eon_Drawer_Basic_Button *thiz, Enesim_Color color)
 {
 	thiz->start_bevel = color;
 	_set_gradient_stops(thiz);
 }
 
-void eon_basic_drawer_button_end_bevel_set(Eon_Basic_Drawer_Button *thiz, Enesim_Color color)
+void eon_drawer_basic_button_end_bevel_set(Eon_Drawer_Basic_Button *thiz, Enesim_Color color)
 {
 	thiz->end_bevel = color;
 	_set_gradient_stops(thiz);
@@ -159,10 +159,10 @@ void eon_basic_drawer_button_end_bevel_set(Eon_Basic_Drawer_Button *thiz, Enesim
 /*----------------------------------------------------------------------------*
  *                              Button interface                              *
  *----------------------------------------------------------------------------*/
-static void _eon_basic_drawer_button_content_set(Eon_Drawer_Widget *w,
+static void _eon_drawer_basic_button_content_set(Eon_Drawer_Widget *w,
 		void *data, Enesim_Renderer *r)
 {
-	Eon_Basic_Drawer_Button *thiz = data;
+	Eon_Drawer_Basic_Button *thiz = data;
 
 	if (r)
 		enesim_renderer_proxy_proxied_set(thiz->proxy, r);
@@ -171,10 +171,10 @@ static void _eon_basic_drawer_button_content_set(Eon_Drawer_Widget *w,
 				enesim_renderer_ref(thiz->proxy_default));
 }
 
-static void _eon_basic_drawer_button_padding_get(Eon_Drawer_Widget *w,
+static void _eon_drawer_basic_button_padding_get(Eon_Drawer_Widget *w,
 		void *data, Eon_Box *padding)
 {
-	Eon_Basic_Drawer_Button *thiz = data;
+	Eon_Drawer_Basic_Button *thiz = data;
 
 	printf("[basic] padding get\n");
 	padding->top = thiz->vertical_padding + thiz->radius;
@@ -183,18 +183,18 @@ static void _eon_basic_drawer_button_padding_get(Eon_Drawer_Widget *w,
 	padding->right = thiz->horizontal_padding + thiz->radius;
 }
 
-static Enesim_Renderer * _eon_basic_drawer_button_renderer_get(
+static Enesim_Renderer * _eon_drawer_basic_button_renderer_get(
 		Eon_Drawer_Widget *w, void *data)
 {
-	Eon_Basic_Drawer_Button *thiz = data;
+	Eon_Drawer_Basic_Button *thiz = data;
 	printf("[basic] renderer get\n");
 	return enesim_renderer_ref(thiz->shape);
 }
 
-static void _eon_basic_drawer_button_geometry_set(Eon_Drawer_Widget *w,
+static void _eon_drawer_basic_button_geometry_set(Eon_Drawer_Widget *w,
 		void *data, Eina_Rectangle *geom)
 {
-	Eon_Basic_Drawer_Button *thiz = data;
+	Eon_Drawer_Basic_Button *thiz = data;
 	Enesim_Matrix m;
 	Enesim_Renderer *r;
 	int x, y, width, height;
@@ -244,7 +244,7 @@ static void _eon_basic_drawer_button_geometry_set(Eon_Drawer_Widget *w,
 	enesim_renderer_rectangle_height_set(r, height);
 }
 
-static void _eon_basic_drawer_button_ender_populate(Eon_Drawer_Widget *w,
+static void _eon_drawer_basic_button_ender_populate(Eon_Drawer_Widget *w,
 		void *data, Egueb_Dom_Node *n)
 {
 	Egueb_Dom_Node *attr;
@@ -252,24 +252,24 @@ static void _eon_basic_drawer_button_ender_populate(Eon_Drawer_Widget *w,
 	/* add our own attributes */
 	printf("[basic] ender populate\n");
 	attr = ender_attr_enesim_color_new("border-color",
-			ENDER_ATTR_ENESIM_COLOR_GET(_eon_basic_drawer_button_border_color_get),
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_basic_drawer_button_border_color_set));
+			ENDER_ATTR_ENESIM_COLOR_GET(_eon_drawer_basic_button_border_color_get),
+			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_border_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
 	attr = ender_attr_enesim_color_new("fill-color",
-			ENDER_ATTR_ENESIM_COLOR_GET(_eon_basic_drawer_button_fill_color_get),
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_basic_drawer_button_fill_color_set));
+			ENDER_ATTR_ENESIM_COLOR_GET(_eon_drawer_basic_button_fill_color_get),
+			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_fill_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
 }
 
-static Eina_Bool _eon_basic_drawer_button_ender_process(Eon_Drawer_Widget *w,
+static Eina_Bool _eon_drawer_basic_button_ender_process(Eon_Drawer_Widget *w,
 		void *data, Egueb_Dom_Node *n)
 {
 	printf("[basic] ender process\n");
 }
 
-static void _eon_basic_drawer_button_free(Eon_Drawer_Widget *w, void *data)
+static void _eon_drawer_basic_button_free(Eon_Drawer_Widget *w, void *data)
 {
-	Eon_Basic_Drawer_Button *thiz = data;
+	Eon_Drawer_Basic_Button *thiz = data;
 
 	enesim_renderer_unref(thiz->proxy);
 	enesim_renderer_unref(thiz->proxy_default);
@@ -283,24 +283,24 @@ static void _eon_basic_drawer_button_free(Eon_Drawer_Widget *w, void *data)
 }
 
 static Eon_Drawer_Button_Descriptor _descriptor = {
-	/* .content_set		= */ _eon_basic_drawer_button_content_set,
-	/* .padding_get 	= */ _eon_basic_drawer_button_padding_get,
-	/* .renderer_get 	= */ _eon_basic_drawer_button_renderer_get,
-	/* .geometry_set 	= */ _eon_basic_drawer_button_geometry_set,
-	/* .ender_populate	= */ _eon_basic_drawer_button_ender_populate,
-	/* .ender_process	= */ _eon_basic_drawer_button_ender_process,
-	/* .free 		= */ _eon_basic_drawer_button_free,
+	/* .content_set		= */ _eon_drawer_basic_button_content_set,
+	/* .padding_get 	= */ _eon_drawer_basic_button_padding_get,
+	/* .renderer_get 	= */ _eon_drawer_basic_button_renderer_get,
+	/* .geometry_set 	= */ _eon_drawer_basic_button_geometry_set,
+	/* .ender_populate	= */ _eon_drawer_basic_button_ender_populate,
+	/* .ender_process	= */ _eon_drawer_basic_button_ender_process,
+	/* .free 		= */ _eon_drawer_basic_button_free,
 };
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Drawer_Widget * eon_basic_drawer_button_new(void)
+Eon_Drawer_Widget * eon_drawer_basic_button_new(void)
 {
-	Eon_Basic_Drawer_Button *thiz;
+	Eon_Drawer_Basic_Button *thiz;
 	Enesim_Renderer *r;
 	Enesim_Renderer_Compound_Layer *l;
 
-	thiz = calloc(1, sizeof(Eon_Basic_Drawer_Button));
+	thiz = calloc(1, sizeof(Eon_Drawer_Basic_Button));
 	thiz->start_shadow = 0x77000000;
 	thiz->end_shadow = 0x22000000;
 	thiz->radius = 4;

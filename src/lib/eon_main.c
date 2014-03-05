@@ -25,8 +25,8 @@
  *                                  Local                                     *
  *============================================================================*/
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
-Eina_Bool eon_basic_init(void);
-void eon_basic_shutdown(void);
+Eina_Bool eon_drawer_basic_init(void);
+void eon_drawer_basic_shutdown(void);
 #endif
 
 static Egueb_Dom_String * _eon_mime;
@@ -148,7 +148,7 @@ EAPI int eon_init(void)
 		egueb_dom_init();
 		_strings_init();
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
-		eon_basic_init();
+		eon_drawer_basic_init();
 #endif
 		/* register our own source */
 		s = egueb_dom_implementation_source_new(&_impl_source_descriptor);
@@ -166,7 +166,7 @@ EAPI int eon_shutdown(void)
 		return _init_count;
 
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
-	eon_basic_shutdown();
+	eon_drawer_basic_shutdown();
 #endif
 	_strings_shutdown();
 	egueb_dom_shutdown();

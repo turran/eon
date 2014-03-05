@@ -15,15 +15,11 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _EON_DRAWER_BASIC_H_
+#define _EON_DRAWER_BASIC_H_
 
-#ifndef _EON_DRAWER_H_
-#define _EON_DRAWER_H_
-
-#include "Ender.h"
-
-#include "eon_drawer_widget.h"
-#include "eon_drawer_eon.h"
-#include "eon_drawer_button.h"
-#include "eon_drawer_label.h"
+Eon_Drawer_Widget * eon_drawer_basic_button_new(void);
+Eon_Drawer_Widget * eon_drawer_basic_label_new(void);
+Eon_Drawer_Widget * eon_drawer_basic_eon_new(void);
 
 #endif

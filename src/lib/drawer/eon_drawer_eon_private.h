@@ -15,10 +15,10 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_BASIC_H_
-#define _EON_BASIC_H_
 
-Eon_Drawer_Widget * eon_basic_drawer_button_new(void);
-Eon_Drawer_Widget * eon_basic_drawer_label_new(void);
+#ifndef _EON_DRAWER_EON_PRIVATE_H_
+#define _EON_DRAWER_EON_PRIVATE_H_
+
+void eon_drawer_eon_update_background(Eon_Drawer_Widget *w);
 
 #endif

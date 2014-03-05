@@ -25,8 +25,6 @@
  *                                  Local                                     *
  *============================================================================*/
 #define EON_ELEMENT_BUTTON_DESCRIPTOR eon_element_button_descriptor_get()
-#define EON_ELEMENT_BUTTON_CLASS(k) ENESIM_OBJECT_CLASS_CHECK(k,		\
-		Eon_Element_Button_Class, EON_ELEMENT_BUTTON_DESCRIPTOR)
 #define EON_ELEMENT_BUTTON(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
 		Eon_Element_Button, EON_ELEMENT_BUTTON_DESCRIPTOR)
 

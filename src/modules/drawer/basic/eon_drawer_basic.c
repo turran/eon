@@ -22,41 +22,43 @@
 #include "Eon.h"
 #include "Eon_Drawer.h"
 
-#include "eon_basic.h"
+#include "eon_drawer_basic.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static Ender_Namespace * _eon_basic_namespace = NULL;
+static Ender_Namespace * _eon_drawer_basic_namespace = NULL;
 /*----------------------------------------------------------------------------*
  *                               Module API                                   *
  *----------------------------------------------------------------------------*/
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
-Eina_Bool eon_basic_init(void)
+Eina_Bool eon_drawer_basic_init(void)
 #else
-static Eina_Bool eon_basic_init(void)
+static Eina_Bool eon_drawer_basic_init(void)
 #endif
 {
-	_eon_basic_namespace = ender_namespace_register("eon_basic");
-	eon_drawer_button_ender_register(_eon_basic_namespace,
-			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_basic_drawer_button_new));
-	eon_drawer_label_ender_register(_eon_basic_namespace,
-			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_basic_drawer_label_new));
-	if (!_eon_basic_namespace)
+	_eon_drawer_basic_namespace = ender_namespace_register("eon_drawer_basic");
+	eon_drawer_button_ender_register(_eon_drawer_basic_namespace,
+			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_drawer_basic_button_new));
+	eon_drawer_label_ender_register(_eon_drawer_basic_namespace,
+			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_drawer_basic_label_new));
+	eon_drawer_eon_ender_register(_eon_drawer_basic_namespace,
+			ENDER_INSTANCE_DESCRIPTOR_CTOR(eon_drawer_basic_eon_new));
+	if (!_eon_drawer_basic_namespace)
 		return EINA_FALSE;
 	return EINA_TRUE;
 }
 
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
-void eon_basic_shutdown(void)
+void eon_drawer_basic_shutdown(void)
 #else
-static void eon_basic_shutdown(void)
+static void eon_drawer_basic_shutdown(void)
 #endif
 {
-	ender_namespace_unregister(_eon_basic_namespace);
-	_eon_basic_namespace = NULL;
+	ender_namespace_unregister(_eon_drawer_basic_namespace);
+	_eon_drawer_basic_namespace = NULL;
 }
 
 #if !BUILD_STATIC_MODULE_DRAWER_BASIC
-EINA_MODULE_INIT(eon_basic_init);
-EINA_MODULE_SHUTDOWN(eon_basic_shutdown);
+EINA_MODULE_INIT(eon_drawer_basic_init);
+EINA_MODULE_SHUTDOWN(eon_drawer_basic_shutdown);
 #endif

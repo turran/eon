@@ -63,7 +63,7 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 
 	n = e->n;
 	parent = egueb_dom_node_parent_get(n);
-	if (parent)
+	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE))
 	{
 		Eon_Element *other;
 
@@ -74,8 +74,8 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 		egueb_dom_attr_final_get(other->theme, &theme);
 		thiz->last_parent_theme = egueb_dom_string_dup(theme);
 		// FIX this egueb_dom_string_unref(theme);
-		egueb_dom_node_unref(parent);
 	}
+	egueb_dom_node_unref(parent);
 
 	egueb_dom_attr_final_get(e->theme, &theme);
 	DBG_ELEMENT(e->n, "Last theme was '%s', new one is '%s'",
@@ -204,6 +204,7 @@ static int _eon_widget_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *si
 static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 {
 	Eon_Element *e;
+	Eon_Widget_Class *klass;
 	Eon_Widget *thiz;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *parent;
@@ -216,14 +217,14 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 		DBG_ELEMENT(e->n, "Widget's theme is different");
 		thiz->theme_changed = EINA_TRUE;
 		eon_renderable_invalidate_geometry(r);
-		return EINA_TRUE;
+		goto done;
 	}
 	/* in case the parent's theme is different than the previous
 	 * theme, invalidate it too
 	 */
 	n = e->n;
 	parent = egueb_dom_node_parent_get(n);
-	if (parent)
+	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE))
 	{
 		Eon_Element *other;
 		Egueb_Dom_String *theme;
@@ -240,7 +241,15 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 			DBG_ELEMENT(e->n, "Parent's theme is different than last one");
 		}
 		// FIX this egueb_dom_string_unref(theme);
-		egueb_dom_node_unref(parent);
+	}
+	egueb_dom_node_unref(parent);
+
+done:
+	klass = EON_WIDGET_CLASS_GET(r);
+	if (klass->pre_process)
+	{
+		if (!klass->pre_process(thiz))
+			return EINA_FALSE;
 	}
 	return EINA_TRUE;
 }
@@ -263,7 +272,7 @@ static Eina_Bool _eon_widget_process(Eon_Renderable *r)
 		if (!klass->process(thiz))
 			return EINA_FALSE;
 	}
- 	/* process the theme instance too */
+ 	/* process the theme instance too? */
 	return EINA_TRUE;
 }
 

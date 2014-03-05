@@ -1,7 +1,8 @@
 SOURCES = \
-src/modules/drawer/basic/eon_basic_drawer_button.c \
-src/modules/drawer/basic/eon_basic_drawer_label.c \
-src/modules/drawer/basic/eon_basic.c
+src/modules/drawer/basic/eon_drawer_basic_button.c \
+src/modules/drawer/basic/eon_drawer_basic_label.c \
+src/modules/drawer/basic/eon_drawer_basic_eon.c \
+src/modules/drawer/basic/eon_drawer_basic.c
 
 if BUILD_STATIC_MODULE_DRAWER_BASIC
 
