@@ -6,6 +6,12 @@
           <set attributeName="border-color" to="#555555"/>
           <animate attributeName="fill-color" from="#555555" to="#cccccc" dur="0.8s" repeatCount="indefinite" />
         </state>
+        <state name="mouseover">
+          <animate attributeName="fill-color" from="#555555" to="red" dur="0.8s" repeatCount="indefinite" />
+        </state>
+        <state name="mouseout">
+          <animate attributeName="fill-color" from="#555555" to="#cccccc" dur="0.8s" repeatCount="indefinite" />
+        </state>
       </states>
     </object>
     <object ns="eon_drawer_basic" name="label" id="label">

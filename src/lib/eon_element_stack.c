@@ -115,7 +115,7 @@ static Eina_Bool _eon_element_stack_process(Eon_Renderable *r)
 	n = (EON_ELEMENT(r))->n;
 
 	free_space = r->geometry;
-	ERR_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
+	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
 
 	/* Regenerate the renderable tree */
 	if (thiz->renderable_changed)

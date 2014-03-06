@@ -185,7 +185,7 @@ static int _eon_element_label_size_hints_get(Eon_Widget *w,
 	_eon_element_label_drawer_propagate(w);
 	thiz = EON_ELEMENT_LABEL(w);
 	egueb_dom_attr_final_get(thiz->ellipsize, &ellipsize);
-	ERR_ELEMENT(n, "Ellipsize %d", ellipsize);
+	DBG_ELEMENT(n, "Ellipsize %d", ellipsize);
 
 	tf = eon_drawer_label_text_font_get(w->theme_widget);
 	if (!tf)
@@ -212,7 +212,6 @@ static Eina_Bool _eon_element_label_process(Eon_Widget *w)
 
 	thiz = EON_ELEMENT_LABEL(w);
 	/* set the correct text buffer, text font, text color */
-	printf("process label\n");
 
 	return EINA_TRUE;
 }

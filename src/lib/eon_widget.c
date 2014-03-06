@@ -27,6 +27,23 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static void _eon_widget_mouse_ui_cb(Egueb_Dom_Event *e, void *data)
+{
+	Eon_Widget *thiz = data;
+	Egueb_Dom_String *type;
+	const char *s;
+
+	if (!thiz->theme_instance)
+		return;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	type = egueb_dom_event_type_get(e);
+	s = egueb_dom_string_string_get(type);
+	ender_element_instance_state_set(thiz->theme_instance, s, NULL);
+	egueb_dom_string_unref(type);
+}
+
 static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 {
 	Eon_Element *e;
@@ -162,6 +179,23 @@ no_document:
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
+static void _eon_widget_init(Eon_Renderable *r)
+{
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(r))->n;
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_UP,
+			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_DOWN,
+			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_OVER,
+			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_OUT,
+			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+}
+
 static Enesim_Renderer * _eon_widget_renderer_get(Eon_Renderable *r)
 {
 	Eon_Widget *thiz;
@@ -291,6 +325,7 @@ static void _eon_widget_class_init(void *k)
 	Eon_Renderable_Class *r_klass;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->init = _eon_widget_init;
 	r_klass->renderer_get = _eon_widget_renderer_get;
 	r_klass->size_hints_get = _eon_widget_size_hints_get;
 	r_klass->geometry_set = _eon_widget_geometry_set;

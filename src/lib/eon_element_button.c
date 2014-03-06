@@ -101,7 +101,7 @@ static Eina_Bool _eon_element_button_process(Eon_Widget *w)
 	free_space.w -= padding.left + padding.right;
 	free_space.h -= padding.bottom + padding.top;
 
-	ERR_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
+	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
 
 	/* Set the content renderer */
 	r = eon_renderable_renderer_get(child);
