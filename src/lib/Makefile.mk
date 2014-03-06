@@ -21,7 +21,11 @@ src/lib/eon_element.c \
 src/lib/eon_element_button.c \
 src/lib/eon_element_eon.c \
 src/lib/eon_element_label.c \
+src/lib/eon_element_stack.c \
 src/lib/eon_event_geometry.c \
+src/lib/eon_layout_frame.c \
+src/lib/eon_layout_stack.c \
+src/lib/eon_layout_frame_private.h \
 src/lib/eon_main.c \
 src/lib/eon_renderable.c \
 src/lib/eon_horizontal_align.c \

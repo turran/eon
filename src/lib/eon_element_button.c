@@ -21,6 +21,7 @@
 
 #include "eon_widget_private.h"
 #include "eon_drawer_button_private.h"
+#include "eon_layout_frame_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -38,80 +39,6 @@ typedef struct _Eon_Element_Button_Class
 	Eon_Widget_Class base;
 } Eon_Element_Button_Class;
 
-/* TODO handle the expand, padding, margin or whatever other attr we decide to add */
-static void _eon_element_button_child_solver(Eina_Rectangle *fs,
-		Eon_Renderable_Size *size, int size_hints,
-		Eon_Vertical_Align valign,
-		Eon_Horizontal_Align halign,
-		Eina_Rectangle *out)
-{
-	int w = -1, h = -1;
-	Eina_Bool w_set = EINA_FALSE;
-	Eina_Bool h_set = EINA_FALSE;
-
-	/* if we have a preferred hint, get the min difference getting that
-	 * as a reference, also check that we are in the min/max range
-	 */
-	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		if (size->pref_width > 0)
-			w = size->pref_width;
-		if (size->pref_height > 0)
-			h = size->pref_height;
-	}
-
-	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
-	{
-		if (w < 0)
-		{
-			w = size->min_width;
-		}
-		if (w > fs->w)
-		{
-			w = fs->w;
-		}
-
-		if (h < 0)
-		{
-			h = size->min_height;
-		}
-		if (h > fs->h)
-		{
-			h = fs->h;
-		}
-	}
-
-	/* handle halign, valign */
-	switch (halign)
-	{
-		case EON_HORIZONTAL_ALIGN_LEFT:
-		out->x = fs->x;
-		break;
-
-		case EON_HORIZONTAL_ALIGN_CENTER:
-		out->x = fs->x + ((fs->w - w) / 2);
-		break;
-
-		case EON_HORIZONTAL_ALIGN_RIGHT:
-		out->x = fs->x + (fs->w - w);
-	}
-	switch (valign)
-	{
-		case EON_VERTICAL_ALIGN_TOP:
-		out->y = fs->y;
-		break;
-
-		case EON_VERTICAL_ALIGN_MIDDLE:
-		out->y = fs->y + ((fs->h - h) / 2);
-		break;
-
-		case EON_VERTICAL_ALIGN_BOTTOM:
-		out->y = fs->y + (fs->h - h);
-		break;
-	}
-	out->w = w;
-	out->h = h;
-}
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -119,73 +46,43 @@ static int _eon_element_button_size_hints_get(Eon_Widget *w,
 		Eon_Renderable_Size *size)
 {
 	Eon_Box padding;
-	Egueb_Dom_Node *child;
 	Egueb_Dom_Node *n;
+	int ret;
 
 	n = (EON_ELEMENT(w))->n;
-	child = egueb_dom_element_child_first_get(n);
 
+	ret = eon_layout_frame_size_hints_get(n, size);
+
+	/* finally add our padding */
 	eon_drawer_button_padding_get(w->theme_widget, &padding);
-	if (child)
+	ret |= EON_RENDERABLE_HINT_MIN_MAX;
+	if (size->min_width > 0)
+		size->min_width += padding.left + padding.right;
+	if (size->min_height > 0)
+		size->min_height += padding.top + padding.bottom;
+	size->max_width = -1;
+	size->max_height = -1;
+
+	if (ret & EON_RENDERABLE_HINT_PREFERRED)
 	{
-		int ret;
-
-		/* in case it has a child get the size hints of the content */
-		ret = eon_renderable_size_hints_get(child, size);
-		egueb_dom_node_unref(child);
-		if (ret & EON_RENDERABLE_HINT_MIN_MAX)
-		{
-			size->min_width += padding.left + padding.right;
-			size->min_height += padding.top + padding.bottom;
-			if (size->max_width > 0)
-			{
-				size->max_width += padding.left + padding.right;
-			}
-			if (size->max_height > 0)
-			{
-				size->max_height += padding.top + padding.bottom;
-			}
-		}
-
-		if (ret & EON_RENDERABLE_HINT_PREFERRED)
-		{
-			if (size->pref_width > 0)
-			{
-				size->pref_width += padding.left + padding.right;
-			}
-			if (size->pref_height > 0)
-			{
-				size->pref_height += padding.top + padding.bottom;
-			}
-
-		}
-
-		return ret;
+		if (size->pref_width > 0)
+			size->pref_width += padding.left + padding.right;
+		if (size->pref_height > 0)
+			size->pref_height += padding.top + padding.bottom;
 	}
-	else
-	{
-		size->min_width = padding.left + padding.right;
-		size->min_height = padding.top + padding.bottom;
-		size->max_width = -1;
-		size->max_height = -1;
 
-		return EON_RENDERABLE_HINT_MIN_MAX;
-	}
+	return ret;
 }
 
 static Eina_Bool _eon_element_button_process(Eon_Widget *w)
 {
 	Eon_Element_Button *thiz;
-	Eon_Renderable_Size size;
 	Eon_Box padding;
-	Eon_Vertical_Align valign;
-	Eon_Horizontal_Align halign;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	Enesim_Renderer *r;
 	Eina_Rectangle geometry;
 	Eina_Rectangle free_space;
-	int size_hints;
 
 	n = (EON_ELEMENT(w))->n;
 	child = egueb_dom_element_child_first_get(n);
@@ -205,21 +102,14 @@ static Eina_Bool _eon_element_button_process(Eon_Widget *w)
 	free_space.h -= padding.bottom + padding.top;
 
 	ERR_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
-	size_hints = eon_renderable_size_hints_get(child, &size);
 
-	/* Our basic frame layout algorithm */
-	valign = eon_renderable_valign_get(child);
-	halign = eon_renderable_halign_get(child);
-	_eon_element_button_child_solver(&free_space, &size, size_hints, valign, halign, &geometry);
-	eon_renderable_geometry_set(child, &geometry);
-	
 	/* Set the content renderer */
 	r = eon_renderable_renderer_get(child);
 	eon_drawer_button_content_set(w->theme_widget, r);
-
-	/* Finally process */
-	egueb_dom_element_process(child);
 	egueb_dom_node_unref(child);
+
+	/* Our basic frame layout algorithm */
+	eon_layout_frame_size_geometry_set(n, &free_space);
 	
 	return EINA_TRUE;
 }

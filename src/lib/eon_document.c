@@ -29,6 +29,9 @@
  *============================================================================*/
 typedef struct _Eon_Document
 {
+	/* input */
+	Egueb_Dom_Input *input;
+	/* window */
 	int width;
 	int height;
 } Eon_Document;
@@ -118,9 +121,52 @@ static void _eon_document_node_removed_cb(Egueb_Dom_Event *ev,
 			_eon_document_request_geometry_cb, EINA_FALSE, n);
 	egueb_dom_node_unref(target);
 }
+/*----------------------------------------------------------------------------*
+ *                              Input interface                               *
+ *----------------------------------------------------------------------------*/
+static Egueb_Dom_Node * _eon_document_input_element_at(void *data,
+		int x, int y)
+{
+	Egueb_Dom_Node *n = data;
+	Egueb_Dom_Node *topmost;
+	Egueb_Dom_Node *ret;
+	Eina_Rectangle ptr;
+
+	/* iterate over the whole tree */
+	eina_rectangle_coords_from(&ptr, x, y, 1, 1);
+	topmost = egueb_dom_document_element_get(n);
+	ret = eon_renderable_element_at(topmost, &ptr);
+	egueb_dom_node_unref(topmost);
+
+	if (ret)
+	{
+		ERR_ELEMENT(ret, "Node inside coordinates %d,%d", x, y);
+	}
+
+	return ret;
+}
+
+static Egueb_Dom_Input_Descriptor _eon_document_input_descriptor = {
+	/* .element_at 		= */ _eon_document_input_element_at,
+};
 
 /*----------------------------------------------------------------------------*
- *                      Aniamtion feature interface                           *
+ *                          UI feature interface                              *
+ *----------------------------------------------------------------------------*/
+static Egueb_Dom_Input * _eon_document_ui_input_get(Egueb_Dom_Node *n)
+{
+	Eon_Document *thiz;
+
+	thiz = egueb_dom_document_external_data_get(n);
+	return thiz->input;
+}
+
+static Egueb_Dom_Feature_UI_Descriptor 
+_eon_document_ui_descriptor = {
+	/* .input_get 	= */ _eon_document_ui_input_get,
+};
+/*----------------------------------------------------------------------------*
+ *                      Animation feature interface                           *
  *----------------------------------------------------------------------------*/
 static Etch * _eon_document_animation_etch_get(Egueb_Dom_Node *n)
 {
@@ -212,6 +258,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_button_new();
 	else if (!strcmp(name, "label"))
 		ret = eon_element_label_new();
+	else if (!strcmp(name, "stack"))
+		ret = eon_element_stack_new();
 	return ret;
 }
 
@@ -229,6 +277,9 @@ static Eina_Bool _eon_document_child_appendable(Egueb_Dom_Node *n,
 
 static void _eon_document_init(Egueb_Dom_Node *n, void *data)
 {
+	Eon_Document *thiz = data;
+
+	thiz->input = egueb_dom_input_new(&_eon_document_input_descriptor, n);
 	/* register the features */
 	egueb_dom_feature_window_add(n,
 			&_eon_document_window_descriptor);
@@ -236,6 +287,8 @@ static void _eon_document_init(Egueb_Dom_Node *n, void *data)
 			&_eon_document_render_descriptor);
 	egueb_dom_feature_animation_add(n,
 			&_eon_document_animation_descriptor);
+	egueb_dom_feature_ui_add(n,
+			&_eon_document_ui_descriptor);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_document_node_inserted_cb,
@@ -249,6 +302,7 @@ static void _eon_document_init(Egueb_Dom_Node *n, void *data)
 static void _eon_document_deinit(Egueb_Dom_Node *n, void *data)
 {
 	Eon_Document *thiz = data;
+	egueb_dom_input_free(thiz->input);
 	free(thiz);
 }
 

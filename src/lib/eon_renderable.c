@@ -17,6 +17,8 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_renderable.h"
+
 #include "eon_renderable_private.h"
 #include "eon_vertical_align_private.h"
 #include "eon_horizontal_align_private.h"
@@ -234,14 +236,15 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	Eon_Renderable_Class *klass;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	thiz->geometry = *geometry;
+	thiz->needs_geometry = EINA_FALSE;
+
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->geometry_set)
 	{
 		DBG_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
 				EINA_RECTANGLE_ARGS(geometry));
 		klass->geometry_set(thiz, geometry);
-		thiz->geometry = *geometry;
-		thiz->needs_geometry = EINA_FALSE;
 	}
 }
 
@@ -264,6 +267,101 @@ void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 	thiz->needs_geometry = EINA_TRUE;
 }
 
+/* TODO handle the expand, padding, margin or whatever other attr we decide to add */
+void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_Rectangle *out)
+{
+	Eon_Vertical_Align valign;
+	Eon_Horizontal_Align halign;
+	Eon_Renderable_Size size;
+	Eina_Bool w_set = EINA_FALSE;
+	Eina_Bool h_set = EINA_FALSE;
+	int size_hints;
+	int w = -1, h = -1;
+
+	size_hints = eon_renderable_size_hints_get(n, &size);
+	valign = eon_renderable_valign_get(n);
+	halign = eon_renderable_halign_get(n);
+
+	/* if we have a preferred hint, get the min difference getting that
+	 * as a reference, also check that we are in the min/max range
+	 */
+	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		if (size.pref_width > 0)
+			w = size.pref_width;
+		if (size.pref_height > 0)
+			h = size.pref_height;
+	}
+
+	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		if (w < 0)
+		{
+			w = size.min_width;
+		}
+		if (w > fs->w)
+		{
+			w = fs->w;
+		}
+
+		if (h < 0)
+		{
+			h = size.min_height;
+		}
+		if (h > fs->h)
+		{
+			h = fs->h;
+		}
+	}
+
+	/* handle halign, valign */
+	switch (halign)
+	{
+		case EON_HORIZONTAL_ALIGN_LEFT:
+		out->x = fs->x;
+		break;
+
+		case EON_HORIZONTAL_ALIGN_CENTER:
+		out->x = fs->x + ((fs->w - w) / 2);
+		break;
+
+		case EON_HORIZONTAL_ALIGN_RIGHT:
+		out->x = fs->x + (fs->w - w);
+	}
+	switch (valign)
+	{
+		case EON_VERTICAL_ALIGN_TOP:
+		out->y = fs->y;
+		break;
+
+		case EON_VERTICAL_ALIGN_MIDDLE:
+		out->y = fs->y + ((fs->h - h) / 2);
+		break;
+
+		case EON_VERTICAL_ALIGN_BOTTOM:
+		out->y = fs->y + (fs->h - h);
+		break;
+	}
+	out->w = w;
+	out->h = h;
+}
+
+Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
+		Eina_Rectangle *cursor)
+{
+	Eon_Renderable *thiz;
+	Eon_Renderable_Class *klass;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	/* check that the mouse is on the current geometry */
+	if (!eina_rectangles_intersect(&thiz->geometry, cursor))
+		return NULL;
+
+	klass = EON_RENDERABLE_CLASS_GET(thiz);
+	if (klass->element_at)
+		return klass->element_at(thiz, cursor);
+	return egueb_dom_node_ref(n);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -381,6 +479,7 @@ EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *s
 		klass = EON_RENDERABLE_CLASS_GET(thiz);
 		if (klass->size_hints_get)
 		{
+			eon_renderable_size_init(size);
 	 		ret = klass->size_hints_get(thiz, size);
 			/* cache it */
 			thiz->size = *size;

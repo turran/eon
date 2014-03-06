@@ -216,6 +216,21 @@ static void _eon_element_eon_init(Eon_Renderable *r)
 			_eon_element_eon_tree_modified_cb,
 			EINA_FALSE, r);
 }
+
+static Egueb_Dom_Node * _eon_element_eon_element_at(Eon_Renderable *r,
+		Eina_Rectangle *cursor)
+{
+	Egueb_Dom_Node *child;
+	Egueb_Dom_Node *ret = NULL;
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(r))->n;
+	child = egueb_dom_element_child_first_get(n);
+	if (child)
+		ret = eon_renderable_element_at(child, cursor);
+	egueb_dom_node_unref(child);
+	return ret;
+}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -263,6 +278,7 @@ static void _eon_element_eon_class_init(void *k)
 	r_klass = EON_RENDERABLE_CLASS(k);
 	r_klass->child_size_dependant = EINA_TRUE;
 	r_klass->init = _eon_element_eon_init;
+	r_klass->element_at = _eon_element_eon_element_at;
 
 	w_klass = EON_WIDGET_CLASS(k);
 	w_klass->size_hints_get = _eon_element_eon_size_hints_get;

@@ -15,121 +15,88 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "eon_private_main.h"
-#include "eon_private_layout.h"
-#include "eon_private_layout_frame.h"
+#include "eon_private.h"
+#include "eon_main.h"
+
+#include "eon_renderable.h"
+#include "eon_renderable_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Layout_Frame_Geometry_Set_Data
-{
-	Eon_Layout_Frame_Descriptor *d;
-	Eon_Geometry *g;
-} Eon_Layout_Frame_Geometry_Set_Data;
-
-typedef struct _Eon_Layout_Frame_Hints_Get_Data
-{
-	Eon_Layout_Frame_Descriptor *d;
-	Eon_Hints *hints;
-} Eon_Layout_Frame_Hints_Get_Data;
-
-/* TODO when setting the geometry we need to take into
- * account the previously generated min/max/preferred
- * per child
- */
-static void _geometry_set_cb(void *ref, void *child, void *user_data)
-{
-	Eon_Layout_Frame_Geometry_Set_Data *data = user_data;
-	Eon_Margin cmargin;
-	Eon_Geometry cg;
-
-	data->d->child_padding_get(ref, child, &cmargin);
-	cg = *data->g;
-	cg.x += cmargin.left;
-	cg.width -= cmargin.right + cmargin.left;
-	cg.y += cmargin.top;
-	cg.height -= cmargin.top + cmargin.bottom;
-	printf("frame: setting geometry %g %g %g %g\n", cg.x, cg.y, cg.width, cg.height);
-	data->d->child_geometry_set(ref, child, &cg);
-}
-
-static void _hints_get_cb(void *ref, void *child, void *user_data)
-{
-	Eon_Layout_Frame_Hints_Get_Data *data = user_data;
-	Eon_Hints hints;
-	Eon_Margin cmargin;
-	double h;
-	double v;
-
-	eon_hints_initialize(&hints);
-	data->d->child_hints_get(ref, child, &hints);
-	data->d->child_padding_get(ref, child, &cmargin);
-
-	//printf("child max %g %g %g %g\n", cmax.width, cmax.height, cmin.width, cmin.height);
-
-	h = cmargin.left + cmargin.right;
-	v = cmargin.top + cmargin.bottom;
-
-	if (hints.min.width < DBL_MAX)
-		hints.min.width += h;
-	if (hints.min.height < DBL_MAX)
-		hints.min.height += v;
-	if (hints.max.width < DBL_MAX)
-		hints.max.width += h;
-	if (hints.max.height < DBL_MAX)
-		hints.max.height += v;
-	if (hints.max.width < DBL_MAX && hints.max.width > 0)
-		hints.preferred.width += h;
-	if (hints.max.height < DBL_MAX && hints.max.height > 0)
-		hints.preferred.height += v;
-
-	/* the min size is the max of every child min size */
-	data->hints->min.width = MAX(data->hints->min.width, hints.min.width);
-	data->hints->min.height = MAX(data->hints->min.height, hints.min.height);
-	/* the max size is the min of every child max size */
-	data->hints->max.width = MIN(data->hints->max.width, hints.max.width);
-	data->hints->max.height = MIN(data->hints->max.height, hints.max.height);
-	/* the preferred size is the max of every child preferred size */
-	data->hints->preferred.width = MAX(data->hints->preferred.width, hints.preferred.width);
-	data->hints->preferred.height = MAX(data->hints->preferred.height, hints.preferred.height);
-
-	eon_hints_sanitize(data->hints);
-	printf("frame: min %g %g max %g %g preferred %g %g\n",
-		data->hints->min.width, data->hints->min.height,
-		data->hints->max.width, data->hints->max.height,
-		data->hints->preferred.width, data->hints->preferred.height);
-}
-/*----------------------------------------------------------------------------*
- *                        The Eon's layout interface                          *
- *----------------------------------------------------------------------------*/
-static void _eon_layout_frame_geometry_set(void *descriptor, void *ref,
-		Eon_Geometry *g)
-{
-	Eon_Layout_Frame_Geometry_Set_Data data;
-	Eon_Layout_Frame_Descriptor *d = descriptor;
-
-	data.d = d;
-	data.g = g;
-	d->child_foreach(ref, _geometry_set_cb, &data);
-}
-
-static void _eon_layout_frame_hints_get(void *descriptor, void *ref,
-		Eon_Hints *hints)
-{
-	Eon_Layout_Frame_Hints_Get_Data data;
-	Eon_Layout_Frame_Descriptor *d = descriptor;
-
-	data.d = d;
-	data.hints = hints;
-	d->child_foreach(ref, _hints_get_cb, &data);
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Layout eon_layout_frame = {
-	/* .geometry_set 	= */ _eon_layout_frame_geometry_set,
-	/* .hints_get 		= */ _eon_layout_frame_hints_get,
-};
+int eon_layout_frame_size_hints_get(Egueb_Dom_Node *r,
+		Eon_Renderable_Size *size)
+{
+	Egueb_Dom_Node *child;
+	int ret = 0;
+
+	/* iterate over the children */
+	child = egueb_dom_element_child_first_get(r);
+	while (child)
+	{
+		Egueb_Dom_Node *tmp;
+		Eon_Renderable_Size child_size;
+		int child_size_flags;
+
+		if (!eon_is_renderable(child))
+			goto next;
+
+		/* the algo */
+		child_size_flags = eon_renderable_size_hints_get(child, &child_size);
+		if (child_size_flags & EON_RENDERABLE_HINT_MIN_MAX)
+		{
+			/* the min size is the max of every child min size */
+			size->min_width = MAX(size->min_width, child_size.min_width);
+			size->min_height = MAX(size->min_height, child_size.min_height);
+			/* the max size is the min of every child max size */
+			if (child_size.max_width >= 0)
+				size->max_width = MIN(size->max_width, child_size.max_width);
+			if (child_size.max_height >= 0)
+				size->max_height = MIN(size->max_height, child_size.max_height);
+		}
+
+		if (child_size_flags & EON_RENDERABLE_HINT_PREFERRED)
+		{
+			/* the preferred size is the max of every child preferred size */
+			size->pref_width = MAX(size->pref_width, child_size.pref_width);
+			size->pref_height = MAX(size->pref_height, child_size.pref_height);
+		}
+
+		ret |= child_size_flags;
+next:
+		tmp = egueb_dom_element_sibling_next_get(child);
+		egueb_dom_node_unref(child);
+		child = tmp;
+	}
+	return ret;
+}
+
+void eon_layout_frame_size_geometry_set(Egueb_Dom_Node *r, Eina_Rectangle *g)
+{
+	Egueb_Dom_Node *child;
+
+	/* iterate over the children and set the size */
+	child = egueb_dom_element_child_first_get(r);
+	while (child)
+	{
+		Egueb_Dom_Node *tmp;
+		Eina_Rectangle child_g = *g;
+
+		if (!eon_is_renderable(child))
+			goto next;
+
+		eon_renderable_geometry_solve(child, g, &child_g);
+		eon_renderable_geometry_set(child, &child_g);
+		/* Finally process */
+		egueb_dom_element_process(child);
+next:
+		tmp = egueb_dom_element_sibling_next_get(child);
+		egueb_dom_node_unref(child);
+		child = tmp;
+	}
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

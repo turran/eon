@@ -29,11 +29,13 @@ typedef enum _Eon_Renderable_Size_Hints
 typedef struct _Eon_Renderable_Size
 {
 	/* for the min/max hint */
+	/* the min must be at least 0, the max can have a -1 and thus is not taken into account */
 	int min_width;
 	int min_height;
 	int max_width;
 	int max_height;
 	/* fot the preferred hint */
+	/* in case of -1, such cordinate is not taken into account */
 	int pref_width;
 	int pref_height;
 } Eon_Renderable_Size;
@@ -44,6 +46,8 @@ EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h);
 EAPI int eon_renderable_height_get(Egueb_Dom_Node *n);
 EAPI void eon_renderable_valign_set(Egueb_Dom_Node *n, Eon_Vertical_Align valign);
 EAPI Eon_Vertical_Align eon_renderable_valign_get(Egueb_Dom_Node *n);
+EAPI void eon_renderable_halign_set(Egueb_Dom_Node *n, Eon_Horizontal_Align halign);
+EAPI Eon_Horizontal_Align eon_renderable_halign_get(Egueb_Dom_Node *n);
 EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
 
 

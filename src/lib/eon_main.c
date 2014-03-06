@@ -77,10 +77,12 @@ static void _strings_init(void)
 	EON_ATTR_ELLIPSIZE = egueb_dom_string_new_with_static_string("ellipsize");
 	EON_ATTR_VALIGN = egueb_dom_string_new_with_static_string("valign");
 	EON_ATTR_HALIGN = egueb_dom_string_new_with_static_string("halign");
+	EON_ATTR_WEIGHT = egueb_dom_string_new_with_static_string("weight");
 	/* elements */
 	EON_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
 	EON_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
+	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
 	/* events */
 	EON_EVENT_GEOMETRY = egueb_dom_string_new_with_static_string("EONGeometry");
 }
@@ -100,10 +102,12 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_ATTR_ELLIPSIZE);
 	egueb_dom_string_unref(EON_ATTR_VALIGN);
 	egueb_dom_string_unref(EON_ATTR_HALIGN);
+	egueb_dom_string_unref(EON_ATTR_WEIGHT);
 	/* elements */
 	egueb_dom_string_unref(EON_ELEMENT_EON);
 	egueb_dom_string_unref(EON_ELEMENT_BUTTON);
 	egueb_dom_string_unref(EON_ELEMENT_LABEL);
+	egueb_dom_string_unref(EON_ELEMENT_STACK);
 	/* events */
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY);
 }
@@ -125,10 +129,12 @@ Egueb_Dom_String *EON_THEME;
 Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
 Egueb_Dom_String *EON_ATTR_VALIGN;
 Egueb_Dom_String *EON_ATTR_HALIGN;
+Egueb_Dom_String *EON_ATTR_WEIGHT;
 /* elements */
 Egueb_Dom_String *EON_ELEMENT_EON;
 Egueb_Dom_String *EON_ELEMENT_BUTTON;
 Egueb_Dom_String *EON_ELEMENT_LABEL;
+Egueb_Dom_String *EON_ELEMENT_STACK;
 /* events */
 Egueb_Dom_String *EON_EVENT_GEOMETRY;
 

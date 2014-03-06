@@ -68,6 +68,10 @@
 #endif
 #define DBG_ELEMENT(n, ...) EGUEB_DOM_ELEMENT_LOG_DOM_DBG(n, eon_main_log, __VA_ARGS__)
 
+/* helper macros */
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b)) 
+
 extern int eon_main_log;
 
 #endif

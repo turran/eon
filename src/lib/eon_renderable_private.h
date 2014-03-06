@@ -57,6 +57,7 @@ typedef void (*Eon_Renderable_Geometry_Set)(Eon_Renderable *thiz, Eina_Rectangle
 typedef Enesim_Renderer * (*Eon_Renderable_Renderer_Get)(Eon_Renderable *thiz);
 typedef Eina_Bool (*Eon_Renderable_Pre_Process)(Eon_Renderable *thiz);
 typedef Eina_Bool (*Eon_Renderable_Process)(Eon_Renderable *thiz);
+typedef Egueb_Dom_Node * (*Eon_Renderable_Element_At)(Eon_Renderable *thiz, Eina_Rectangle *cursor);
 
 typedef struct _Eon_Renderable_Class
 {
@@ -69,13 +70,28 @@ typedef struct _Eon_Renderable_Class
 	Eon_Renderable_Renderer_Get renderer_get;
 	Eon_Renderable_Pre_Process pre_process;
 	Eon_Renderable_Process process;
+	Eon_Renderable_Element_At element_at;
 	Eina_Bool child_size_dependant;
 } Eon_Renderable_Class;
 
 Eina_Bool eon_is_renderable(Egueb_Dom_Node *n);
 void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry);
 void eon_renderable_invalidate_geometry(Eon_Renderable *thiz);
+void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_Rectangle *out);
 Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n);
+Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
+		Eina_Rectangle *cursor);
+
+static inline void eon_renderable_size_init(Eon_Renderable_Size *s)
+{
+	s->min_width = 0;
+	s->max_width = -1;
+	s->min_height = 0;
+	s->max_height = -1;
+
+	s->pref_width = -1;
+	s->pref_height = -1;
+}
 
 #endif
 

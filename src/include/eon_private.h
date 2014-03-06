@@ -52,9 +52,6 @@
 	} while(0)
 
 
-/* helper functions */
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MAX(a, b) ((a) > (b) ? (a) : (b)) 
 /* element inheritance */
 /* widget inheritance */
 #define EON_COMPOUND_MAGIC 0xe0400004
