@@ -46,6 +46,12 @@ typedef enum _Eon_Horizontal_Align
 	EON_HORIZONTAL_ALIGN_RIGHT,
 } Eon_Horizontal_Align;
 
+typedef enum _Eon_Orientation
+{
+	EON_ORIENTATION_HORIZONTAL,
+	EON_ORIENTATION_VERTICAL,
+} Eon_Orientation;
+
 EAPI int eon_init(void);
 EAPI int eon_shutdown(void);
 
@@ -60,6 +66,7 @@ EAPI extern Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
 EAPI extern Egueb_Dom_String *EON_ATTR_VALIGN;
 EAPI extern Egueb_Dom_String *EON_ATTR_HALIGN;
 EAPI extern Egueb_Dom_String *EON_ATTR_WEIGHT;
+EAPI extern Egueb_Dom_String *EON_ATTR_ORIENTATION;
 
 EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON;

@@ -17,9 +17,11 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_element_stack.h"
 
 #include "eon_renderable_private.h"
 #include "eon_layout_stack_private.h"
+#include "eon_orientation_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -31,6 +33,7 @@ typedef struct _Eon_Element_Stack
 {
 	Eon_Renderable base;
 	/* attributes */
+	Egueb_Dom_Node *orientation;
 	/* private */
 	Enesim_Renderer *r;
 	int weights;
@@ -88,20 +91,27 @@ static int _eon_element_stack_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size *size)
 {
 	Eon_Element_Stack *thiz;
+	Eon_Orientation orientation;
 	Egueb_Dom_Node *child;
 	Egueb_Dom_Node *n;
 
 	thiz = EON_ELEMENT_STACK(r);
 
 	n = (EON_ELEMENT(r))->n;
-	return eon_layout_stack_vertical_size_hints_get(n, size,
-			&thiz->min_length, &thiz->weights);
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+		return eon_layout_stack_horizontal_size_hints_get(n, size,
+				&thiz->min_length, &thiz->weights);
+	else
+		return eon_layout_stack_vertical_size_hints_get(n, size,
+				&thiz->min_length, &thiz->weights);
 }
 
 static Eina_Bool _eon_element_stack_process(Eon_Renderable *r)
 {
 	Eon_Element_Stack *thiz;
 	Eon_Renderable_Size size;
+	Eon_Orientation orientation;
 	Eon_Box padding;
 	Eon_Vertical_Align valign;
 	Eon_Horizontal_Align halign;
@@ -149,15 +159,22 @@ next1:
 		thiz->renderable_changed = EINA_FALSE;
 	}
 	/* Set the geometry on each child */
-	eon_layout_stack_vertical_size_geometry_set(n, &free_space,
-			thiz->min_length, thiz->weights);
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+		eon_layout_stack_horizontal_size_geometry_set(n, &free_space,
+				thiz->min_length, thiz->weights);
+	else
+		eon_layout_stack_vertical_size_geometry_set(n, &free_space,
+				thiz->min_length, thiz->weights);
 	return EINA_TRUE;
 }
 
 static void _eon_element_stack_init(Eon_Renderable *r)
 {
+	Eon_Element_Stack *thiz;
 	Egueb_Dom_Node *n;
 
+	thiz = EON_ELEMENT_STACK(r);
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
@@ -167,6 +184,13 @@ static void _eon_element_stack_init(Eon_Renderable *r)
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_stack_tree_modified_cb,
 			EINA_FALSE, r);
+
+	/* add the attributes */
+	thiz->orientation = eon_orientation_attr_new();
+	egueb_dom_attr_set(thiz->orientation, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			EON_ORIENTATION_HORIZONTAL);
+	egueb_dom_element_attribute_add(n,
+		egueb_dom_node_ref(thiz->orientation), NULL);
 }
 
 static Egueb_Dom_Node * _eon_element_stack_element_at(Eon_Renderable *r,
@@ -255,6 +279,7 @@ static void _eon_element_stack_instance_deinit(void *o)
 	Eon_Element_Stack *thiz;
 
 	thiz = EON_ELEMENT_STACK(o);
+	egueb_dom_node_unref(thiz->orientation);
 	enesim_renderer_unref(thiz->r);
 }
 /*============================================================================*

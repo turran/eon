@@ -29,7 +29,11 @@ src/lib/eon_layout_frame_private.h \
 src/lib/eon_main.c \
 src/lib/eon_renderable.c \
 src/lib/eon_horizontal_align.c \
+src/lib/eon_horizontal_align_private.h \
 src/lib/eon_vertical_align.c \
+src/lib/eon_vertical_align_private.h \
+src/lib/eon_orientation.c \
+src/lib/eon_orientation_private.h \
 src/lib/eon_widget.c
 
 src_lib_libeon_la_LIBADD = \

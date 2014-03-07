@@ -1,5 +1,5 @@
 <eon>
-  <stack direction="1">
+  <stack orientation="vertical">
     <button id="button01">
       <label>My very own label</label>
     </button>

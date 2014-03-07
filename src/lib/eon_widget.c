@@ -181,8 +181,11 @@ no_document:
  *----------------------------------------------------------------------------*/
 static void _eon_widget_init(Eon_Renderable *r)
 {
+	Eon_Widget *thiz;
+	Eon_Widget_Class *klass;
 	Egueb_Dom_Node *n;
 
+	thiz = EON_WIDGET(r);
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_CLICK,
 			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
@@ -194,6 +197,10 @@ static void _eon_widget_init(Eon_Renderable *r)
 			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_OUT,
 			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+
+	klass = EON_WIDGET_CLASS_GET(thiz);
+	if (klass->init)
+		klass->init(thiz);
 }
 
 static Enesim_Renderer * _eon_widget_renderer_get(Eon_Renderable *r)

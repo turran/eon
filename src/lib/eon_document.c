@@ -21,6 +21,7 @@
 #include "eon_element_eon.h"
 #include "eon_element_button.h"
 #include "eon_element_label.h"
+#include "eon_element_stack.h"
 
 #include "eon_renderable_private.h"
 #include "eon_element_eon_private.h"
