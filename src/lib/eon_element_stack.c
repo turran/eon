@@ -196,6 +196,9 @@ next:
 		egueb_dom_node_unref(child);
 		child = tmp;
 	}
+	if (!ret)
+		ret = egueb_dom_node_ref(n);
+
 	return ret;
 }
 /*----------------------------------------------------------------------------*

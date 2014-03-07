@@ -229,6 +229,8 @@ static Egueb_Dom_Node * _eon_element_eon_element_at(Eon_Renderable *r,
 	if (child)
 		ret = eon_renderable_element_at(child, cursor);
 	egueb_dom_node_unref(child);
+	if (!ret)
+		ret = egueb_dom_node_ref(n);
 	return ret;
 }
 /*----------------------------------------------------------------------------*
