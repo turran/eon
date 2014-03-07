@@ -176,7 +176,6 @@ static void _eon_drawer_basic_button_padding_get(Eon_Drawer_Widget *w,
 {
 	Eon_Drawer_Basic_Button *thiz = data;
 
-	printf("[basic] padding get\n");
 	padding->top = thiz->vertical_padding + thiz->radius;
 	padding->bottom = thiz->vertical_padding + thiz->radius;
 	padding->left = thiz->horizontal_padding + thiz->radius;
@@ -187,7 +186,6 @@ static Enesim_Renderer * _eon_drawer_basic_button_renderer_get(
 		Eon_Drawer_Widget *w, void *data)
 {
 	Eon_Drawer_Basic_Button *thiz = data;
-	printf("[basic] renderer get\n");
 	return enesim_renderer_ref(thiz->shape);
 }
 
@@ -199,7 +197,6 @@ static void _eon_drawer_basic_button_geometry_set(Eon_Drawer_Widget *w,
 	Enesim_Renderer *r;
 	int x, y, width, height;
 
-	printf("[basic] geometry set\n");
 	x = geom->x;
 	y = geom->y;
 	width = geom->w;
@@ -226,7 +223,6 @@ static void _eon_drawer_basic_button_geometry_set(Eon_Drawer_Widget *w,
 	/* store the height */
 	thiz->height = height;
 
-	printf("height = %d\n", height);
 	r = thiz->background_fill;
 	m.xx = 1; m.xy = 0; m.xz = 0;
 	m.yx = 0; m.yy = height; m.yz = 0;
@@ -250,7 +246,6 @@ static void _eon_drawer_basic_button_ender_populate(Eon_Drawer_Widget *w,
 	Egueb_Dom_Node *attr;
 
 	/* add our own attributes */
-	printf("[basic] ender populate\n");
 	attr = ender_attr_enesim_color_new("border-color",
 			ENDER_ATTR_ENESIM_COLOR_GET(_eon_drawer_basic_button_border_color_get),
 			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_border_color_set));

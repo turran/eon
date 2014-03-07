@@ -78,7 +78,7 @@ static Eina_Bool _eon_drawer_label_generate_font(Eon_Drawer_Label *thiz)
 		}
 		if (!thiz->tf)
 		{
-			printf("Impossible to load any font, using default one");
+			WARN("Impossible to load any font, using default one");
 			thiz->tf = enesim_text_font_new_description_from(e, "Sans:style=Regular", 16);
 		}
 		enesim_text_engine_unref(e);

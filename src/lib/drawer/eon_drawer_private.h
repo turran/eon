@@ -19,9 +19,7 @@
 #ifndef EON_DRAWER_PRIVATE_H_
 #define EON_DRAWER_PRIVATE_H_
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "eon_private.h"
 
 #include "Eon.h" 
 #include "Ender.h"
