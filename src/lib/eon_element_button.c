@@ -55,6 +55,7 @@ static int _eon_element_button_size_hints_get(Eon_Widget *w,
 
 	/* finally add our padding */
 	eon_drawer_button_padding_get(w->theme_widget, &padding);
+	/* a button can be of any size */
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
 	if (size->min_width > 0)
 		size->min_width += padding.left + padding.right;
