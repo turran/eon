@@ -1,6 +1,6 @@
 <eon>
   <stack orientation="vertical">
-    <button id="button01">
+    <button id="button01" weight="2">
       <label>My very own label</label>
     </button>
     <button id="button02">
