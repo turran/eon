@@ -203,14 +203,12 @@ static void _eon_drawer_basic_button_geometry_set(Eon_Drawer_Widget *w,
 	height = geom->h;
 
 	/* the x */
-	enesim_renderer_x_origin_set(thiz->background_fill, x);
 	enesim_renderer_gradient_linear_x0_set(thiz->inner_button_fill, x);
 	enesim_renderer_gradient_linear_x1_set(thiz->inner_button_fill, x);
 	enesim_renderer_rectangle_x_set(thiz->inner_button, x + thiz->horizontal_padding);
 	enesim_renderer_rectangle_x_set(thiz->shape, x);
 
 	/* the y */
-	enesim_renderer_y_origin_set(thiz->background_fill, y);
 	enesim_renderer_gradient_linear_y0_set(thiz->inner_button_fill, y);
 	enesim_renderer_rectangle_y_set(thiz->inner_button, y + thiz->vertical_padding);
 	enesim_renderer_rectangle_y_set(thiz->shape, y);
@@ -224,8 +222,8 @@ static void _eon_drawer_basic_button_geometry_set(Eon_Drawer_Widget *w,
 	thiz->height = height;
 
 	r = thiz->background_fill;
-	m.xx = 1; m.xy = 0; m.xz = 0;
-	m.yx = 0; m.yy = height; m.yz = 0;
+	m.xx = 1; m.xy = 0; m.xz = x;
+	m.yx = 0; m.yy = height; m.yz = y;
 	m.zx = 0; m.zy = 0; m.zz = 1;
 	enesim_renderer_transformation_set(r, &m);
 
