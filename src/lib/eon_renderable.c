@@ -278,40 +278,35 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 	int size_hints;
 	int w = -1, h = -1;
 
+	DBG_ELEMENT(n, "Solving free space %" EINA_RECTANGLE_FORMAT,
+			EINA_RECTANGLE_ARGS(fs));
 	size_hints = eon_renderable_size_hints_get(n, &size);
 	valign = eon_renderable_valign_get(n);
 	halign = eon_renderable_halign_get(n);
 
-	/* if we have a preferred hint, get the min difference getting that
-	 * as a reference, also check that we are in the min/max range
-	 */
-	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		if (size.pref_width > 0)
-			w = size.pref_width;
-		if (size.pref_height > 0)
-			h = size.pref_height;
-	}
-
+	w = fs->w;
+	h = fs->h;
 	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
 	{
-		if (w < 0)
+		if (w < size.min_width)
 		{
+			ERR_ELEMENT(n, "Parent set a width %d less than min %d",
+					fs->w, size.min_width);
 			w = size.min_width;
 		}
-		if (w > fs->w)
-		{
-			w = fs->w;
-		}
 
-		if (h < 0)
+		if (w > size.max_width && size.max_width > 0)
+			w = size.max_width;
+
+		if (h < size.min_height)
 		{
+			ERR_ELEMENT(n, "Parent set a height %d less than min %d",
+					fs->h, size.min_height);
 			h = size.min_height;
 		}
-		if (h > fs->h)
-		{
-			h = fs->h;
-		}
+
+		if (h > size.max_height && size.max_height > 0)
+			h = size.max_height;
 	}
 
 	/* handle halign, valign */
