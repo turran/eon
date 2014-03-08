@@ -112,6 +112,7 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 		Eina_Rectangle *g, int min_height, int weights)
 {
 	Egueb_Dom_Node *child;
+	int extra;
 	int empty = 0;
 	int ret = 0;
 
@@ -119,8 +120,8 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 	 * then, use the weight to calculate how much space should
 	 * we allocate for every child min size
 	 */
-	empty = g->y - min_height;
-
+	empty = g->h - min_height;
+	extra = empty/weights;
 	/* iterate over the children */
 	child = egueb_dom_element_child_first_get(r);
 	while (child)
@@ -146,7 +147,7 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 
 		/* we start from its minimum size and give space based on the weight */
 		child_g.h = child_size.min_height;
-		child_g.h += (empty / weights) * weight;
+		child_g.h += extra * weight;
 
 		eon_renderable_geometry_solve(child, &child_g, &child_final_g);
 		eon_renderable_geometry_set(child, &child_final_g);
@@ -155,7 +156,6 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 		egueb_dom_element_process(child);
 
 		g->y += child_g.h;
-		empty -= g->h;
 next_size:
 		tmp = egueb_dom_element_sibling_next_get(child);
 		egueb_dom_node_unref(child);
@@ -235,6 +235,7 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 		Eina_Rectangle *g, int min_width, int weights)
 {
 	Egueb_Dom_Node *child;
+	int extra;
 	int empty = 0;
 	int ret = 0;
 
@@ -243,6 +244,7 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 	 * we allocate for every child min size
 	 */
 	empty = g->w - min_width;
+	extra = (empty / weights);
 
 	/* iterate over the children */
 	child = egueb_dom_element_child_first_get(r);
@@ -269,7 +271,7 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 
 		/* we start from its minimum size and give space based on the weight */
 		child_g.w = child_size.min_width;
-		child_g.w += (empty / weights) * weight;
+		child_g.w += extra * weight;
 
 		eon_renderable_geometry_solve(child, &child_g, &child_final_g);
 		eon_renderable_geometry_set(child, &child_final_g);
@@ -277,7 +279,6 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 		egueb_dom_element_process(child);
 
 		g->x += child_g.w;
-		empty -= g->w;
 next_size:
 		tmp = egueb_dom_element_sibling_next_get(child);
 		egueb_dom_node_unref(child);
