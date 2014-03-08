@@ -46,10 +46,9 @@ typedef struct _Eon_Element_Stack_Class
 	Eon_Renderable_Class base;
 } Eon_Element_Stack_Class;
 
-static void _eon_element_stack_tree_modified_cb(Egueb_Dom_Event *e,
-		void *data)
+static Egueb_Dom_Node * _eon_element_stack_event_get_renderable(
+		Eon_Element_Stack *thiz, Egueb_Dom_Event *e)
 {
-	Eon_Element_Stack *thiz = data;
 	Egueb_Dom_Node *related = NULL;
 	Egueb_Dom_Node *target = NULL;
 	Egueb_Dom_Node *n;
@@ -60,7 +59,7 @@ static void _eon_element_stack_tree_modified_cb(Egueb_Dom_Event *e,
 	if (related != n)
 	{
 		egueb_dom_node_unref(related);
-		return;
+		return NULL;
 	}
 	egueb_dom_node_unref(related);
 
@@ -69,10 +68,46 @@ static void _eon_element_stack_tree_modified_cb(Egueb_Dom_Event *e,
 	if (!eon_is_renderable(target))
 	{
 		egueb_dom_node_unref(target);
-		return;
+		return NULL;
 	}
+	return target;
+}
+
+static void _eon_element_stack_node_inserted_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Stack *thiz = data;
+	Egueb_Dom_Node *target;
+	Egueb_Dom_Node *attr;
+
+	target = _eon_element_stack_event_get_renderable(thiz, e);
+	if (!target) return;
 
 	thiz->renderable_changed = EINA_TRUE;
+	/* add the weight attribute */
+	attr = egueb_dom_attr_int_new(
+			egueb_dom_string_ref(EON_ATTR_WEIGHT), EINA_FALSE,
+			EINA_FALSE, EINA_FALSE);
+	egueb_dom_attr_set(attr, EGUEB_DOM_ATTR_TYPE_BASE, 1);
+	egueb_dom_element_attribute_add(target, attr, NULL);
+	egueb_dom_node_unref(target);
+}
+
+static void _eon_element_stack_node_removed_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Stack *thiz = data;
+	Egueb_Dom_Node *target;
+	Egueb_Dom_Node *attr;
+
+	target = _eon_element_stack_event_get_renderable(thiz, e);
+	if (!target) return;
+
+	thiz->renderable_changed = EINA_TRUE;
+#if 0
+	/* remove the weight attribute */
+	attr = egueb_dom_element_property_fetch(target, EON_ATTR_WEIGHT);
+#endif	
 	egueb_dom_node_unref(target);
 }
 
@@ -178,11 +213,11 @@ static void _eon_element_stack_init(Eon_Renderable *r)
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
-			_eon_element_stack_tree_modified_cb,
+			_eon_element_stack_node_inserted_cb,
 			EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
-			_eon_element_stack_tree_modified_cb,
+			_eon_element_stack_node_removed_cb,
 			EINA_FALSE, r);
 
 	/* add the attributes */
