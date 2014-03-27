@@ -129,16 +129,25 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 	thiz->theme_document = eon_element_eon_theme_load(topmost, theme);
 	if (thiz->theme_document)
 	{
-		Egueb_Dom_String *tag_name;
+		Eon_Widget_Class *klass;
 
-		tag_name = egueb_dom_element_tag_name_get(n);
-		thiz->theme_instance = ender_document_instance_new(
+		klass = EON_WIDGET_CLASS_GET(thiz);
+		if (klass->theme_instance_create)
+		{
+			thiz->theme_instance = klass->theme_instance_create(thiz);
+		}
+		else
+		{
+			Egueb_Dom_String *tag_name;
+
+			tag_name = egueb_dom_element_tag_name_get(n);
+			thiz->theme_instance = ender_document_instance_new(
 				thiz->theme_document,
 				egueb_dom_string_string_get(tag_name),
 				NULL);
+		}
 		if (thiz->theme_instance)
 		{
-			Eon_Widget_Class *klass;
 			Enesim_Renderer *r;
 
 			INFO_ELEMENT(e->n, "Instance fetched correctly");
@@ -148,9 +157,8 @@ static Eina_Bool _eon_widget_load_theme(Eon_Widget *thiz)
 			r = eon_drawer_widget_renderer_get(thiz->theme_widget);
 			enesim_renderer_proxy_proxied_set(thiz->proxy, r);
 			/* call the class method */
-			klass = EON_WIDGET_CLASS_GET(thiz);
-			if (klass->theme_created)
-				klass->theme_created(thiz);
+			if (klass->theme_instance_created)
+				klass->theme_instance_created(thiz);
 			/* Set the default state first */
 			ender_element_instance_state_set(thiz->theme_instance, "default", NULL);
 		}

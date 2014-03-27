@@ -150,7 +150,7 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 /*----------------------------------------------------------------------------*
  *                              Widget interface                              *
  *----------------------------------------------------------------------------*/
-static void _eon_element_label_theme_created(Eon_Widget *w)
+static void _eon_element_label_theme_instance_created(Eon_Widget *w)
 {
 	Eon_Element_Label *thiz;
 
@@ -298,7 +298,7 @@ static void _eon_element_label_class_init(void *k)
 	r_klass->init = _eon_element_label_init;
 
 	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->theme_created = _eon_element_label_theme_created;
+	w_klass->theme_instance_created = _eon_element_label_theme_instance_created;
 	w_klass->size_hints_get = _eon_element_label_size_hints_get;
 	w_klass->process = _eon_element_label_process;
 }
