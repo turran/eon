@@ -20,7 +20,7 @@
 #include "eon_renderable.h"
 #include "eon_renderable_private.h"
 
-#include "eon_widget_private.h"
+#include "eon_widget_drawer_private.h"
 #include "eon_element_eon_private.h"
 #include "eon_event_geometry_private.h"
 
@@ -41,7 +41,7 @@ typedef struct _Eon_Element_Eon_Theme
 
 typedef struct _Eon_Element_Eon
 {
-	Eon_Widget base;
+	Eon_Widget_Drawer base;
 	Eina_Bool renderable_changed;
 	Etch *etch;
 	/* the theme system */
@@ -50,7 +50,7 @@ typedef struct _Eon_Element_Eon
 
 typedef struct _Eon_Element_Eon_Class
 {
-	Eon_Widget_Class base;
+	Eon_Widget_Drawer_Class base;
 } Eon_Element_Eon_Class;
 
 static void _eon_element_eon_etch_cb(Egueb_Dom_Event *e,
@@ -94,17 +94,18 @@ static void _eon_element_eon_tree_modified_cb(Egueb_Dom_Event *e,
 	thiz->renderable_changed = EINA_TRUE;
 	egueb_dom_node_unref(target);
 }
+
 /*----------------------------------------------------------------------------*
- *                             Widget interface                               *
+ *                        Widget Drawer interface                             *
  *----------------------------------------------------------------------------*/
-static int _eon_element_eon_size_hints_get(Eon_Widget *r, Eon_Renderable_Size *size)
+static int _eon_element_eon_size_hints_get(Eon_Widget_Drawer *w, Eon_Renderable_Size *size)
 {
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	int ret;
 
-	e = EON_ELEMENT(r);
+	e = EON_ELEMENT(w);
 	n = e->n;
 	/* get the hints from our child */
 	child = egueb_dom_element_child_first_get(n);
@@ -115,40 +116,8 @@ static int _eon_element_eon_size_hints_get(Eon_Widget *r, Eon_Renderable_Size *s
 	return ret;
 }
 
-static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
-{
-	Eon_Renderable *r;
-
-	r = EON_RENDERABLE(w);
-	/* set the size based on the user provided size */
-	if (r->needs_geometry)
-	{
-		Egueb_Dom_Event *ev;
-		Eina_Rectangle geom;
-		Eina_Bool set;
-		Egueb_Dom_Node *n;
-
-		n = (EON_ELEMENT(r))->n;
-		/* request a geometry upstream */
-		ev = eon_event_geometry_new();
-		egueb_dom_node_event_dispatch(n, egueb_dom_event_ref(ev), NULL, NULL);
-		/* check that we have a valid geometry */
-		set = eon_event_geometry_get(ev, &geom);
-		egueb_dom_event_unref(ev);
-
-		if (!set)
-		{
-			ERR("Application does not set a geometry");
-			return EINA_FALSE;
-
-		}
-		eon_renderable_geometry_set(n, &geom);
-	}
-	return EINA_TRUE;
-}
-
 /* a process is called whenever we want to set a new geometry */
-static Eina_Bool _eon_element_eon_process(Eon_Widget *w)
+static Eina_Bool _eon_element_eon_process(Eon_Widget_Drawer *w)
 {
 	Eon_Element_Eon *thiz;
 	Eon_Renderable *r;
@@ -199,24 +168,60 @@ static Eina_Bool _eon_element_eon_process(Eon_Widget *w)
 
 	return EINA_TRUE;
 }
+
 /*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
+ *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
-static void _eon_element_eon_init(Eon_Renderable *r)
+static void _eon_element_eon_init(Eon_Widget *w)
 {
 	Egueb_Dom_Node *n;
 
-	n = (EON_ELEMENT(r))->n;
+	n = (EON_ELEMENT(w))->n;
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_eon_tree_modified_cb,
-			EINA_FALSE, r);
+			EINA_FALSE, w);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_tree_modified_cb,
-			EINA_FALSE, r);
+			EINA_FALSE, w);
 }
 
+static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
+{
+	Eon_Renderable *r;
+
+	r = EON_RENDERABLE(w);
+	/* set the size based on the user provided size */
+	if (r->needs_geometry)
+	{
+		Egueb_Dom_Event *ev;
+		Eina_Rectangle geom;
+		Eina_Bool set;
+		Egueb_Dom_Node *n;
+
+		n = (EON_ELEMENT(r))->n;
+		/* request a geometry upstream */
+		ev = eon_event_geometry_new();
+		egueb_dom_node_event_dispatch(n, egueb_dom_event_ref(ev), NULL, NULL);
+		/* check that we have a valid geometry */
+		set = eon_event_geometry_get(ev, &geom);
+		egueb_dom_event_unref(ev);
+
+		if (!set)
+		{
+			ERR("Application does not set a geometry");
+			return EINA_FALSE;
+
+		}
+		eon_renderable_geometry_set(n, &geom);
+	}
+	return EINA_TRUE;
+}
+
+/*----------------------------------------------------------------------------*
+ *                           Renderable interface                             *
+ *----------------------------------------------------------------------------*/
 static Egueb_Dom_Node * _eon_element_eon_element_at(Eon_Renderable *r,
 		Eina_Rectangle *cursor)
 {
@@ -265,7 +270,7 @@ static Eina_Bool _eon_element_eon_child_appendable(Eon_Element *e, Egueb_Dom_Nod
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Eon,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Eon,
 		Eon_Element_Eon_Class, eon_element_eon);
 
 static void _eon_element_eon_class_init(void *k)
@@ -273,19 +278,22 @@ static void _eon_element_eon_class_init(void *k)
 	Eon_Element_Class *klass = k;
 	Eon_Renderable_Class *r_klass;
 	Eon_Widget_Class *w_klass;
+	Eon_Widget_Drawer_Class *wd_klass;
 
 	klass->tag_name_get = _eon_element_eon_tag_name_get;
 	klass->child_appendable = _eon_element_eon_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
 	r_klass->child_size_dependant = EINA_TRUE;
-	r_klass->init = _eon_element_eon_init;
 	r_klass->element_at = _eon_element_eon_element_at;
 
 	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->size_hints_get = _eon_element_eon_size_hints_get;
-	w_klass->process = _eon_element_eon_process;
+	w_klass->init = _eon_element_eon_init;
 	w_klass->pre_process = _eon_element_eon_pre_process;
+
+	wd_klass = EON_WIDGET_DRAWER_CLASS(k);
+	wd_klass->size_hints_get = _eon_element_eon_size_hints_get;
+	wd_klass->process = _eon_element_eon_process;
 }
 
 static void _eon_element_eon_instance_init(void *o)

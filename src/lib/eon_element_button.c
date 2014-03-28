@@ -19,7 +19,7 @@
 #include "eon_main.h"
 #include "eon_element_button.h"
 
-#include "eon_widget_private.h"
+#include "eon_widget_drawer_private.h"
 #include "eon_drawer_button_private.h"
 #include "eon_layout_frame_private.h"
 /*============================================================================*
@@ -31,18 +31,18 @@
 
 typedef struct _Eon_Element_Button
 {
-	Eon_Widget base;
+	Eon_Widget_Drawer base;
 } Eon_Element_Button;
 
 typedef struct _Eon_Element_Button_Class
 {
-	Eon_Widget_Class base;
+	Eon_Widget_Drawer_Class base;
 } Eon_Element_Button_Class;
 
 /*----------------------------------------------------------------------------*
- *                             Widget interface                               *
+ *                        Widget Drawer interface                             *
  *----------------------------------------------------------------------------*/
-static int _eon_element_button_size_hints_get(Eon_Widget *w,
+static int _eon_element_button_size_hints_get(Eon_Widget_Drawer *w,
 		Eon_Renderable_Size *size)
 {
 	Eon_Box padding;
@@ -75,7 +75,7 @@ static int _eon_element_button_size_hints_get(Eon_Widget *w,
 	return ret;
 }
 
-static Eina_Bool _eon_element_button_process(Eon_Widget *w)
+static Eina_Bool _eon_element_button_process(Eon_Widget_Drawer *w)
 {
 	Eon_Element_Button *thiz;
 	Eon_Box padding;
@@ -115,6 +115,9 @@ static Eina_Bool _eon_element_button_process(Eon_Widget *w)
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
+ *                             Widget interface                               *
+ *----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*
@@ -148,14 +151,14 @@ static Eina_Bool _eon_element_button_child_appendable(Eon_Element *e, Egueb_Dom_
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Button,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Button,
 		Eon_Element_Button_Class, eon_element_button);
 
 static void _eon_element_button_class_init(void *k)
 {
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
-	Eon_Widget_Class *w_klass;
+	Eon_Widget_Drawer_Class *w_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_button_tag_name_get;
@@ -163,7 +166,7 @@ static void _eon_element_button_class_init(void *k)
 
 	r_klass = EON_RENDERABLE_CLASS(k);
 
-	w_klass = EON_WIDGET_CLASS(k);
+	w_klass = EON_WIDGET_DRAWER_CLASS(k);
 	w_klass->size_hints_get = _eon_element_button_size_hints_get;
 	w_klass->process = _eon_element_button_process;
 }

@@ -1,0 +1,9 @@
+<eon>
+  <stack orientation="vertical">
+    <button id="button01">
+      <label>My very own label</label>
+    </button>
+    <buttonStock id="buttonStock01"/>
+  </stack>
+</eon>
+

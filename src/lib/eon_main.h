@@ -67,9 +67,11 @@ EAPI extern Egueb_Dom_String *EON_ATTR_VALIGN;
 EAPI extern Egueb_Dom_String *EON_ATTR_HALIGN;
 EAPI extern Egueb_Dom_String *EON_ATTR_WEIGHT;
 EAPI extern Egueb_Dom_String *EON_ATTR_ORIENTATION;
+EAPI extern Egueb_Dom_String *EON_ATTR_ENABLED;
 
 EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON;
+EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_LABEL;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_STACK;
 

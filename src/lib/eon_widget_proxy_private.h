@@ -33,21 +33,24 @@ Enesim_Object_Descriptor * eon_widget_proxy_descriptor_get(void);
 
 typedef struct _Eon_Widget_Proxy
 {
-	Eon_Renderable base;
+	Eon_Widget base;
 	/* attributes */
 	/* private */
-	Enesim_Renderer *proxy_r;
 	Egueb_Dom_Node *proxy;
+	/* Whenever the parent's theme attr changed or the
+	 * widget's theme attr changed this flag will be set
+	 */
+	Eina_Bool theme_changed;
 } Eon_Widget_Proxy;
 
 typedef void (*Eon_Widget_Proxy_Init)(Eon_Widget_Proxy *thiz);
-typedef Eina_Bool (*Eon_Widget_Proxy_Pre_Process)(Eon_Widget_Proxy *thiz);
+typedef Egueb_Dom_Node * (*Eon_Widget_Proxy_Proxied_Get)(Eon_Widget_Proxy *thiz);
 
 typedef struct _Eon_Widget_Proxy_Class
 {
-	Eon_Renderable_Class base;
+	Eon_Widget_Class base;
 	Eon_Widget_Proxy_Init init;
-	Eon_Widget_Proxy_Pre_Process pre_process;
+	Eon_Widget_Proxy_Proxied_Get proxied_get;
 } Eon_Widget_Proxy_Class;
 
 #endif

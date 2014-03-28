@@ -1,5 +1,13 @@
 <ender>
   <scene>
+    <object ns="eon_drawer_basic" name="button" id="buttonOk">
+      <states>
+        <state name="default">
+          <set attributeName="border-color" to="#555555"/>
+          <set attributeName="fill-color" to="green"/>
+        </state>
+      </states>
+    </object>
     <object ns="eon_drawer_basic" name="button" id="button">
       <states>
         <state name="default">

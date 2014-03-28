@@ -85,10 +85,11 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 
 	klass = EON_ELEMENT_CLASS_GET(data);
 
+	/* FIXME do we actually need this? */
 	/* process the inheritable attributes */
 	rel = egueb_dom_node_parent_get(n);
 	/* check the topmost */
-	if (egueb_dom_node_type_get(rel) != EGUEB_DOM_NODE_TYPE_ELEMENT_NODE)
+	if (rel && egueb_dom_node_type_get(rel) != EGUEB_DOM_NODE_TYPE_ELEMENT_NODE)
 	{
 		egueb_dom_node_unref(rel);
 		rel = NULL;

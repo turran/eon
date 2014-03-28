@@ -36,36 +36,26 @@ typedef struct _Eon_Widget
 {
 	Eon_Renderable base;
 	/* attributes */
+	Egueb_Dom_Node *enabled;
 	/* private */
-	Egueb_Dom_Node *theme_document;
-	Egueb_Dom_Node *theme_instance;
-	Eon_Drawer_Widget *theme_widget;
-	Enesim_Renderer *proxy;
 	Egueb_Dom_String *last_theme;
 	Egueb_Dom_String *last_parent_theme;
-	/* Whenever the parent's theme attr changed or the
-	 * widget's theme attr changed this flag will be set
-	 */
-	Eina_Bool theme_changed;
 } Eon_Widget;
 
 typedef void (*Eon_Widget_Init)(Eon_Widget *thiz);
-typedef int (*Eon_Widget_Size_Hints_Get)(Eon_Widget *thiz, Eon_Renderable_Size *size);
 typedef Eina_Bool (*Eon_Widget_Pre_Process)(Eon_Widget *thiz);
-typedef Eina_Bool (*Eon_Widget_Process)(Eon_Widget *thiz);
-typedef Egueb_Dom_Node * (*Eon_Widget_Theme_Instance_Create)(Eon_Widget *thiz);
-typedef void (*Eon_Widget_Theme_Instance_Created)(Eon_Widget *thiz);
+typedef void (*Eon_Widget_State_Set)(Eon_Widget *thiz, Egueb_Dom_String *state);
+typedef void (*Eon_Widget_Theme_Changed)(Eon_Widget *thiz);
 
 typedef struct _Eon_Widget_Class
 {
 	Eon_Renderable_Class base;
 	Eon_Widget_Init init;
-	Eon_Widget_Theme_Instance_Create theme_instance_create;
-	Eon_Widget_Theme_Instance_Created theme_instance_created;
-	Eon_Widget_Size_Hints_Get size_hints_get;
+	Eon_Widget_State_Set state_set;
 	Eon_Widget_Pre_Process pre_process;
-	Eon_Widget_Process process;
+	Eon_Widget_Theme_Changed theme_changed;
 } Eon_Widget_Class;
 
-#endif
+void eon_widget_state_set(Egueb_Dom_Node *n, Egueb_Dom_String *state);
 
+#endif

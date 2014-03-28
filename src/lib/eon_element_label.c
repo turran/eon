@@ -19,7 +19,7 @@
 #include "eon_main.h"
 #include "eon_element_label.h"
 
-#include "eon_widget_private.h"
+#include "eon_widget_drawer_private.h"
 #include "eon_drawer_label_private.h"
 /* Create our own text span renderer to pre-calculate the size of the ellipsized text
  * In acse the text of the character data has changed, be sure to notify upstream too
@@ -35,7 +35,7 @@
 
 typedef struct _Eon_Element_Label
 {
-	Eon_Widget base;
+	Eon_Widget_Drawer base;
 	/* properties */
 	Egueb_Dom_Node *ellipsize;
 	/* private */
@@ -49,7 +49,7 @@ typedef struct _Eon_Element_Label
 
 typedef struct _Eon_Element_Label_Class
 {
-	Eon_Widget_Class base;
+	Eon_Widget_Drawer_Class base;
 } Eon_Element_Label_Class;
 
 static void _eon_element_label_tree_modified_cb(Egueb_Dom_Event *e,
@@ -72,7 +72,7 @@ static void _eon_element_label_tree_modified_cb(Egueb_Dom_Event *e,
 	thiz->text_changed = EINA_TRUE;
 }
 
-static void _eon_element_label_drawer_propagate(Eon_Widget *w)
+static void _eon_element_label_drawer_propagate(Eon_Widget_Drawer *w)
 {
 	Eon_Element_Label *thiz;
 
@@ -148,9 +148,9 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 }
 #endif
 /*----------------------------------------------------------------------------*
- *                              Widget interface                              *
+ *                        Widget Drawer interface                             *
  *----------------------------------------------------------------------------*/
-static void _eon_element_label_theme_instance_created(Eon_Widget *w)
+static void _eon_element_label_theme_instance_created(Eon_Widget_Drawer *w)
 {
 	Eon_Element_Label *thiz;
 
@@ -166,7 +166,7 @@ static void _eon_element_label_theme_instance_created(Eon_Widget *w)
 	thiz->text_changed = EINA_TRUE;
 }
 
-static int _eon_element_label_size_hints_get(Eon_Widget *w,
+static int _eon_element_label_size_hints_get(Eon_Widget_Drawer *w,
 		Eon_Renderable_Size *size)
 {
 	Eon_Element_Label *thiz;
@@ -206,7 +206,7 @@ static int _eon_element_label_size_hints_get(Eon_Widget *w,
 }
 
 
-static Eina_Bool _eon_element_label_process(Eon_Widget *w)
+static Eina_Bool _eon_element_label_process(Eon_Widget_Drawer *w)
 {
 	Eon_Element_Label *thiz;
 
@@ -216,20 +216,20 @@ static Eina_Bool _eon_element_label_process(Eon_Widget *w)
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
- *                            Renderable interface                            *
+ *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
-static void _eon_element_label_init(Eon_Renderable *r)
+static void _eon_element_label_init(Eon_Widget *w)
 {
 	Eon_Element_Label *thiz;
 	Egueb_Dom_Node *n;
 
-	thiz = EON_ELEMENT_LABEL(r);
+	thiz = EON_ELEMENT_LABEL(w);
 	thiz->ellipsize = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_ATTR_ELLIPSIZE), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->ellipsize, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
 	
-	n = (EON_ELEMENT(r))->n;
+	n = (EON_ELEMENT(w))->n;
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->ellipsize), NULL);
 	/* attributes */
 	/* TODO add:
@@ -244,12 +244,15 @@ static void _eon_element_label_init(Eon_Renderable *r)
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_label_tree_modified_cb,
-			EINA_FALSE, r);
+			EINA_FALSE, w);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_label_tree_modified_cb,
-			EINA_FALSE, r);
+			EINA_FALSE, w);
 }
+/*----------------------------------------------------------------------------*
+ *                            Renderable interface                            *
+ *----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -281,7 +284,7 @@ static Eina_Bool _eon_element_label_child_appendable(Eon_Element *e, Egueb_Dom_N
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Label,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Label,
 		Eon_Element_Label_Class, eon_element_label);
 
 static void _eon_element_label_class_init(void *k)
@@ -289,18 +292,21 @@ static void _eon_element_label_class_init(void *k)
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
 	Eon_Widget_Class *w_klass;
+	Eon_Widget_Drawer_Class *wd_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_label_tag_name_get;
 	klass->child_appendable = _eon_element_label_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
-	r_klass->init = _eon_element_label_init;
 
 	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->theme_instance_created = _eon_element_label_theme_instance_created;
-	w_klass->size_hints_get = _eon_element_label_size_hints_get;
-	w_klass->process = _eon_element_label_process;
+	w_klass->init = _eon_element_label_init;
+
+	wd_klass = EON_WIDGET_DRAWER_CLASS(k);
+	wd_klass->theme_instance_created = _eon_element_label_theme_instance_created;
+	wd_klass->size_hints_get = _eon_element_label_size_hints_get;
+	wd_klass->process = _eon_element_label_process;
 }
 
 static void _eon_element_label_instance_init(void *o)
