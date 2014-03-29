@@ -138,6 +138,9 @@ static Egueb_Dom_Node * _eon_document_input_element_at(void *data,
 	ret = eon_renderable_element_at(topmost, &ptr);
 	egueb_dom_node_unref(topmost);
 
+	if (ret)
+		DBG_ELEMENT(ret, "Element found at %d %d", x, y);
+
 	return ret;
 }
 

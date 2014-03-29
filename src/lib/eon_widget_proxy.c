@@ -73,34 +73,19 @@ static void _eon_widget_proxy_resolve_theme(Eon_Widget_Proxy *thiz)
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
-static void _eon_widget_proxy_theme_changed(Eon_Widget *w)
-{
-	Eon_Widget_Proxy *thiz;
-
-	thiz = EON_WIDGET_PROXY(w);
-	thiz->theme_changed = EINA_TRUE;
-}
-
-static void _eon_widget_proxy_state_set(Eon_Widget *thiz, Egueb_Dom_String *s)
-{
-	printf("state seeeeet\n");
-}
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
-static void _eon_widget_proxy_init(Eon_Renderable *r)
+static void _eon_widget_proxy_init(Eon_Widget *w)
 {
 	Eon_Widget_Proxy *thiz;
 	Eon_Widget_Proxy_Class *klass;
 	Egueb_Dom_Node *n;
 
-	thiz = EON_WIDGET_PROXY(r);
+	thiz = EON_WIDGET_PROXY(w);
 	klass = EON_WIDGET_PROXY_CLASS_GET(thiz);
 	if (klass->init)
 		klass->init(thiz);
 	thiz->proxy = klass->proxied_get(thiz);
 
-	n = (EON_ELEMENT(r))->n;
+	n = (EON_ELEMENT(w))->n;
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED_FROM_DOCUMENT,
 			_eon_widget_proxy_node_removed_from_document_cb,
@@ -111,6 +96,24 @@ static void _eon_widget_proxy_init(Eon_Renderable *r)
 			EINA_TRUE, thiz);
 }
 
+static void _eon_widget_proxy_theme_changed(Eon_Widget *w)
+{
+	Eon_Widget_Proxy *thiz;
+
+	thiz = EON_WIDGET_PROXY(w);
+	thiz->theme_changed = EINA_TRUE;
+}
+
+static void _eon_widget_proxy_state_set(Eon_Widget *w, Egueb_Dom_String *s)
+{
+	Eon_Widget_Proxy *thiz;
+
+	thiz = EON_WIDGET_PROXY(w);
+	eon_widget_state_set(thiz->proxy, s);
+}
+/*----------------------------------------------------------------------------*
+ *                           Renderable interface                             *
+ *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _eon_widget_proxy_renderer_get(Eon_Renderable *r)
 {
 	Eon_Widget_Proxy *thiz;
@@ -163,13 +166,13 @@ static void _eon_widget_proxy_class_init(void *k)
 	Eon_Renderable_Class *r_klass;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
-	r_klass->init = _eon_widget_proxy_init;
 	r_klass->renderer_get = _eon_widget_proxy_renderer_get;
 	r_klass->size_hints_get = _eon_widget_proxy_size_hints_get;
 	r_klass->geometry_set = _eon_widget_proxy_geometry_set;
 	r_klass->process = _eon_widget_proxy_process;
 
 	w_klass = EON_WIDGET_CLASS(k);
+	w_klass->init = _eon_widget_proxy_init;
 	w_klass->state_set = _eon_widget_proxy_state_set;
 	w_klass->theme_changed = _eon_widget_proxy_theme_changed;
 }
