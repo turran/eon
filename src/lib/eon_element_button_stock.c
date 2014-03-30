@@ -31,6 +31,7 @@
 #include "eon_main.h"
 #include "eon_element_button.h"
 #include "eon_element_label.h"
+#include "eon_element_button_stock.h"
 
 #include "eon_widget_drawer_private.h"
 #include "eon_widget_proxy_private.h"
@@ -143,5 +144,17 @@ EAPI Egueb_Dom_Node * eon_element_button_stock_new(void)
 	Egueb_Dom_Node *n;
 	n = EON_ELEMENT_NEW(eon_element_button_stock);
 	return n;
+}
+
+EAPI void eon_element_button_stock_type_set(Egueb_Dom_Node *n,
+		Eon_Element_Button_Stock_Type type)
+{
+
+}
+
+EAPI Eon_Element_Button_Stock_Type
+eon_element_button_stock_type_get(Egueb_Dom_Node *n)
+{
+
 }
 

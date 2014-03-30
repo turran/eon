@@ -15,23 +15,10 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_ELEMENT_BUTTON_STOCK_H_
-#define _EON_ELEMENT_BUTTON_STOCK_H_
+#ifndef _EON_WIDGET_H_
+#define _EON_WIDGET_H_
 
-typedef enum _Eon_Element_Button_Stock_Type
-{
-	EON_ELEMENT_BUTTON_STOCK_TYPE_OK,
-	EON_ELEMENT_BUTTON_STOCK_TYPE_CANCEL,
-	EON_ELEMENT_BUTTON_STOCK_TYPE_APPLY,
-	EON_ELEMENT_BUTTON_STOCK_TYPE_HELP,
-	EON_ELEMENT_BUTTON_STOCK_TYPE_NEXT,
-	EON_ELEMENT_BUTTON_STOCK_TYPE_PREV,
-} Eon_Element_Button_Stock_Type;
-
-EAPI Egueb_Dom_Node * eon_element_button_stock_new(void);
-EAPI void eon_element_button_stock_type_set(Egueb_Dom_Node *n,
-		Eon_Element_Button_Stock_Type type);
-EAPI Eon_Element_Button_Stock_Type
-eon_element_button_stock_type_get(Egueb_Dom_Node *n);
+EAPI void eon_widget_enabled_set(Egueb_Dom_Node *n, Eina_Bool enabled);
+EAPI Eina_Bool eon_widget_enabled_get(Egueb_Dom_Node *n);
 
 #endif

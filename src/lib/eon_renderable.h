@@ -50,7 +50,4 @@ EAPI void eon_renderable_halign_set(Egueb_Dom_Node *n, Eon_Horizontal_Align hali
 EAPI Eon_Horizontal_Align eon_renderable_halign_get(Egueb_Dom_Node *n);
 EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
 
-
-
 #endif
-
