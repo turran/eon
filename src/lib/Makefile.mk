@@ -9,7 +9,9 @@ src/lib/eon_element_button.h \
 src/lib/eon_element_button_stock.h \
 src/lib/eon_element_eon.h \
 src/lib/eon_element_label.h \
-src/lib/eon_element_stack.h
+src/lib/eon_element_label_stock.h \
+src/lib/eon_element_stack.h \
+src/lib/eon_stock.h
 
 src_lib_libeon_la_CPPFLAGS = \
 -I$(top_srcdir)/src/lib \
@@ -24,6 +26,7 @@ src/lib/eon_element_button.c \
 src/lib/eon_element_button_stock.c \
 src/lib/eon_element_eon.c \
 src/lib/eon_element_label.c \
+src/lib/eon_element_label_stock.c \
 src/lib/eon_element_stack.c \
 src/lib/eon_event_geometry.c \
 src/lib/eon_layout_frame.c \
@@ -37,6 +40,7 @@ src/lib/eon_vertical_align.c \
 src/lib/eon_vertical_align_private.h \
 src/lib/eon_orientation.c \
 src/lib/eon_orientation_private.h \
+src/lib/eon_stock.c \
 src/lib/eon_widget.c \
 src/lib/eon_widget_private.h \
 src/lib/eon_widget_drawer.c \

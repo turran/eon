@@ -34,7 +34,8 @@ Enesim_Object_Descriptor * eon_widget_drawer_descriptor_get(void);
 
 typedef struct _Eon_Widget_Drawer Eon_Widget_Drawer;
 typedef Egueb_Dom_Node * (*Eon_Widget_Drawer_Theme_Instance_Create)(
-		Eon_Widget_Drawer *thiz, Egueb_Dom_Node *theme_document);
+		Eon_Widget_Drawer *thiz, Egueb_Dom_Node *theme_document,
+		void *data);
 
 struct _Eon_Widget_Drawer
 {
@@ -50,6 +51,7 @@ struct _Eon_Widget_Drawer
 	 */
 	Eina_Bool theme_changed;
 	Eon_Widget_Drawer_Theme_Instance_Create theme_instance_create;
+	void *theme_instance_create_data;
 };
 
 typedef int (*Eon_Widget_Drawer_Class_Size_Hints_Get)(Eon_Widget_Drawer *thiz,
@@ -68,5 +70,8 @@ typedef struct _Eon_Widget_Drawer_Class
 	Eon_Widget_Drawer_Class_Size_Hints_Get size_hints_get;
 	Eon_Widget_Drawer_Class_Process process;
 } Eon_Widget_Drawer_Class;
+
+void eon_widget_drawer_theme_instance_create_set(Egueb_Dom_Node *n,
+		Eon_Widget_Drawer_Theme_Instance_Create cb, void *data);
 
 #endif

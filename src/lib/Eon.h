@@ -52,6 +52,11 @@ extern "C" {
 #endif
 
 #include "eon_main.h"
+
+/* types */
+#include "eon_stock.h"
+
+/* elements */
 #include "eon_document.h"
 #include "eon_element_eon.h"
 #include "eon_element_eon.h"

@@ -3,7 +3,8 @@
     <button id="button01">
       <label>My very own label</label>
     </button>
-    <buttonStock id="buttonStock01"/>
+    <stockButton id="stockButton01" stock="ok"/>
+    <stockButton id="stockButton02" stock="cancel"/>
   </stack>
 </eon>
 

@@ -125,7 +125,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 		if (thiz->theme_instance_create)
 		{
 			theme_instance = thiz->theme_instance_create(thiz,
-					thiz->theme_document);
+					thiz->theme_document, thiz->theme_instance_create_data);
 		}
 
 		if (!theme_instance && klass->theme_instance_create)
@@ -321,6 +321,15 @@ static void _eon_widget_drawer_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_widget_drawer_theme_instance_create_set(Egueb_Dom_Node *n,
+		Eon_Widget_Drawer_Theme_Instance_Create cb, void *data)
+{
+	Eon_Widget_Drawer *thiz;
+
+	thiz = EON_WIDGET_DRAWER(egueb_dom_element_external_data_get(n));
+	thiz->theme_instance_create = cb;
+	thiz->theme_instance_create_data = data;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

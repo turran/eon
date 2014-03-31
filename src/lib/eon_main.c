@@ -80,11 +80,13 @@ static void _strings_init(void)
 	EON_ATTR_WEIGHT = egueb_dom_string_new_with_static_string("weight");
 	EON_ATTR_ORIENTATION = egueb_dom_string_new_with_static_string("orientation");
 	EON_ATTR_ENABLED = egueb_dom_string_new_with_static_string("enabled");
+	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
 	EON_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
-	EON_ELEMENT_BUTTON_STOCK = egueb_dom_string_new_with_static_string("buttonStock");
+	EON_ELEMENT_BUTTON_STOCK = egueb_dom_string_new_with_static_string("stockButton");
 	EON_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
+	EON_ELEMENT_LABEL_STOCK = egueb_dom_string_new_with_static_string("stockLabel");
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
 	/* events */
 	EON_EVENT_GEOMETRY = egueb_dom_string_new_with_static_string("EONGeometry");
@@ -106,13 +108,15 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_ATTR_VALIGN);
 	egueb_dom_string_unref(EON_ATTR_HALIGN);
 	egueb_dom_string_unref(EON_ATTR_WEIGHT);
-	egueb_dom_string_unref(EON_ATTR_ENABLED);
 	egueb_dom_string_unref(EON_ATTR_ORIENTATION);
+	egueb_dom_string_unref(EON_ATTR_ENABLED);
+	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
 	egueb_dom_string_unref(EON_ELEMENT_EON);
 	egueb_dom_string_unref(EON_ELEMENT_BUTTON);
 	egueb_dom_string_unref(EON_ELEMENT_BUTTON_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_LABEL);
+	egueb_dom_string_unref(EON_ELEMENT_LABEL_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
 	/* events */
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY);
@@ -136,13 +140,15 @@ Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
 Egueb_Dom_String *EON_ATTR_VALIGN;
 Egueb_Dom_String *EON_ATTR_HALIGN;
 Egueb_Dom_String *EON_ATTR_WEIGHT;
-Egueb_Dom_String *EON_ATTR_ENABLED;
 Egueb_Dom_String *EON_ATTR_ORIENTATION;
+Egueb_Dom_String *EON_ATTR_ENABLED;
+Egueb_Dom_String *EON_STOCK;
 /* elements */
 Egueb_Dom_String *EON_ELEMENT_EON;
 Egueb_Dom_String *EON_ELEMENT_BUTTON;
 Egueb_Dom_String *EON_ELEMENT_BUTTON_STOCK;
 Egueb_Dom_String *EON_ELEMENT_LABEL;
+Egueb_Dom_String *EON_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;
 /* events */
 Egueb_Dom_String *EON_EVENT_GEOMETRY;

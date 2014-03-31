@@ -15,12 +15,12 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_ELEMENT_BUTTON_STOCK_H_
-#define _EON_ELEMENT_BUTTON_STOCK_H_
+#ifndef _EON_ELEMENT_LABEL_STOCK_H_
+#define _EON_ELEMENT_LABEL_STOCK_H_
 
-EAPI Egueb_Dom_Node * eon_element_button_stock_new(void);
-EAPI void eon_element_button_stock_stock_set(Egueb_Dom_Node *n,
+EAPI Egueb_Dom_Node * eon_element_label_stock_new(void);
+EAPI void eon_element_label_stock_stock_set(Egueb_Dom_Node *n,
 		Eon_Stock stock);
-EAPI Eon_Stock eon_element_button_stock_stock_get(Egueb_Dom_Node *n);
+EAPI Eon_Stock eon_element_label_stock_stock_get(Egueb_Dom_Node *n);
 
 #endif

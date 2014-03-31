@@ -17,11 +17,13 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_stock.h"
 #include "eon_document.h"
 #include "eon_element_eon.h"
 #include "eon_element_button.h"
 #include "eon_element_button_stock.h"
 #include "eon_element_label.h"
+#include "eon_element_label_stock.h"
 #include "eon_element_stack.h"
 
 #include "eon_renderable_private.h"
@@ -276,12 +278,14 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_eon_new();
 	else if (!strcmp(name, "button"))
 		ret = eon_element_button_new();
-	else if (!strcmp(name, "buttonStock"))
-		ret = eon_element_button_stock_new();
 	else if (!strcmp(name, "label"))
 		ret = eon_element_label_new();
 	else if (!strcmp(name, "stack"))
 		ret = eon_element_stack_new();
+	else if (!strcmp(name, "stockLabel"))
+		ret = eon_element_label_stock_new();
+	else if (!strcmp(name, "stockButton"))
+		ret = eon_element_button_stock_new();
 	return ret;
 }
 
