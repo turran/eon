@@ -21,53 +21,66 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static void _eon_widget_proxy_node_removed_from_document_cb(
-		Egueb_Dom_Event *ev, void *data)
+static void _eon_widget_proxy_propagate(Eon_Widget_Proxy *thiz)
 {
-}
+	Eon_Widget_Proxy_Class *klass;
 
-static void _eon_widget_proxy_node_inserted_into_document_cb(
-		Egueb_Dom_Event *ev, void *data)
-{
-	Eon_Widget_Proxy *thiz = data;
-	Egueb_Dom_Node *doc;
-	Egueb_Dom_Node *n;
-	
-	n = (EON_ELEMENT(thiz))->n;
-	doc = egueb_dom_node_document_get(n);
-	thiz->proxy = egueb_dom_document_node_adopt(doc, thiz->proxy, NULL);
+	klass = EON_WIDGET_PROXY_CLASS_GET(thiz);
+	if (klass->geometry_propagate)
+	{
+		klass->geometry_propagate(thiz);
+	}
 }
 
 static void _eon_widget_proxy_resolve_theme(Eon_Widget_Proxy *thiz)
 {
-	Eon_Element *e;
 	Eon_Widget *w;
+	Eon_Element *e;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *parent;
+	Egueb_Dom_Node *rel_theme = NULL;
 	Egueb_Dom_String *theme = NULL;
 
-	if (!thiz->theme_changed)
+	if (!thiz->theme_changed && thiz->adopted)
 		return;
 
 	w = EON_WIDGET(thiz);
 	e = EON_ELEMENT(thiz);
 	n = e->n;
-
-	parent = egueb_dom_node_parent_get(n);
-	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE))
+	if (thiz->theme_changed)
 	{
-		Eon_Element *other;
+		parent = egueb_dom_node_parent_get(n);
+		if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE))
+		{
+			Eon_Element *other;
 
-		other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
-		egueb_dom_attr_inheritable_process(e->theme, other->theme);
-		if (w->last_parent_theme)
-			egueb_dom_string_unref(w->last_parent_theme);
-		egueb_dom_attr_final_get(other->theme, &theme);
-		w->last_parent_theme = egueb_dom_string_dup(theme);
-		// FIX this egueb_dom_string_unref(theme);
+			other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
+			rel_theme = egueb_dom_node_ref(other->theme);
+			if (w->last_parent_theme)
+				egueb_dom_string_unref(w->last_parent_theme);
+			egueb_dom_attr_final_get(other->theme, &theme);
+			w->last_parent_theme = egueb_dom_string_dup(theme);
+			// FIX this egueb_dom_string_unref(theme);
+		}
+		egueb_dom_attr_inheritable_process(e->theme, rel_theme);
+
+		egueb_dom_node_unref(rel_theme);
+		egueb_dom_node_unref(parent);
+		thiz->theme_changed = EINA_FALSE;
 	}
-	egueb_dom_node_unref(parent);
-	thiz->theme_changed = EINA_FALSE;
+	/* Adopt the proxied element. We do here instead of on an event
+	 * to avoid the case of have a proxy that proxies another proxy.
+	 * In such case the adopt function does not trigger an event and is
+	 * impossible to adopt the second proxied node
+	 */
+	if (!thiz->adopted)
+	{
+		Egueb_Dom_Node *doc;
+
+		doc = egueb_dom_node_document_get((EON_ELEMENT(w))->n);
+		thiz->proxy = egueb_dom_document_node_adopt(doc, thiz->proxy, NULL);
+		thiz->adopted = EINA_TRUE;
+	}
 }
 
 /*----------------------------------------------------------------------------*
@@ -84,16 +97,6 @@ static void _eon_widget_proxy_init(Eon_Widget *w)
 	if (klass->init)
 		klass->init(thiz);
 	thiz->proxy = klass->proxied_get(thiz);
-
-	n = (EON_ELEMENT(w))->n;
-	egueb_dom_node_event_listener_add(n,
-			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED_FROM_DOCUMENT,
-			_eon_widget_proxy_node_removed_from_document_cb,
-			EINA_TRUE, thiz);
-	egueb_dom_node_event_listener_add(n,
-			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED_INTO_DOCUMENT,
-			_eon_widget_proxy_node_inserted_into_document_cb,
-			EINA_TRUE, thiz);
 }
 
 static void _eon_widget_proxy_theme_changed(Eon_Widget *w)
@@ -111,6 +114,7 @@ static void _eon_widget_proxy_state_set(Eon_Widget *w, Egueb_Dom_String *s)
 	thiz = EON_WIDGET_PROXY(w);
 	eon_widget_state_set(thiz->proxy, s);
 }
+
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -137,6 +141,8 @@ static int _eon_widget_proxy_size_hints_get(Eon_Renderable *r, Eon_Renderable_Si
 	Eon_Widget_Proxy *thiz;
 
 	thiz = EON_WIDGET_PROXY(r);
+	/* First propagate any widget attribute that might require a different size hint */
+	_eon_widget_proxy_propagate(thiz);
 	_eon_widget_proxy_resolve_theme(thiz);
 	return eon_renderable_size_hints_get(thiz->proxy, size);
 }

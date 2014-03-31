@@ -40,7 +40,7 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 	attr = egueb_dom_event_mutation_related_get(ev);
 	if ((thiz->width == attr) || (thiz->height == attr))
 	{
-		ERR_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
+		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
 		eon_renderable_invalidate_geometry(thiz);
 	}
 }
@@ -278,12 +278,13 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 	int size_hints;
 	int w = -1, h = -1;
 
-	DBG_ELEMENT(n, "Solving free space %" EINA_RECTANGLE_FORMAT,
-			EINA_RECTANGLE_ARGS(fs));
 	size_hints = eon_renderable_size_hints_get(n, &size);
 	valign = eon_renderable_valign_get(n);
 	halign = eon_renderable_halign_get(n);
 
+	DBG_ELEMENT(n, "Solving free space %" EINA_RECTANGLE_FORMAT
+			" halign: %d, valign :%d", EINA_RECTANGLE_ARGS(fs),
+			halign, valign);
 	w = fs->w;
 	h = fs->h;
 	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)

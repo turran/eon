@@ -36,6 +36,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 	Egueb_Dom_Node *parent;
 	Egueb_Dom_Node *doc;
 	Egueb_Dom_Node *topmost;
+	Egueb_Dom_Node *rel_theme = NULL;
 	Eina_Bool ret = EINA_TRUE;
 
 	w = EON_WIDGET(thiz);
@@ -71,13 +72,16 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 		Eon_Element *other;
 
 		other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
-		egueb_dom_attr_inheritable_process(e->theme, other->theme);
+		rel_theme = egueb_dom_node_ref(other->theme);
 		if (w->last_parent_theme)
 			egueb_dom_string_unref(w->last_parent_theme);
 		egueb_dom_attr_final_get(other->theme, &theme);
 		w->last_parent_theme = egueb_dom_string_dup(theme);
 		// FIX this egueb_dom_string_unref(theme);
 	}
+	egueb_dom_attr_inheritable_process(e->theme, rel_theme);
+
+	egueb_dom_node_unref(rel_theme);
 	egueb_dom_node_unref(parent);
 
 	egueb_dom_attr_final_get(e->theme, &theme);
@@ -96,7 +100,6 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 	}
 	// FIX this egueb_dom_string_unref(theme);
 
-	/* FIXME make the theme be loaded without a document */
 	/* load the theme */
 	doc = egueb_dom_node_document_get(n);
 	if (!doc)

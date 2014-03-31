@@ -143,13 +143,14 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 		default_theme = "basic";
 	}
 	theme = egueb_dom_string_new_with_static_string(default_theme);
-	/* TODO make it inheritable */
 	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
 			theme, EINA_FALSE, EINA_FALSE, EINA_TRUE);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->theme), NULL);
 
 	return n;
 }
+
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

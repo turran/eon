@@ -41,15 +41,18 @@ typedef struct _Eon_Widget_Proxy
 	 * widget's theme attr changed this flag will be set
 	 */
 	Eina_Bool theme_changed;
+	Eina_Bool adopted;
 } Eon_Widget_Proxy;
 
 typedef void (*Eon_Widget_Proxy_Init)(Eon_Widget_Proxy *thiz);
+typedef void (*Eon_Widget_Proxy_Geometry_Propagate)(Eon_Widget_Proxy *thiz);
 typedef Egueb_Dom_Node * (*Eon_Widget_Proxy_Proxied_Get)(Eon_Widget_Proxy *thiz);
 
 typedef struct _Eon_Widget_Proxy_Class
 {
 	Eon_Widget_Class base;
 	Eon_Widget_Proxy_Init init;
+	Eon_Widget_Proxy_Geometry_Propagate geometry_propagate;
 	Eon_Widget_Proxy_Proxied_Get proxied_get;
 } Eon_Widget_Proxy_Class;
 

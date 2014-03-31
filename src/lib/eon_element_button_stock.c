@@ -16,17 +16,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Create an enum for every stock type button, i.e
- * - OK
- * - CANCEL
- * - HELP
- * - APPLY
- * - ...
- * Define how are we going to handle the meta-widgets, that is
- * widgets that use others for drawing/interacting.
- * Theme propagation?
- * How to make a specific owned widget use a specific theme?
- */
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_stock.h"
@@ -109,6 +98,26 @@ static Egueb_Dom_Node * _eon_element_button_stock_proxied_get(
 	thiz = EON_ELEMENT_BUTTON_STOCK(wp);
 	return egueb_dom_node_ref(thiz->button);
 }
+
+/* We need to propagate the 'stock' value because it will change the hints
+ * of the element
+ */
+static void _eon_element_button_stock_geometry_propagate(Eon_Widget_Proxy *wp)
+{
+	Eon_Element_Button_Stock *thiz;
+
+	thiz = EON_ELEMENT_BUTTON_STOCK(wp);
+	if (egueb_dom_attr_has_changed(thiz->stock))
+	{
+		Eon_Stock stock;
+
+		egueb_dom_attr_final_get(thiz->stock, &stock);
+		egueb_dom_element_property_set(thiz->label, EON_STOCK,
+				EGUEB_DOM_ATTR_TYPE_BASE, stock);
+		/* FIXME mark it as processed */
+	}
+}
+
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -117,10 +126,6 @@ static Eina_Bool _eon_element_button_stock_pre_process(Eon_Widget *w)
 	Eon_Element_Button_Stock *thiz;
 
 	thiz = EON_ELEMENT_BUTTON_STOCK(w);
-	printf("pre process\n");
-	if (egueb_dom_attr_has_changed(thiz->stock))
-		printf(">>>>>>>>> changed\n");
-	/* set the stock on the label too */
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
@@ -155,6 +160,7 @@ static void _eon_element_button_stock_class_init(void *k)
 	wp_klass = EON_WIDGET_PROXY_CLASS(k);
 	wp_klass->init = _eon_element_button_stock_init;
 	wp_klass->proxied_get = _eon_element_button_stock_proxied_get;
+	wp_klass->geometry_propagate = _eon_element_button_stock_geometry_propagate;
 }
 
 static void _eon_element_button_stock_instance_init(void *o)
