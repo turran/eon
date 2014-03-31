@@ -18,6 +18,12 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_widget_proxy_private.h"
+
+/*
+ * TODO
+ * Whenever the proxied element needs to be processed be sure to request
+ * ourselves too
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
