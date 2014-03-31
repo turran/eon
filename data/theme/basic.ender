@@ -38,6 +38,22 @@
         </state>
       </states>
     </object>
+    <object ns="eon_drawer_basic" name="label" id="label-ok">
+      <states>
+        <state name="default">
+          <set attributeName="color" to="#008800"/>
+          <set attributeName="font" to="Verdana"/>
+        </state>
+      </states>
+    </object>
+    <object ns="eon_drawer_basic" name="label" id="label-cancel">
+      <states>
+        <state name="default">
+          <set attributeName="color" to="#880000"/>
+          <set attributeName="font" to="Verdana"/>
+        </state>
+      </states>
+    </object>
     <object ns="eon_drawer_basic" name="eon" id="eon">
       <states>
         <state name="default">
