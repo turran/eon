@@ -28,9 +28,14 @@ static void _eon_widget_mouse_ui_cb(Egueb_Dom_Event *e, void *data)
 	Eon_Widget *thiz = data;
 	Eon_Widget_Class *klass;
 	Egueb_Dom_String *type;
+	Eina_Bool enabled;
 
 	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
+	egueb_dom_attr_final_get(thiz->enabled, &enabled);
+	if (!enabled)
+		return;
+
 	klass = EON_WIDGET_CLASS_GET(thiz);
 	if (!klass->state_set)
 		return;
@@ -38,6 +43,39 @@ static void _eon_widget_mouse_ui_cb(Egueb_Dom_Event *e, void *data)
 	type = egueb_dom_event_type_get(e);
 	klass->state_set(thiz, type);
 	egueb_dom_string_unref(type);
+}
+
+static void _eon_widget_enabled_modifed_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Widget *thiz = EON_WIDGET(data);
+	Egueb_Dom_Event_Phase phase;
+	Egueb_Dom_Node *attr;
+
+	attr = egueb_dom_event_mutation_related_get(ev);
+	/* check if we are at the target */
+	phase = egueb_dom_event_phase_get(ev);
+	if (phase != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* check if the attribute is the width or the height */
+	attr = egueb_dom_event_mutation_related_get(ev);
+	if (thiz->enabled == attr)
+	{
+		Eon_Widget_Class *klass;
+
+		klass = EON_WIDGET_CLASS_GET(thiz);
+		if (klass->state_set)
+		{
+			Eina_Bool enabled;
+			Egueb_Dom_String *state;
+
+			egueb_dom_attr_final_get(thiz->enabled, &enabled);
+			state = egueb_dom_string_new_with_static_string(enabled ? "enabled" : "disabled");
+			klass->state_set(thiz, state);
+			egueb_dom_string_unref(state);
+		}
+	}
+	egueb_dom_node_unref(attr);
 }
 
 /*----------------------------------------------------------------------------*
@@ -61,6 +99,9 @@ static void _eon_widget_init(Eon_Renderable *r)
 			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_OUT,
 			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+	egueb_dom_node_event_listener_add(n,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_widget_enabled_modifed_cb, EINA_FALSE, r);
 
 	thiz->enabled = egueb_dom_attr_boolean_new(egueb_dom_string_ref(EON_ATTR_ENABLED),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);

@@ -150,6 +150,8 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 		if (theme_instance)
 		{
 			Enesim_Renderer *r;
+			/* TODO make the bool attribute have an uint8 type */
+			int enabled;
 
 			INFO_ELEMENT(n, "Instance fetched correctly");
 			thiz->theme_instance = theme_instance;
@@ -162,7 +164,9 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 			if (klass->theme_instance_created)
 				klass->theme_instance_created(thiz);
 			/* Set the default state first */
-			ender_element_instance_state_set(thiz->theme_instance, "default", NULL);
+			egueb_dom_attr_final_get(w->enabled, &enabled, NULL);
+			ender_element_instance_state_set(thiz->theme_instance,
+					enabled ? "default" : "disabled", NULL);
 		}
 		else
 		{

@@ -6,7 +6,7 @@
     <button id="button02">
       <label>My second button</label>
     </button>
-    <button id="button03">
+    <button id="button03" enabled="false">
       <label>My third button</label>
     </button>
     <button id="button04">

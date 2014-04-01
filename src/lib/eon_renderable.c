@@ -43,6 +43,7 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
 		eon_renderable_invalidate_geometry(thiz);
 	}
+	egueb_dom_node_unref(attr);
 }
 
 static void _eon_renderable_mutation_cb(Egueb_Dom_Event *ev,
