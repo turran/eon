@@ -6,6 +6,26 @@
           <set attributeName="border-color" to="#555555"/>
           <set attributeName="fill-color" to="green"/>
         </state>
+        <state name="mousedown">
+          <set attributeName="fill-color" to="darkgreen"/>
+        </state>
+        <state name="mouseup">
+          <set attributeName="fill-color" to="green"/>
+        </state>
+      </states>
+    </object>
+    <object ns="eon_drawer_basic" name="button" id="button-help">
+      <states>
+        <state name="default">
+          <set attributeName="border-color" to="#555555"/>
+          <set attributeName="fill-color" to="lightblue"/>
+        </state>
+        <state name="mousedown">
+          <set attributeName="fill-color" to="lightskyblue"/>
+        </state>
+        <state name="mouseup">
+          <set attributeName="fill-color" to="lightblue"/>
+        </state>
       </states>
     </object>
     <object ns="eon_drawer_basic" name="button" id="button-cancel">
@@ -14,19 +34,29 @@
           <set attributeName="border-color" to="#555555"/>
           <set attributeName="fill-color" to="red"/>
         </state>
+        <state name="mousedown">
+          <set attributeName="fill-color" to="darkred"/>
+        </state>
+        <state name="mouseup">
+          <set attributeName="fill-color" to="red"/>
+        </state>
       </states>
     </object>
     <object ns="eon_drawer_basic" name="button" id="button">
       <states>
         <state name="default">
           <set attributeName="border-color" to="#555555"/>
-          <animate attributeName="fill-color" from="#555555" to="#cccccc" dur="0.8s" repeatCount="indefinite" />
+          <set attributeName="fill-color" to="#cccccc"/>
         </state>
-        <state name="mouseover">
-          <animate attributeName="fill-color" from="#555555" to="red" dur="0.8s" repeatCount="indefinite" />
+        <state name="disabled">
+          <set attributeName="border-color" to="#555555"/>
+          <set attributeName="fill-color" to="#888888"/>
         </state>
-        <state name="mouseout">
-          <animate attributeName="fill-color" from="#555555" to="#cccccc" dur="0.8s" repeatCount="indefinite" />
+        <state name="mousedown">
+          <set attributeName="fill-color" to="#888888"/>
+        </state>
+        <state name="mouseup">
+          <set attributeName="fill-color" to="#cccccc"/>
         </state>
       </states>
     </object>

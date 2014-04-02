@@ -5,6 +5,7 @@
     </button>
     <stockButton id="stockButton01" stock="ok"/>
     <stockButton id="stockButton02" stock="cancel"/>
+    <stockButton id="stockButton02" stock="help"/>
   </stack>
 </eon>
 
