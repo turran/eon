@@ -126,8 +126,8 @@ static void _eon_document_node_removed_cb(Egueb_Dom_Event *ev,
 /*----------------------------------------------------------------------------*
  *                              Input interface                               *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_Node * _eon_document_input_element_at(void *data,
-		int x, int y)
+static Egueb_Dom_Node * _eon_document_input_element_at(Egueb_Dom_Node *parent,
+		int x, int y, void *data)
 {
 	Egueb_Dom_Node *n = data;
 	Egueb_Dom_Node *topmost;
@@ -328,7 +328,7 @@ static void _eon_document_init(Egueb_Dom_Node *n, void *data)
 static void _eon_document_deinit(Egueb_Dom_Node *n, void *data)
 {
 	Eon_Document *thiz = data;
-	egueb_dom_input_free(thiz->input);
+	egueb_dom_input_unref(thiz->input);
 	free(thiz);
 }
 
