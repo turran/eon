@@ -28,7 +28,7 @@ static void _eon_widget_mouse_ui_cb(Egueb_Dom_Event *e, void *data)
 	Eon_Widget *thiz = data;
 	Eon_Widget_Class *klass;
 	Egueb_Dom_String *type;
-	Eina_Bool enabled;
+	int enabled;
 
 	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
@@ -66,7 +66,7 @@ static void _eon_widget_enabled_modifed_cb(Egueb_Dom_Event *ev,
 		klass = EON_WIDGET_CLASS_GET(thiz);
 		if (klass->state_set)
 		{
-			Eina_Bool enabled;
+			int enabled;
 			Egueb_Dom_String *state;
 
 			egueb_dom_attr_final_get(thiz->enabled, &enabled);
