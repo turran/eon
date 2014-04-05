@@ -46,5 +46,3 @@ EAPI void eon_drawer_button_ender_register(Ender_Namespace *ns,
  * @}
  */
 #endif
-
-
