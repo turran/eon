@@ -10,6 +10,7 @@ src/lib/eon_element_button_stock.h \
 src/lib/eon_element_eon.h \
 src/lib/eon_element_label.h \
 src/lib/eon_element_label_stock.h \
+src/lib/eon_element_object.h \
 src/lib/eon_element_stack.h \
 src/lib/eon_stock.h
 
@@ -27,6 +28,7 @@ src/lib/eon_element_button_stock.c \
 src/lib/eon_element_eon.c \
 src/lib/eon_element_label.c \
 src/lib/eon_element_label_stock.c \
+src/lib/eon_element_object.c \
 src/lib/eon_element_stack.c \
 src/lib/eon_event_geometry.c \
 src/lib/eon_layout_frame.c \

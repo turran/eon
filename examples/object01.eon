@@ -1,0 +1,6 @@
+<eon>
+  <stack orientation="vertical">
+    <label>My very own label</label>
+    <object xlink:href=""/>
+  </stack>
+</eon>

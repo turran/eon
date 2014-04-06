@@ -63,6 +63,7 @@ extern "C" {
 #include "eon_element_button.h"
 #include "eon_element_button_stock.h"
 #include "eon_element_label.h"
+#include "eon_element_object.h"
 #include "eon_element_stack.h"
 #include "eon_renderable.h"
 #include "eon_event_geometry.h"
