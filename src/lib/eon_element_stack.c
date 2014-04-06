@@ -177,14 +177,18 @@ static Eina_Bool _eon_element_stack_process(Eon_Renderable *r)
 			/* Add child renderer */
 			if (thiz->renderable_changed)
 			{
-				Enesim_Renderer_Compound_Layer *l;
 				Enesim_Renderer *ren;
 
-				l = enesim_renderer_compound_layer_new();
 				ren = eon_renderable_renderer_get(child);
-				enesim_renderer_compound_layer_renderer_set(l, ren);
-				enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
-				enesim_renderer_compound_layer_add(thiz->r, l);
+				if (ren)
+				{
+					Enesim_Renderer_Compound_Layer *l;
+
+					l = enesim_renderer_compound_layer_new();
+					enesim_renderer_compound_layer_renderer_set(l, ren);
+					enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+					enesim_renderer_compound_layer_add(thiz->r, l);
+				}
 			}
 next1:
 			tmp = egueb_dom_element_sibling_next_get(child);

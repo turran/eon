@@ -149,8 +149,8 @@ static Eina_Bool _eon_element_eon_process(Eon_Widget_Drawer *w)
 	/* update the renderable tree */
 	if (thiz->renderable_changed)
 	{
-		Enesim_Renderer_Compound_Layer *l;
 		Enesim_Renderer *r;
+		Enesim_Renderer *r_child;
 
 		r = eon_drawer_widget_renderer_get(w->theme_widget);
 		enesim_renderer_compound_layer_clear(r);
@@ -158,10 +158,16 @@ static Eina_Bool _eon_element_eon_process(Eon_Widget_Drawer *w)
 		/* update the backgrund */
 		eon_drawer_eon_update_background(w->theme_widget);
 		/* add our own child */
-		l = enesim_renderer_compound_layer_new();
-		enesim_renderer_compound_layer_renderer_set(l, eon_renderable_renderer_get(child));
-		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
-		enesim_renderer_compound_layer_add(r, l);
+		r_child = eon_renderable_renderer_get(child);
+		if (r_child)
+		{
+			Enesim_Renderer_Compound_Layer *l;
+
+			l = enesim_renderer_compound_layer_new();
+			enesim_renderer_compound_layer_renderer_set(l, r_child);
+			enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+			enesim_renderer_compound_layer_add(r, l);
+		}
 		thiz->renderable_changed = EINA_FALSE;
 		enesim_renderer_unref(r);
 	}
