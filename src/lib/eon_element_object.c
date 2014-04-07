@@ -20,6 +20,12 @@
 #include "eon_element_object.h"
 #include "eon_element_eon_private.h"
 #include "eon_renderable_private.h"
+
+/* TODO
+ * - forward input events
+ * - handle the animation feature
+ * - add a way to set/get in code a document
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
