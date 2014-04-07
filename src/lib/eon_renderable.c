@@ -83,7 +83,6 @@ static void _eon_renderable_process_cb(Egueb_Dom_Event *ev,
 
 	n = egueb_dom_event_target_current_get(ev);
 	egueb_dom_element_enqueue(n);
-	egueb_dom_node_unref(n);
 	egueb_dom_node_unref(child);
 }
 /*----------------------------------------------------------------------------*

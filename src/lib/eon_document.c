@@ -318,6 +318,7 @@ static void _eon_document_init(Egueb_Dom_Node *n, void *data)
 			&_eon_document_animation_descriptor);
 	egueb_dom_feature_ui_add(n,
 			&_eon_document_ui_descriptor);
+	egueb_dom_feature_io_add(n);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_document_node_inserted_cb,

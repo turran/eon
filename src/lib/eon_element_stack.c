@@ -304,6 +304,7 @@ static void _eon_element_stack_class_init(void *k)
 	r_klass->size_hints_get = _eon_element_stack_size_hints_get;
 	r_klass->process = _eon_element_stack_process;
 	r_klass->element_at = _eon_element_stack_element_at;
+	r_klass->child_size_dependant = EINA_TRUE;
 }
 
 static void _eon_element_stack_instance_init(void *o)

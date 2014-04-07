@@ -1,6 +1,6 @@
 <eon>
   <stack orientation="vertical">
-    <label>My very own label</label>
-    <object xlink:href=""/>
+    <label>A SVG file!!!</label>
+    <object xlink:href="http://www.w3.org/TR/2003/REC-SVG11-20030114/images/shapes/rect02.svg"/>
   </stack>
 </eon>
