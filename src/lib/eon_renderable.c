@@ -22,6 +22,7 @@
 #include "eon_renderable_private.h"
 #include "eon_vertical_align_private.h"
 #include "eon_horizontal_align_private.h"
+#include "eon_event_geometry_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -46,45 +47,44 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 	egueb_dom_node_unref(attr);
 }
 
-static void _eon_renderable_mutation_cb(Egueb_Dom_Event *ev,
+static void _eon_renderable_geometry_invalidate_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
 	Eon_Renderable *thiz = EON_RENDERABLE(data);
-	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *child;
+	Eon_Renderable_Class *klass;
+	Egueb_Dom_Event_Phase phase;
 
-	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
-		return;
-	child = egueb_dom_event_relative_get(ev);
-	if (egueb_dom_element_is_enqueued(child))
-		egueb_dom_element_dequeue(egueb_dom_node_ref(child));
+	phase = egueb_dom_event_phase_get(ev);
+	if (phase == EGUEB_DOM_EVENT_PHASE_BUBBLING)
+	{
+		klass = EON_RENDERABLE_CLASS_GET(thiz);
+		/* in case this element is child size dependant, be sure to invalidate
+		 * our geometry/hints and let the event flow
+		 */
+		if (klass->child_size_dependant)
+		{
+			thiz->size_hints_cached = EINA_FALSE;
+			thiz->needs_geometry = EINA_TRUE;
+		}
+		/* otherwise just process again ourselves which whill set again a size
+		 * on the child
+		 */
+		else
+		{
+			Egueb_Dom_Node *n;
 
-	egueb_dom_event_mutation_process_prevent(ev);
-	n = egueb_dom_event_target_current_get(ev);
-	egueb_dom_element_enqueue(n);
-	egueb_dom_node_unref(child);
+			n = egueb_dom_event_target_current_get(ev);
+			egueb_dom_element_enqueue(n);
+		}
+	}
+	/* if we are at the target, be sure clear the geometry */
+	else if (phase == EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+	{
+		thiz->size_hints_cached = EINA_FALSE;
+		thiz->needs_geometry = EINA_TRUE;
+	}
 }
 
-/* The idea is that if a direct child is being enqueued we should be
- * enqueued first and not our child.
- */
-static void _eon_renderable_process_cb(Egueb_Dom_Event *ev,
-		void *data)
-{
-	Eon_Renderable *thiz = EON_RENDERABLE(data);
-	Egueb_Dom_Node *child;
-	Egueb_Dom_Node *n;
-
-	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
-		return;
-	child = egueb_dom_event_relative_get(ev);
-	if (egueb_dom_element_is_enqueued(child))
-		egueb_dom_element_dequeue(egueb_dom_node_ref(child));
-
-	n = egueb_dom_event_target_current_get(ev);
-	egueb_dom_element_enqueue(n);
-	egueb_dom_node_unref(child);
-}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -124,27 +124,10 @@ static void _eon_renderable_init(Eon_Element *e)
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_renderable_attr_modified_cb, EINA_FALSE, thiz);
 
+	egueb_dom_node_event_listener_add(n,
+			EON_EVENT_GEOMETRY_INVALIDATE,
+			_eon_renderable_geometry_invalidate_cb, EINA_FALSE, thiz);
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
-	if (klass->child_size_dependant)
-	{
-		/* in case this is dependent on the child size, be sure to
-		 * register some events in order to process this node
-		 * whenever our child requires a process
-		 */
-		egueb_dom_node_event_listener_add(n,
-				EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
-				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
-		egueb_dom_node_event_listener_add(n,
-				EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
-				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
-		egueb_dom_node_event_listener_add(n,
-				EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
-				_eon_renderable_mutation_cb, EINA_FALSE, thiz);
-		egueb_dom_node_event_listener_add(n,
-				EGUEB_DOM_EVENT_PROCESS,
-				_eon_renderable_process_cb, EINA_FALSE, thiz);
-	}
-
 	if (klass->init)
 		klass->init(thiz);
 }
@@ -262,9 +245,12 @@ Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n)
 
 void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 {
+	Egueb_Dom_Event *ev;
+
 	DBG_ELEMENT(((EON_ELEMENT(thiz))->n), "Invalidating geometry");
-	thiz->size_hints_cached = EINA_FALSE;
-	thiz->needs_geometry = EINA_TRUE;
+
+	ev = eon_event_geometry_invalidate_new();
+	egueb_dom_node_event_dispatch((EON_ELEMENT(thiz))->n, ev, NULL, NULL);
 }
 
 /* TODO handle the expand, padding, margin or whatever other attr we decide to add */

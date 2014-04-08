@@ -34,7 +34,6 @@ static int _eon_layout_stack_get_weight(Egueb_Dom_Node *n)
 		egueb_dom_attr_final_get(weight_attr, &weight);
 		egueb_dom_node_unref(weight_attr);
 	}
-	if (!weight) weight = 1;
 	return weight;
 }
 /*============================================================================*
@@ -47,6 +46,7 @@ int eon_layout_stack_vertical_size_hints_get(Egueb_Dom_Node *r,
 	int ret = 0;
 
 	/* iterate over the children */
+	*weights = 0;
 	child = egueb_dom_element_child_first_get(r);
 	while (child)
 	{
@@ -112,7 +112,7 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 		Eina_Rectangle *g, int min_height, int weights)
 {
 	Egueb_Dom_Node *child;
-	int extra;
+	int extra = 0;
 	int empty = 0;
 	int ret = 0;
 
@@ -121,7 +121,8 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 	 * we allocate for every child min size
 	 */
 	empty = g->h - min_height;
-	extra = empty/weights;
+	if (weights)
+		extra = empty/weights;
 	/* iterate over the children */
 	child = egueb_dom_element_child_first_get(r);
 	while (child)
@@ -170,6 +171,7 @@ int eon_layout_stack_horizontal_size_hints_get(Egueb_Dom_Node *r,
 	int ret = 0;
 
 	/* iterate over the children */
+	*weights = 0;
 	child = egueb_dom_element_child_first_get(r);
 	while (child)
 	{
@@ -235,7 +237,7 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 		Eina_Rectangle *g, int min_width, int weights)
 {
 	Egueb_Dom_Node *child;
-	int extra;
+	int extra = 0;
 	int empty = 0;
 	int ret = 0;
 
@@ -244,7 +246,8 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 	 * we allocate for every child min size
 	 */
 	empty = g->w - min_width;
-	extra = (empty / weights);
+	if (weights)
+		extra = empty/weights;
 
 	/* iterate over the children */
 	child = egueb_dom_element_child_first_get(r);

@@ -40,8 +40,13 @@ typedef struct _Eon_Element_Object
 	Egueb_Dom_Node *xlink_href;
 	/* private */
 	Egueb_Dom_Node *doc;
+	Egueb_Dom_Feature *ui;
+	Egueb_Dom_Feature *render;
+	Egueb_Dom_Feature *window;
+
 	Eina_Bool xlink_href_changed;
 	Egueb_Dom_String *xlink_href_last;
+	Enesim_Renderer *clipper;
 	Enesim_Renderer *image;
 	Enesim_Surface *s;
 	Eina_List *damages;
@@ -51,6 +56,33 @@ typedef struct _Eon_Element_Object_Class
 {
 	Eon_Renderable_Class base;
 } Eon_Element_Object_Class;
+
+static void _eon_element_object_document_cleanup(Eon_Element_Object *thiz)
+{
+	if (thiz->window)
+	{
+		egueb_dom_feature_unref(thiz->window);
+		thiz->window = NULL;
+	}
+
+	if (thiz->render)
+	{
+		egueb_dom_feature_unref(thiz->render);
+		thiz->render = NULL;
+	}
+
+	if (thiz->ui)
+	{
+		egueb_dom_feature_unref(thiz->ui);
+		thiz->ui = NULL;
+	}
+
+	if (thiz->doc)
+	{
+		egueb_dom_node_unref(thiz->doc);
+		thiz->doc = NULL;
+	}
+}
 
 static Eina_Bool _eon_element_object_render_damages(Egueb_Dom_Feature *e EINA_UNUSED,
 		Eina_Rectangle *area, void *data)
@@ -90,6 +122,52 @@ static void _eon_element_object_attr_modified_cb(Egueb_Dom_Event *ev,
 	egueb_dom_node_unref(attr);
 }
 
+static void _eon_element_object_ui_mouse_move_cb(Egueb_Dom_Event *e, void *data)
+{
+	Eon_Element_Object *thiz = EON_ELEMENT_OBJECT(data);
+	Eon_Renderable *r = EON_RENDERABLE(thiz);
+	Egueb_Dom_Input *input;
+	int x, y;
+
+	if (!thiz->doc || !thiz->ui)
+		return;
+
+	egueb_dom_feature_ui_input_get(thiz->ui, &input);
+	egueb_dom_event_mouse_client_coords_get(e, &x, &y);
+	/* calculate the relative coordiantes */
+	x = x - r->geometry.x;
+	y = y - r->geometry.y;
+	egueb_dom_input_feed_mouse_move(input, x, y);
+}
+
+static void _eon_element_object_ui_mouse_down_cb(Egueb_Dom_Event *e, void *data)
+{
+	Eon_Element_Object *thiz = EON_ELEMENT_OBJECT(data);
+	Egueb_Dom_Input *input;
+	int button;
+
+	if (!thiz->doc || !thiz->ui)
+		return;
+
+	egueb_dom_feature_ui_input_get(thiz->ui, &input);
+	button = egueb_dom_event_mouse_button_get(e);
+	egueb_dom_input_feed_mouse_down(input, button);
+}
+
+static void _eon_element_object_ui_mouse_up_cb(Egueb_Dom_Event *e, void *data)
+{
+	Eon_Element_Object *thiz = EON_ELEMENT_OBJECT(data);
+	Egueb_Dom_Input *input;
+	int button;
+
+	if (!thiz->doc || !thiz->ui)
+		return;
+
+	egueb_dom_feature_ui_input_get(thiz->ui, &input);
+	button = egueb_dom_event_mouse_button_get(e);
+	egueb_dom_input_feed_mouse_up(input, button);
+}
+
 static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
 		Enesim_Stream *data)
 {
@@ -107,6 +185,18 @@ static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
 	INFO_ELEMENT(n, "Uri fetched with MIME '%s'", mime);
 
 	egueb_dom_parser_parse(data, &thiz->doc);
+	if (!thiz->doc)
+	{
+		WARN_ELEMENT(n, "Can not parse the file");
+		goto done;
+	}
+	/* get every possible feature */
+	thiz->ui = egueb_dom_node_feature_get(thiz->doc,
+			EGUEB_DOM_FEATURE_UI_NAME, NULL);
+	thiz->window = egueb_dom_node_feature_get(thiz->doc,
+			EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
+	thiz->render = egueb_dom_node_feature_get(thiz->doc,
+			EGUEB_DOM_FEATURE_RENDER_NAME, NULL);
 	/* The data has been fetched, invalidete the geometry so we can inform
 	 * about the new hints, size, etc
 	 */
@@ -139,7 +229,12 @@ static void _eon_element_object_init(Eon_Renderable *r)
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_object_attr_modified_cb, EINA_FALSE, thiz);
-
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_UP,
+			_eon_element_object_ui_mouse_up_cb, EINA_FALSE, thiz);
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_DOWN,
+			_eon_element_object_ui_mouse_down_cb, EINA_FALSE, thiz);
+	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_MOVE,
+			_eon_element_object_ui_mouse_move_cb, EINA_FALSE, thiz);
 }
 
 static Enesim_Renderer * _eon_element_object_renderer_get(Eon_Renderable *r)
@@ -147,7 +242,7 @@ static Enesim_Renderer * _eon_element_object_renderer_get(Eon_Renderable *r)
 	Eon_Element_Object *thiz;
 
 	thiz = EON_ELEMENT_OBJECT(r);
-	return enesim_renderer_ref(thiz->image);
+	return enesim_renderer_ref(thiz->clipper);
 }
 
 static void _eon_element_object_geometry_set(Eon_Renderable *r, Eina_Rectangle *geometry)
@@ -155,58 +250,47 @@ static void _eon_element_object_geometry_set(Eon_Renderable *r, Eina_Rectangle *
 	Eon_Element_Object *thiz;
 
 	thiz = EON_ELEMENT_OBJECT(r);
-	if (thiz->doc)
-	{
-		Egueb_Dom_Feature *window;
-		window = egueb_dom_node_feature_get(thiz->doc,
-				EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
-		if (window)
-		{
-			enesim_renderer_image_position_set(thiz->image, geometry->x, geometry->y);
-			enesim_renderer_image_size_set(thiz->image, geometry->w, geometry->h);
-			egueb_dom_feature_window_content_size_set(window,
-					geometry->w, geometry->h);
-			egueb_dom_feature_unref(window);
-		}
-	}
+	if (!thiz->doc || !thiz->window)
+		return;
+	enesim_renderer_clipper_position_set(thiz->clipper, geometry->x, geometry->y);
+	enesim_renderer_clipper_size_set(thiz->clipper, geometry->w, geometry->h);
+
+	enesim_renderer_image_position_set(thiz->image, geometry->x, geometry->y);
+	egueb_dom_feature_window_content_size_set(thiz->window,
+			geometry->w, geometry->h);
 }
 
 static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
 {
 	Eon_Element_Object *thiz;
+	Egueb_Dom_Feature_Window_Type type;
 	int ret = 0;
+	int cw, ch;
+
 
 	thiz = EON_ELEMENT_OBJECT(r);
-	/* TODO in case the data is not loaded yet, do not return any hint */
-	if (thiz->doc)
-	{
-		Egueb_Dom_Feature *window;
-		window = egueb_dom_node_feature_get(thiz->doc, EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
-		if (window)
-		{
-			Egueb_Dom_Feature_Window_Type type;
-			int cw, ch;
+	if (!thiz->doc || !thiz->window)
+		return 0;
 
-			egueb_dom_feature_window_type_get(window, &type);
-			if (type == EGUEB_DOM_FEATURE_WINDOW_TYPE_MASTER)
-			{
-				egueb_dom_feature_window_content_size_get(window, &cw, &ch);
-				if (cw >= 0 && ch >= 0)
-				{
-					ret |= EON_RENDERABLE_HINT_PREFERRED;
-					size->pref_width = cw;
-					size->pref_height = ch;
-				}
-				else
-				{
-					ret |= EON_RENDERABLE_HINT_MIN_MAX;
-					size->min_width = 1;
-					size->min_height = 1;
-					size->max_width = -1;
-					size->max_height = -1;
-				}
-			}
-			egueb_dom_feature_unref(window);
+	egueb_dom_feature_window_type_get(thiz->window, &type);
+	if (type == EGUEB_DOM_FEATURE_WINDOW_TYPE_MASTER)
+	{
+		egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
+		if (cw >= 0 && ch >= 0)
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+			size->min_width = cw;
+			size->min_height = ch;
+			size->max_width = cw;
+			size->max_height = ch;
+		}
+		else
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+			size->min_width = 1;
+			size->min_height = 1;
+			size->max_width = -1;
+			size->max_height = -1;
 		}
 	}
 	return ret;
@@ -232,11 +316,7 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 		egueb_dom_attr_final_get(thiz->xlink_href, &uri);
 		if (!egueb_dom_string_is_equal(uri, thiz->xlink_href_last))
 		{
-			if (thiz->doc)
-			{
-				egueb_dom_node_unref(thiz->doc);
-				thiz->doc = NULL;
-			}
+			_eon_element_object_document_cleanup(thiz);
 
 			if (thiz->xlink_href_last)
 			{
@@ -271,7 +351,6 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 static Eina_Bool _eon_element_object_process(Eon_Renderable *r)
 {
 	Eon_Element_Object *thiz;
-	Egueb_Dom_Feature *window, *render;
 	Egueb_Dom_Node *n;
 	Eina_Rectangle *rect;
 	Eina_Bool new_surface = EINA_FALSE;
@@ -286,13 +365,10 @@ static Eina_Bool _eon_element_object_process(Eon_Renderable *r)
 	egueb_dom_document_process(thiz->doc);
 
 	/* create a surface that fits on the geometry of the object */
-	window = egueb_dom_node_feature_get(thiz->doc,
-			EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
-	if (!window)
+	if (!thiz->window)
 		goto done;
 
-	egueb_dom_feature_window_content_size_get(window, &cw, &ch);
-	egueb_dom_feature_unref(window);
+	egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
 
 	if (thiz->s)
 	{
@@ -312,34 +388,30 @@ static Eina_Bool _eon_element_object_process(Eon_Renderable *r)
 		thiz->s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, cw, ch);
 		enesim_renderer_image_source_surface_set(thiz->image,
 				enesim_surface_ref(thiz->s));
+		enesim_renderer_image_size_set(thiz->image, cw, ch);
 		new_surface = EINA_TRUE;
 	}
 
 	/* get the damages of the external document and update the image area */
-	render = egueb_dom_node_feature_get(thiz->doc,
-			EGUEB_DOM_FEATURE_RENDER_NAME, NULL);
-	if (!render)
+	if (!thiz->render)
 		goto done;
 
-	egueb_dom_feature_render_damages_get(render, thiz->s,
+	egueb_dom_feature_render_damages_get(thiz->render, thiz->s,
 			_eon_element_object_render_damages, thiz);
 	if (!thiz->damages && !new_surface)
-		goto no_damages;
+		goto done;
 
 	if (thiz->damages)
-		egueb_dom_feature_render_draw_list(render, thiz->s,
+		egueb_dom_feature_render_draw_list(thiz->render, thiz->s,
 				ENESIM_ROP_FILL, thiz->damages, 0, 0, NULL);
 	else
-		egueb_dom_feature_render_draw(render, thiz->s,
+		egueb_dom_feature_render_draw(thiz->render, thiz->s,
 				ENESIM_ROP_FILL, NULL, 0, 0, NULL);
 
 	EINA_LIST_FREE(thiz->damages, rect)
 	{
 		free(rect);
 	}
-no_damages:
-	egueb_dom_feature_unref(render);
-
 	/* Make sure to process again this node, this will make the document
 	 * to always process ourselves.
 	 */
@@ -384,6 +456,8 @@ static void _eon_element_object_instance_init(void *o)
 
 	thiz = EON_ELEMENT_OBJECT(o);
 	thiz->image = enesim_renderer_image_new();
+	thiz->clipper = enesim_renderer_clipper_new();
+	enesim_renderer_clipper_clipped_set(thiz->clipper, enesim_renderer_ref(thiz->image));
 }
 
 static void _eon_element_object_instance_deinit(void *o)
@@ -391,19 +465,15 @@ static void _eon_element_object_instance_deinit(void *o)
 	Eon_Element_Object *thiz;
 
 	thiz = EON_ELEMENT_OBJECT(o);
-
-	if (thiz->doc)
-	{
-		egueb_dom_node_unref(thiz->doc);
-		thiz->doc = NULL;
-	}
-
+	_eon_element_object_document_cleanup(thiz);
 	if (thiz->s)
 	{
 		enesim_surface_unref(thiz->s);
 		thiz->s = NULL;
 	}
+
 	enesim_renderer_unref(thiz->image);
+	enesim_renderer_unref(thiz->clipper);
 	egueb_dom_node_unref(thiz->xlink_href);
 }
 /*============================================================================*

@@ -1,6 +1,7 @@
 <eon>
   <stack orientation="vertical">
-    <label>A SVG file!!!</label>
-    <object xlink:href="http://www.w3.org/TR/2003/REC-SVG11-20030114/images/shapes/rect02.svg"/>
+    <label weight="0">A SVG file!!!</label>
+    <object weight="1" xlink:href="http://www.w3.org/TR/2003/REC-SVG11-20030114/images/shapes/rect02.svg"/>
+    <label weight="0">Is on the middle</label>
   </stack>
 </eon>

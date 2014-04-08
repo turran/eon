@@ -23,7 +23,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static void _eon_widget_mouse_ui_cb(Egueb_Dom_Event *e, void *data)
+static void _eon_widget_ui_mouse_cb(Egueb_Dom_Event *e, void *data)
 {
 	Eon_Widget *thiz = data;
 	Eon_Widget_Class *klass;
@@ -90,15 +90,15 @@ static void _eon_widget_init(Eon_Renderable *r)
 	thiz = EON_WIDGET(r);
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_CLICK,
-			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_UP,
-			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_DOWN,
-			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_OVER,
-			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_OUT,
-			_eon_widget_mouse_ui_cb, EINA_FALSE, r);
+			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
 	egueb_dom_node_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_widget_enabled_modifed_cb, EINA_FALSE, r);

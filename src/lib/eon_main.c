@@ -90,7 +90,8 @@ static void _strings_init(void)
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
 	EON_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
 	/* events */
-	EON_EVENT_GEOMETRY = egueb_dom_string_new_with_static_string("EONGeometry");
+	EON_EVENT_GEOMETRY_REQUEST = egueb_dom_string_new_with_static_string("EONGeometryRequest");
+	EON_EVENT_GEOMETRY_INVALIDATE = egueb_dom_string_new_with_static_string("EONGeometryInvalidate");
 }
 
 static void _strings_shutdown(void)
@@ -121,7 +122,8 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
 	egueb_dom_string_unref(EON_ELEMENT_OBJECT);
 	/* events */
-	egueb_dom_string_unref(EON_EVENT_GEOMETRY);
+	egueb_dom_string_unref(EON_EVENT_GEOMETRY_REQUEST);
+	egueb_dom_string_unref(EON_EVENT_GEOMETRY_INVALIDATE);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -154,7 +156,8 @@ Egueb_Dom_String *EON_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;
 Egueb_Dom_String *EON_ELEMENT_OBJECT;
 /* events */
-Egueb_Dom_String *EON_EVENT_GEOMETRY;
+Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
+Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;
 
 /**
  *

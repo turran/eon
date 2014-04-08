@@ -32,21 +32,31 @@ typedef struct _Eon_Event_Geometry
 	Eina_Rectangle geometry;
 	Eina_Bool set;
 } Eon_Event_Geometry;
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-Egueb_Dom_Event * eon_event_geometry_new(void)
+
+Egueb_Dom_Event * _eon_event_geometry_new(Egueb_Dom_String *name)
 {
 	Eon_Event_Geometry *thiz;
 	Egueb_Dom_Event *e;
 
 	thiz = calloc(1, sizeof(Eon_Event_Geometry));
-	e = egueb_dom_event_external_new(egueb_dom_string_ref(EON_EVENT_GEOMETRY),
-			EINA_TRUE, EINA_TRUE, EINA_TRUE,
+	e = egueb_dom_event_external_new(name, EINA_TRUE, EINA_TRUE, EINA_TRUE,
 			EGUEB_DOM_EVENT_DIRECTION_BUBBLE_CAPTURE, thiz, free);
 }
 
-Eina_Bool eon_event_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom)
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+Egueb_Dom_Event * eon_event_geometry_invalidate_new(void)
+{
+	return _eon_event_geometry_new(egueb_dom_string_ref(EON_EVENT_GEOMETRY_INVALIDATE));
+}
+
+Egueb_Dom_Event * eon_event_geometry_request_new(void)
+{
+	return _eon_event_geometry_new(egueb_dom_string_ref(EON_EVENT_GEOMETRY_REQUEST));
+}
+
+Eina_Bool eon_event_geometry_request_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom)
 {
 	Eon_Event_Geometry *thiz;
 
@@ -62,7 +72,8 @@ Eina_Bool eon_event_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI void eon_event_geometry_set(Egueb_Dom_Event *e, Eina_Rectangle *geom)
+EAPI void eon_event_geometry_request_geometry_set(Egueb_Dom_Event *e,
+		Eina_Rectangle *geom)
 {
 	Eon_Event_Geometry *thiz;
 

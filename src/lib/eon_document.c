@@ -51,6 +51,15 @@ static void _eon_document_request_geometry_cb(Egueb_Dom_Event *ev, void *data)
 	Eina_Rectangle geometry;
 	int size_hints;
 
+	/* FIXME this event is not used on any application, we can safely
+	 * remove it. For now, whenever the topmost element requests a geometry
+	 * we return the current width/height set through the window feature
+	 */
+	thiz = egueb_dom_document_external_data_get(n);
+	eina_rectangle_coords_from(&geometry, 0, 0, thiz->width, thiz->height);
+	eon_event_geometry_request_geometry_set(ev, &geometry);
+	return;
+
 	DBG("Rquesting main geometry");
 	eon = egueb_dom_document_element_get(n);
 	if (!eon)
@@ -73,7 +82,7 @@ static void _eon_document_request_geometry_cb(Egueb_Dom_Event *ev, void *data)
 		size.height = 0;
 	}
 	eina_rectangle_coords_from(&geometry, 0, 0, size.width, size.height);
-	eon_event_geometry_set(ev, &geometry);
+	eon_event_geometry_request_geometry_set(ev, &geometry);
 	egueb_dom_node_unref(eon);
 
 	/* Se the width so the user when requesting the geometry will get this value */
@@ -99,7 +108,7 @@ static void _eon_document_node_inserted_cb(Egueb_Dom_Event *ev,
 
 	egueb_dom_node_unref(parent);
 	target = egueb_dom_event_target_get(ev);
-	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY,
+	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
 			_eon_document_request_geometry_cb, EINA_FALSE, n);
 	egueb_dom_node_unref(target);
 }
@@ -120,7 +129,7 @@ static void _eon_document_node_removed_cb(Egueb_Dom_Event *ev,
 
 	egueb_dom_node_unref(parent);
 	target = egueb_dom_event_target_get(ev);
-	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY,
+	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
 			_eon_document_request_geometry_cb, EINA_FALSE, n);
 	egueb_dom_node_unref(target);
 }

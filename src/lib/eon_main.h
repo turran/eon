@@ -78,6 +78,7 @@ EAPI extern Egueb_Dom_String *EON_ELEMENT_LABEL_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_STACK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_OBJECT;
 
-EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY;
+EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
+EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;
 
 #endif

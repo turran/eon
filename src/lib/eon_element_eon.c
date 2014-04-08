@@ -65,6 +65,18 @@ static void _eon_element_eon_etch_cb(Egueb_Dom_Event *e,
 	egueb_smil_event_etch_set(e, thiz->etch);
 }
 
+/* Whenever an invalidate geoemtry event reaches the topmost element,
+ * just enqueue the element for later processing
+ */
+static void _eon_element_eon_geometry_invalidate_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Egueb_Dom_Node *n;
+
+	n = egueb_dom_event_target_current_get(ev);
+	egueb_dom_element_enqueue(n);
+}
+
 static void _eon_element_eon_tree_modified_cb(Egueb_Dom_Event *e,
 		void *data)
 {
@@ -191,6 +203,10 @@ static void _eon_element_eon_init(Eon_Widget *w)
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_tree_modified_cb,
 			EINA_FALSE, w);
+	egueb_dom_node_event_listener_add(n,
+			EON_EVENT_GEOMETRY_INVALIDATE,
+			_eon_element_eon_geometry_invalidate_cb, EINA_FALSE,
+			w);
 }
 
 static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
@@ -208,10 +224,10 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
 
 		n = (EON_ELEMENT(r))->n;
 		/* request a geometry upstream */
-		ev = eon_event_geometry_new();
+		ev = eon_event_geometry_request_new();
 		egueb_dom_node_event_dispatch(n, egueb_dom_event_ref(ev), NULL, NULL);
 		/* check that we have a valid geometry */
-		set = eon_event_geometry_get(ev, &geom);
+		set = eon_event_geometry_request_geometry_get(ev, &geom);
 		egueb_dom_event_unref(ev);
 
 		if (!set)
@@ -224,7 +240,6 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
 	}
 	return EINA_TRUE;
 }
-
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
