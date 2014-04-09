@@ -19,5 +19,9 @@
 #define _EON_ELEMENT_OBJECT_H_
 
 EAPI Egueb_Dom_Node * eon_element_object_new(void);
+EAPI void eon_element_object_xlink_href_set(Egueb_Dom_Node *n,
+		Egueb_Dom_String * xlink_href);
+EAPI Egueb_Dom_String * eon_element_object_xlink_href_get(Egueb_Dom_Node *n);
+EAPI Egueb_Dom_Node * eon_element_object_document_get(Egueb_Dom_Node *n);
 
 #endif

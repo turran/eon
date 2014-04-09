@@ -31,6 +31,7 @@ src/lib/eon_element_label_stock.c \
 src/lib/eon_element_object.c \
 src/lib/eon_element_stack.c \
 src/lib/eon_event_geometry.c \
+src/lib/eon_event_geometry_private.h \
 src/lib/eon_layout_frame.c \
 src/lib/eon_layout_stack.c \
 src/lib/eon_layout_frame_private.h \

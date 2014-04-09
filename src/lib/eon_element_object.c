@@ -22,9 +22,8 @@
 #include "eon_renderable_private.h"
 
 /* TODO
- * - forward input events
  * - handle the animation feature
- * - add a way to set/get in code a document
+ * - add a way to set in code a document
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -172,6 +171,7 @@ static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
 		Enesim_Stream *data)
 {
 	Eon_Element_Object *thiz;
+	Egueb_Dom_Event *e;
 	const char *mime;
 
 	thiz = EON_ELEMENT_OBJECT(egueb_dom_element_external_data_get(n));
@@ -509,3 +509,11 @@ EAPI Egueb_Dom_String * eon_element_object_xlink_href_get(Egueb_Dom_Node *n)
 	return ret;
 }
 
+EAPI Egueb_Dom_Node * eon_element_object_document_get(Egueb_Dom_Node *n)
+{
+	Eon_Element_Object *thiz;
+	Egueb_Dom_String *ret;
+
+	thiz = EON_ELEMENT_OBJECT(egueb_dom_element_external_data_get(n));
+	return egueb_dom_node_ref(thiz->doc);
+}
