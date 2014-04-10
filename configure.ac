@@ -28,6 +28,9 @@ AC_DEFINE_UNQUOTED([VERSION_MAJOR], [v_maj], [Major version])
 AC_DEFINE_UNQUOTED([VERSION_MINOR], [v_min], [Minor version])
 AC_DEFINE_UNQUOTED([VERSION_MICRO], [v_mic], [Micro version])
 
+VMAJ=v_maj
+AC_SUBST([VMAJ])
+
 ## Add parameters for aclocal (keep in sync with Makefile.am)
 AC_SUBST(ACLOCAL_AMFLAGS, "-I m4 -I common/m4")
 
@@ -69,12 +72,14 @@ ENDER_VERSION="0.0.10"
 ENESIM_VERSION="0.0.20"
 EGUEB_VERSION="0.0.23"
 
-AC_SUBST([requirements_eon])
-eon_requirements="egueb-dom >= ${EGUEB_VERSION}"
-eon_requirements_private="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} ender >= ${ENDER_VERSION} egueb-smil >= ${EGUEB_VERSION}"
-PKG_CHECK_MODULES([EON], [${eon_requirements} ${eon_requirements_private}])
+requirements_pc="egueb-dom >= ${EGUEB_VERSION}"
+requirements_private_pc="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} ender >= ${ENDER_VERSION} egueb-smil >= ${EGUEB_VERSION}"
+PKG_CHECK_MODULES([EON], [${requirements_pc} ${requirements_private_pc}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
+
+AC_SUBST([requirements_pc])
+AC_SUBST([requirements_private_pc])
 
 ## Esvg
 
@@ -158,7 +163,6 @@ ENS_MODULE([Drawer_basic], [static], [yes])
 
 AC_CONFIG_FILES([
 Makefile
-eon.pc
 ])
 
 AC_OUTPUT

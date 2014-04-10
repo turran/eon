@@ -2,11 +2,12 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
+pkgincludedir=@pkgincludedir@-@VMAJ@
 
 Name: Eon
 Description: Eon
-Requires.private: @eon_requirements_private@
-Requires: @eon_requirements@
+Requires.private: @requirements_private_pc@
+Requires: @requirements_pc@
 Version: @VERSION@
 Libs: -L${libdir} -leon
-Cflags: -I${includedir} -I${includedir}/eon
+Cflags: -I${pkgincludedir}
