@@ -23,7 +23,6 @@
 
 /* TODO
  * - handle the animation feature
- * - add a way to set in code a document
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -44,6 +43,8 @@ typedef struct _Eon_Element_Object
 	Egueb_Dom_Feature *window;
 
 	Eina_Bool xlink_href_changed;
+	Eina_Bool external_doc_changed;
+	Egueb_Dom_Node *external_doc;
 	Egueb_Dom_String *xlink_href_last;
 	Enesim_Renderer *clipper;
 	Enesim_Renderer *image;
@@ -81,6 +82,26 @@ static void _eon_element_object_document_cleanup(Eon_Element_Object *thiz)
 		egueb_dom_node_unref(thiz->doc);
 		thiz->doc = NULL;
 	}
+}
+
+static void _eon_element_object_document_setup(Eon_Element_Object *thiz, Egueb_Dom_Node *doc)
+{
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(thiz))->n;
+	thiz->doc = doc;
+	/* get every possible feature */
+	thiz->ui = egueb_dom_node_feature_get(thiz->doc,
+			EGUEB_DOM_FEATURE_UI_NAME, NULL);
+	thiz->window = egueb_dom_node_feature_get(thiz->doc,
+			EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
+	thiz->render = egueb_dom_node_feature_get(thiz->doc,
+			EGUEB_DOM_FEATURE_RENDER_NAME, NULL);
+	/* The data has been fetched, invalidete the geometry so we can inform
+	 * about the new hints, size, etc
+	 */
+	eon_renderable_invalidate_geometry(EON_RENDERABLE(thiz));
+	egueb_dom_element_request_process(n);
 }
 
 static Eina_Bool _eon_element_object_render_damages(Egueb_Dom_Feature *e EINA_UNUSED,
@@ -172,6 +193,7 @@ static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
 {
 	Eon_Element_Object *thiz;
 	Egueb_Dom_Event *e;
+	Egueb_Dom_Node *doc = NULL;
 	const char *mime;
 
 	thiz = EON_ELEMENT_OBJECT(egueb_dom_element_external_data_get(n));
@@ -184,24 +206,14 @@ static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
 
 	INFO_ELEMENT(n, "Uri fetched with MIME '%s'", mime);
 
-	egueb_dom_parser_parse(data, &thiz->doc);
-	if (!thiz->doc)
+	egueb_dom_parser_parse(data, &doc);
+	if (!doc)
 	{
 		WARN_ELEMENT(n, "Can not parse the file");
 		goto done;
 	}
-	/* get every possible feature */
-	thiz->ui = egueb_dom_node_feature_get(thiz->doc,
-			EGUEB_DOM_FEATURE_UI_NAME, NULL);
-	thiz->window = egueb_dom_node_feature_get(thiz->doc,
-			EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
-	thiz->render = egueb_dom_node_feature_get(thiz->doc,
-			EGUEB_DOM_FEATURE_RENDER_NAME, NULL);
-	/* The data has been fetched, invalidete the geometry so we can inform
-	 * about the new hints, size, etc
-	 */
-	eon_renderable_invalidate_geometry(EON_RENDERABLE(thiz));
-	egueb_dom_element_request_process(n);
+
+	_eon_element_object_document_setup(thiz, doc);
 done:
 	enesim_stream_unref(data);
 }
@@ -308,7 +320,7 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 	/* in case the xlink href has actually changed, request the application
 	 * to load the content
 	 */
-	if (thiz->xlink_href_changed)
+	if (thiz->xlink_href_changed && !thiz->external_doc)
 	{
 		Egueb_Dom_String *uri;
 		Egueb_Dom_Uri u;
@@ -345,6 +357,16 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 		}
 		egueb_dom_string_unref(uri);
 	}
+
+	if (thiz->external_doc_changed)
+	{
+		_eon_element_object_document_cleanup(thiz);
+		_eon_element_object_document_setup(thiz, thiz->external_doc);
+	}
+	
+	thiz->external_doc_changed = EINA_FALSE;
+	thiz->xlink_href_changed = EINA_FALSE;
+
 	return EINA_TRUE;
 }
 
@@ -472,6 +494,18 @@ static void _eon_element_object_instance_deinit(void *o)
 		thiz->s = NULL;
 	}
 
+	if (thiz->doc)
+	{
+		egueb_dom_node_unref(thiz->doc);
+		thiz->doc = NULL;
+	}
+
+	if (thiz->external_doc)
+	{
+		egueb_dom_node_unref(thiz->external_doc);
+		thiz->external_doc = NULL;
+	}
+
 	enesim_renderer_unref(thiz->image);
 	enesim_renderer_unref(thiz->clipper);
 	egueb_dom_node_unref(thiz->xlink_href);
@@ -509,11 +543,25 @@ EAPI Egueb_Dom_String * eon_element_object_xlink_href_get(Egueb_Dom_Node *n)
 	return ret;
 }
 
+EAPI void eon_element_object_document_set(Egueb_Dom_Node *n, Egueb_Dom_Node *doc)
+{
+	Eon_Element_Object *thiz;
+	Egueb_Dom_String *ret;
+
+	thiz = EON_ELEMENT_OBJECT(egueb_dom_element_external_data_get(n));
+	if (thiz->external_doc)
+		egueb_dom_node_unref(thiz->external_doc);
+	thiz->external_doc = doc;
+	thiz->external_doc_changed = EINA_TRUE;
+}
+
 EAPI Egueb_Dom_Node * eon_element_object_document_get(Egueb_Dom_Node *n)
 {
 	Eon_Element_Object *thiz;
 	Egueb_Dom_String *ret;
 
 	thiz = EON_ELEMENT_OBJECT(egueb_dom_element_external_data_get(n));
+	if (thiz->external_doc)
+		return egueb_dom_node_ref(thiz->external_doc);
 	return egueb_dom_node_ref(thiz->doc);
 }
