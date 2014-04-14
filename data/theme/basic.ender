@@ -87,7 +87,7 @@
     <object ns="eon_drawer_basic" name="eon" id="eon">
       <states>
         <state name="default">
-          <animate attributeName="color" from="#ffffff" to="#cccccc" dur="0.8s" repeatCount="1" />
+          <set attributeName="color" to="#cccccc"/>
         </state>
       </states>
     </object>
