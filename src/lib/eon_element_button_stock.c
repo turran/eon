@@ -112,7 +112,7 @@ static void _eon_element_button_stock_geometry_propagate(Eon_Widget_Proxy *wp)
 		Eon_Stock stock;
 
 		egueb_dom_attr_final_get(thiz->stock, &stock);
-		egueb_dom_element_property_set(thiz->label, EON_STOCK,
+		egueb_dom_element_attribute_masked_set(thiz->label, EON_STOCK,
 				EGUEB_DOM_ATTR_TYPE_BASE, stock);
 		/* FIXME mark it as processed */
 	}

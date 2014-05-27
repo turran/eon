@@ -51,7 +51,8 @@ static const char * _enesim_image_eon_extension_from(const char *ext)
 	return NULL;
 }
 
-static Enesim_Image_Finder _finder = {
+static Enesim_Image_Finder_Descriptor _finder = {
+	/* .version 		= */ ENESIM_IMAGE_FINDER_DESCRIPTOR_VERSION,
 	/* .data_from 		= */ _enesim_image_eon_data_from,
 	/* .extension_from 	= */ _enesim_image_eon_extension_from,
 };

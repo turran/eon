@@ -28,7 +28,7 @@ static int _eon_layout_stack_get_weight(Egueb_Dom_Node *n)
 	Egueb_Dom_Node *weight_attr;
 	int weight = 0;
 
-	weight_attr = egueb_dom_element_property_fetch(n, EON_ATTR_WEIGHT);
+	weight_attr = egueb_dom_element_attribute_fetch(n, EON_ATTR_WEIGHT);
 	if (weight_attr)
 	{
 		egueb_dom_attr_final_get(weight_attr, &weight);
@@ -139,7 +139,7 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 			goto next_size;
 
 		child_size_flags = eon_renderable_size_hints_get(child, &child_size);
-		weight_attr = egueb_dom_element_property_fetch(child, EON_ATTR_WEIGHT);
+		weight_attr = egueb_dom_element_attribute_fetch(child, EON_ATTR_WEIGHT);
 		if (weight_attr)
 		{
 			egueb_dom_attr_final_get(weight_attr, &weight);
@@ -265,7 +265,7 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 			goto next_size;
 
 		child_size_flags = eon_renderable_size_hints_get(child, &child_size);
-		weight_attr = egueb_dom_element_property_fetch(child, EON_ATTR_WEIGHT);
+		weight_attr = egueb_dom_element_attribute_fetch(child, EON_ATTR_WEIGHT);
 		if (weight_attr)
 		{
 			egueb_dom_attr_final_get(weight_attr, &weight);

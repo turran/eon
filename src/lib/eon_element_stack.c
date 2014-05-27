@@ -106,7 +106,7 @@ static void _eon_element_stack_node_removed_cb(Egueb_Dom_Event *e,
 	thiz->renderable_changed = EINA_TRUE;
 #if 0
 	/* remove the weight attribute */
-	attr = egueb_dom_element_property_fetch(target, EON_ATTR_WEIGHT);
+	attr = egueb_dom_element_attribute_fetch(target, EON_ATTR_WEIGHT);
 #endif	
 	egueb_dom_node_unref(target);
 }
