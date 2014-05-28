@@ -16,11 +16,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-struct _Ender_Namespace
+struct _Eon_Theme_Namespace
 {
 	char *name;
 	Eina_Hash *descriptors;
@@ -28,9 +28,9 @@ struct _Ender_Namespace
 
 static Eina_Hash *_namespaces = NULL;
 
-static void _ender_namespace_free(void *data)
+static void _eon_theme_namespace_free(void *data)
 {
-	Ender_Namespace *thiz = data;
+	Eon_Theme_Namespace *thiz = data;
 
 	if (thiz->name)
 		free(thiz->name);
@@ -40,18 +40,18 @@ static void _ender_namespace_free(void *data)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void ender_namespace_init(void)
+void eon_theme_namespace_init(void)
 {
-	_namespaces = eina_hash_string_superfast_new(_ender_namespace_free);
+	_namespaces = eina_hash_string_superfast_new(_eon_theme_namespace_free);
 }
 
-void ender_namespace_shutdown(void)
+void eon_theme_namespace_shutdown(void)
 {
 	eina_hash_free(_namespaces);
 }
 
-const Ender_Instance_Descriptor * ender_namespace_instance_find(
-		const Ender_Namespace *thiz, const char *name)
+const Eon_Theme_Instance_Descriptor * eon_theme_namespace_instance_find(
+		const Eon_Theme_Namespace *thiz, const char *name)
 {
 	if (!thiz) return NULL;
 	DBG("Looking for instance '%s' on namespace '%s'", name, thiz->name);
@@ -65,9 +65,9 @@ const Ender_Instance_Descriptor * ender_namespace_instance_find(
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ender_Namespace * ender_namespace_register(const char *name)
+EAPI Eon_Theme_Namespace * eon_theme_namespace_register(const char *name)
 {
-	Ender_Namespace *thiz;
+	Eon_Theme_Namespace *thiz;
 
 	DBG("Registering namespace '%s'", name);
 	if (!name) return NULL;
@@ -75,7 +75,7 @@ EAPI Ender_Namespace * ender_namespace_register(const char *name)
 	thiz = eina_hash_find(_namespaces, name);
 	if (thiz) return thiz;
 
-	thiz = calloc(1, sizeof(Ender_Namespace));
+	thiz = calloc(1, sizeof(Eon_Theme_Namespace));
 	thiz->name = strdup(name);
 	thiz->descriptors = eina_hash_string_superfast_new(EINA_FREE_CB(free));
 
@@ -89,7 +89,7 @@ EAPI Ender_Namespace * ender_namespace_register(const char *name)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ender_namespace_unregister(Ender_Namespace *thiz)
+EAPI void eon_theme_namespace_unregister(Eon_Theme_Namespace *thiz)
 {
 	if (!thiz) return;
 	DBG("Unregistering namespace '%s'", thiz->name);
@@ -100,7 +100,7 @@ EAPI void ender_namespace_unregister(Ender_Namespace *thiz)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI const Ender_Namespace * ender_namespace_find(const char *name)
+EAPI const Eon_Theme_Namespace * eon_theme_namespace_find(const char *name)
 {
 	DBG("Looking for namespace '%s'", name);
 	if (!name) return NULL;
@@ -111,10 +111,10 @@ EAPI const Ender_Namespace * ender_namespace_find(const char *name)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool ender_namespace_instance_register(Ender_Namespace *thiz,
-		const Ender_Instance_Descriptor *descriptor, const char *name)
+EAPI Eina_Bool eon_theme_namespace_instance_register(Eon_Theme_Namespace *thiz,
+		const Eon_Theme_Instance_Descriptor *descriptor, const char *name)
 {
-	Ender_Instance_Descriptor *d;
+	Eon_Theme_Instance_Descriptor *d;
 
 	if (!thiz) return EINA_FALSE;
 	if (!descriptor) return EINA_FALSE;
@@ -124,7 +124,7 @@ EAPI Eina_Bool ender_namespace_instance_register(Ender_Namespace *thiz,
 	d = eina_hash_find(thiz->descriptors, name);
 	if (d) return EINA_FALSE;
 
-	d = calloc(1, sizeof(Ender_Instance_Descriptor));
+	d = calloc(1, sizeof(Eon_Theme_Instance_Descriptor));
 	*d = *descriptor;
 
 	eina_hash_add(thiz->descriptors, name, d);
@@ -136,7 +136,7 @@ EAPI Eina_Bool ender_namespace_instance_register(Ender_Namespace *thiz,
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ender_namespace_list(Ender_Namespace_List_Callback cb, void *data)
+EAPI void eon_theme_namespace_list(Eon_Theme_Namespace_List_Callback cb, void *data)
 {
 	Eina_List *namespaces;
 	Eina_Iterator *it;
@@ -144,7 +144,7 @@ EAPI void ender_namespace_list(Ender_Namespace_List_Callback cb, void *data)
 	it = eina_hash_iterator_data_new(_namespaces);
 	while (eina_iterator_next(it, (void **)&namespaces))
 	{
-		Ender_Namespace *thiz;
+		Eon_Theme_Namespace *thiz;
 		Eina_List *tmp;
 
 		EINA_LIST_FOREACH(namespaces, tmp, thiz)
@@ -160,12 +160,12 @@ EAPI void ender_namespace_list(Ender_Namespace_List_Callback cb, void *data)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool ender_namespace_list_with_name(const char *name,
-		Ender_Namespace_List_Callback cb, void *data)
+EAPI Eina_Bool eon_theme_namespace_list_with_name(const char *name,
+		Eon_Theme_Namespace_List_Callback cb, void *data)
 {
 	Eina_List *namespaces;
 	Eina_List *tmp;
-	Ender_Namespace *thiz;
+	Eon_Theme_Namespace *thiz;
 
 	if (!name) return EINA_FALSE;
 
@@ -184,9 +184,9 @@ EAPI Eina_Bool ender_namespace_list_with_name(const char *name,
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ender_Descriptor * ender_namespace_descriptor_find(Ender_Namespace *thiz, const char *name)
+EAPI Eon_Theme_Descriptor * eon_theme_namespace_descriptor_find(Eon_Theme_Namespace *thiz, const char *name)
 {
-	Ender_Descriptor *ret;
+	Eon_Theme_Descriptor *ret;
 	if (!thiz || !name) return NULL;
 
 	ret = eina_hash_find(thiz->descriptors, name);
@@ -201,10 +201,10 @@ EAPI Ender_Descriptor * ender_namespace_descriptor_find(Ender_Namespace *thiz, c
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ender_namespace_descriptor_list(Ender_Namespace *thiz, Ender_Descriptor_List_Callback cb, void *data)
+EAPI void eon_theme_namespace_descriptor_list(Eon_Theme_Namespace *thiz, Eon_Theme_Descriptor_List_Callback cb, void *data)
 {
 	Eina_Iterator *it;
-	Ender_Descriptor *desc;
+	Eon_Theme_Descriptor *desc;
 
 	if (!thiz) return;
 
@@ -221,15 +221,15 @@ EAPI void ender_namespace_descriptor_list(Ender_Namespace *thiz, Ender_Descripto
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ender_Descriptor * ender_namespace_descriptor_add(Ender_Namespace *ens,
-		const char *name, Ender_Creator creator,
-		Ender_Destructor destructor, Ender_Descriptor *parent,
-		Ender_Descriptor_Type type, int size)
+EAPI Eon_Theme_Descriptor * eon_theme_namespace_descriptor_add(Eon_Theme_Namespace *ens,
+		const char *name, Eon_Theme_Creator creator,
+		Eon_Theme_Destructor destructor, Eon_Theme_Descriptor *parent,
+		Eon_Theme_Descriptor_Type type, int size)
 {
-	Ender_Descriptor *desc;
+	Eon_Theme_Descriptor *desc;
 
 	if (!name || !ens) return NULL;
-	desc = ender_descriptor_new(name, ens, creator, destructor, parent,
+	desc = eon_theme_descriptor_new(name, ens, creator, destructor, parent,
 			type, size);
 	if (!desc) return NULL;
 	DBG("class %s@%s registered correctly %p", name, ens->name, desc);
@@ -242,7 +242,7 @@ EAPI Ender_Descriptor * ender_namespace_descriptor_add(Ender_Namespace *ens,
  * To be documented
  * FIXME: To be fixed
  */
-EAPI const char * ender_namespace_name_get(Ender_Namespace *thiz)
+EAPI const char * eon_theme_namespace_name_get(Eon_Theme_Namespace *thiz)
 {
 	if (!thiz) return NULL;
 	return thiz->name;

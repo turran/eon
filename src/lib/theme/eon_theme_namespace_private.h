@@ -18,9 +18,9 @@
 #ifndef ENDER_NAMESPACE_PRIVATE_H_
 #define ENDER_NAMESPACE_PRIVATE_H_
 
-void ender_namespace_init(void);
-void ender_namespace_shutdown(void);
-const Ender_Instance_Descriptor * ender_namespace_instance_find(
-		const Ender_Namespace *thiz, const char *name);
+void eon_theme_namespace_init(void);
+void eon_theme_namespace_shutdown(void);
+const Eon_Theme_Instance_Descriptor * eon_theme_namespace_instance_find(
+		const Eon_Theme_Namespace *thiz, const char *name);
 
 #endif

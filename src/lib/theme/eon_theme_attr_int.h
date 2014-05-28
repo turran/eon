@@ -18,13 +18,13 @@
 #ifndef ENDER_ATTR_INT_H_
 #define ENDER_ATTR_INT_H_
 
-#define ENDER_ATTR_INT_SET(f) ((Ender_Attr_Int_Set)(f))
-#define ENDER_ATTR_INT_GET(f) ((Ender_Attr_Int_Get)(f))
+#define ENDER_ATTR_INT_SET(f) ((Eon_Theme_Attr_Int_Set)(f))
+#define ENDER_ATTR_INT_GET(f) ((Eon_Theme_Attr_Int_Get)(f))
 
-typedef void (*Ender_Attr_Int_Set)(void *o, int i);
-typedef int (*Ender_Attr_Int_Get)(void *o);
+typedef void (*Eon_Theme_Attr_Int_Set)(void *o, int i);
+typedef int (*Eon_Theme_Attr_Int_Get)(void *o);
 
-EAPI Egueb_Dom_Node * ender_attr_int_new(const char *name,
-		Ender_Attr_Int_Get get, Ender_Attr_Int_Set set);
+EAPI Egueb_Dom_Node * eon_theme_attr_int_new(const char *name,
+		Eon_Theme_Attr_Int_Get get, Eon_Theme_Attr_Int_Set set);
 
 #endif

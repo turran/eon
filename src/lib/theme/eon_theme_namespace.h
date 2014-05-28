@@ -18,11 +18,11 @@
 #ifndef ENDER_NAMESPACE_H_
 #define ENDER_NAMESPACE_H_
 
-typedef struct _Ender_Namespace Ender_Namespace;
+typedef struct _Eon_Theme_Namespace Eon_Theme_Namespace;
 
-EAPI Ender_Namespace * ender_namespace_register(const char *name);
-EAPI void ender_namespace_unregister(Ender_Namespace *thiz);
-EAPI Eina_Bool ender_namespace_instance_register(Ender_Namespace *thiz, const Ender_Instance_Descriptor *descriptor, const char *name);
-EAPI const Ender_Namespace * ender_namespace_find(const char *name);
+EAPI Eon_Theme_Namespace * eon_theme_namespace_register(const char *name);
+EAPI void eon_theme_namespace_unregister(Eon_Theme_Namespace *thiz);
+EAPI Eina_Bool eon_theme_namespace_instance_register(Eon_Theme_Namespace *thiz, const Eon_Theme_Instance_Descriptor *descriptor, const char *name);
+EAPI const Eon_Theme_Namespace * eon_theme_namespace_find(const char *name);
 
 #endif

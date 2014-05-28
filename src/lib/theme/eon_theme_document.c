@@ -16,18 +16,18 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Ender_Document
+typedef struct _Eon_Theme_Document
 {
-} Ender_Document;
+} Eon_Theme_Document;
 
 /*----------------------------------------------------------------------------*
  *                     The exernal document interface                         *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_Node * _ender_document_element_create(Egueb_Dom_Node *n,
+static Egueb_Dom_Node * _eon_theme_document_element_create(Egueb_Dom_Node *n,
 		void *data, const char *name)
 {
 	/* we can only create states/state/set/animate */
@@ -35,27 +35,27 @@ static Egueb_Dom_Node * _ender_document_element_create(Egueb_Dom_Node *n,
 	DBG("Creating element '%s'", name);
 	if (!strcmp(name, "states"))
 	{
-		return ender_element_states_new();
+		return eon_theme_element_states_new();
 	}
 	else if (!strcmp(name, "state"))
 	{
-		return ender_element_state_new();
+		return eon_theme_element_state_new();
 	}
 	else if (!strcmp(name, "object"))
 	{
-		return ender_element_object_new();
+		return eon_theme_element_object_new();
 	}
 	else if (!strcmp(name, "ender"))
 	{
-		return ender_element_ender_new();
+		return eon_theme_element_eon_theme_new();
 	}
 	else if (!strcmp(name, "instance"))
 	{
-		return ender_element_instance_new();
+		return eon_theme_element_instance_new();
 	}
 	else if (!strcmp(name, "scene"))
 	{
-		return ender_element_scene_new();
+		return eon_theme_element_scene_new();
 	}
 	else if (!strcmp(name, "set"))
 	{
@@ -69,18 +69,18 @@ static Egueb_Dom_Node * _ender_document_element_create(Egueb_Dom_Node *n,
 	return NULL;
 }
 
-static void _ender_document_init(Egueb_Dom_Node *n, void *data)
+static void _eon_theme_document_init(Egueb_Dom_Node *n, void *data)
 {
 }
 
-static void _ender_document_deinit(Egueb_Dom_Node *n, void *data)
+static void _eon_theme_document_deinit(Egueb_Dom_Node *n, void *data)
 {
-	Ender_Document *thiz = data;
+	Eon_Theme_Document *thiz = data;
 
 	free(thiz);
 }
 
-static Eina_Bool _ender_document_child_appendable(Egueb_Dom_Node *n,
+static Eina_Bool _eon_theme_document_child_appendable(Egueb_Dom_Node *n,
 		void *data, Egueb_Dom_Node *child)
 {
 	Egueb_Dom_String *name;
@@ -93,10 +93,10 @@ static Eina_Bool _ender_document_child_appendable(Egueb_Dom_Node *n,
 }
 
 static Egueb_Dom_Document_External_Descriptor _descriptor = {
-	/* init 		= */ _ender_document_init,
-	/* deinit 		= */ _ender_document_deinit,
-	/* element_create	= */ _ender_document_element_create,
-	/* child_appendable 	= */ _ender_document_child_appendable,
+	/* init 		= */ _eon_theme_document_init,
+	/* deinit 		= */ _eon_theme_document_deinit,
+	/* element_create	= */ _eon_theme_document_element_create,
+	/* child_appendable 	= */ _eon_theme_document_child_appendable,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -104,16 +104,16 @@ static Egueb_Dom_Document_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * ender_document_new(void)
+EAPI Egueb_Dom_Node * eon_theme_document_new(void)
 {
-	Ender_Document *thiz;
+	Eon_Theme_Document *thiz;
 
-	thiz = calloc(1, sizeof(Ender_Document));
+	thiz = calloc(1, sizeof(Eon_Theme_Document));
 
 	return egueb_dom_document_external_new(&_descriptor, thiz);
 }
 
-EAPI Egueb_Dom_Node * ender_document_instance_new(Egueb_Dom_Node *n,
+EAPI Egueb_Dom_Node * eon_theme_document_instance_new(Egueb_Dom_Node *n,
 		const char *id, Eina_Error *err)
 {
 	Egueb_Dom_Node *ret;
@@ -126,7 +126,7 @@ EAPI Egueb_Dom_Node * ender_document_instance_new(Egueb_Dom_Node *n,
 	egueb_dom_string_unref(sid);
 	if (!rel) return NULL;
 
-	if (!ender_element_is_object(rel))
+	if (!eon_theme_element_is_object(rel))
 	{
 		egueb_dom_node_unref(rel);
 		return NULL;
@@ -141,7 +141,7 @@ EAPI Egueb_Dom_Node * ender_document_instance_new(Egueb_Dom_Node *n,
 
 	topmost = egueb_dom_document_element_get(n);
 	egueb_dom_node_child_append(topmost, egueb_dom_node_ref(ret), NULL);
-	ender_element_instance_relative_set(ret, rel);
+	eon_theme_element_instance_relative_set(ret, rel);
 	egueb_dom_node_unref(topmost);
 
 	return ret;

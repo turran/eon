@@ -18,14 +18,14 @@
 #ifndef ENDER_ATTR_FONT_H_
 #define ENDER_ATTR_FONT_H_
 
-#define ENDER_ATTR_FONT_SET(f) ((Ender_Attr_Font_Set)(f))
-#define ENDER_ATTR_FONT_GET(f) ((Ender_Attr_Font_Get)(f))
+#define ENDER_ATTR_FONT_SET(f) ((Eon_Theme_Attr_Font_Set)(f))
+#define ENDER_ATTR_FONT_GET(f) ((Eon_Theme_Attr_Font_Get)(f))
 
-typedef void (*Ender_Attr_Font_Set)(void *o, Egueb_Css_Font *v);
-typedef void (*Ender_Attr_Font_Get)(void *o, Egueb_Css_Font *v);
+typedef void (*Eon_Theme_Attr_Font_Set)(void *o, Egueb_Css_Font *v);
+typedef void (*Eon_Theme_Attr_Font_Get)(void *o, Egueb_Css_Font *v);
 
-EAPI Egueb_Dom_Node * ender_attr_font_new(const char *name,
-		Ender_Attr_Font_Get get, Ender_Attr_Font_Set set);
+EAPI Egueb_Dom_Node * eon_theme_attr_font_new(const char *name,
+		Eon_Theme_Attr_Font_Get get, Eon_Theme_Attr_Font_Set set);
 
 #endif
 

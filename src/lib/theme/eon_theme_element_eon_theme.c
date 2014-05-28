@@ -16,24 +16,24 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Ender_Element_Ender
+typedef struct _Eon_Theme_Element_Ender
 {
-} Ender_Element_Ender;
+} Eon_Theme_Element_Ender;
 
 /*----------------------------------------------------------------------------*
  *                      The exernal element interface                         *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_String * _ender_element_ender_tag_name_get(
+static Egueb_Dom_String * _eon_theme_element_eon_theme_tag_name_get(
 		Egueb_Dom_Node *node, void *data)
 {
 	return egueb_dom_string_ref(ENDER_ELEMENT_ENDER);
 }
 
-static Eina_Bool _ender_element_ender_child_appendable(Egueb_Dom_Node *n,
+static Eina_Bool _eon_theme_element_eon_theme_child_appendable(Egueb_Dom_Node *n,
 		void *data, Egueb_Dom_Node *child)
 {
 	Egueb_Dom_String *name;
@@ -55,8 +55,8 @@ static Eina_Bool _ender_element_ender_child_appendable(Egueb_Dom_Node *n,
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
 	/* init 		= */ NULL,
 	/* deinit 		= */ NULL,
-	/* tag_name_get		= */ _ender_element_ender_tag_name_get,
-	/* child_appendable 	= */ _ender_element_ender_child_appendable,
+	/* tag_name_get		= */ _eon_theme_element_eon_theme_tag_name_get,
+	/* child_appendable 	= */ _eon_theme_element_eon_theme_child_appendable,
 	/* process 		= */ NULL,
 };
 /*============================================================================*
@@ -65,7 +65,7 @@ static Egueb_Dom_Element_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * ender_element_ender_new(void)
+EAPI Egueb_Dom_Node * eon_theme_element_eon_theme_new(void)
 {
 	return egueb_dom_element_external_new(&_descriptor, NULL);
 }

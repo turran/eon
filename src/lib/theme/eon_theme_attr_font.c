@@ -16,43 +16,43 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Ender_Attr_Font
+typedef struct _Eon_Theme_Attr_Font
 {
-	Ender_Attr_Font_Set set;
-	Ender_Attr_Font_Get get;
+	Eon_Theme_Attr_Font_Set set;
+	Eon_Theme_Attr_Font_Get get;
 	Egueb_Css_Font font;
-} Ender_Attr_Font;
+} Eon_Theme_Attr_Font;
 /*----------------------------------------------------------------------------*
  *                        The exernal attr interface                           *
  *----------------------------------------------------------------------------*/
-static void * _ender_attr_font_init(Egueb_Dom_Node *n)
+static void * _eon_theme_attr_font_init(Egueb_Dom_Node *n)
 {
-	Ender_Attr_Font *thiz;
+	Eon_Theme_Attr_Font *thiz;
 
-	thiz = calloc(1, sizeof(Ender_Attr_Font));
+	thiz = calloc(1, sizeof(Eon_Theme_Attr_Font));
 	return thiz;
 }
 
-static void _ender_attr_font_deinit(Egueb_Dom_Node *n, void *data)
+static void _eon_theme_attr_font_deinit(Egueb_Dom_Node *n, void *data)
 {
 	free(data);
 }
 
-static Eina_Bool _ender_attr_font_value_get(Egueb_Dom_Node *n, void *data,
+static Eina_Bool _eon_theme_attr_font_value_get(Egueb_Dom_Node *n, void *data,
 		Egueb_Dom_Attr_Type type, Egueb_Dom_Value *value)
 {
-	Ender_Attr_Font *thiz = data;
+	Eon_Theme_Attr_Font *thiz = data;
 	Egueb_Dom_Node *owner;
 	void *o;
 
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = ender_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->get(o, &thiz->font);
 
 	value->data.ptr = &thiz->font;
@@ -63,35 +63,35 @@ static Eina_Bool _ender_attr_font_value_get(Egueb_Dom_Node *n, void *data,
 	return EINA_TRUE;
 }
 
-static Eina_Bool _ender_attr_font_value_set(Egueb_Dom_Node *n, void *data,
+static Eina_Bool _eon_theme_attr_font_value_set(Egueb_Dom_Node *n, void *data,
 		Egueb_Dom_Attr_Type type, Egueb_Dom_Value *value)
 {
-	Ender_Attr_Font *thiz = data;
+	Eon_Theme_Attr_Font *thiz = data;
 	Egueb_Dom_Node *owner;
 	void *o;
 
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = ender_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->set(o, value->data.ptr);
 	egueb_dom_node_unref(owner);
 
 	return EINA_TRUE;
 }
 
-static const Egueb_Dom_Value_Descriptor * _ender_attr_font_value_descriptor_get(
+static const Egueb_Dom_Value_Descriptor * _eon_theme_attr_font_value_descriptor_get(
 		Egueb_Dom_Node *n, void *data)
 {
 	return egueb_css_font_descriptor_get();
 }
 
 static Egueb_Dom_Attr_External_Descriptor _descriptor = {
-	/* init 		= */ _ender_attr_font_init,
-	/* deinit 		= */ _ender_attr_font_deinit,
-	/* value_descriptor_get	= */ _ender_attr_font_value_descriptor_get,
-	/* value_get 		= */ _ender_attr_font_value_get,
-	/* value_set	 	= */ _ender_attr_font_value_set,
+	/* init 		= */ _eon_theme_attr_font_init,
+	/* deinit 		= */ _eon_theme_attr_font_deinit,
+	/* value_descriptor_get	= */ _eon_theme_attr_font_value_descriptor_get,
+	/* value_get 		= */ _eon_theme_attr_font_value_get,
+	/* value_set	 	= */ _eon_theme_attr_font_value_set,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -99,10 +99,10 @@ static Egueb_Dom_Attr_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * ender_attr_font_new(const char *name,
-		Ender_Attr_Font_Get get, Ender_Attr_Font_Set set)
+EAPI Egueb_Dom_Node * eon_theme_attr_font_new(const char *name,
+		Eon_Theme_Attr_Font_Get get, Eon_Theme_Attr_Font_Set set)
 {
-	Ender_Attr_Font *thiz;
+	Eon_Theme_Attr_Font *thiz;
 	Egueb_Dom_String *s;
 	Egueb_Dom_Node *n;
 

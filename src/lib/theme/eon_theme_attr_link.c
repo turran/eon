@@ -16,78 +16,78 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Ender_Attr_Link
+typedef struct _Eon_Theme_Attr_Link
 {
-	Ender_Attr_Link_Set set;
-	Ender_Attr_Link_Get get;
+	Eon_Theme_Attr_Link_Set set;
+	Eon_Theme_Attr_Link_Get get;
 	Egueb_Dom_String *s;
-} Ender_Attr_Link;
+} Eon_Theme_Attr_Link;
 /*----------------------------------------------------------------------------*
  *                        The exernal attr interface                           *
  *----------------------------------------------------------------------------*/
-static void * _ender_attr_link_init(Egueb_Dom_Node *n)
+static void * _eon_theme_attr_link_init(Egueb_Dom_Node *n)
 {
-	Ender_Attr_Link *thiz;
+	Eon_Theme_Attr_Link *thiz;
 
-	thiz = calloc(1, sizeof(Ender_Attr_Link));
+	thiz = calloc(1, sizeof(Eon_Theme_Attr_Link));
 	return thiz;
 }
 
-static void _ender_attr_link_deinit(Egueb_Dom_Node *n, void *data)
+static void _eon_theme_attr_link_deinit(Egueb_Dom_Node *n, void *data)
 {
 	free(data);
 }
 
-static Eina_Bool _ender_attr_link_value_get(Egueb_Dom_Node *n, void *data,
+static Eina_Bool _eon_theme_attr_link_value_get(Egueb_Dom_Node *n, void *data,
 		Egueb_Dom_Attr_Type type, Egueb_Dom_Value *value)
 {
-	Ender_Attr_Link *thiz = data;
+	Eon_Theme_Attr_Link *thiz = data;
 	Egueb_Dom_Node *owner;
 	void *o;
 
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = ender_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	value->data.d = thiz->get(o);
 	egueb_dom_node_unref(owner);
 
 	return EINA_TRUE;
 }
 
-static Eina_Bool _ender_attr_link_value_set(Egueb_Dom_Node *n, void *data,
+static Eina_Bool _eon_theme_attr_link_value_set(Egueb_Dom_Node *n, void *data,
 		Egueb_Dom_Attr_Type type, Egueb_Dom_Value *value)
 {
-	Ender_Attr_Link *thiz = data;
+	Eon_Theme_Attr_Link *thiz = data;
 	Egueb_Dom_Node *owner;
 	void *o;
 
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = ender_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->set(o, value->data.d);
 	egueb_dom_node_unref(owner);
 
 	return EINA_TRUE;
 }
 
-static const Egueb_Dom_Value_Descriptor * _ender_attr_link_value_descriptor_get(
+static const Egueb_Dom_Value_Descriptor * _eon_theme_attr_link_value_descriptor_get(
 		Egueb_Dom_Node *n, void *data)
 {
 	return egueb_dom_value_dom_string_get();
 }
 
 static Egueb_Dom_Attr_External_Descriptor _descriptor = {
-	/* init 		= */ _ender_attr_link_init,
-	/* deinit 		= */ _ender_attr_link_deinit,
-	/* value_descriptor_get	= */ _ender_attr_link_value_descriptor_get,
-	/* value_get 		= */ _ender_attr_link_value_get,
-	/* value_set	 	= */ _ender_attr_link_value_set,
+	/* init 		= */ _eon_theme_attr_link_init,
+	/* deinit 		= */ _eon_theme_attr_link_deinit,
+	/* value_descriptor_get	= */ _eon_theme_attr_link_value_descriptor_get,
+	/* value_get 		= */ _eon_theme_attr_link_value_get,
+	/* value_set	 	= */ _eon_theme_attr_link_value_set,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -95,10 +95,10 @@ static Egueb_Dom_Attr_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * ender_attr_link_new(const char *name,
-		Ender_Attr_Link_Get get, Ender_Attr_Link_Set set)
+EAPI Egueb_Dom_Node * eon_theme_attr_link_new(const char *name,
+		Eon_Theme_Attr_Link_Get get, Eon_Theme_Attr_Link_Set set)
 {
-	Ender_Attr_Link *thiz;
+	Eon_Theme_Attr_Link *thiz;
 	Egueb_Dom_String *s;
 	Egueb_Dom_Node *n;
 

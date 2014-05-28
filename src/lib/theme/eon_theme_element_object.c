@@ -16,20 +16,20 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 /*----------------------------------------------------------------------------*
  *                      The exernal element interface                         *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_String * _ender_element_object_tag_name_get(
+static Egueb_Dom_String * _eon_theme_element_object_tag_name_get(
 		Egueb_Dom_Node *node, void *data)
 {
 	return egueb_dom_string_ref(ENDER_ELEMENT_OBJECT);
 }
 
-static Eina_Bool _ender_element_object_child_appendable(Egueb_Dom_Node *n,
+static Eina_Bool _eon_theme_element_object_child_appendable(Egueb_Dom_Node *n,
 		void *data, Egueb_Dom_Node *child)
 {
 	Egueb_Dom_String *name;
@@ -49,14 +49,14 @@ static Eina_Bool _ender_element_object_child_appendable(Egueb_Dom_Node *n,
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
 	/* init 		= */ NULL,
 	/* deinit 		= */ NULL,
-	/* tag_name_get		= */ _ender_element_object_tag_name_get,
-	/* child_appendable 	= */ _ender_element_object_child_appendable,
+	/* tag_name_get		= */ _eon_theme_element_object_tag_name_get,
+	/* child_appendable 	= */ _eon_theme_element_object_child_appendable,
 	/* process 		= */ NULL,
 };
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eina_Bool ender_element_is_object(Egueb_Dom_Node *n)
+Eina_Bool eon_theme_element_is_object(Egueb_Dom_Node *n)
 {
 	Egueb_Dom_String *name;
 	Eina_Bool ret = EINA_FALSE;
@@ -73,7 +73,7 @@ Eina_Bool ender_element_is_object(Egueb_Dom_Node *n)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * ender_element_object_new(void)
+EAPI Egueb_Dom_Node * eon_theme_element_object_new(void)
 {
 	return egueb_dom_element_external_new(&_descriptor, NULL);
 }

@@ -16,14 +16,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 /*----------------------------------------------------------------------------*
  *                      The exernal element interface                         *
  *----------------------------------------------------------------------------*/
-static Egueb_Dom_String * _ender_element_state_tag_name_get(
+static Egueb_Dom_String * _eon_theme_element_state_tag_name_get(
 		Egueb_Dom_Node *node, void *data)
 {
 	return egueb_dom_string_ref(ENDER_ELEMENT_STATE);
@@ -32,7 +32,7 @@ static Egueb_Dom_String * _ender_element_state_tag_name_get(
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
 	/* init 		= */ NULL,
 	/* deinit 		= */ NULL,
-	/* tag_name_get		= */ _ender_element_state_tag_name_get,
+	/* tag_name_get		= */ _eon_theme_element_state_tag_name_get,
 	/* process 		= */ NULL,
 };
 /*============================================================================*
@@ -41,7 +41,7 @@ static Egueb_Dom_Element_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * ender_element_state_new(void)
+EAPI Egueb_Dom_Node * eon_theme_element_state_new(void)
 {
 	return egueb_dom_element_external_new(&_descriptor, NULL);
 }

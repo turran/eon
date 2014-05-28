@@ -18,13 +18,13 @@
 #ifndef ENDER_ATTR_ENESIM_COLOR_H_
 #define ENDER_ATTR_ENESIM_COLOR_H_
 
-#define ENDER_ATTR_ENESIM_COLOR_SET(f) ((Ender_Attr_Enesim_Color_Set)(f))
-#define ENDER_ATTR_ENESIM_COLOR_GET(f) ((Ender_Attr_Enesim_Color_Get)(f))
+#define ENDER_ATTR_ENESIM_COLOR_SET(f) ((Eon_Theme_Attr_Enesim_Color_Set)(f))
+#define ENDER_ATTR_ENESIM_COLOR_GET(f) ((Eon_Theme_Attr_Enesim_Color_Get)(f))
 
-typedef void (*Ender_Attr_Enesim_Color_Set)(void *o, Enesim_Color v);
-typedef Enesim_Color (*Ender_Attr_Enesim_Color_Get)(void *o);
+typedef void (*Eon_Theme_Attr_Enesim_Color_Set)(void *o, Enesim_Color v);
+typedef Enesim_Color (*Eon_Theme_Attr_Enesim_Color_Get)(void *o);
 
-EAPI Egueb_Dom_Node * ender_attr_enesim_color_new(const char *name,
-		Ender_Attr_Enesim_Color_Get get, Ender_Attr_Enesim_Color_Set set);
+EAPI Egueb_Dom_Node * eon_theme_attr_enesim_color_new(const char *name,
+		Eon_Theme_Attr_Enesim_Color_Get get, Eon_Theme_Attr_Enesim_Color_Set set);
 
 #endif

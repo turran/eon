@@ -18,11 +18,11 @@
 #ifndef ENDER_ATTR_PRIMITIVE_H_
 #define ENDER_ATTR_PRIMITIVE_H_
 
-typedef void (*Ender_Attr_Primitive_Set)(void *o, void *p);
-typedef void (*Ender_Attr_Primitive_Get)(void *o, void *p);
+typedef void (*Eon_Theme_Attr_Primitive_Set)(void *o, void *p);
+typedef void (*Eon_Theme_Attr_Primitive_Get)(void *o, void *p);
 
-EAPI Egueb_Dom_Node * ender_attr_primitive_new(Egueb_Dom_String *name,
-		Ender_Attr_Primitive_Get get, Ender_Attr_Primitive_Set set,
+EAPI Egueb_Dom_Node * eon_theme_attr_primitive_new(Egueb_Dom_String *name,
+		Eon_Theme_Attr_Primitive_Get get, Eon_Theme_Attr_Primitive_Set set,
 		size_t size, const Egueb_Dom_Value_Descriptor *descriptor);
 
 #endif

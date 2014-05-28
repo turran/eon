@@ -16,7 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ender.h"
-#include "ender_private.h"
+#include "eon_theme_private.h"
 
 /*============================================================================*
  *                                  Local                                     *
@@ -26,7 +26,7 @@ static Eina_Array *_modules = NULL;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-int ender_log_dom = -1;
+int eon_theme_log_dom = -1;
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -40,7 +40,7 @@ Egueb_Dom_String *ENDER_ELEMENT_STATE;
 /**
  * Initialize the ender library
  */
-EAPI void ender_init(void)
+EAPI void eon_theme_init(void)
 {
 	if (!_init++)
 	{
@@ -51,14 +51,14 @@ EAPI void ender_init(void)
  		ENDER_ELEMENT_SCENE = egueb_dom_string_new_with_static_string("scene");
  		ENDER_ELEMENT_STATES = egueb_dom_string_new_with_static_string("states");
  		ENDER_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
-		ender_log_dom = eina_log_domain_register("ender", NULL);
-		ender_namespace_init();
+		eon_theme_log_dom = eina_log_domain_register("ender", NULL);
+		eon_theme_namespace_init();
 		/* the modules */
 		_modules = eina_module_list_get(_modules, PACKAGE_LIB_DIR"/ender/", 1, NULL, NULL);
 		eina_module_list_load(_modules);
 		/* the static modules */
 #if BUILD_STATIC_MODULE_ENESIM
-		ender_enesim_init();
+		eon_theme_enesim_init();
 #endif
 	}
 }
@@ -66,7 +66,7 @@ EAPI void ender_init(void)
 /**
  * Shutdown the ender library
  */
-EAPI void ender_shutdown(void)
+EAPI void eon_theme_shutdown(void)
 {
 	if (_init == 1)
 	{
@@ -75,10 +75,10 @@ EAPI void ender_shutdown(void)
 		eina_array_free(_modules);
 		/* unload every static module */
 #if BUILD_STATIC_MODULE_ENESIM
-		ender_enesim_shutdown();
+		eon_theme_enesim_shutdown();
 #endif
-		ender_namespace_shutdown();
-		eina_log_domain_unregister(ender_log_dom);
+		eon_theme_namespace_shutdown();
+		eina_log_domain_unregister(eon_theme_log_dom);
 		egueb_dom_string_unref(ENDER_ELEMENT_ENDER);
 		egueb_dom_string_unref(ENDER_ELEMENT_INSTANCE);
 		egueb_dom_string_unref(ENDER_ELEMENT_OBJECT);
@@ -94,7 +94,7 @@ EAPI void ender_shutdown(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ender_version(unsigned int *major, unsigned int *minor, unsigned int *micro)
+EAPI void eon_theme_version(unsigned int *major, unsigned int *minor, unsigned int *micro)
 {
 	if (major) *major = VERSION_MAJOR;
 	if (minor) *minor = VERSION_MINOR;
