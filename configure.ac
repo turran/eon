@@ -68,12 +68,11 @@ AC_SUBST([pkgconfig_requires_private])
 ### Checks for libraries
 
 EINA_VERSION="1.0.99"
-ENDER_VERSION="0.0.10"
 ENESIM_VERSION="0.0.20"
 EGUEB_VERSION="0.0.23"
 
 requirements_pc="egueb-dom >= ${EGUEB_VERSION}"
-requirements_private_pc="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} ender >= ${ENDER_VERSION} egueb-smil >= ${EGUEB_VERSION}"
+requirements_private_pc="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} egueb-smil >= ${EGUEB_VERSION} egueb-css >= ${EGUEB_VERSION}"
 PKG_CHECK_MODULES([EON], [${requirements_pc} ${requirements_private_pc}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
@@ -91,11 +90,6 @@ if test "x$have_esvg" = "xyes" ; then
 fi
 
 AM_CONDITIONAL([BUILD_EXTENSION_ESVG], [test "x${build_extension_esvg}" = "xyes"])
-
-## Ender
-
-ENDER_DATADIR=$(${PKG_CONFIG} --variable=datadir ender)
-AC_SUBST([ENDER_DATADIR])
 
 ## Backends
 

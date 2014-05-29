@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 - 2012 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,16 +15,16 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ENDER_INSTANCE_H_
-#define ENDER_INSTANCE_H_
+#ifndef EON_THEME_INSTANCE_H_
+#define EON_THEME_INSTANCE_H_
 
-#define ENDER_INSTANCE_DESCRIPTOR_CTOR(f) (Eon_Theme_Instance_Descriptor_Ctor)(f)
-#define ENDER_INSTANCE_DESCRIPTOR_DTOR(f) (Eon_Theme_Instance_Descriptor_Dtor)(f)
-#define ENDER_INSTANCE_DESCRIPTOR_PROCESS(f) (Eon_Theme_Instance_Descriptor_Process)(f)
-#define ENDER_INSTANCE_DESCRIPTOR_POPULATE(f) (Eon_Theme_Instance_Descriptor_Populate)(f)
-#define ENDER_INSTANCE_DESCRIPTOR_CHILD_APPENDABLE(f) (Eon_Theme_Instance_Descriptor_Child_Appendable)(f)
-#define ENDER_INSTANCE_DESCRIPTOR_CHILD_ADDED(f) (Eon_Theme_Instance_Descriptor_Child_Added)(f)
-#define ENDER_INSTANCE_DESCRIPTOR_CHILD_REMOVED(f) (Eon_Theme_Instance_Descriptor_Child_Removed)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_CTOR(f) (Eon_Theme_Instance_Descriptor_Ctor)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_DTOR(f) (Eon_Theme_Instance_Descriptor_Dtor)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_PROCESS(f) (Eon_Theme_Instance_Descriptor_Process)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_POPULATE(f) (Eon_Theme_Instance_Descriptor_Populate)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_CHILD_APPENDABLE(f) (Eon_Theme_Instance_Descriptor_Child_Appendable)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_CHILD_ADDED(f) (Eon_Theme_Instance_Descriptor_Child_Added)(f)
+#define EON_THEME_INSTANCE_DESCRIPTOR_CHILD_REMOVED(f) (Eon_Theme_Instance_Descriptor_Child_Removed)(f)
 
 typedef void * (*Eon_Theme_Instance_Descriptor_Ctor)(void);
 typedef void (*Eon_Theme_Instance_Descriptor_Dtor)(void *thiz);

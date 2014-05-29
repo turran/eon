@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,8 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _ENDER_PRIVATE_H
-#define _ENDER_PRIVATE_H
+#ifndef _EON_THEME_PRIVATE_H
+#define _EON_THEME_PRIVATE_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

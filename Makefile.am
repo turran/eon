@@ -26,6 +26,7 @@ EXTRA_DIST =
 
 ### Library
 include src/lib/Makefile.mk
+include src/lib/theme/Makefile.mk
 include src/lib/drawer/Makefile.mk
 
 ### Modules

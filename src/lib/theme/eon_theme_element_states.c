@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 - 2012 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@
 static Egueb_Dom_String * _eon_theme_element_states_tag_name_get(
 		Egueb_Dom_Node *node, void *data)
 {
-	return egueb_dom_string_ref(ENDER_ELEMENT_STATES);
+	return egueb_dom_string_ref(EON_THEME_ELEMENT_STATES);
 }
 
 static Eina_Bool _eon_theme_element_states_child_appendable(Egueb_Dom_Node *n,
@@ -39,7 +39,7 @@ static Eina_Bool _eon_theme_element_states_child_appendable(Egueb_Dom_Node *n,
 		return ret;
 
 	name = egueb_dom_element_name_get(child);
-	if (name == ENDER_ELEMENT_STATE)
+	if (name == EON_THEME_ELEMENT_STATE)
 		ret = EINA_TRUE;
 	egueb_dom_string_unref(name);
 

@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 - 2012 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,11 +15,11 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ENDER_ATTR_ENESIM_COLOR_H_
-#define ENDER_ATTR_ENESIM_COLOR_H_
+#ifndef EON_THEME_ATTR_ENESIM_COLOR_H_
+#define EON_THEME_ATTR_ENESIM_COLOR_H_
 
-#define ENDER_ATTR_ENESIM_COLOR_SET(f) ((Eon_Theme_Attr_Enesim_Color_Set)(f))
-#define ENDER_ATTR_ENESIM_COLOR_GET(f) ((Eon_Theme_Attr_Enesim_Color_Get)(f))
+#define EON_THEME_ATTR_ENESIM_COLOR_SET(f) ((Eon_Theme_Attr_Enesim_Color_Set)(f))
+#define EON_THEME_ATTR_ENESIM_COLOR_GET(f) ((Eon_Theme_Attr_Enesim_Color_Get)(f))
 
 typedef void (*Eon_Theme_Attr_Enesim_Color_Set)(void *o, Enesim_Color v);
 typedef Enesim_Color (*Eon_Theme_Attr_Enesim_Color_Get)(void *o);

@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 - 2012 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,8 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ENDER_NAMESPACE_H_
-#define ENDER_NAMESPACE_H_
+#ifndef EON_THEME_NAMESPACE_H_
+#define EON_THEME_NAMESPACE_H_
 
 typedef struct _Eon_Theme_Namespace Eon_Theme_Namespace;
 

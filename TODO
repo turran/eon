@@ -1,3 +1,5 @@
++ Make the theme be the theme files only
++ Move the register part of the theme to the drawer
 + Remove the wrapper element
 + We need to create some common code for widgets that are in fact compound widgets, like the color_button for example.
   Basically we need to create some kind of wrapper of the theme ender element which will just add the same properties

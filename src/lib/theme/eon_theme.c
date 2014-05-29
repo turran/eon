@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,12 +30,12 @@ int eon_theme_log_dom = -1;
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Egueb_Dom_String *ENDER_ELEMENT_ENDER;
-Egueb_Dom_String *ENDER_ELEMENT_INSTANCE;
-Egueb_Dom_String *ENDER_ELEMENT_OBJECT;
-Egueb_Dom_String *ENDER_ELEMENT_SCENE;
-Egueb_Dom_String *ENDER_ELEMENT_STATES;
-Egueb_Dom_String *ENDER_ELEMENT_STATE;
+Egueb_Dom_String *EON_THEME_ELEMENT_EON_THEME;
+Egueb_Dom_String *EON_THEME_ELEMENT_INSTANCE;
+Egueb_Dom_String *EON_THEME_ELEMENT_OBJECT;
+Egueb_Dom_String *EON_THEME_ELEMENT_SCENE;
+Egueb_Dom_String *EON_THEME_ELEMENT_STATES;
+Egueb_Dom_String *EON_THEME_ELEMENT_STATE;
 
 /**
  * Initialize the ender library
@@ -45,12 +45,12 @@ EAPI void eon_theme_init(void)
 	if (!_init++)
 	{
 		egueb_dom_init();
- 		ENDER_ELEMENT_ENDER = egueb_dom_string_new_with_static_string("ender");
- 		ENDER_ELEMENT_INSTANCE = egueb_dom_string_new_with_static_string("instance");
- 		ENDER_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
- 		ENDER_ELEMENT_SCENE = egueb_dom_string_new_with_static_string("scene");
- 		ENDER_ELEMENT_STATES = egueb_dom_string_new_with_static_string("states");
- 		ENDER_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
+ 		EON_THEME_ELEMENT_EON_THEME = egueb_dom_string_new_with_static_string("ender");
+ 		EON_THEME_ELEMENT_INSTANCE = egueb_dom_string_new_with_static_string("instance");
+ 		EON_THEME_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
+ 		EON_THEME_ELEMENT_SCENE = egueb_dom_string_new_with_static_string("scene");
+ 		EON_THEME_ELEMENT_STATES = egueb_dom_string_new_with_static_string("states");
+ 		EON_THEME_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
 		eon_theme_log_dom = eina_log_domain_register("ender", NULL);
 		eon_theme_namespace_init();
 		/* the modules */
@@ -79,12 +79,12 @@ EAPI void eon_theme_shutdown(void)
 #endif
 		eon_theme_namespace_shutdown();
 		eina_log_domain_unregister(eon_theme_log_dom);
-		egueb_dom_string_unref(ENDER_ELEMENT_ENDER);
-		egueb_dom_string_unref(ENDER_ELEMENT_INSTANCE);
-		egueb_dom_string_unref(ENDER_ELEMENT_OBJECT);
-		egueb_dom_string_unref(ENDER_ELEMENT_SCENE);
-		egueb_dom_string_unref(ENDER_ELEMENT_STATES);
-		egueb_dom_string_unref(ENDER_ELEMENT_STATE);
+		egueb_dom_string_unref(EON_THEME_ELEMENT_EON_THEME);
+		egueb_dom_string_unref(EON_THEME_ELEMENT_INSTANCE);
+		egueb_dom_string_unref(EON_THEME_ELEMENT_OBJECT);
+		egueb_dom_string_unref(EON_THEME_ELEMENT_SCENE);
+		egueb_dom_string_unref(EON_THEME_ELEMENT_STATES);
+		egueb_dom_string_unref(EON_THEME_ELEMENT_STATE);
 		egueb_dom_shutdown();
 	}
 	_init--;

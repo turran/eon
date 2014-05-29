@@ -1,5 +1,5 @@
-/* ENDER - Enesim's descriptor library
- * Copyright (C) 2010 - 2012 Jorge Luis Zapata
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2014 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,11 +15,11 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ENDER_ATTR_DOUBLE_H_
-#define ENDER_ATTR_DOUBLE_H_
+#ifndef EON_THEME_ATTR_DOUBLE_H_
+#define EON_THEME_ATTR_DOUBLE_H_
 
-#define ENDER_ATTR_DOUBLE_SET(f) ((Eon_Theme_Attr_Double_Set)(f))
-#define ENDER_ATTR_DOUBLE_GET(f) ((Eon_Theme_Attr_Double_Get)(f))
+#define EON_THEME_ATTR_DOUBLE_SET(f) ((Eon_Theme_Attr_Double_Set)(f))
+#define EON_THEME_ATTR_DOUBLE_GET(f) ((Eon_Theme_Attr_Double_Get)(f))
 
 typedef void (*Eon_Theme_Attr_Double_Set)(void *o, double i);
 typedef double (*Eon_Theme_Attr_Double_Get)(void *o);
