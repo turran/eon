@@ -15,16 +15,9 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EON_THEME_ATTR_ENESIM_COLOR_H_
-#define EON_THEME_ATTR_ENESIM_COLOR_H_
+#ifndef _EON_THEME_ELEMENT_EON_THEME_PRIVATE_H
+#define _EON_THEME_ELEMENT_EON_THEME_PRIVATE_H
 
-#define EON_THEME_ATTR_ENESIM_COLOR_SET(f) ((Eon_Theme_Attr_Enesim_Color_Set)(f))
-#define EON_THEME_ATTR_ENESIM_COLOR_GET(f) ((Eon_Theme_Attr_Enesim_Color_Get)(f))
-
-typedef void (*Eon_Theme_Attr_Enesim_Color_Set)(void *o, Enesim_Color v);
-typedef Enesim_Color (*Eon_Theme_Attr_Enesim_Color_Get)(void *o);
-
-EAPI Egueb_Dom_Node * eon_theme_attr_enesim_color_new(const char *name,
-		Eon_Theme_Attr_Enesim_Color_Get get, Eon_Theme_Attr_Enesim_Color_Set set);
+Egueb_Dom_Node * eon_theme_element_eon_theme_new(void);
 
 #endif

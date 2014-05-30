@@ -15,14 +15,22 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _EON_THEME_MAIN_PRIVATE_H
+#define _EON_THEME_MAIN_PRIVATE_H
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
+#define ERR(...) EINA_LOG_DOM_ERR(eon_theme_log_dom, __VA_ARGS__)
+#define WRN(...) EINA_LOG_DOM_WARN(eon_theme_log_dom, __VA_ARGS__)
+#define INF(...) EINA_LOG_DOM_INFO(eon_theme_log_dom, __VA_ARGS__)
+#define DBG(...) EINA_LOG_DOM_DBG(eon_theme_log_dom, __VA_ARGS__)
+extern int eon_theme_log_dom;
+extern Egueb_Dom_String *EON_THEME_ELEMENT_EON_THEME;
+extern Egueb_Dom_String *EON_THEME_ELEMENT_INSTANCE;
+extern Egueb_Dom_String *EON_THEME_ELEMENT_OBJECT;
+extern Egueb_Dom_String *EON_THEME_ELEMENT_SCENE;
+extern Egueb_Dom_String *EON_THEME_ELEMENT_STATES;
+extern Egueb_Dom_String *EON_THEME_ELEMENT_STATE;
 
-#include "eon_private.h"
-
-#include "Eon.h" 
-#include <Egueb_Dom.h>
-#include <Egueb_Css.h>
+void eon_theme_init(void);
+void eon_theme_shutdown(void);
 
 #endif

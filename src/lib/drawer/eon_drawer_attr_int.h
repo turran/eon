@@ -15,14 +15,16 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef EON_DRAWER_ATTR_INT_H_
+#define EON_DRAWER_ATTR_INT_H_
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
+#define EON_DRAWER_ATTR_INT_SET(f) ((Eon_Drawer_Attr_Int_Set)(f))
+#define EON_DRAWER_ATTR_INT_GET(f) ((Eon_Drawer_Attr_Int_Get)(f))
 
-#include "eon_private.h"
+typedef void (*Eon_Drawer_Attr_Int_Set)(void *o, int i);
+typedef int (*Eon_Drawer_Attr_Int_Get)(void *o);
 
-#include "Eon.h" 
-#include <Egueb_Dom.h>
-#include <Egueb_Css.h>
+EAPI Egueb_Dom_Node * eon_drawer_attr_int_new(const char *name,
+		Eon_Drawer_Attr_Int_Get get, Eon_Drawer_Attr_Int_Set set);
 
 #endif

@@ -15,15 +15,16 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EON_THEME_ATTR_PRIMITIVE_H_
-#define EON_THEME_ATTR_PRIMITIVE_H_
+#ifndef _EON_DRAWER_MAIN_PRIVATE_H_
+#define _EON_DRAWER_MAIN_PRIVATE_H_
 
-typedef void (*Eon_Theme_Attr_Primitive_Set)(void *o, void *p);
-typedef void (*Eon_Theme_Attr_Primitive_Get)(void *o, void *p);
+#define ERR(...) EINA_LOG_DOM_ERR(eon_drawer_log_dom, __VA_ARGS__)
+#define WRN(...) EINA_LOG_DOM_WARN(eon_drawer_log_dom, __VA_ARGS__)
+#define INF(...) EINA_LOG_DOM_INFO(eon_drawer_log_dom, __VA_ARGS__)
+#define DBG(...) EINA_LOG_DOM_DBG(eon_drawer_log_dom, __VA_ARGS__)
+extern int eon_drawer_log_dom;
 
-EAPI Egueb_Dom_Node * eon_theme_attr_primitive_new(Egueb_Dom_String *name,
-		Eon_Theme_Attr_Primitive_Get get, Eon_Theme_Attr_Primitive_Set set,
-		size_t size, const Egueb_Dom_Value_Descriptor *descriptor);
+void eon_drawer_init(void);
+void eon_drawer_shutdown(void);
 
 #endif
-

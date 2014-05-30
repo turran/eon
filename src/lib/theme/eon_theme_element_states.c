@@ -15,8 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Ender.h"
 #include "eon_theme_private.h"
+#include "eon_theme_main_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

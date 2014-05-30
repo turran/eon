@@ -15,14 +15,15 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef EON_DRAWER_ATTR_PRIMITIVE_H_
+#define EON_DRAWER_ATTR_PRIMITIVE_H_
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
+typedef void (*Eon_Drawer_Attr_Primitive_Set)(void *o, void *p);
+typedef void (*Eon_Drawer_Attr_Primitive_Get)(void *o, void *p);
 
-#include "eon_private.h"
-
-#include "Eon.h" 
-#include <Egueb_Dom.h>
-#include <Egueb_Css.h>
+EAPI Egueb_Dom_Node * eon_drawer_attr_primitive_new(Egueb_Dom_String *name,
+		Eon_Drawer_Attr_Primitive_Get get, Eon_Drawer_Attr_Primitive_Set set,
+		size_t size, const Egueb_Dom_Value_Descriptor *descriptor);
 
 #endif
+

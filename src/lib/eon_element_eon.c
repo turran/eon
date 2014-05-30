@@ -26,6 +26,7 @@
 
 #include "eon_drawer_widget_private.h"
 #include "eon_drawer_eon_private.h"
+#include "eon_theme_document_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -380,7 +381,7 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		s = enesim_stream_file_new(path, "r");
 		if (!s) return NULL;
 
-		doc = ender_document_new();
+		doc = eon_theme_document_new();
 		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_ETCH,
 				_eon_element_eon_etch_cb, EINA_TRUE, thiz);
 		egueb_dom_parser_parse(s, &doc);

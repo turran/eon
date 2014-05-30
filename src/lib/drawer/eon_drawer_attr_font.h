@@ -15,14 +15,17 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EON_THEME_NAMESPACE_H_
-#define EON_THEME_NAMESPACE_H_
+#ifndef EON_DRAWER_ATTR_FONT_H_
+#define EON_DRAWER_ATTR_FONT_H_
 
-typedef struct _Eon_Theme_Namespace Eon_Theme_Namespace;
+#define EON_DRAWER_ATTR_FONT_SET(f) ((Eon_Drawer_Attr_Font_Set)(f))
+#define EON_DRAWER_ATTR_FONT_GET(f) ((Eon_Drawer_Attr_Font_Get)(f))
 
-EAPI Eon_Theme_Namespace * eon_theme_namespace_register(const char *name);
-EAPI void eon_theme_namespace_unregister(Eon_Theme_Namespace *thiz);
-EAPI Eina_Bool eon_theme_namespace_instance_register(Eon_Theme_Namespace *thiz, const Eon_Theme_Instance_Descriptor *descriptor, const char *name);
-EAPI const Eon_Theme_Namespace * eon_theme_namespace_find(const char *name);
+typedef void (*Eon_Drawer_Attr_Font_Set)(void *o, Egueb_Css_Font *v);
+typedef void (*Eon_Drawer_Attr_Font_Get)(void *o, Egueb_Css_Font *v);
+
+EAPI Egueb_Dom_Node * eon_drawer_attr_font_new(const char *name,
+		Eon_Drawer_Attr_Font_Get get, Eon_Drawer_Attr_Font_Set set);
 
 #endif
+

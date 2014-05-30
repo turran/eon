@@ -70,10 +70,12 @@ Eina_Bool eon_theme_element_is_object(Egueb_Dom_Node *n)
 	egueb_dom_string_unref(name);
 	return ret;
 }
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-EAPI Egueb_Dom_Node * eon_theme_element_object_new(void)
+
+Egueb_Dom_Node * eon_theme_element_object_new(void)
 {
 	return egueb_dom_element_external_new(&_descriptor, NULL);
 }
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+

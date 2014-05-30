@@ -17,10 +17,12 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+
 #include "eon_widget_drawer_private.h"
 #include "eon_element_eon_private.h"
-
 #include "eon_drawer_widget_private.h"
+#include "eon_theme_document_private.h"
+#include "eon_theme_element_instance_private.h"
 /* TODO
  * - Add a callback on the request_process function of the theme
  */
@@ -142,7 +144,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 			Egueb_Dom_String *tag_name;
 
 			tag_name = egueb_dom_element_tag_name_get(n);
-			theme_instance = ender_document_instance_new(
+			theme_instance = eon_theme_document_instance_new(
 				thiz->theme_document,
 				egueb_dom_string_string_get(tag_name),
 				NULL);
@@ -155,7 +157,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 			INFO_ELEMENT(n, "Instance fetched correctly");
 			thiz->theme_instance = theme_instance;
 			/* get the drawer widget */
-			thiz->theme_widget = ender_element_instance_object_get(thiz->theme_instance);
+			thiz->theme_widget = eon_theme_element_instance_object_get(thiz->theme_instance);
 			/* set the renderer */
 			r = eon_drawer_widget_renderer_get(thiz->theme_widget);
 			enesim_renderer_proxy_proxied_set(thiz->proxy, r);
@@ -164,7 +166,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 				klass->theme_instance_created(thiz);
 			/* Set the default state first */
 			egueb_dom_attr_final_get(w->enabled, &enabled);
-			ender_element_instance_state_set(thiz->theme_instance,
+			eon_theme_element_instance_state_set(thiz->theme_instance,
 					enabled ? "default" : "disabled", NULL);
 		}
 		else
@@ -210,7 +212,7 @@ static void _eon_widget_drawer_state_set(Eon_Widget *w, Egueb_Dom_String *state)
 		return;
 
 	s = egueb_dom_string_string_get(state);	
-	ender_element_instance_state_set(thiz->theme_instance, s, NULL);
+	eon_theme_element_instance_state_set(thiz->theme_instance, s, NULL);
 }
 
 /*----------------------------------------------------------------------------*

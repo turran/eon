@@ -25,7 +25,6 @@
 
 #include "Egueb_Dom.h"
 #include "Egueb_Smil.h"
-#include "Ender.h"
 
 #ifdef ERR
 # undef ERR

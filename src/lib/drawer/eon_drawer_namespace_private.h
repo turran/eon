@@ -15,14 +15,14 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef EON_DRAWER_NAMESPACE_PRIVATE_H_
+#define EON_DRAWER_NAMESPACE_PRIVATE_H_
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
-
-#include "eon_private.h"
-
-#include "Eon.h" 
-#include <Egueb_Dom.h>
-#include <Egueb_Css.h>
+void eon_drawer_namespace_init(void);
+void eon_drawer_namespace_shutdown(void);
+const Eon_Drawer_Instance_Descriptor * eon_drawer_namespace_instance_find(
+		const Eon_Drawer_Namespace *thiz, const char *name);
+Eina_Bool eon_drawer_namespace_instance_register(Eon_Drawer_Namespace *thiz,
+		const Eon_Drawer_Instance_Descriptor *descriptor, const char *name);
 
 #endif

@@ -171,7 +171,6 @@ EAPI int eon_init(void)
 	{
 		eina_init();
 		eon_main_log = eina_log_domain_register("eon", NULL);
-		ender_init();
 		egueb_dom_init();
 		_strings_init();
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
@@ -197,7 +196,6 @@ EAPI int eon_shutdown(void)
 #endif
 	_strings_shutdown();
 	egueb_dom_shutdown();
-	ender_shutdown();
 	eina_log_domain_unregister(eon_main_log);
 	eon_main_log = -1;
 	eina_shutdown();

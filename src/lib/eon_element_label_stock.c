@@ -26,6 +26,7 @@
 #include "eon_stock_private.h"
 #include "eon_widget_drawer_private.h"
 #include "eon_widget_proxy_private.h"
+#include "eon_theme_document_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -68,7 +69,7 @@ static Egueb_Dom_Node * _eon_element_label_stock_theme_instance_create(
 		return NULL;
 	}
 
-	ret = ender_document_instance_new(theme_document, name, NULL);
+	ret = eon_theme_document_instance_new(theme_document, name, NULL);
 	free(name);
 
 	return ret;

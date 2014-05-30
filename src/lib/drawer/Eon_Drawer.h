@@ -19,8 +19,15 @@
 #ifndef _EON_DRAWER_H_
 #define _EON_DRAWER_H_
 
-#include "Ender.h"
+#include <Egueb_Dom.h>
+#include <Egueb_Css.h>
 
+#include "eon_drawer_attr_double.h"
+#include "eon_drawer_attr_enesim_color.h"
+#include "eon_drawer_attr_font.h"
+#include "eon_drawer_attr_int.h"
+#include "eon_drawer_instance.h"
+#include "eon_drawer_namespace.h"
 #include "eon_drawer_widget.h"
 #include "eon_drawer_eon.h"
 #include "eon_drawer_button.h"

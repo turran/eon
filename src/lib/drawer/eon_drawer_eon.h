@@ -29,16 +29,16 @@ typedef struct _Eon_Drawer_Eon_Descriptor
 {
 	Eon_Drawer_Eon_Descriptor_Background_Renderer_Get background_renderer_get;
 	/* widget descriptor */
-	Eon_Drawer_Widget_Descriptor_Ender_Populate ender_populate;
-	Eon_Drawer_Widget_Descriptor_Ender_Process ender_process;
+	Eon_Drawer_Widget_Descriptor_Eon_Drawer_Populate ender_populate;
+	Eon_Drawer_Widget_Descriptor_Eon_Drawer_Process ender_process;
 	Eon_Drawer_Widget_Descriptor_Free free;
 } Eon_Drawer_Eon_Descriptor;
 
 EAPI Eon_Drawer_Widget * eon_drawer_eon_new(
 		const Eon_Drawer_Eon_Descriptor *d, void *data);
 EAPI void * eon_drawer_eon_data_get(Eon_Drawer_Widget *w);
-EAPI void eon_drawer_eon_ender_register(Ender_Namespace *ns,
-		Ender_Instance_Descriptor_Ctor ctor);
+EAPI void eon_drawer_eon_ender_register(Eon_Drawer_Namespace *ns,
+		Eon_Drawer_Instance_Descriptor_Ctor ctor);
 
 /**
  * @}

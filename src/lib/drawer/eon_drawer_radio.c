@@ -169,15 +169,15 @@ EAPI void * eon_drawer_radio_data_get(Eon_Drawer_Widget *w)
  * @param ns The ender namespace registered on the drawer imeplementation
  * @param ctor The function used to create a drawer implementation radio
  */
-EAPI void eon_drawer_radio_ender_register(Ender_Namespace *ns,
-		Ender_Instance_Descriptor_Ctor ctor)
+EAPI void eon_drawer_radio_ender_register(Eon_Drawer_Namespace *ns,
+		Eon_Drawer_Instance_Descriptor_Ctor ctor)
 {
-	Ender_Instance_Descriptor d;
+	Eon_Drawer_Instance_Descriptor d;
 
 	d.ctor = ctor;
-	d.dtor = ENDER_INSTANCE_DESCRIPTOR_DTOR(eon_drawer_widget_free);
-	d.populate = ENDER_INSTANCE_DESCRIPTOR_POPULATE(eon_drawer_widget_ender_populate);
-	d.process = ENDER_INSTANCE_DESCRIPTOR_PROCESS(eon_drawer_widget_ender_process);
+	d.dtor = EON_DRAWER_INSTANCE_DESCRIPTOR_DTOR(eon_drawer_widget_free);
+	d.populate = EON_DRAWER_INSTANCE_DESCRIPTOR_POPULATE(eon_drawer_widget_ender_populate);
+	d.process = EON_DRAWER_INSTANCE_DESCRIPTOR_PROCESS(eon_drawer_widget_ender_process);
 	d.child_appendable = NULL;
 	d.child_added = NULL;
 	d.child_removed = NULL;

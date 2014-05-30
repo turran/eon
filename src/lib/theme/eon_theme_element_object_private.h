@@ -15,14 +15,11 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _EON_THEME_ELEMENT_OBJECT_PRIVATE_H
+#define _EON_THEME_ELEMENT_OBJECT_PRIVATE_H
 
-#ifndef EON_DRAWER_PRIVATE_H_
-#define EON_DRAWER_PRIVATE_H_
-
-#include "eon_private.h"
-
-#include "Eon.h" 
-#include <Egueb_Dom.h>
-#include <Egueb_Css.h>
+Eina_Bool eon_theme_element_is_object(Egueb_Dom_Node *n);
+Egueb_Dom_Node * eon_theme_element_object_new(void);
 
 #endif
+

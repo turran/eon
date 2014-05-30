@@ -15,8 +15,9 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Ender.h"
 #include "eon_theme_private.h"
+#include "eon_theme_main_private.h"
+#include "eon_theme_element_eon_theme_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -62,10 +63,10 @@ static Egueb_Dom_Element_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-EAPI Egueb_Dom_Node * eon_theme_element_eon_theme_new(void)
+Egueb_Dom_Node * eon_theme_element_eon_theme_new(void)
 {
 	return egueb_dom_element_external_new(&_descriptor, NULL);
 }
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/

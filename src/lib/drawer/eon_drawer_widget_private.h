@@ -39,16 +39,16 @@ struct _Eon_Drawer_Widget
 
 typedef Enesim_Renderer * (*Eon_Drawer_Widget_Renderer_Get)(Eon_Drawer_Widget *w); 
 typedef void (*Eon_Drawer_Widget_Geometry_Set)(Eon_Drawer_Widget *w, Eina_Rectangle *geom);
-typedef void (*Eon_Drawer_Widget_Ender_Populate)(Eon_Drawer_Widget *w, Egueb_Dom_Node *n);
-typedef Eina_Bool (*Eon_Drawer_Widget_Ender_Process)(Eon_Drawer_Widget *w, Egueb_Dom_Node *n);
+typedef void (*Eon_Drawer_Widget_Eon_Drawer_Populate)(Eon_Drawer_Widget *w, Egueb_Dom_Node *n);
+typedef Eina_Bool (*Eon_Drawer_Widget_Eon_Drawer_Process)(Eon_Drawer_Widget *w, Egueb_Dom_Node *n);
 
 typedef struct _Eon_Drawer_Widget_Class
 {
 	Enesim_Object_Class base;
 	Eon_Drawer_Widget_Renderer_Get renderer_get;
 	Eon_Drawer_Widget_Geometry_Set geometry_set;
-	Eon_Drawer_Widget_Ender_Populate ender_populate;
-	Eon_Drawer_Widget_Ender_Process ender_process;
+	Eon_Drawer_Widget_Eon_Drawer_Populate ender_populate;
+	Eon_Drawer_Widget_Eon_Drawer_Process ender_process;
 } Eon_Drawer_Widget_Class;
 
 /*

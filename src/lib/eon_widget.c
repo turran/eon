@@ -18,8 +18,10 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_widget.h"
+
 #include "eon_widget_private.h"
 #include "eon_element_eon_private.h"
+#include "eon_theme_document_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/

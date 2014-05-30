@@ -17,6 +17,10 @@
  */
 #include "eon_drawer_private.h"
 
+#include "eon_drawer_attr_enesim_color.h"
+#include "eon_drawer_attr_font.h"
+#include "eon_drawer_instance.h"
+#include "eon_drawer_namespace.h"
 #include "eon_drawer_widget.h"
 #include "eon_drawer_label.h"
 #include "eon_drawer_widget_private.h"
@@ -175,14 +179,14 @@ static void _eon_drawer_label_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Nod
 
 	thiz = EON_DRAWER_LABEL(w);
 	/* add the font attributes */
-	attr = ender_attr_enesim_color_new("color",
-			ENDER_ATTR_ENESIM_COLOR_GET(_eon_drawer_label_color_get),
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_label_color_set));
+	attr = eon_drawer_attr_enesim_color_new("color",
+			EON_DRAWER_ATTR_ENESIM_COLOR_GET(_eon_drawer_label_color_get),
+			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_label_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
 
-	attr = ender_attr_font_new("font",
-			ENDER_ATTR_FONT_GET(_eon_drawer_label_font_get),
-			ENDER_ATTR_FONT_SET(_eon_drawer_label_font_set));
+	attr = eon_drawer_attr_font_new("font",
+			EON_DRAWER_ATTR_FONT_GET(_eon_drawer_label_font_get),
+			EON_DRAWER_ATTR_FONT_SET(_eon_drawer_label_font_set));
 	/* set the default font */
 	egueb_dom_element_attribute_add(n, attr, NULL);
 
@@ -314,15 +318,15 @@ EAPI void * eon_drawer_label_data_get(Eon_Drawer_Widget *w)
  * @param ns The ender namespace registered on the drawer imeplementation
  * @param ctor The function used to create a drawer implementation label
  */
-EAPI void eon_drawer_label_ender_register(Ender_Namespace *ns,
-		Ender_Instance_Descriptor_Ctor ctor)
+EAPI void eon_drawer_label_ender_register(Eon_Drawer_Namespace *ns,
+		Eon_Drawer_Instance_Descriptor_Ctor ctor)
 {
-	Ender_Instance_Descriptor d;
+	Eon_Drawer_Instance_Descriptor d;
 
 	d.ctor = ctor;
-	d.dtor = ENDER_INSTANCE_DESCRIPTOR_DTOR(eon_drawer_widget_free);
-	d.populate = ENDER_INSTANCE_DESCRIPTOR_POPULATE(eon_drawer_widget_ender_populate);
-	d.process = ENDER_INSTANCE_DESCRIPTOR_PROCESS(eon_drawer_widget_ender_process);
+	d.dtor = EON_DRAWER_INSTANCE_DESCRIPTOR_DTOR(eon_drawer_widget_free);
+	d.populate = EON_DRAWER_INSTANCE_DESCRIPTOR_POPULATE(eon_drawer_widget_ender_populate);
+	d.process = EON_DRAWER_INSTANCE_DESCRIPTOR_PROCESS(eon_drawer_widget_ender_process);
 	d.child_appendable = NULL;
 	d.child_added = NULL;
 	d.child_removed = NULL;

@@ -15,9 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Ender.h"
 #include "eon_theme_private.h"
-
+#include "eon_theme_main_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -27,9 +26,6 @@ static Eina_Array *_modules = NULL;
  *                                 Global                                     *
  *============================================================================*/
 int eon_theme_log_dom = -1;
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
 Egueb_Dom_String *EON_THEME_ELEMENT_EON_THEME;
 Egueb_Dom_String *EON_THEME_ELEMENT_INSTANCE;
 Egueb_Dom_String *EON_THEME_ELEMENT_OBJECT;
@@ -37,10 +33,7 @@ Egueb_Dom_String *EON_THEME_ELEMENT_SCENE;
 Egueb_Dom_String *EON_THEME_ELEMENT_STATES;
 Egueb_Dom_String *EON_THEME_ELEMENT_STATE;
 
-/**
- * Initialize the ender library
- */
-EAPI void eon_theme_init(void)
+void eon_theme_init(void)
 {
 	if (!_init++)
 	{
@@ -52,32 +45,15 @@ EAPI void eon_theme_init(void)
  		EON_THEME_ELEMENT_STATES = egueb_dom_string_new_with_static_string("states");
  		EON_THEME_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
 		eon_theme_log_dom = eina_log_domain_register("ender", NULL);
-		eon_theme_namespace_init();
-		/* the modules */
-		_modules = eina_module_list_get(_modules, PACKAGE_LIB_DIR"/ender/", 1, NULL, NULL);
-		eina_module_list_load(_modules);
-		/* the static modules */
-#if BUILD_STATIC_MODULE_ENESIM
-		eon_theme_enesim_init();
-#endif
+		eon_drawer_init();
 	}
 }
 
-/**
- * Shutdown the ender library
- */
-EAPI void eon_theme_shutdown(void)
+void eon_theme_shutdown(void)
 {
 	if (_init == 1)
 	{
-		/* unload every module */
-		eina_module_list_free(_modules);
-		eina_array_free(_modules);
-		/* unload every static module */
-#if BUILD_STATIC_MODULE_ENESIM
-		eon_theme_enesim_shutdown();
-#endif
-		eon_theme_namespace_shutdown();
+		eon_drawer_shutdown();
 		eina_log_domain_unregister(eon_theme_log_dom);
 		egueb_dom_string_unref(EON_THEME_ELEMENT_EON_THEME);
 		egueb_dom_string_unref(EON_THEME_ELEMENT_INSTANCE);
@@ -89,15 +65,6 @@ EAPI void eon_theme_shutdown(void)
 	}
 	_init--;
 }
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void eon_theme_version(unsigned int *major, unsigned int *minor, unsigned int *micro)
-{
-	if (major) *major = VERSION_MAJOR;
-	if (minor) *minor = VERSION_MINOR;
-	if (micro) *micro = VERSION_MICRO;
-}
-
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/

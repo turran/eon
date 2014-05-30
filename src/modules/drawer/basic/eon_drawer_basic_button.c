@@ -227,17 +227,17 @@ static void _eon_drawer_basic_button_ender_populate(Eon_Drawer_Widget *w,
 	Egueb_Dom_Node *attr;
 
 	/* add our own attributes */
-	attr = ender_attr_enesim_color_new("border-color", NULL,
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_border_color_set));
+	attr = eon_drawer_attr_enesim_color_new("border-color", NULL,
+			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_border_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
-	attr = ender_attr_enesim_color_new("fill-color", NULL,
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_fill_color_set));
+	attr = eon_drawer_attr_enesim_color_new("fill-color", NULL,
+			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_fill_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
-	attr = ender_attr_enesim_color_new("start-shadow-color", NULL,
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_start_shadow_color_set));
+	attr = eon_drawer_attr_enesim_color_new("start-shadow-color", NULL,
+			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_start_shadow_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
-	attr = ender_attr_enesim_color_new("end-shadow-color", NULL,
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_end_shadow_color_set));
+	attr = eon_drawer_attr_enesim_color_new("end-shadow-color", NULL,
+			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_button_end_shadow_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
 }
 

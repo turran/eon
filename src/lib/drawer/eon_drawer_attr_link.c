@@ -15,78 +15,78 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Ender.h"
-#include "eon_theme_private.h"
+#include "eon_drawer_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Eon_Theme_Attr_Double
+typedef struct _Eon_Drawer_Attr_Link
 {
-	Eon_Theme_Attr_Double_Set set;
-	Eon_Theme_Attr_Double_Get get;
-} Eon_Theme_Attr_Double;
+	Eon_Drawer_Attr_Link_Set set;
+	Eon_Drawer_Attr_Link_Get get;
+	Egueb_Dom_String *s;
+} Eon_Drawer_Attr_Link;
 /*----------------------------------------------------------------------------*
  *                        The exernal attr interface                           *
  *----------------------------------------------------------------------------*/
-static void * _eon_theme_attr_double_init(Egueb_Dom_Node *n)
+static void * _eon_drawer_attr_link_init(Egueb_Dom_Node *n)
 {
-	Eon_Theme_Attr_Double *thiz;
+	Eon_Drawer_Attr_Link *thiz;
 
-	thiz = calloc(1, sizeof(Eon_Theme_Attr_Double));
+	thiz = calloc(1, sizeof(Eon_Drawer_Attr_Link));
 	return thiz;
 }
 
-static void _eon_theme_attr_double_deinit(Egueb_Dom_Node *n, void *data)
+static void _eon_drawer_attr_link_deinit(Egueb_Dom_Node *n, void *data)
 {
 	free(data);
 }
 
-static Eina_Bool _eon_theme_attr_double_value_get(Egueb_Dom_Node *n, void *data,
+static Eina_Bool _eon_drawer_attr_link_value_get(Egueb_Dom_Node *n, void *data,
 		Egueb_Dom_Attr_Type type, Egueb_Dom_Value *value)
 {
-	Eon_Theme_Attr_Double *thiz = data;
+	Eon_Drawer_Attr_Link *thiz = data;
 	Egueb_Dom_Node *owner;
 	void *o;
 
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_theme_element_instance_object_get(owner);
+	o = eon_drawer_element_instance_object_get(owner);
 	value->data.d = thiz->get(o);
 	egueb_dom_node_unref(owner);
 
 	return EINA_TRUE;
 }
 
-static Eina_Bool _eon_theme_attr_double_value_set(Egueb_Dom_Node *n, void *data,
+static Eina_Bool _eon_drawer_attr_link_value_set(Egueb_Dom_Node *n, void *data,
 		Egueb_Dom_Attr_Type type, Egueb_Dom_Value *value)
 {
-	Eon_Theme_Attr_Double *thiz = data;
+	Eon_Drawer_Attr_Link *thiz = data;
 	Egueb_Dom_Node *owner;
 	void *o;
 
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_theme_element_instance_object_get(owner);
+	o = eon_drawer_element_instance_object_get(owner);
 	thiz->set(o, value->data.d);
 	egueb_dom_node_unref(owner);
 
 	return EINA_TRUE;
 }
 
-static const Egueb_Dom_Value_Descriptor * _eon_theme_attr_double_value_descriptor_get(
+static const Egueb_Dom_Value_Descriptor * _eon_drawer_attr_link_value_descriptor_get(
 		Egueb_Dom_Node *n, void *data)
 {
-	return egueb_dom_value_double_descriptor_get();
+	return egueb_dom_value_dom_string_get();
 }
 
 static Egueb_Dom_Attr_External_Descriptor _descriptor = {
-	/* init 		= */ _eon_theme_attr_double_init,
-	/* deinit 		= */ _eon_theme_attr_double_deinit,
-	/* value_descriptor_get	= */ _eon_theme_attr_double_value_descriptor_get,
-	/* value_get 		= */ _eon_theme_attr_double_value_get,
-	/* value_set	 	= */ _eon_theme_attr_double_value_set,
+	/* init 		= */ _eon_drawer_attr_link_init,
+	/* deinit 		= */ _eon_drawer_attr_link_deinit,
+	/* value_descriptor_get	= */ _eon_drawer_attr_link_value_descriptor_get,
+	/* value_get 		= */ _eon_drawer_attr_link_value_get,
+	/* value_set	 	= */ _eon_drawer_attr_link_value_set,
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -94,10 +94,10 @@ static Egueb_Dom_Attr_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Egueb_Dom_Node * eon_theme_attr_double_new(const char *name,
-		Eon_Theme_Attr_Double_Get get, Eon_Theme_Attr_Double_Set set)
+EAPI Egueb_Dom_Node * eon_drawer_attr_link_new(const char *name,
+		Eon_Drawer_Attr_Link_Get get, Eon_Drawer_Attr_Link_Set set)
 {
-	Eon_Theme_Attr_Double *thiz;
+	Eon_Drawer_Attr_Link *thiz;
 	Egueb_Dom_String *s;
 	Egueb_Dom_Node *n;
 
@@ -111,4 +111,5 @@ EAPI Egueb_Dom_Node * eon_theme_attr_double_new(const char *name,
 	
 	return n;
 }
+
 

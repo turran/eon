@@ -1,5 +1,5 @@
 /* EON - Canvas and Toolkit library
- * Copyright (C) 2008-2014 Jorge Luis Zapata
+ * Copyright (C) 2008-2011 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,34 +15,43 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "eon_theme_private.h"
-#include "eon_theme_main_private.h"
+#include "eon_drawer_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-/*----------------------------------------------------------------------------*
- *                      The exernal element interface                         *
- *----------------------------------------------------------------------------*/
-static Egueb_Dom_String * _eon_theme_element_state_tag_name_get(
-		Egueb_Dom_Node *node, void *data)
-{
-	return egueb_dom_string_ref(EON_THEME_ELEMENT_STATE);
-}
-
-static Egueb_Dom_Element_External_Descriptor _descriptor = {
-	/* init 		= */ NULL,
-	/* deinit 		= */ NULL,
-	/* tag_name_get		= */ _eon_theme_element_state_tag_name_get,
-	/* process 		= */ NULL,
-};
+static int _init = 0;
+static Eina_Array *_modules = NULL;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-EAPI Egueb_Dom_Node * eon_theme_element_state_new(void)
+int eon_drawer_log_dom = -1;
+
+void eon_drawer_init(void)
 {
-	return egueb_dom_element_external_new(&_descriptor, NULL);
+	if (!_init++)
+	{
+		egueb_dom_init();
+ 		eon_drawer_log_dom = eina_log_domain_register("ender", NULL);
+		eon_drawer_namespace_init();
+		/* the modules */
+		_modules = eina_module_list_get(_modules, PACKAGE_LIB_DIR"/drawer/", 1, NULL, NULL);
+		eina_module_list_load(_modules);
+		/* the static modules */
+	}
+}
+
+void eon_drawer_shutdown(void)
+{
+	if (_init == 1)
+	{
+		/* unload every module */
+		eina_module_list_free(_modules);
+		eina_array_free(_modules);
+		/* unload every static module */
+		eon_drawer_namespace_shutdown();
+		eina_log_domain_unregister(eon_drawer_log_dom);
+		egueb_dom_shutdown();
+	}
+	_init--;
 }
 

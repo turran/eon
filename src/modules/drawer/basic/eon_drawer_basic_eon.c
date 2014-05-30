@@ -61,9 +61,9 @@ static void _eon_drawer_basic_eon_ender_populate(Eon_Drawer_Widget *w,
 	Egueb_Dom_Node *attr;
 
 	/* add our own attributes */
-	attr = ender_attr_enesim_color_new("color",
-			ENDER_ATTR_ENESIM_COLOR_GET(_eon_drawer_basic_eon_color_get),
-			ENDER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_eon_color_set));
+	attr = eon_drawer_attr_enesim_color_new("color",
+			EON_DRAWER_ATTR_ENESIM_COLOR_GET(_eon_drawer_basic_eon_color_get),
+			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_basic_eon_color_set));
 	egueb_dom_element_attribute_add(n, attr, NULL);
 }
 

@@ -15,16 +15,11 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EON_THEME_ATTR_INT_H_
-#define EON_THEME_ATTR_INT_H_
+#ifndef _EON_THEME_DOCUMENT_PRIVATE_H
+#define _EON_THEME_DOCUMENT_PRIVATE_H
 
-#define EON_THEME_ATTR_INT_SET(f) ((Eon_Theme_Attr_Int_Set)(f))
-#define EON_THEME_ATTR_INT_GET(f) ((Eon_Theme_Attr_Int_Get)(f))
-
-typedef void (*Eon_Theme_Attr_Int_Set)(void *o, int i);
-typedef int (*Eon_Theme_Attr_Int_Get)(void *o);
-
-EAPI Egueb_Dom_Node * eon_theme_attr_int_new(const char *name,
-		Eon_Theme_Attr_Int_Get get, Eon_Theme_Attr_Int_Set set);
+Egueb_Dom_Node * eon_theme_document_new(void);
+Egueb_Dom_Node * eon_theme_document_instance_new(Egueb_Dom_Node *n,
+		const char *id, Eina_Error *err);
 
 #endif

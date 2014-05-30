@@ -15,12 +15,17 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EON_THEME_NAMESPACE_PRIVATE_H_
-#define EON_THEME_NAMESPACE_PRIVATE_H_
+#ifndef EON_DRAWER_ATTR_DOUBLE_H_
+#define EON_DRAWER_ATTR_DOUBLE_H_
 
-void eon_theme_namespace_init(void);
-void eon_theme_namespace_shutdown(void);
-const Eon_Theme_Instance_Descriptor * eon_theme_namespace_instance_find(
-		const Eon_Theme_Namespace *thiz, const char *name);
+#define EON_DRAWER_ATTR_DOUBLE_SET(f) ((Eon_Drawer_Attr_Double_Set)(f))
+#define EON_DRAWER_ATTR_DOUBLE_GET(f) ((Eon_Drawer_Attr_Double_Get)(f))
+
+typedef void (*Eon_Drawer_Attr_Double_Set)(void *o, double i);
+typedef double (*Eon_Drawer_Attr_Double_Get)(void *o);
+
+EAPI Egueb_Dom_Node * eon_drawer_attr_double_new(const char *name,
+		Eon_Drawer_Attr_Double_Get get, Eon_Drawer_Attr_Double_Set set);
 
 #endif
+

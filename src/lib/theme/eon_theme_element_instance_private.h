@@ -15,17 +15,14 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EON_THEME_ATTR_DOUBLE_H_
-#define EON_THEME_ATTR_DOUBLE_H_
 
-#define EON_THEME_ATTR_DOUBLE_SET(f) ((Eon_Theme_Attr_Double_Set)(f))
-#define EON_THEME_ATTR_DOUBLE_GET(f) ((Eon_Theme_Attr_Double_Get)(f))
+#ifndef EON_THEME_ELEMENT_INSTANCE_PRIVATE_H_
+#define EON_THEME_ELEMENT_INSTANCE_PRIVATE_H_
 
-typedef void (*Eon_Theme_Attr_Double_Set)(void *o, double i);
-typedef double (*Eon_Theme_Attr_Double_Get)(void *o);
-
-EAPI Egueb_Dom_Node * eon_theme_attr_double_new(const char *name,
-		Eon_Theme_Attr_Double_Get get, Eon_Theme_Attr_Double_Set set);
+Egueb_Dom_Node * eon_theme_element_instance_new(void);
+void eon_theme_element_instance_relative_set(Egueb_Dom_Node *n, Egueb_Dom_Node *rel);
+void * eon_theme_element_instance_object_get(Egueb_Dom_Node *n);
+Eina_Bool eon_theme_element_instance_state_set(Egueb_Dom_Node *n, const char *s,
+		Eina_Error *err);
 
 #endif
-

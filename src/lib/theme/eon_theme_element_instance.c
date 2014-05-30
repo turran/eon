@@ -15,22 +15,28 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Ender.h"
 #include "eon_theme_private.h"
+
+#include "Eon.h"
+#include "Eon_Drawer.h"
+
+#include "eon_theme_main_private.h"
+#include "eon_theme_element_instance_private.h"
+#include "eon_drawer_namespace_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 typedef struct _Eon_Theme_Element_Instance {
 	Egueb_Dom_Node *rel;
-	const Eon_Theme_Instance_Descriptor *descriptor;
+	const Eon_Drawer_Instance_Descriptor *descriptor;
 	void *object;
 } Eon_Theme_Element_Instance;
 
 static Eina_Bool _eon_theme_element_instance_create_object(Egueb_Dom_Node *n)
 {
 	Eon_Theme_Element_Instance *thiz;
-	const Eon_Theme_Namespace *ns;
-	const Eon_Theme_Instance_Descriptor *d;
+	const Eon_Drawer_Namespace *ns;
+	const Eon_Drawer_Instance_Descriptor *d;
 	Egueb_Dom_String *nss;
 	Egueb_Dom_String *nsa;
 	Egueb_Dom_String *ds;
@@ -43,7 +49,7 @@ static Eina_Bool _eon_theme_element_instance_create_object(Egueb_Dom_Node *n)
 	nsa = egueb_dom_element_attribute_get(thiz->rel, nss);
 	egueb_dom_string_unref(nss);
 
-	ns = eon_theme_namespace_find(egueb_dom_string_string_get(nsa));
+	ns = eon_drawer_namespace_find(egueb_dom_string_string_get(nsa));
 	egueb_dom_string_unref(nsa);
 	if (!ns)
 	{
@@ -55,7 +61,7 @@ static Eina_Bool _eon_theme_element_instance_create_object(Egueb_Dom_Node *n)
 	da = egueb_dom_element_attribute_get(thiz->rel, ds);
 	egueb_dom_string_unref(ds);
 
-	d = eon_theme_namespace_instance_find(ns, egueb_dom_string_string_get(da));
+	d = eon_drawer_namespace_instance_find(ns, egueb_dom_string_string_get(da));
 	egueb_dom_string_unref(da);
 	if (!d)
 	{
@@ -208,10 +214,7 @@ void eon_theme_element_instance_relative_set(Egueb_Dom_Node *n, Egueb_Dom_Node *
 	thiz->rel = rel;
 }
 
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-EAPI void * eon_theme_element_instance_object_get(Egueb_Dom_Node *n)
+void * eon_theme_element_instance_object_get(Egueb_Dom_Node *n)
 {
 	Eon_Theme_Element_Instance *thiz;
 
@@ -221,7 +224,7 @@ EAPI void * eon_theme_element_instance_object_get(Egueb_Dom_Node *n)
 	return thiz->object;
 }
 
-EAPI Eina_Bool eon_theme_element_instance_state_set(Egueb_Dom_Node *n, const char *s,
+Eina_Bool eon_theme_element_instance_state_set(Egueb_Dom_Node *n, const char *s,
 		Eina_Error *err)
 {
 	Eon_Theme_Element_Instance *thiz;
@@ -300,3 +303,8 @@ done:
 	egueb_dom_node_unref(states);
 	return ret;
 }
+
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+
