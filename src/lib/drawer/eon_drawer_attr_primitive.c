@@ -17,6 +17,7 @@
  */
 #include "eon_drawer_private.h"
 #include "eon_drawer_attr_primitive.h"
+#include "eon_theme_element_instance_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -56,7 +57,7 @@ static Eina_Bool _eon_drawer_attr_primitive_value_get(Egueb_Dom_Node *n, void *d
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->get(o, thiz->tmp_primitive);
 	value->data.ptr = thiz->tmp_primitive;
 	value->owned = EINA_FALSE;
@@ -75,7 +76,7 @@ static Eina_Bool _eon_drawer_attr_primitive_value_set(Egueb_Dom_Node *n, void *d
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->set(o, value->data.ptr);
 	egueb_dom_node_unref(owner);
 

@@ -16,6 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_drawer_private.h"
+#include "eon_theme_element_instance_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -51,7 +52,7 @@ static Eina_Bool _eon_drawer_attr_link_value_get(Egueb_Dom_Node *n, void *data,
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	value->data.d = thiz->get(o);
 	egueb_dom_node_unref(owner);
 
@@ -68,7 +69,7 @@ static Eina_Bool _eon_drawer_attr_link_value_set(Egueb_Dom_Node *n, void *data,
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->set(o, value->data.d);
 	egueb_dom_node_unref(owner);
 

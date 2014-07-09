@@ -331,5 +331,5 @@ EAPI void eon_drawer_label_ender_register(Eon_Drawer_Namespace *ns,
 	d.child_added = NULL;
 	d.child_removed = NULL;
 
-	ender_namespace_instance_register(ns, &d, "label");
+	eon_drawer_namespace_instance_register(ns, &d, "label");
 }

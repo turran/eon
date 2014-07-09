@@ -17,6 +17,7 @@
  */
 #include "eon_drawer_private.h"
 #include "eon_drawer_attr_enesim_color.h"
+#include "eon_theme_element_instance_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -52,7 +53,7 @@ static Eina_Bool _eon_drawer_attr_enesim_color_value_get(Egueb_Dom_Node *n, void
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	c = thiz->get(o);
 	/* convert it to argb */
 	value->data.i32 = enesim_color_argb_to(c);
@@ -72,7 +73,7 @@ static Eina_Bool _eon_drawer_attr_enesim_color_value_set(Egueb_Dom_Node *n, void
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	/* convert it from argb */
 	c = enesim_color_argb_from(value->data.i32);
 	thiz->set(o, c);

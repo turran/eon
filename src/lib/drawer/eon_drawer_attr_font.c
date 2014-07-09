@@ -17,6 +17,7 @@
  */
 #include "eon_drawer_private.h"
 #include "eon_drawer_attr_font.h"
+#include "eon_theme_element_instance_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -52,7 +53,7 @@ static Eina_Bool _eon_drawer_attr_font_value_get(Egueb_Dom_Node *n, void *data,
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->get(o, &thiz->font);
 
 	value->data.ptr = &thiz->font;
@@ -73,7 +74,7 @@ static Eina_Bool _eon_drawer_attr_font_value_set(Egueb_Dom_Node *n, void *data,
 	owner = egueb_dom_attr_owner_get(n);
 	if (!owner) return EINA_FALSE;
 
-	o = eon_drawer_element_instance_object_get(owner);
+	o = eon_theme_element_instance_object_get(owner);
 	thiz->set(o, value->data.ptr);
 	egueb_dom_node_unref(owner);
 
