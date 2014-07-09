@@ -265,7 +265,7 @@ static Eina_Bool _eon_element_label_child_appendable(Eon_Element *e, Egueb_Dom_N
 	Egueb_Dom_Node *our_child;
 
 	/* only accept one child and of type text */
-	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_TEXT_NODE)
+	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_TEXT)
 		return EINA_FALSE;
 
 	/* check if we already have one child */

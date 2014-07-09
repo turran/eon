@@ -153,7 +153,7 @@ static Eina_Bool _eon_theme_element_instance_child_appendable(Egueb_Dom_Node *no
 	Eon_Theme_Element_Instance *thiz = data;
 
 	/* every smil object is appendable */
-	if ((egueb_dom_node_type_get(child) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE)
+	if ((egueb_dom_node_type_get(child) == EGUEB_DOM_NODE_TYPE_ELEMENT)
 			&&egueb_smil_is_animation(child))
 	{
 		return EINA_TRUE;
@@ -177,7 +177,7 @@ static Eina_Bool _eon_theme_element_instance_process(Egueb_Dom_Node *node,
 	while (child)
 	{
 		Egueb_Dom_Node *next;
-		if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_ELEMENT_NODE)
+		if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_ELEMENT)
 			goto next;
 		egueb_dom_element_process(child);
 next:
@@ -267,7 +267,7 @@ Eina_Bool eon_theme_element_instance_state_set(Egueb_Dom_Node *n, const char *s,
 		Egueb_Dom_String *name;
 		Eina_Bool is_state = EINA_FALSE;
 
-		if (egueb_dom_node_type_get(state) != EGUEB_DOM_NODE_TYPE_ELEMENT_NODE)
+		if (egueb_dom_node_type_get(state) != EGUEB_DOM_NODE_TYPE_ELEMENT)
 			goto next;
 		element_name = egueb_dom_element_name_get(state);
 		if (element_name == EON_THEME_ELEMENT_STATE)

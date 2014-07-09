@@ -56,7 +56,7 @@ static void _eon_widget_proxy_resolve_theme(Eon_Widget_Proxy *thiz)
 	if (thiz->theme_changed)
 	{
 		parent = egueb_dom_node_parent_get(n);
-		if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE))
+		if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT))
 		{
 			Eon_Element *other;
 

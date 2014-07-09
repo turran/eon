@@ -15,8 +15,8 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Ender.h"
 #include "eon_theme_private.h"
+#include "eon_theme_main_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -35,7 +35,7 @@ static Eina_Bool _eon_theme_element_scene_child_appendable(Egueb_Dom_Node *n,
 	Egueb_Dom_String *name;
 	Eina_Bool ret = EINA_FALSE;
 
-	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_ELEMENT_NODE)
+	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_ELEMENT)
 		return ret;
 
 	name = egueb_dom_element_name_get(child);

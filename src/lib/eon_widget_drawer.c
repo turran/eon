@@ -69,7 +69,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 	thiz->theme_widget = NULL;
 
 	parent = egueb_dom_node_parent_get(n);
-	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT_NODE))
+	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT))
 	{
 		Eon_Element *other;
 
