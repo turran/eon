@@ -21,6 +21,7 @@
 
 #include "eon_main_private.h"
 
+#include "eon_theme_main_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -172,6 +173,7 @@ EAPI int eon_init(void)
 		eina_init();
 		eon_main_log = eina_log_domain_register("eon", NULL);
 		egueb_dom_init();
+		eon_theme_init();
 		_strings_init();
 #if BUILD_STATIC_MODULE_DRAWER_BASIC
 		eon_drawer_basic_init();
@@ -195,6 +197,7 @@ EAPI int eon_shutdown(void)
 	eon_drawer_basic_shutdown();
 #endif
 	_strings_shutdown();
+	eon_theme_shutdown();
 	egueb_dom_shutdown();
 	eina_log_domain_unregister(eon_main_log);
 	eon_main_log = -1;
