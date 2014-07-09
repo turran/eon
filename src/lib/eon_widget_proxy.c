@@ -83,7 +83,7 @@ static void _eon_widget_proxy_resolve_theme(Eon_Widget_Proxy *thiz)
 	{
 		Egueb_Dom_Node *doc;
 
-		doc = egueb_dom_node_document_get((EON_ELEMENT(w))->n);
+		doc = egueb_dom_node_owner_document_get((EON_ELEMENT(w))->n);
 		thiz->proxy = egueb_dom_document_node_adopt(doc, thiz->proxy, NULL);
 		thiz->adopted = EINA_TRUE;
 	}

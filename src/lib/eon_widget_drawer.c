@@ -103,7 +103,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 	// FIX this egueb_dom_string_unref(theme);
 
 	/* load the theme */
-	doc = egueb_dom_node_document_get(n);
+	doc = egueb_dom_node_owner_document_get(n);
 	if (!doc)
 	{
 		WARN_ELEMENT(n, "Node does not have a document");
@@ -111,7 +111,7 @@ static Eina_Bool _eon_widget_drawer_load_theme(Eon_Widget_Drawer *thiz)
 		goto no_document;
 	}
 
-	topmost = egueb_dom_document_element_get(doc);
+	topmost = egueb_dom_document_document_element_get(doc);
 	if (!topmost)
 	{
 		WARN_ELEMENT(n, "Document does not have topmost element");

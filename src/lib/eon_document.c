@@ -61,7 +61,7 @@ static void _eon_document_request_geometry_cb(Egueb_Dom_Event *ev, void *data)
 	return;
 
 	DBG("Rquesting main geometry");
-	eon = egueb_dom_document_element_get(n);
+	eon = egueb_dom_document_document_element_get(n);
 	if (!eon)
 	{
 		ERR("No topmost element found");
@@ -146,7 +146,7 @@ static Egueb_Dom_Node * _eon_document_input_element_at(Egueb_Dom_Node *parent,
 
 	/* iterate over the whole tree */
 	eina_rectangle_coords_from(&ptr, x, y, 1, 1);
-	topmost = egueb_dom_document_element_get(n);
+	topmost = egueb_dom_document_document_element_get(n);
 	ret = eon_renderable_element_at(topmost, &ptr);
 	egueb_dom_node_unref(topmost);
 
@@ -183,7 +183,7 @@ static Etch * _eon_document_animation_etch_get(Egueb_Dom_Node *n)
 	Egueb_Dom_Node *topmost;
 	Etch *ret;
 
-	topmost = egueb_dom_document_element_get(n);
+	topmost = egueb_dom_document_document_element_get(n);
 	if (!topmost) return NULL;
 
 	ret = eon_element_eon_etch_get(topmost);
@@ -216,7 +216,7 @@ static Eina_Bool _eon_document_window_content_size_set(
 	if (w <= 0 || h <= 0)
 		return EINA_FALSE;
 
-	eon = egueb_dom_document_element_get(n);
+	eon = egueb_dom_document_document_element_get(n);
 	if (!eon)
 	{
 		return EINA_FALSE;
@@ -262,7 +262,7 @@ static Enesim_Renderer * _eon_document_render_renderer_get(
 	Enesim_Renderer *r;
 
 	/* get the topmost element, get the renderer and return it */
-	topmost = egueb_dom_document_element_get(n);
+	topmost = egueb_dom_document_document_element_get(n);
 	if (!topmost) return NULL;
 
 	r = eon_renderable_renderer_get(topmost);

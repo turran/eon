@@ -139,7 +139,7 @@ Egueb_Dom_Node * eon_theme_document_instance_new(Egueb_Dom_Node *n,
 		return NULL;
 	}
 
-	topmost = egueb_dom_document_element_get(n);
+	topmost = egueb_dom_document_document_element_get(n);
 	egueb_dom_node_child_append(topmost, egueb_dom_node_ref(ret), NULL);
 	eon_theme_element_instance_relative_set(ret, rel);
 	egueb_dom_node_unref(topmost);
