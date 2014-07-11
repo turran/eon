@@ -18,10 +18,6 @@
 #ifndef _EON_THEME_MAIN_PRIVATE_H
 #define _EON_THEME_MAIN_PRIVATE_H
 
-#define ERR(...) EINA_LOG_DOM_ERR(eon_theme_log_dom, __VA_ARGS__)
-#define WRN(...) EINA_LOG_DOM_WARN(eon_theme_log_dom, __VA_ARGS__)
-#define INF(...) EINA_LOG_DOM_INFO(eon_theme_log_dom, __VA_ARGS__)
-#define DBG(...) EINA_LOG_DOM_DBG(eon_theme_log_dom, __VA_ARGS__)
 extern int eon_theme_log_dom;
 extern Egueb_Dom_String *EON_THEME_ELEMENT_EON_THEME;
 extern Egueb_Dom_String *EON_THEME_ELEMENT_INSTANCE;

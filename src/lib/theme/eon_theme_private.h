@@ -25,11 +25,9 @@
 #include <Egueb_Dom.h>
 #include <Egueb_Smil.h>
 
-#if 0
-Egueb_Dom_Node * eon_theme_element_instance_new(void);
-void eon_theme_element_instance_relative_set(Egueb_Dom_Node *n, Egueb_Dom_Node *rel);
-
-#include "eon_theme_namespace_private.h"
-#endif
+#define ERR(...) EINA_LOG_DOM_ERR(eon_theme_log_dom, __VA_ARGS__)
+#define WRN(...) EINA_LOG_DOM_WARN(eon_theme_log_dom, __VA_ARGS__)
+#define INF(...) EINA_LOG_DOM_INFO(eon_theme_log_dom, __VA_ARGS__)
+#define DBG(...) EINA_LOG_DOM_DBG(eon_theme_log_dom, __VA_ARGS__)
 
 #endif

@@ -1,3 +1,8 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- we need to rename the main element to something like
+     eont or eon-theme or something like
+     that
+-->
 <ender>
   <scene>
     <object ns="eon_drawer_basic" name="button" id="button-ok">
