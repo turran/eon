@@ -144,7 +144,7 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT))
 	{
 		Eon_Element *other;
-		Egueb_Dom_String *theme;
+		Egueb_Dom_String *theme = NULL;
 
 		other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
 		egueb_dom_attr_final_get(other->theme, &theme);

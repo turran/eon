@@ -272,42 +272,6 @@ static void _eon_element_object_geometry_set(Eon_Renderable *r, Eina_Rectangle *
 			geometry->w, geometry->h);
 }
 
-static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
-{
-	Eon_Element_Object *thiz;
-	Egueb_Dom_Feature_Window_Type type;
-	int ret = 0;
-	int cw, ch;
-
-
-	thiz = EON_ELEMENT_OBJECT(r);
-	if (!thiz->doc || !thiz->window)
-		return 0;
-
-	egueb_dom_feature_window_type_get(thiz->window, &type);
-	if (type == EGUEB_DOM_FEATURE_WINDOW_TYPE_MASTER)
-	{
-		egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
-		if (cw >= 0 && ch >= 0)
-		{
-			ret |= EON_RENDERABLE_HINT_MIN_MAX;
-			size->min_width = cw;
-			size->min_height = ch;
-			size->max_width = cw;
-			size->max_height = ch;
-		}
-		else
-		{
-			ret |= EON_RENDERABLE_HINT_MIN_MAX;
-			size->min_width = 1;
-			size->min_height = 1;
-			size->max_width = -1;
-			size->max_height = -1;
-		}
-	}
-	return ret;
-}
-
 static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 {
 	Eon_Element_Object *thiz;
@@ -325,6 +289,10 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 		Egueb_Dom_String *uri;
 		Egueb_Dom_Uri u;
 
+		/* clear it */
+		thiz->xlink_href_changed = EINA_FALSE;
+
+		/* get the new href */
 		egueb_dom_attr_final_get(thiz->xlink_href, &uri);
 		if (!egueb_dom_string_is_equal(uri, thiz->xlink_href_last))
 		{
@@ -360,13 +328,11 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 
 	if (thiz->external_doc_changed)
 	{
+		thiz->external_doc_changed = EINA_FALSE;
 		_eon_element_object_document_cleanup(thiz);
 		_eon_element_object_document_setup(thiz, thiz->external_doc);
 	}
 	
-	thiz->external_doc_changed = EINA_FALSE;
-	thiz->xlink_href_changed = EINA_FALSE;
-
 	return EINA_TRUE;
 }
 
@@ -442,6 +408,47 @@ done:
 
 	return EINA_TRUE;
 }
+
+static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
+{
+	Eon_Element_Object *thiz;
+	Egueb_Dom_Feature_Window_Type type;
+	int ret = 0;
+	int cw, ch;
+
+
+	thiz = EON_ELEMENT_OBJECT(r);
+	/* first resolve every property to get the doc */
+	if (!_eon_element_object_pre_process(r))
+		return 0;
+	
+	if (!thiz->doc || !thiz->window)
+		return 0;
+
+	egueb_dom_feature_window_type_get(thiz->window, &type);
+	if (type == EGUEB_DOM_FEATURE_WINDOW_TYPE_MASTER)
+	{
+		egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
+		if (cw >= 0 && ch >= 0)
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+			size->min_width = cw;
+			size->min_height = ch;
+			size->max_width = cw;
+			size->max_height = ch;
+		}
+		else
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+			size->min_width = 1;
+			size->min_height = 1;
+			size->max_width = -1;
+			size->max_height = -1;
+		}
+	}
+	return ret;
+}
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
