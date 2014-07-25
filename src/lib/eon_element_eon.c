@@ -44,7 +44,7 @@ typedef struct _Eon_Element_Eon
 {
 	Eon_Widget_Drawer base;
 	Eina_Bool renderable_changed;
-	Etch *etch;
+	Egueb_Smil_Timeline *timeline;
 	/* the theme system */
 	Eina_List *themes;
 } Eon_Element_Eon;
@@ -54,16 +54,16 @@ typedef struct _Eon_Element_Eon_Class
 	Eon_Widget_Drawer_Class base;
 } Eon_Element_Eon_Class;
 
-static void _eon_element_eon_etch_cb(Egueb_Dom_Event *e,
+static void _eon_element_eon_timeline_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Eon *thiz = data;
 	Egueb_Dom_Node *n;
 
 	n = egueb_dom_event_target_get(e);
-	DBG("Ender document requesting an etch on %p", n);
+	DBG("Ender document requesting a timeline on %p", n);
 	egueb_dom_node_unref(n);
-	egueb_smil_event_etch_set(e, thiz->etch);
+	egueb_smil_event_timeline_set(e, thiz->timeline);
 }
 
 /* Whenever an invalidate geoemtry event reaches the topmost element,
@@ -323,7 +323,7 @@ static void _eon_element_eon_instance_init(void *o)
 	Eon_Element_Eon *thiz;
 
 	thiz = EON_ELEMENT_EON(o);
-	thiz->etch = etch_new();
+	thiz->timeline = egueb_smil_timeline_new();
 }
 
 static void _eon_element_eon_instance_deinit(void *o)
@@ -338,7 +338,7 @@ static void _eon_element_eon_instance_deinit(void *o)
 		free(theme->name);
 		free(theme);
 	}
-	etch_delete(thiz->etch);
+	egueb_smil_timeline_unref(thiz->timeline);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -382,8 +382,8 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		if (!s) return NULL;
 
 		doc = eon_theme_document_new();
-		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_ETCH,
-				_eon_element_eon_etch_cb, EINA_TRUE, thiz);
+		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_TIMELINE,
+				_eon_element_eon_timeline_cb, EINA_TRUE, thiz);
 		egueb_dom_parser_parse(s, &doc);
 		enesim_stream_unref(s);
 
@@ -399,12 +399,12 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 
 }
 
-Etch * eon_element_eon_etch_get(Egueb_Dom_Node *n)
+Egueb_Smil_Timeline * eon_element_eon_timeline_get(Egueb_Dom_Node *n)
 {
 	Eon_Element_Eon *thiz;
 
 	thiz = EON_ELEMENT_EON(egueb_dom_element_external_data_get(n));
-	return thiz->etch;
+	return egueb_smil_timeline_ref(thiz->timeline);
 }
 /*============================================================================*
  *                                   API                                      *
