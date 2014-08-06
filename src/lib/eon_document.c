@@ -157,7 +157,10 @@ static Egueb_Dom_Node * _eon_document_input_element_at(Egueb_Dom_Node *parent,
 }
 
 static Egueb_Dom_Input_Descriptor _eon_document_input_descriptor = {
+	/* .version		= */ EGUEB_DOM_INPUT_DESCRIPTOR_VERSION,
 	/* .element_at 		= */ _eon_document_input_element_at,
+	/* .focus_next		= */ NULL,
+	/* .focus_prev		= */ NULL,
 };
 
 /*----------------------------------------------------------------------------*

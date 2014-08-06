@@ -206,7 +206,7 @@ static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
 
 	INFO_ELEMENT(n, "Uri fetched with MIME '%s'", mime);
 
-	egueb_dom_parser_parse(data, &doc);
+	egueb_dom_parser_parse(enesim_stream_ref(data), &doc);
 	if (!doc)
 	{
 		WARN_ELEMENT(n, "Can not parse the file");

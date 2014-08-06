@@ -385,7 +385,6 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_TIMELINE,
 				_eon_element_eon_timeline_cb, EINA_TRUE, thiz);
 		egueb_dom_parser_parse(s, &doc);
-		enesim_stream_unref(s);
 
 		theme = calloc(1, sizeof(Eon_Element_Eon_Theme));
 		theme->doc = doc;
