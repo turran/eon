@@ -194,13 +194,13 @@ static void _eon_drawer_label_ender_populate(Eon_Drawer_Widget *w, Egueb_Dom_Nod
 	attr = eon_drawer_attr_enesim_color_new("color",
 			EON_DRAWER_ATTR_ENESIM_COLOR_GET(_eon_drawer_label_color_get),
 			EON_DRAWER_ATTR_ENESIM_COLOR_SET(_eon_drawer_label_color_set));
-	egueb_dom_element_attribute_add(n, attr, NULL);
+	egueb_dom_element_attribute_node_set(n, attr, NULL);
 
 	attr = eon_drawer_attr_font_new("font",
 			EON_DRAWER_ATTR_FONT_GET(_eon_drawer_label_font_get),
 			EON_DRAWER_ATTR_FONT_SET(_eon_drawer_label_font_set));
 	/* set the default font */
-	egueb_dom_element_attribute_add(n, attr, NULL);
+	egueb_dom_element_attribute_node_set(n, attr, NULL);
 
 	if (thiz->d->ender_populate)
 		thiz->d->ender_populate(w, thiz->data, n);

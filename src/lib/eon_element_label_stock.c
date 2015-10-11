@@ -110,9 +110,9 @@ static void _eon_element_label_stock_init(Eon_Widget_Proxy *wp)
 
 	thiz->stock = eon_stock_attr_new();
 	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->stock), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->stock), NULL);
 
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_label_stock_attr_modified_cb,
 			EINA_FALSE, thiz);
@@ -139,8 +139,7 @@ static void _eon_element_label_stock_geometry_propagate(Eon_Widget_Proxy *wp)
 
 		egueb_dom_attr_final_string_get(thiz->stock, &s);
 		/* FIXME freeze the node to not send any event, this will skip the mutation */
-		egueb_dom_character_data_append_data_inline(thiz->text,
-				egueb_dom_string_string_get(s), NULL);
+		egueb_dom_character_data_data_append(thiz->text, s, NULL);
 		egueb_dom_string_unref(s);
 		/* FIXME thaw back */
 		/* FIXME mark it as processed */

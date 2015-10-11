@@ -89,7 +89,7 @@ static void _eon_element_stack_node_inserted_cb(Egueb_Dom_Event *e,
 			egueb_dom_string_ref(EON_ATTR_WEIGHT), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(attr, EGUEB_DOM_ATTR_TYPE_BASE, 1);
-	egueb_dom_element_attribute_add(target, attr, NULL);
+	egueb_dom_element_attribute_node_set(target, attr, NULL);
 	egueb_dom_node_unref(target);
 }
 
@@ -215,11 +215,11 @@ static void _eon_element_stack_init(Eon_Renderable *r)
 
 	thiz = EON_ELEMENT_STACK(r);
 	n = (EON_ELEMENT(r))->n;
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_stack_node_inserted_cb,
 			EINA_FALSE, r);
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_stack_node_removed_cb,
 			EINA_FALSE, r);
@@ -228,7 +228,7 @@ static void _eon_element_stack_init(Eon_Renderable *r)
 	thiz->orientation = eon_orientation_attr_new();
 	egueb_dom_attr_set(thiz->orientation, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			EON_ORIENTATION_HORIZONTAL);
-	egueb_dom_element_attribute_add(n,
+	egueb_dom_element_attribute_node_set(n,
 		egueb_dom_node_ref(thiz->orientation), NULL);
 }
 

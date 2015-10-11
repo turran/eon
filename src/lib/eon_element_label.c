@@ -228,7 +228,7 @@ static void _eon_element_label_init(Eon_Widget *w)
 	egueb_dom_attr_set(thiz->ellipsize, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
 	
 	n = (EON_ELEMENT(w))->n;
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->ellipsize), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->ellipsize), NULL);
 	/* attributes */
 	/* TODO add:
 	 * font family
@@ -239,11 +239,11 @@ static void _eon_element_label_init(Eon_Widget *w)
 	 */
 	
 	/* events */
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_label_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_label_tree_modified_cb,
 			EINA_FALSE, w);

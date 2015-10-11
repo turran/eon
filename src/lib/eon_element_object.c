@@ -233,19 +233,19 @@ static void _eon_element_object_init(Eon_Renderable *r)
 	thiz->xlink_href = egueb_dom_attr_string_new(
 			egueb_dom_string_ref(EGUEB_XLINK_NAME_HREF), NULL, NULL,
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->xlink_href), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->xlink_href), NULL);
 
 	/* in case the attribute xlink href has changed be sure to invalidate
 	 * the geometry
 	 */
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_object_attr_modified_cb, EINA_FALSE, thiz);
-	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_UP,
+	egueb_dom_event_target_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_UP,
 			_eon_element_object_ui_mouse_up_cb, EINA_FALSE, thiz);
-	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_DOWN,
+	egueb_dom_event_target_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_DOWN,
 			_eon_element_object_ui_mouse_down_cb, EINA_FALSE, thiz);
-	egueb_dom_node_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_MOVE,
+	egueb_dom_event_target_event_listener_add(n, EGUEB_DOM_EVENT_MOUSE_MOVE,
 			_eon_element_object_ui_mouse_move_cb, EINA_FALSE, thiz);
 }
 
@@ -320,7 +320,7 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 
 			DBG_ELEMENT(n, "Requesting data load on '%s'", egueb_dom_string_string_get(uri));
 			e = egueb_dom_event_io_data_new(&u, _eon_element_object_data_cb);
-			egueb_dom_node_event_dispatch(n, e, NULL, NULL);
+			egueb_dom_event_target_event_dispatch(n, e, NULL, NULL);
 			egueb_dom_uri_cleanup(&u);
 		}
 		egueb_dom_string_unref(uri);

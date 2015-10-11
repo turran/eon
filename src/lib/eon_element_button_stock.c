@@ -88,7 +88,7 @@ static void _eon_element_button_stock_init(Eon_Widget_Proxy *wp)
 
 	thiz->stock = eon_stock_attr_new();
 	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->stock), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->stock), NULL);
 }
 
 static Egueb_Dom_Node * _eon_element_button_stock_proxied_get(

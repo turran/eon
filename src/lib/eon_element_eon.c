@@ -140,7 +140,7 @@ static void _eon_element_eon_node_inserted_cb(Egueb_Dom_Event *ev,
 	egueb_dom_node_unref(parent);
 	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 #if 0
-	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
+	egueb_dom_event_target_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
 			_eon_element_eon_request_geometry_cb, EINA_FALSE, n);
 #endif
 	egueb_dom_node_unref(target);
@@ -163,7 +163,7 @@ static void _eon_element_eon_node_removed_cb(Egueb_Dom_Event *ev,
 	egueb_dom_node_unref(parent);
 	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 #if 0
-	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
+	egueb_dom_event_target_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
 			_eon_element_eon_request_geometry_cb, EINA_FALSE, n);
 #endif
 	egueb_dom_node_unref(target);
@@ -434,23 +434,23 @@ static void _eon_element_eon_init(Eon_Widget *w)
 	Eon_Element_Eon *thiz;
 
 	n = (EON_ELEMENT(w))->n;
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_eon_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EON_EVENT_GEOMETRY_INVALIDATE,
 			_eon_element_eon_geometry_invalidate_cb, EINA_FALSE,
 			w);
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_eon_node_inserted_cb,
 			EINA_FALSE, n);
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_node_removed_cb,
 			EINA_FALSE, n);
@@ -485,7 +485,7 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
 		n = (EON_ELEMENT(r))->n;
 		/* request a geometry upstream */
 		ev = eon_event_geometry_request_new();
-		egueb_dom_node_event_dispatch(n, egueb_dom_event_ref(ev), NULL, NULL);
+		egueb_dom_event_target_event_dispatch(n, egueb_dom_event_ref(ev), NULL, NULL);
 		/* check that we have a valid geometry */
 		set = eon_event_geometry_request_geometry_get(ev, &geom);
 		egueb_dom_event_unref(ev);
@@ -638,7 +638,7 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 
 		doc = eon_theme_document_new();
 #if 0
-		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_TIMELINE,
+		egueb_dom_event_target_event_listener_add(doc, EGUEB_SMIL_EVENT_TIMELINE,
 				_eon_element_eon_timeline_cb, EINA_TRUE, thiz);
 #endif
 		egueb_dom_parser_parse(s, &doc);

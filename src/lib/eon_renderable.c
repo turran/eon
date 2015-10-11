@@ -112,19 +112,19 @@ static void _eon_renderable_init(Eon_Element *e)
 	egueb_dom_attr_set(thiz->halign, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_HORIZONTAL_ALIGN_CENTER);
 
 	n = e->n;
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->width), NULL);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->height), NULL);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->valign), NULL);
-	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->halign), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->width), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->height), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->valign), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->halign), NULL);
 
 	/* in case the attribute width or height has changed be sure to invalidate
 	 * the geometry
 	 */
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_renderable_attr_modified_cb, EINA_FALSE, thiz);
 
-	egueb_dom_node_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(n,
 			EON_EVENT_GEOMETRY_INVALIDATE,
 			_eon_renderable_geometry_invalidate_cb, EINA_FALSE, thiz);
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
@@ -250,7 +250,7 @@ void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 	DBG_ELEMENT(((EON_ELEMENT(thiz))->n), "Invalidating geometry");
 
 	ev = eon_event_geometry_invalidate_new();
-	egueb_dom_node_event_dispatch((EON_ELEMENT(thiz))->n, ev, NULL, NULL);
+	egueb_dom_event_target_event_dispatch((EON_ELEMENT(thiz))->n, ev, NULL, NULL);
 }
 
 /* TODO handle the expand, padding, margin or whatever other attr we decide to add */
