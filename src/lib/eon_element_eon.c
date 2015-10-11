@@ -58,16 +58,18 @@ typedef struct _Eon_Element_Eon_Class
 	Eon_Widget_Drawer_Class base;
 } Eon_Element_Eon_Class;
 
-static void _eon_element_eon_timeline_cb(Egueb_Dom_Event *e,
+static void _eon_element_eon_monitor_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Eon *thiz = data;
 	Egueb_Dom_Node *n;
 
-	n = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
-	DBG("Ender document requesting a timeline on %p", n);
-	egueb_dom_node_unref(n);
-	printf("requesting a timeline!!!\n");
+	if (!egueb_smil_event_is_timeline(e))
+		return;
+
+	DBG("Theme document requesting a timeline");
+	n = (EON_ELEMENT(thiz))->n;
+	egueb_dom_node_event_propagate(n, e);
 }
 
 /* Whenever an invalidate geometry event reaches the topmost element,
@@ -471,6 +473,8 @@ static void _eon_element_eon_instance_deinit(void *o)
 	thiz = EON_ELEMENT_EON(o);
 	EINA_LIST_FREE(thiz->themes, theme)
 	{
+		egueb_dom_event_target_monitor_remove(EGUEB_DOM_EVENT_TARGET(theme->doc),
+				_eon_element_eon_monitor_cb, thiz);
 		egueb_dom_node_unref(theme->doc);
 		free(theme->name);
 		free(theme);
@@ -519,10 +523,8 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		if (!s) return NULL;
 
 		doc = eon_theme_document_new();
-#if 0
-		egueb_dom_event_target_event_listener_add(doc, EGUEB_SMIL_EVENT_TIMELINE,
-				_eon_element_eon_timeline_cb, EINA_TRUE, thiz);
-#endif
+		egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(doc),
+				_eon_element_eon_monitor_cb, thiz);
 		egueb_dom_parser_parse(s, &doc);
 
 		theme = calloc(1, sizeof(Eon_Element_Eon_Theme));
