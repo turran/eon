@@ -56,13 +56,27 @@ typedef struct _Eon_Drawer_Label_Class
 } Eon_Drawer_Label_Class;
 
 
+static void _find_font(void *data, void *user_data)
+{
+	Egueb_Css_Font_Family_Value *f = data;
+	Eon_Drawer_Label *thiz = user_data;
+	Enesim_Text_Engine *e;
+
+	if (thiz->tf)
+		return;
+
+	e = enesim_text_engine_default_get();
+	/* TODO still missing the font size, convert the variants into fontconfig information, etc */
+	thiz->tf = enesim_text_font_new_description_from(e, egueb_dom_string_string_get(f->family), 16);
+	enesim_text_engine_unref(e);
+}
+
 static Eina_Bool _eon_drawer_label_generate_font(Eon_Drawer_Label *thiz)
 {
 	if (thiz->font_changed)
 	{
-		Enesim_Text_Engine *e;
 		Enesim_Renderer *r;
-		char *f;
+		Egueb_Css_Font_Family_Value *f;
 		Eina_List *l;
 
 		r = eon_drawer_label_text_renderer_get(EON_DRAWER_WIDGET(thiz));
@@ -71,24 +85,20 @@ static Eina_Bool _eon_drawer_label_generate_font(Eon_Drawer_Label *thiz)
 			return EINA_FALSE;
 		}
 
-		/* TODO generate a text font based on the attributes */
-		e = enesim_text_engine_default_get();
-		EINA_LIST_FOREACH(thiz->font.families, l, f)
-		{
-			/* TODO still missing the font size, convert the variants into fontconfig information, etc */
-			thiz->tf = enesim_text_font_new_description_from(e, f, 16);
-			if (thiz->tf)
-				break;
-		}
+		egueb_dom_list_foreach(thiz->font.family, _find_font, thiz);
 		if (!thiz->tf)
 		{
+			Enesim_Text_Engine *e;
 			WARN("Impossible to load any font, using default one");
+
+			e = enesim_text_engine_default_get();
 			thiz->tf = enesim_text_font_new_description_from(e, "Sans:style=Regular", 16);
+			enesim_text_engine_unref(e);
 		}
-		enesim_text_engine_unref(e);
 		thiz->font_changed = EINA_FALSE;
 
 		enesim_renderer_text_span_font_set(r, thiz->tf);
+		thiz->tf = NULL;
 		enesim_renderer_unref(r);
 	}
 	return EINA_TRUE;
@@ -132,12 +142,14 @@ static Enesim_Color _eon_drawer_label_color_get(Eon_Drawer_Widget *w)
 static void _eon_drawer_label_font_set(Eon_Drawer_Widget *w, Egueb_Css_Font *font)
 {
 	Eon_Drawer_Label *thiz;
-	char *f;
+	Egueb_Css_Font_Family_Value *f;
 
 	thiz = EON_DRAWER_LABEL(w);
-	EINA_LIST_FREE(thiz->font.families, f)
+#if 0
+	EINA_LIST_FREE(thiz->font.family, f)
 		//free(f);
-	thiz->font.families = NULL;
+#endif
+	thiz->font.family = NULL;
 	thiz->font = *font;
 	thiz->font_changed = EINA_TRUE;
 }

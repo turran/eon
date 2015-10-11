@@ -88,6 +88,7 @@ static const Egueb_Dom_Value_Descriptor * _eon_drawer_attr_font_value_descriptor
 }
 
 static Egueb_Dom_Attr_External_Descriptor _descriptor = {
+	/* version 		= */ EGUEB_DOM_ATTR_EXTERNAL_DESCRIPTOR_VERSION,
 	/* init 		= */ _eon_drawer_attr_font_init,
 	/* deinit 		= */ _eon_drawer_attr_font_deinit,
 	/* value_descriptor_get	= */ _eon_drawer_attr_font_value_descriptor_get,
@@ -109,7 +110,7 @@ EAPI Egueb_Dom_Node * eon_drawer_attr_font_new(const char *name,
 
 	n = egueb_dom_attr_external_new(&_descriptor);
 	s = egueb_dom_string_new_with_static_string(name);
-	egueb_dom_attr_init(n, s, EINA_TRUE, EINA_TRUE,
+	egueb_dom_attr_init(n, s, NULL, EINA_TRUE, EINA_TRUE,
 			EINA_TRUE);
 	thiz = egueb_dom_attr_external_data_get(n);
 	thiz->set = set;

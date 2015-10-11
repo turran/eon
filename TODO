@@ -1,3 +1,5 @@
++ Rename drawer_namespace ns to drawer collection
++ Change the ns attribute on the theme
 + Refactor the theme files to be simple, no need to use the external interface directly
 + Make the theme be the theme files only
 + Move the register part of the theme to the drawer

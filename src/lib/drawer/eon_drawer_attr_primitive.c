@@ -92,6 +92,7 @@ static const Egueb_Dom_Value_Descriptor * _eon_drawer_attr_primitive_value_descr
 }
 
 static Egueb_Dom_Attr_External_Descriptor _descriptor = {
+	/* version 		= */ EGUEB_DOM_ATTR_EXTERNAL_DESCRIPTOR_VERSION,
 	/* init 		= */ _eon_drawer_attr_primitive_init,
 	/* deinit 		= */ _eon_drawer_attr_primitive_deinit,
 	/* value_descriptor_get	= */ _eon_drawer_attr_primitive_value_descriptor_get,
@@ -112,7 +113,7 @@ EAPI Egueb_Dom_Node * eon_drawer_attr_primitive_new(Egueb_Dom_String *name,
 	Egueb_Dom_Node *n;
 
 	n = egueb_dom_attr_external_new(&_descriptor);
-	egueb_dom_attr_init(n, name, EINA_TRUE, EINA_TRUE,
+	egueb_dom_attr_init(n, name, NULL, EINA_TRUE, EINA_TRUE,
 			EINA_TRUE);
 	thiz = egueb_dom_attr_external_data_get(n);
 	thiz->set = set;
