@@ -47,7 +47,7 @@ static void _eon_widget_ui_mouse_cb(Egueb_Dom_Event *e, void *data)
 	egueb_dom_string_unref(type);
 }
 
-static void _eon_widget_enabled_modifed_cb(Egueb_Dom_Event *ev,
+static void _eon_widget_enabled_modified_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
 	Eon_Widget *thiz = EON_WIDGET(data);
@@ -103,7 +103,7 @@ static void _eon_widget_init(Eon_Renderable *r)
 			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
 	egueb_dom_event_target_event_listener_add(n,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
-			_eon_widget_enabled_modifed_cb, EINA_FALSE, r);
+			_eon_widget_enabled_modified_cb, EINA_FALSE, r);
 
 	thiz->enabled = egueb_dom_attr_boolean_new(egueb_dom_string_ref(EON_ATTR_ENABLED),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
