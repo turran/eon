@@ -87,7 +87,7 @@ static void _eon_element_label_drawer_propagate(Eon_Widget_Drawer *w)
 		child = egueb_dom_node_child_first_get(n);
 		if (child)
 		{
-			egueb_dom_character_data_buffer_get(child, &tb);
+			tb = egueb_dom_character_data_buffer_get(child);
 			enesim_renderer_text_span_real_buffer_set(thiz->r, tb);
 			/* now make the text node to use our own buffer from now on */
 			tb = enesim_renderer_text_span_buffer_get(thiz->r);

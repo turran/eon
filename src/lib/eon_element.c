@@ -108,6 +108,7 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 }
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
+	/* .version		= */ EGUEB_DOM_ELEMENT_EXTERNAL_DESCRIPTOR_VERSION,
 	/* init 		= */ _eon_element_init,
 	/* deinit 		= */ _eon_element_deinit,
 	/* tag_name_get		= */ _eon_element_tag_name_get,
@@ -144,7 +145,7 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	}
 	theme = egueb_dom_string_new_with_static_string(default_theme);
 	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
-			theme, EINA_FALSE, EINA_FALSE, EINA_TRUE);
+			NULL, theme, EINA_FALSE, EINA_FALSE, EINA_TRUE);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->theme), NULL);
 
 	return n;

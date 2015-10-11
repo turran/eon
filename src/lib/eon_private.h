@@ -24,6 +24,7 @@
 #endif
 
 #include "Egueb_Dom.h"
+#include "Egueb_Xlink.h"
 #include "Egueb_Smil.h"
 
 #ifdef ERR

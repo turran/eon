@@ -231,7 +231,7 @@ static void _eon_element_object_init(Eon_Renderable *r)
 	n = (EON_ELEMENT(r))->n;
 
 	thiz->xlink_href = egueb_dom_attr_string_new(
-			egueb_dom_string_ref(EGUEB_DOM_XLINK_HREF), NULL,
+			egueb_dom_string_ref(EGUEB_XLINK_NAME_HREF), NULL, NULL,
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_add(n, egueb_dom_node_ref(thiz->xlink_href), NULL);
 

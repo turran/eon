@@ -20,6 +20,5 @@
 #define EON_ELEMENT_EON_PRIVATE_H_
 
 Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String *theme_name);
-Egueb_Smil_Timeline * eon_element_eon_timeline_get(Egueb_Dom_Node *n);
 
 #endif

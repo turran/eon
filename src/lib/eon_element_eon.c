@@ -44,9 +44,13 @@ typedef struct _Eon_Element_Eon
 {
 	Eon_Widget_Drawer base;
 	Eina_Bool renderable_changed;
-	Egueb_Smil_Timeline *timeline;
 	/* the theme system */
 	Eina_List *themes;
+	/* input */
+	Egueb_Dom_Input *input;
+	/* window */
+	int width;
+	int height;
 } Eon_Element_Eon;
 
 typedef struct _Eon_Element_Eon_Class
@@ -60,13 +64,112 @@ static void _eon_element_eon_timeline_cb(Egueb_Dom_Event *e,
 	Eon_Element_Eon *thiz = data;
 	Egueb_Dom_Node *n;
 
-	n = egueb_dom_event_target_get(e);
+	n = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
 	DBG("Ender document requesting a timeline on %p", n);
 	egueb_dom_node_unref(n);
-	egueb_smil_event_timeline_set(e, thiz->timeline);
+	printf("requesting a timeline!!!\n");
 }
 
-/* Whenever an invalidate geoemtry event reaches the topmost element,
+#if 0
+static void _eon_element_eon_request_geometry_cb(Egueb_Dom_Event *ev, void *data)
+{
+	Eon_Document *thiz;
+	Eon_Size size;
+	Eon_Renderable_Size renderable_size;
+	Egueb_Dom_Node *n = data;
+	Egueb_Dom_Node *eon;
+	Eina_Rectangle geometry;
+	int size_hints;
+
+	/* FIXME this event is not used on any application, we can safely
+	 * remove it. For now, whenever the topmost element requests a geometry
+	 * we return the current width/height set through the window feature
+	 */
+	thiz = egueb_dom_document_external_data_get(n);
+	eina_rectangle_coords_from(&geometry, 0, 0, thiz->width, thiz->height);
+	eon_event_geometry_request_geometry_set(ev, &geometry);
+	return;
+
+	DBG("Rquesting main geometry");
+	eon = egueb_dom_document_document_element_get(n);
+	if (!eon)
+	{
+		ERR("No topmost element found");
+		return;
+	}
+
+	size_hints = eon_renderable_size_hints_get(eon, &renderable_size);
+	DBG("Main hints are %08x", size_hints);
+	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		/* TODO set the min size for now */
+		size.width = renderable_size.min_width;
+		size.height = renderable_size.min_height;
+	}
+	else
+	{
+		size.width = 0;
+		size.height = 0;
+	}
+	eina_rectangle_coords_from(&geometry, 0, 0, size.width, size.height);
+	eon_event_geometry_request_geometry_set(ev, &geometry);
+	egueb_dom_node_unref(eon);
+
+	/* Se the width so the user when requesting the geometry will get this value */
+	thiz = egueb_dom_document_external_data_get(n);
+	thiz->width = size.width;
+	thiz->height = size.height;
+}
+#endif
+
+static void _eon_element_eon_node_inserted_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Egueb_Dom_Node *n = data;
+	Egueb_Dom_Node *parent;
+	Egueb_Dom_Node *target;
+
+	parent = egueb_dom_event_mutation_related_get(ev);
+
+	if (parent != n)
+	{
+		egueb_dom_node_unref(parent);
+		return;
+	}
+
+	egueb_dom_node_unref(parent);
+	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
+#if 0
+	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
+			_eon_element_eon_request_geometry_cb, EINA_FALSE, n);
+#endif
+	egueb_dom_node_unref(target);
+}
+
+static void _eon_element_eon_node_removed_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Egueb_Dom_Node *n = data;
+	Egueb_Dom_Node *parent;
+	Egueb_Dom_Node *target;
+
+	parent = egueb_dom_event_mutation_related_get(ev);
+	if (parent != n)
+	{
+		egueb_dom_node_unref(parent);
+		return;
+	}
+
+	egueb_dom_node_unref(parent);
+	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
+#if 0
+	egueb_dom_node_event_listener_add(target, EON_EVENT_GEOMETRY_REQUEST,
+			_eon_element_eon_request_geometry_cb, EINA_FALSE, n);
+#endif
+	egueb_dom_node_unref(target);
+}
+
+/* Whenever an invalidate geometry event reaches the topmost element,
  * just enqueue the element for later processing
  */
 static void _eon_element_eon_geometry_invalidate_cb(Egueb_Dom_Event *ev,
@@ -74,7 +177,7 @@ static void _eon_element_eon_geometry_invalidate_cb(Egueb_Dom_Event *ev,
 {
 	Egueb_Dom_Node *n;
 
-	n = egueb_dom_event_target_current_get(ev);
+	n = EGUEB_DOM_NODE(egueb_dom_event_target_current_get(ev));
 	egueb_dom_element_enqueue(n);
 }
 
@@ -97,7 +200,7 @@ static void _eon_element_eon_tree_modified_cb(Egueb_Dom_Event *e,
 	egueb_dom_node_unref(related);
 
 	/* get the target and check if it is of type renderable */
-	target = egueb_dom_event_target_get(e);
+	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
 	if (!eon_is_renderable(target))
 	{
 		egueb_dom_node_unref(target);
@@ -107,7 +210,141 @@ static void _eon_element_eon_tree_modified_cb(Egueb_Dom_Event *e,
 	thiz->renderable_changed = EINA_TRUE;
 	egueb_dom_node_unref(target);
 }
+/*----------------------------------------------------------------------------*
+ *                              Input interface                               *
+ *----------------------------------------------------------------------------*/
+static Egueb_Dom_Node * _eon_element_eon_input_element_at(Egueb_Dom_Node *parent,
+		int x, int y, void *data)
+{
+	Egueb_Dom_Node *n = data;
+	Egueb_Dom_Node *topmost;
+	Egueb_Dom_Node *ret;
+	Eina_Rectangle ptr;
 
+	/* iterate over the whole tree */
+	eina_rectangle_coords_from(&ptr, x, y, 1, 1);
+	topmost = egueb_dom_document_document_element_get(n);
+	ret = eon_renderable_element_at(topmost, &ptr);
+	egueb_dom_node_unref(topmost);
+
+	if (ret)
+		DBG_ELEMENT(ret, "Element found at %d %d", x, y);
+
+	return ret;
+}
+
+static Egueb_Dom_Input_Descriptor _eon_element_eon_input_descriptor = {
+	/* .version		= */ EGUEB_DOM_INPUT_DESCRIPTOR_VERSION,
+	/* .element_at 		= */ _eon_element_eon_input_element_at,
+	/* .focus_next		= */ NULL,
+	/* .focus_prev		= */ NULL,
+};
+
+/*----------------------------------------------------------------------------*
+ *                          UI feature interface                              *
+ *----------------------------------------------------------------------------*/
+static Egueb_Dom_Input * _eon_element_eon_ui_input_get(Egueb_Dom_Node *n)
+{
+	Eon_Element_Eon *thiz;
+
+	thiz = egueb_dom_element_external_data_get(n);
+	return thiz->input;
+}
+
+static Egueb_Dom_Feature_UI_Descriptor 
+_eon_element_eon_ui_descriptor = {
+	/* .version	= */ EGUEB_DOM_FEATURE_UI_DESCRIPTOR_VERSION,
+	/* .input_get 	= */ _eon_element_eon_ui_input_get,
+};
+/*----------------------------------------------------------------------------*
+ *                      Animation feature interface                           *
+ *----------------------------------------------------------------------------*/
+static Egueb_Smil_Feature_Animation_Descriptor 
+_eon_element_eon_animation_descriptor = {
+	/* .version		= */ EGUEB_SMIL_FEATURE_ANIMATION_DESCRIPTOR_VERSION,
+	/* .timeline_get 	= */ NULL,
+};
+/*----------------------------------------------------------------------------*
+ *                        Window feature interface                            *
+ *----------------------------------------------------------------------------*/
+static Eina_Bool _eon_element_eon_window_type_get(
+		Egueb_Dom_Node *n, Egueb_Dom_Feature_Window_Type *type)
+{
+	*type = EGUEB_DOM_FEATURE_WINDOW_TYPE_SLAVE;
+	return EINA_TRUE;
+}
+
+static Eina_Bool _eon_element_eon_window_content_size_set(
+		Egueb_Dom_Node *n, int w, int h)
+{
+	Eon_Element_Eon *thiz;
+	Egueb_Dom_Node *eon;
+	Eina_Rectangle geom;
+	Eina_Rectangle eon_geom;
+
+	if (w <= 0 || h <= 0)
+		return EINA_FALSE;
+
+	eon = egueb_dom_document_document_element_get(n);
+	if (!eon)
+	{
+		return EINA_FALSE;
+	}
+	eina_rectangle_coords_from(&geom, 0, 0, w, h);
+	eon_renderable_geometry_solve(eon, &geom, &eon_geom);
+	eon_renderable_geometry_set(eon, &eon_geom);
+	egueb_dom_element_enqueue(eon);
+
+	thiz = egueb_dom_element_external_data_get(n);
+	thiz->width = w;
+	thiz->height = h;
+
+	return EINA_TRUE;
+}
+
+static Eina_Bool _eon_element_eon_window_content_size_get(
+		Egueb_Dom_Node *n, int *w, int *h)
+{
+	Eon_Element_Eon *thiz;
+	Egueb_Dom_Node *topmost = NULL;
+
+	thiz = egueb_dom_element_external_data_get(n);
+	*h = thiz->height;
+	*w = thiz->width;
+
+	return EINA_TRUE;
+}
+
+static Egueb_Dom_Feature_Window_Descriptor 
+_eon_element_eon_window_descriptor = {
+	/* .version		= */ EGUEB_DOM_FEATURE_WINDOW_DESCRIPTOR_VERSION,
+	/* .type_get 		= */ _eon_element_eon_window_type_get,
+	/* .content_size_set 	= */ _eon_element_eon_window_content_size_set,
+	/* .content_size_get 	= */ _eon_element_eon_window_content_size_get,
+};
+/*----------------------------------------------------------------------------*
+ *                        Render feature interface                            *
+ *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_element_eon_render_renderer_get(
+		Egueb_Dom_Node *n)
+{
+	Egueb_Dom_Node *topmost;
+	Enesim_Renderer *r;
+
+	/* get the topmost element, get the renderer and return it */
+	topmost = egueb_dom_document_document_element_get(n);
+	if (!topmost) return NULL;
+
+	r = eon_renderable_renderer_get(topmost);
+	egueb_dom_node_unref(topmost);
+	return r;
+}
+
+static Egueb_Dom_Feature_Render_Descriptor
+_eon_element_eon_render_descriptor = {
+	/* .version		= */ EGUEB_DOM_FEATURE_RENDER_DESCRIPTOR_VERSION,
+	/* .renderer_get 	= */ _eon_element_eon_render_renderer_get,
+};
 /*----------------------------------------------------------------------------*
  *                        Widget Drawer interface                             *
  *----------------------------------------------------------------------------*/
@@ -194,6 +431,7 @@ static Eina_Bool _eon_element_eon_process(Eon_Widget_Drawer *w)
 static void _eon_element_eon_init(Eon_Widget *w)
 {
 	Egueb_Dom_Node *n;
+	Eon_Element_Eon *thiz;
 
 	n = (EON_ELEMENT(w))->n;
 	egueb_dom_node_event_listener_add(n,
@@ -208,6 +446,27 @@ static void _eon_element_eon_init(Eon_Widget *w)
 			EON_EVENT_GEOMETRY_INVALIDATE,
 			_eon_element_eon_geometry_invalidate_cb, EINA_FALSE,
 			w);
+	egueb_dom_node_event_listener_add(n,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+			_eon_element_eon_node_inserted_cb,
+			EINA_FALSE, n);
+	egueb_dom_node_event_listener_add(n,
+			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+			_eon_element_eon_node_removed_cb,
+			EINA_FALSE, n);
+
+	thiz = EON_ELEMENT_EON(w);
+	thiz->input = egueb_dom_input_new(&_eon_element_eon_input_descriptor, n);
+	/* register the features */
+	egueb_dom_feature_window_add(n,
+			&_eon_element_eon_window_descriptor);
+	egueb_dom_feature_render_add(n,
+			&_eon_element_eon_render_descriptor);
+	egueb_dom_feature_ui_add(n,
+			&_eon_element_eon_ui_descriptor);
+	egueb_dom_feature_io_add(n);
+	egueb_smil_feature_animation_add(n,
+			&_eon_element_eon_animation_descriptor);
 }
 
 static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
@@ -320,10 +579,6 @@ static void _eon_element_eon_class_init(void *k)
 
 static void _eon_element_eon_instance_init(void *o)
 {
-	Eon_Element_Eon *thiz;
-
-	thiz = EON_ELEMENT_EON(o);
-	thiz->timeline = egueb_smil_timeline_new();
 }
 
 static void _eon_element_eon_instance_deinit(void *o)
@@ -338,7 +593,7 @@ static void _eon_element_eon_instance_deinit(void *o)
 		free(theme->name);
 		free(theme);
 	}
-	egueb_smil_timeline_unref(thiz->timeline);
+	egueb_dom_input_unref(thiz->input);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -382,8 +637,10 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		if (!s) return NULL;
 
 		doc = eon_theme_document_new();
+#if 0
 		egueb_dom_node_event_listener_add(doc, EGUEB_SMIL_EVENT_TIMELINE,
 				_eon_element_eon_timeline_cb, EINA_TRUE, thiz);
+#endif
 		egueb_dom_parser_parse(s, &doc);
 
 		theme = calloc(1, sizeof(Eon_Element_Eon_Theme));
@@ -398,13 +655,6 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 
 }
 
-Egueb_Smil_Timeline * eon_element_eon_timeline_get(Egueb_Dom_Node *n)
-{
-	Eon_Element_Eon *thiz;
-
-	thiz = EON_ELEMENT_EON(egueb_dom_element_external_data_get(n));
-	return egueb_smil_timeline_ref(thiz->timeline);
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
