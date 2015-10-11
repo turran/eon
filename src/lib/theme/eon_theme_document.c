@@ -31,7 +31,7 @@ typedef struct _Eon_Theme_Document
  *                     The exernal document interface                         *
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_Node * _eon_theme_document_element_create(Egueb_Dom_Node *n,
-		void *data, const char *name)
+		void *data, const char *ns, const char *name)
 {
 	/* we can only create states/state/set/animate */
 	/* any other object needs to be created using the topmost ender */

@@ -73,7 +73,7 @@ static void _eon_renderable_geometry_invalidate_cb(Egueb_Dom_Event *ev,
 		{
 			Egueb_Dom_Node *n;
 
-			n = egueb_dom_event_target_current_get(ev);
+			n = EGUEB_DOM_NODE(egueb_dom_event_target_current_get(ev));
 			egueb_dom_element_enqueue(n);
 		}
 	}
