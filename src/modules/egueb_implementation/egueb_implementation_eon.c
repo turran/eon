@@ -22,17 +22,17 @@
 /*----------------------------------------------------------------------------*
  *                             Module API                                     *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _egueb_source_eon_init(void)
+static Eina_Bool _egueb_implementation_eon_init(void)
 {
 	/* This function will register the implementation source */
 	eon_init();
 	return EINA_TRUE;
 }
 
-static void _egueb_source_eon_shutdown(void)
+static void _egueb_implementation_eon_shutdown(void)
 {
 	eon_shutdown();
 }
 
-EINA_MODULE_INIT(_egueb_source_eon_init);
-EINA_MODULE_SHUTDOWN(_egueb_source_eon_shutdown);
+EINA_MODULE_INIT(_egueb_implementation_eon_init);
+EINA_MODULE_SHUTDOWN(_egueb_implementation_eon_shutdown);

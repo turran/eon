@@ -174,7 +174,7 @@ EAPI int eon_init(void)
 #endif
 		/* register our own source */
 		i = egueb_dom_implementation_new(&_impl_descriptor);
-		egueb_dom_registry_source_add(i);
+		egueb_dom_registry_implementation_add(i);
 	}
 	return _init_count;
 }

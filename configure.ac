@@ -18,6 +18,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([1.6 dist-bzip2])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AM_PROG_AR
 
 LT_PREREQ([2.2])
 LT_INIT([win32-dll])
@@ -118,8 +119,8 @@ AM_CONDITIONAL([BUILD_BACKEND_REMOTE], [test "x${build_backend_remote}" = "xyes"
 ENESIM_MODULE_IMAGE_DIR=`${PKG_CONFIG} --variable=moduleimagedir enesim`
 AC_SUBST([ENESIM_MODULE_IMAGE_DIR])
 
-EGUEB_MODULE_SOURCE_DIR=`${PKG_CONFIG} --variable=modulesourcedir egueb-dom`
-AC_SUBST([EGUEB_MODULE_SOURCE_DIR])
+EGUEB_MODULE_IMPLEMENTATION_DIR=`${PKG_CONFIG} --variable=moduleimplementationdir egueb-dom`
+AC_SUBST([EGUEB_MODULE_IMPLEMENTATION_DIR])
 
 ### Checks for header files
 
