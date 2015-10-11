@@ -30,6 +30,7 @@ static Egueb_Dom_String * _eon_theme_element_state_tag_name_get(
 }
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
+	/* version 		= */ EGUEB_DOM_ELEMENT_EXTERNAL_DESCRIPTOR_VERSION,
 	/* init 		= */ NULL,
 	/* deinit 		= */ NULL,
 	/* tag_name_get		= */ _eon_theme_element_state_tag_name_get,

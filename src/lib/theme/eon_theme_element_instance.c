@@ -188,6 +188,7 @@ next:
 }
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
+	/* version 		= */ EGUEB_DOM_ELEMENT_EXTERNAL_DESCRIPTOR_VERSION,
 	/* init 		= */ _eon_theme_element_instance_init,
 	/* deinit 		= */ _eon_theme_element_instance_deinit,
 	/* tag_name_get		= */ _eon_theme_element_instance_tag_name_get,

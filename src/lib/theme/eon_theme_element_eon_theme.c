@@ -54,6 +54,7 @@ static Eina_Bool _eon_theme_element_eon_theme_child_appendable(Egueb_Dom_Node *n
 }
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
+	/* version 		= */ EGUEB_DOM_ELEMENT_EXTERNAL_DESCRIPTOR_VERSION,
 	/* init 		= */ NULL,
 	/* deinit 		= */ NULL,
 	/* tag_name_get		= */ _eon_theme_element_eon_theme_tag_name_get,
