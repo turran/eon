@@ -120,15 +120,12 @@ static Egueb_Dom_Node * _eon_element_eon_input_element_at(Egueb_Dom_Node *parent
 		int x, int y, void *data)
 {
 	Egueb_Dom_Node *n = data;
-	Egueb_Dom_Node *topmost;
 	Egueb_Dom_Node *ret;
 	Eina_Rectangle ptr;
 
 	/* iterate over the whole tree */
 	eina_rectangle_coords_from(&ptr, x, y, 1, 1);
-	topmost = egueb_dom_document_document_element_get(n);
-	ret = eon_renderable_element_at(topmost, &ptr);
-	egueb_dom_node_unref(topmost);
+	ret = eon_renderable_element_at(n, &ptr);
 
 	if (ret)
 		DBG_ELEMENT(ret, "Element found at %d %d", x, y);
@@ -209,7 +206,6 @@ static Eina_Bool _eon_element_eon_window_content_size_get(
 		Egueb_Dom_Node *n, int *w, int *h)
 {
 	Eon_Element_Eon *thiz;
-	Egueb_Dom_Node *topmost = NULL;
 
 	thiz = egueb_dom_element_external_data_get(n);
 	*h = thiz->height;
@@ -231,15 +227,9 @@ _eon_element_eon_window_descriptor = {
 static Enesim_Renderer * _eon_element_eon_render_renderer_get(
 		Egueb_Dom_Node *n)
 {
-	Egueb_Dom_Node *topmost;
 	Enesim_Renderer *r;
 
-	/* get the topmost element, get the renderer and return it */
-	topmost = egueb_dom_document_document_element_get(n);
-	if (!topmost) return NULL;
-
-	r = eon_renderable_renderer_get(topmost);
-	egueb_dom_node_unref(topmost);
+	r = eon_renderable_renderer_get(n);
 	return r;
 }
 
