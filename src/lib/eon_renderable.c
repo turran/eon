@@ -93,6 +93,7 @@ static void _eon_renderable_init(Eon_Element *e)
 	Eon_Renderable *thiz;
 	Eon_Renderable_Class *klass;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *et;
 
  	thiz = EON_RENDERABLE(e);
 	/* add the attributes */
@@ -120,11 +121,12 @@ static void _eon_renderable_init(Eon_Element *e)
 	/* in case the attribute width or height has changed be sure to invalidate
 	 * the geometry
 	 */
-	egueb_dom_event_target_event_listener_add(n,
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_renderable_attr_modified_cb, EINA_FALSE, thiz);
 
-	egueb_dom_event_target_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(et,
 			EON_EVENT_GEOMETRY_INVALIDATE,
 			_eon_renderable_geometry_invalidate_cb, EINA_FALSE, thiz);
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
@@ -246,11 +248,13 @@ Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n)
 void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
 {
 	Egueb_Dom_Event *ev;
+	Egueb_Dom_Event_Target *et;
 
 	DBG_ELEMENT(((EON_ELEMENT(thiz))->n), "Invalidating geometry");
 
 	ev = eon_event_geometry_invalidate_new();
-	egueb_dom_event_target_event_dispatch((EON_ELEMENT(thiz))->n, ev, NULL, NULL);
+	et = EGUEB_DOM_EVENT_TARGET((EON_ELEMENT(thiz))->n);
+	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
 }
 
 /* TODO handle the expand, padding, margin or whatever other attr we decide to add */

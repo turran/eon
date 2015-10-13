@@ -333,19 +333,22 @@ static Eina_Bool _eon_element_eon_process(Eon_Widget_Drawer *w)
  *----------------------------------------------------------------------------*/
 static void _eon_element_eon_init(Eon_Widget *w)
 {
-	Egueb_Dom_Node *n;
 	Eon_Element_Eon *thiz;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *e;
 
 	n = (EON_ELEMENT(w))->n;
-	egueb_dom_event_target_event_listener_add(n,
+
+	e = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_eon_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_event_target_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_event_target_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(e,
 			EON_EVENT_GEOMETRY_INVALIDATE,
 			_eon_element_eon_geometry_invalidate_cb, EINA_FALSE,
 			w);

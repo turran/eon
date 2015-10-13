@@ -64,7 +64,7 @@ static Egueb_Dom_Node * _eon_element_stack_event_get_renderable(
 	egueb_dom_node_unref(related);
 
 	/* get the target and check if it is of type renderable */
-	target = egueb_dom_event_target_get(e);
+	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
 	if (!eon_is_renderable(target))
 	{
 		egueb_dom_node_unref(target);
@@ -212,14 +212,17 @@ static void _eon_element_stack_init(Eon_Renderable *r)
 {
 	Eon_Element_Stack *thiz;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *e;
 
 	thiz = EON_ELEMENT_STACK(r);
 	n = (EON_ELEMENT(r))->n;
-	egueb_dom_event_target_event_listener_add(n,
+
+	e = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_stack_node_inserted_cb,
 			EINA_FALSE, r);
-	egueb_dom_event_target_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_stack_node_removed_cb,
 			EINA_FALSE, r);

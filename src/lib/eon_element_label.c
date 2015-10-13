@@ -220,6 +220,7 @@ static void _eon_element_label_init(Eon_Widget *w)
 {
 	Eon_Element_Label *thiz;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *e;
 
 	thiz = EON_ELEMENT_LABEL(w);
 	thiz->ellipsize = egueb_dom_attr_boolean_new(
@@ -239,11 +240,12 @@ static void _eon_element_label_init(Eon_Widget *w)
 	 */
 	
 	/* events */
-	egueb_dom_event_target_event_listener_add(n,
+	e = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_label_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_event_target_event_listener_add(n,
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_label_tree_modified_cb,
 			EINA_FALSE, w);

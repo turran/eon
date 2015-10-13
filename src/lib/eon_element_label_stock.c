@@ -104,6 +104,7 @@ static void _eon_element_label_stock_init(Eon_Widget_Proxy *wp)
 {
 	Eon_Element_Label_Stock *thiz;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *e;
 
 	thiz = EON_ELEMENT_LABEL_STOCK(wp);
 	n = (EON_ELEMENT(wp))->n;
@@ -112,7 +113,8 @@ static void _eon_element_label_stock_init(Eon_Widget_Proxy *wp)
 	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->stock), NULL);
 
-	egueb_dom_event_target_event_listener_add(n,
+	e = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(e,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_label_stock_attr_modified_cb,
 			EINA_FALSE, thiz);
