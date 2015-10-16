@@ -178,22 +178,16 @@ static Eina_Bool _eon_element_eon_window_content_size_set(
 		Egueb_Dom_Node *n, int w, int h)
 {
 	Eon_Element_Eon *thiz;
-	Egueb_Dom_Node *eon;
 	Eina_Rectangle geom;
 	Eina_Rectangle eon_geom;
 
 	if (w <= 0 || h <= 0)
 		return EINA_FALSE;
 
-	eon = egueb_dom_document_document_element_get(n);
-	if (!eon)
-	{
-		return EINA_FALSE;
-	}
 	eina_rectangle_coords_from(&geom, 0, 0, w, h);
-	eon_renderable_geometry_solve(eon, &geom, &eon_geom);
-	eon_renderable_geometry_set(eon, &eon_geom);
-	egueb_dom_element_enqueue(eon);
+	eon_renderable_geometry_solve(n, &geom, &eon_geom);
+	eon_renderable_geometry_set(n, &eon_geom);
+	egueb_dom_element_enqueue(egueb_dom_node_ref(n));
 
 	thiz = egueb_dom_element_external_data_get(n);
 	thiz->width = w;
