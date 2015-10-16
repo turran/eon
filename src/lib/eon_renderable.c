@@ -220,6 +220,8 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	Eon_Renderable *thiz;
 	Eon_Renderable_Class *klass;
 
+	DBG_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
+			EINA_RECTANGLE_ARGS(geometry));
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
 	thiz->geometry = *geometry;
 	thiz->needs_geometry = EINA_FALSE;
@@ -227,8 +229,6 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->geometry_set)
 	{
-		DBG_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
-				EINA_RECTANGLE_ARGS(geometry));
 		klass->geometry_set(thiz, geometry);
 	}
 }
@@ -339,6 +339,7 @@ Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
 	Eon_Renderable_Class *klass;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	DBG_ELEMENT(n, "Renderable of geometry %" EINA_RECTANGLE_FORMAT " at %d %d?", EINA_RECTANGLE_ARGS(&thiz->geometry), cursor->x, cursor->y); 
 	/* check that the mouse is on the current geometry */
 	if (!eina_rectangles_intersect(&thiz->geometry, cursor))
 		return NULL;
