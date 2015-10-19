@@ -15,20 +15,16 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_THEME_MAIN_PRIVATE_H
-#define _EON_THEME_MAIN_PRIVATE_H
 
-extern int eon_theme_log_dom;
-extern Egueb_Dom_String *EON_THEME_NAME_ELEMENT_EOT;
+#ifndef _EON_THEME_NAMESPACE_H_
+#define _EON_THEME_NAMESPACE_H_
 
-extern Egueb_Dom_String *EON_THEME_ELEMENT_EON_THEME;
-extern Egueb_Dom_String *EON_THEME_ELEMENT_INSTANCE;
-extern Egueb_Dom_String *EON_THEME_ELEMENT_OBJECT;
-extern Egueb_Dom_String *EON_THEME_ELEMENT_SCENE;
-extern Egueb_Dom_String *EON_THEME_ELEMENT_STATES;
-extern Egueb_Dom_String *EON_THEME_ELEMENT_STATE;
+typedef struct _Eon_Theme_Namespace Eon_Theme_Namespace;
 
-void eon_theme_init(void);
-void eon_theme_shutdown(void);
+typedef Egueb_Dom_Node * (*Eon_Theme_Namespace_Element_Ctor)(void);
+
+EAPI Eon_Theme_Namespace * eon_theme_namespace_register(const char *ns_uri);
+EAPI void eon_theme_namespace_element_add(Eon_Theme_Namespace *thiz,
+		const char *name, Eon_Theme_Namespace_Element_Ctor ctor);
 
 #endif

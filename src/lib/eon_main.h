@@ -52,6 +52,9 @@ typedef enum _Eon_Orientation
 	EON_ORIENTATION_VERTICAL,
 } Eon_Orientation;
 
+typedef int (*Eon_Version_Get_Cb)(void);
+typedef void (*Eon_Free_Cb)(void *data);
+
 EAPI int eon_init(void);
 EAPI int eon_shutdown(void);
 

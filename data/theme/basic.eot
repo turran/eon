@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="yes"?>
+<eot xmlns="http://www.eon.org/1.0/spec"
+  xmlns:basic="http://www.eon.org/theme/basic"
+  xmlns:mars="http://www.eon.org/theme/mars">
+
+  <stack padding="20px" separator="20px"/>
+  <basic:button id="button" border-color="#555" fill-color="green">
+    <set attributeName="fill-color" to="darkgreen" start="mousedown"/>
+    <set attributeName="fill-color" to="green" start="mouseup"/>
+  </basic:button>
+  <mars:button id="button-mars" color="green"/>
+</eot>

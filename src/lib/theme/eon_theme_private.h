@@ -24,6 +24,7 @@
 
 #include <Egueb_Dom.h>
 #include <Egueb_Smil.h>
+#include "Eon.h"
 
 #define ERR(...) EINA_LOG_DOM_ERR(eon_theme_log_dom, __VA_ARGS__)
 #define WRN(...) EINA_LOG_DOM_WARN(eon_theme_log_dom, __VA_ARGS__)

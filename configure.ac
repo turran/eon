@@ -153,6 +153,7 @@ AC_SUBST([lt_enable_auto_import])
 ### Checks for library functions
 
 ENS_MODULE([Drawer_basic], [static], [yes])
+ENS_MODULE([theme_mars], [static], [yes])
 
 ## Make the debug preprocessor configurable
 
@@ -179,6 +180,8 @@ echo "Backends:"
 echo "SDL: .....................: $build_backend_sdl"
 echo "Remote: ..................: $build_backend_remote"
 echo
+echo "Themes:"
+echo "Mars: ....................: ${build_module_theme_mars}"
 echo "Drawers:"
 echo "Basic: ...................: ${build_module_drawer_basic}"
 echo

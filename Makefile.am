@@ -31,6 +31,7 @@ include src/lib/drawer/Makefile.mk
 
 ### Modules
 include src/modules/drawer/basic/Makefile.mk
+include src/modules/theme/mars/Makefile.mk
 include src/modules/enesim_image/Makefile.mk
 include src/modules/egueb_implementation/Makefile.mk
 

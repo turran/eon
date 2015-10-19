@@ -18,6 +18,8 @@
 #include "eon_theme_private.h"
 #include "eon_theme_main_private.h"
 #include "eon_theme_document_private.h"
+#include "eon_theme_namespace_private.h"
+#include "eon_theme_element_eot_private.h"
 #include "eon_theme_element_instance_private.h"
 #include "eon_theme_element_object_private.h"
 /*============================================================================*
@@ -26,39 +28,18 @@
 typedef struct _Eon_Theme_Document
 {
 } Eon_Theme_Document;
-
 /*----------------------------------------------------------------------------*
  *                     The exernal document interface                         *
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_Node * _eon_theme_document_element_create(Egueb_Dom_Node *n,
-		void *data, const char *ns, const char *name)
+		void *data, const char *ns_uri, const char *name)
 {
 	/* we can only create states/state/set/animate */
 	/* any other object needs to be created using the topmost ender */
-	DBG("Creating element '%s'", name);
-	if (!strcmp(name, "states"))
+	DBG("Creating element '%s' with ns '%s'", name, ns_uri);
+	if (!strcmp(name, "eot"))
 	{
-		return eon_theme_element_states_new();
-	}
-	else if (!strcmp(name, "state"))
-	{
-		return eon_theme_element_state_new();
-	}
-	else if (!strcmp(name, "object"))
-	{
-		return eon_theme_element_object_new();
-	}
-	else if (!strcmp(name, "ender"))
-	{
-		return eon_theme_element_eon_theme_new();
-	}
-	else if (!strcmp(name, "instance"))
-	{
-		return eon_theme_element_instance_new();
-	}
-	else if (!strcmp(name, "scene"))
-	{
-		return eon_theme_element_scene_new();
+		return eon_theme_element_eot_new();
 	}
 	else if (!strcmp(name, "set"))
 	{
@@ -67,6 +48,17 @@ static Egueb_Dom_Node * _eon_theme_document_element_create(Egueb_Dom_Node *n,
 	else if (!strcmp(name, "animate"))
 	{
 		return egueb_smil_animate_new();
+	}
+	else if (ns_uri)
+	{
+		Eon_Theme_Namespace *ns;
+		ns = eon_theme_namespace_find(ns_uri);
+		if (!ns)
+		{
+			WRN("No namespace '%s' found", ns_uri);
+			return NULL;
+		}
+		return eon_theme_namespace_element_ctor(ns, name);
 	}
 
 	return NULL;

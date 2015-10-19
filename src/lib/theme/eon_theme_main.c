@@ -17,15 +17,17 @@
  */
 #include "eon_theme_private.h"
 #include "eon_theme_main_private.h"
+#include "eon_theme_namespace_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 static int _init = 0;
-static Eina_Array *_modules = NULL;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
 int eon_theme_log_dom = -1;
+Egueb_Dom_String *EON_THEME_NAME_ELEMENT_EOT;
+
 Egueb_Dom_String *EON_THEME_ELEMENT_EON_THEME;
 Egueb_Dom_String *EON_THEME_ELEMENT_INSTANCE;
 Egueb_Dom_String *EON_THEME_ELEMENT_OBJECT;
@@ -38,13 +40,16 @@ void eon_theme_init(void)
 	if (!_init++)
 	{
 		egueb_dom_init();
+ 		EON_THEME_NAME_ELEMENT_EOT = egueb_dom_string_new_with_static_string("eot");
+
  		EON_THEME_ELEMENT_EON_THEME = egueb_dom_string_new_with_static_string("ender");
  		EON_THEME_ELEMENT_INSTANCE = egueb_dom_string_new_with_static_string("instance");
  		EON_THEME_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
  		EON_THEME_ELEMENT_SCENE = egueb_dom_string_new_with_static_string("scene");
  		EON_THEME_ELEMENT_STATES = egueb_dom_string_new_with_static_string("states");
  		EON_THEME_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
-		eon_theme_log_dom = eina_log_domain_register("ender", NULL);
+		eon_theme_log_dom = eina_log_domain_register("eon-theme", NULL);
+		eon_theme_namespace_init();
 		eon_drawer_init();
 	}
 }
@@ -54,7 +59,10 @@ void eon_theme_shutdown(void)
 	if (_init == 1)
 	{
 		eon_drawer_shutdown();
+		eon_theme_namespace_shutdown();
 		eina_log_domain_unregister(eon_theme_log_dom);
+		egueb_dom_string_unref(EON_THEME_NAME_ELEMENT_EOT);
+
 		egueb_dom_string_unref(EON_THEME_ELEMENT_EON_THEME);
 		egueb_dom_string_unref(EON_THEME_ELEMENT_INSTANCE);
 		egueb_dom_string_unref(EON_THEME_ELEMENT_OBJECT);

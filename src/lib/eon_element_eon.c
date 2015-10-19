@@ -507,7 +507,7 @@ Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String 
 		{
 			theme_path = "/usr/local/share/eon/themes";
 		}
-		snprintf(path, PATH_MAX, "%s/%s.ender", theme_path, egueb_dom_string_string_get(theme_name));
+		snprintf(path, PATH_MAX, "%s/%s.eot", theme_path, egueb_dom_string_string_get(theme_name));
 		DBG("Loading theme at '%s'", path);
 		s = enesim_stream_file_new(path, "r");
 		if (!s) return NULL;
