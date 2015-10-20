@@ -145,7 +145,9 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	}
 	theme = egueb_dom_string_new_with_static_string(default_theme);
 	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
-			NULL, theme, EINA_FALSE, EINA_FALSE, EINA_TRUE);
+			NULL, theme, EINA_FALSE, EINA_TRUE, EINA_TRUE);
+	thiz->theme_id = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
+			NULL, theme, EINA_FALSE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->theme), NULL);
 
 	return n;

@@ -37,6 +37,7 @@ typedef struct _Eon_Element
 	Enesim_Object_Instance base;
 	/* attributes */
 	Egueb_Dom_Node *theme;
+	Egueb_Dom_Node *theme_id;
 	/* private */
 	Egueb_Dom_Node *n;
 } Eon_Element;
