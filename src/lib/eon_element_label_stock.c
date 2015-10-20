@@ -92,7 +92,7 @@ static void _eon_element_label_stock_attr_modified_cb(Egueb_Dom_Event *e,
 	{
 		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Stock changed, "
 				"invalidating geometry");
-		eon_renderable_invalidate_geometry(EON_RENDERABLE(thiz));
+		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
 	}
 	egueb_dom_node_unref(attr);
 }

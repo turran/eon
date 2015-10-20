@@ -16,108 +16,91 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_theme_private.h"
-#include "eon_theme_element_button.h"
+#include "eon_theme_element_eon.h"
 #include "eon_theme_main_private.h"
 #include "eon_theme_renderable_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define EON_THEME_ELEMENT_BUTTON_DESCRIPTOR eon_theme_element_button_descriptor_get()
-#define EON_THEME_ELEMENT_BUTTON(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
-		Eon_Theme_Element_Button, EON_THEME_ELEMENT_BUTTON_DESCRIPTOR)
+#define EON_THEME_ELEMENT_EON_DESCRIPTOR eon_theme_element_eon_descriptor_get()
+#define EON_THEME_ELEMENT_EON(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
+		Eon_Theme_Element_Eon, EON_THEME_ELEMENT_EON_DESCRIPTOR)
 
-typedef struct _Eon_Theme_Element_Button
+typedef struct _Eon_Theme_Element_Eon
 {
 	Eon_Theme_Renderable base;
-	const Eon_Theme_Element_Button_Descriptor *d;
+	const Eon_Theme_Element_Eon_Descriptor *d;
 	void *data;
-} Eon_Theme_Element_Button;
+} Eon_Theme_Element_Eon;
 
-typedef struct _Eon_Theme_Element_Button_Class
+typedef struct _Eon_Theme_Element_Eon_Class
 {
 	Eon_Theme_Renderable_Class base;
-} Eon_Theme_Element_Button_Class;
+} Eon_Theme_Element_Eon_Class;
 
 /*----------------------------------------------------------------------------*
- *                              Widget interface                              *
+ *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_theme_element_button_renderer_get(Eon_Theme_Renderable *w)
+static Enesim_Renderer * _eon_theme_element_eon_renderer_get(Eon_Theme_Renderable *w)
 {
-	Eon_Theme_Element_Button *thiz;
+	Eon_Theme_Element_Eon *thiz;
 
-	thiz = EON_THEME_ELEMENT_BUTTON(w);
+	thiz = EON_THEME_ELEMENT_EON(w);
 	if (thiz->d->renderer_get)
 		return thiz->d->renderer_get(thiz->data);
 	return NULL;
 }
 
-static void _eon_theme_element_button_geometry_set(Eon_Theme_Renderable *w, Eina_Rectangle *geom)
+static void _eon_theme_element_eon_geometry_set(Eon_Theme_Renderable *w, Eina_Rectangle *geom)
 {
-	Eon_Theme_Element_Button *thiz;
+	Eon_Theme_Element_Eon *thiz;
 
-	thiz = EON_THEME_ELEMENT_BUTTON(w);
+	thiz = EON_THEME_ELEMENT_EON(w);
 }
 
 ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_RENDERABLE_DESCRIPTOR,
-		Eon_Theme_Element_Button, Eon_Theme_Element_Button_Class, eon_theme_element_button);
+		Eon_Theme_Element_Eon, Eon_Theme_Element_Eon_Class, eon_theme_element_eon);
 
-static void _eon_theme_element_button_class_init(void *k)
+static void _eon_theme_element_eon_class_init(void *k)
 {
 	Eon_Theme_Renderable_Class *klass;
 
 	klass = EON_THEME_RENDERABLE_CLASS(k);
-	klass->renderer_get = _eon_theme_element_button_renderer_get;
-	klass->geometry_set = _eon_theme_element_button_geometry_set;
+	klass->renderer_get = _eon_theme_element_eon_renderer_get;
+	klass->geometry_set = _eon_theme_element_eon_geometry_set;
 }
 
-static void _eon_theme_element_button_instance_init(void *o)
+static void _eon_theme_element_eon_instance_init(void *o)
 {
 }
 
-static void _eon_theme_element_button_instance_deinit(void *o)
+static void _eon_theme_element_eon_instance_deinit(void *o)
 {
-	Eon_Theme_Element_Button *thiz;
+	Eon_Theme_Element_Eon *thiz;
 
-	thiz = EON_THEME_ELEMENT_BUTTON(o);
+	thiz = EON_THEME_ELEMENT_EON(o);
 	if (thiz->d->free)
 		thiz->d->free(thiz->data);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_theme_element_button_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
-{
-	Eon_Theme_Element_Button *thiz;
-
-	thiz = EON_THEME_ELEMENT_BUTTON(egueb_dom_element_external_data_get(n));
-	if (thiz->d->padding_get)
-		thiz->d->padding_get(thiz->data, padding);
-}
-
-void eon_theme_element_button_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
-{
-	Eon_Theme_Element_Button *thiz;
-
-	thiz = EON_THEME_ELEMENT_BUTTON(egueb_dom_element_external_data_get(n));
-	if (thiz->d->content_set)
-		thiz->d->content_set(thiz->data, r);
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
 /**
- * Creates a new button theme
+ * Creates a new eon theme
  * @param d The set of functions the theme implemenation must implement
  * @param data The private data passed in on the descriptor functions 
  */
-EAPI Egueb_Dom_Node * eon_theme_element_button_new(
-		const Eon_Theme_Element_Button_Descriptor *d, void *data)
+EAPI Egueb_Dom_Node * eon_theme_element_eon_new(
+		const Eon_Theme_Element_Eon_Descriptor *d, void *data)
 {
-	Eon_Theme_Element_Button *thiz;
+	Eon_Theme_Element_Eon *thiz;
 	Eon_Theme_Element *e;
 	Egueb_Dom_Node *n;
 
-	n = EON_THEME_ELEMENT_NEW(eon_theme_element_button);
+	n = EON_THEME_ELEMENT_NEW(eon_theme_element_eon);
 	thiz = egueb_dom_element_external_data_get(n);
 	thiz->d = d;
 	thiz->data = data;
@@ -127,17 +110,18 @@ EAPI Egueb_Dom_Node * eon_theme_element_button_new(
 }
 
 /**
- * Gets the private data of a button
- * @param w The button to get the data from
+ * Gets the private data of a eon
+ * @param w The eon to get the data from
  * @return The private data
  */
-EAPI void * eon_theme_element_button_data_get(Egueb_Dom_Node *n)
+EAPI void * eon_theme_element_eon_data_get(Egueb_Dom_Node *n)
 {
-	Eon_Theme_Element_Button *thiz;
+	Eon_Theme_Element_Eon *thiz;
 	Eon_Theme_Element *e;
 
 	e = EON_THEME_ELEMENT(egueb_dom_element_external_data_get(n));
-	thiz = EON_THEME_ELEMENT_BUTTON(e);
+	thiz = EON_THEME_ELEMENT_EON(e);
 
 	return thiz->data;
 }
+

@@ -130,19 +130,19 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 	klass = EON_WIDGET_CLASS_GET(r);
 
 	e = EON_ELEMENT(r);
+	n = e->n;
 	/* in case the theme value has been modifed, invalide the geometry */
 	if (egueb_dom_attr_has_changed(e->theme))
 	{
 		DBG_ELEMENT(e->n, "Widget's theme is different");
 		if (klass->theme_changed)
 			klass->theme_changed(thiz);
-		eon_renderable_invalidate_geometry(r);
+		eon_renderable_invalidate_geometry(n);
 		goto done;
 	}
 	/* in case the parent's theme is different than the previous
 	 * theme, invalidate it too
 	 */
-	n = e->n;
 	parent = egueb_dom_node_parent_get(n);
 	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT))
 	{
@@ -161,7 +161,7 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 			thiz->last_parent_theme = egueb_dom_string_dup(theme);
 			if (klass->theme_changed)
 				klass->theme_changed(thiz);
-			eon_renderable_invalidate_geometry(r);
+			eon_renderable_invalidate_geometry(n);
 		}
 		// FIX this egueb_dom_string_unref(theme);
 	}

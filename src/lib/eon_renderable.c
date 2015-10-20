@@ -42,7 +42,7 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 	if ((thiz->width == attr) || (thiz->height == attr))
 	{
 		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
-		eon_renderable_invalidate_geometry(thiz);
+		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
 	}
 	egueb_dom_node_unref(attr);
 }
@@ -245,11 +245,13 @@ Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n)
 	return NULL;
 }
 
-void eon_renderable_invalidate_geometry(Eon_Renderable *thiz)
+void eon_renderable_invalidate_geometry(Egueb_Dom_Node *n)
 {
+	Eon_Renderable *thiz;
 	Egueb_Dom_Event *ev;
 	Egueb_Dom_Event_Target *et;
 
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
 	DBG_ELEMENT(((EON_ELEMENT(thiz))->n), "Invalidating geometry");
 
 	ev = eon_event_geometry_invalidate_new();

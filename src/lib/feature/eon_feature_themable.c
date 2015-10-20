@@ -19,6 +19,7 @@
 #include "eon_main.h"
 
 #include "eon_element_private.h"
+#include "eon_renderable_private.h"
 #include "eon_feature_themable_private.h"
 #include "eon_theme_document_private.h"
 /*============================================================================*
@@ -148,6 +149,15 @@ changed:
 	{
 		Egueb_Dom_Node *theme_doc;
 		Egueb_Dom_Node *theme_element;
+
+		/* for element that are renderable, make sure to invalidate
+		 * the geometry
+		 */
+		if (eon_is_renderable(thiz->n))
+		{
+			eon_renderable_invalidate_geometry(thiz->n);
+		}
+
 
 		if (thiz->theme_element)
 		{

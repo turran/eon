@@ -76,7 +76,7 @@ typedef struct _Eon_Renderable_Class
 
 Eina_Bool eon_is_renderable(Egueb_Dom_Node *n);
 void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry);
-void eon_renderable_invalidate_geometry(Eon_Renderable *thiz);
+void eon_renderable_invalidate_geometry(Egueb_Dom_Node *n);
 void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_Rectangle *out);
 Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n);
 Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,

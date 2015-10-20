@@ -18,12 +18,14 @@
 #include "eon_private.h"
 #include "eon_main.h"
 #include "eon_renderable.h"
+
 #include "eon_renderable_private.h"
+#include "eon_feature_themable_private.h"
+#include "eon_theme_renderable_private.h"
 
 #include "eon_widget_drawer_private.h"
 #include "eon_element_eon_private.h"
 #include "eon_event_geometry_private.h"
-
 #include "eon_drawer_widget_private.h"
 #include "eon_drawer_eon_private.h"
 #include "eon_theme_document_private.h"
@@ -42,7 +44,10 @@ typedef struct _Eon_Element_Eon_Theme
 
 typedef struct _Eon_Element_Eon
 {
-	Eon_Widget_Drawer base;
+	Eon_Renderable base;
+	/* private */
+	Egueb_Dom_Feature *theme_feature;
+	Enesim_Renderer *compound;
 	Eina_Bool renderable_changed;
 	/* the theme system */
 	Eina_List *themes;
@@ -55,7 +60,7 @@ typedef struct _Eon_Element_Eon
 
 typedef struct _Eon_Element_Eon_Class
 {
-	Eon_Widget_Drawer_Class base;
+	Eon_Renderable_Class base;
 } Eon_Element_Eon_Class;
 
 static void _eon_element_eon_monitor_cb(Egueb_Dom_Event *e,
@@ -233,89 +238,9 @@ _eon_element_eon_render_descriptor = {
 	/* .renderer_get 	= */ _eon_element_eon_render_renderer_get,
 };
 /*----------------------------------------------------------------------------*
- *                        Widget Drawer interface                             *
+ *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static int _eon_element_eon_size_hints_get(Eon_Widget_Drawer *w, Eon_Renderable_Size *size)
-{
-	Eon_Element *e;
-	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *child;
-	int ret;
-
-	e = EON_ELEMENT(w);
-	n = e->n;
-	/* get the hints from our child */
-	child = egueb_dom_element_child_first_get(n);
-	if (!child) return 0;
-
-	ret = eon_renderable_size_hints_get(child, size);
-	egueb_dom_node_unref(child);
-	return ret;
-}
-
-/* a process is called whenever we want to set a new geometry */
-static Eina_Bool _eon_element_eon_process(Eon_Widget_Drawer *w)
-{
-	Eon_Element_Eon *thiz;
-	Eon_Renderable *r;
-	Eon_Renderable_Size size;
-	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *child;
-	int size_hints;
-
-	r = EON_RENDERABLE(w);
-
-	n = (EON_ELEMENT(r))->n;
-	child = egueb_dom_element_child_first_get(n);
-	if (!child) return EINA_TRUE;
-
-	size_hints = eon_renderable_size_hints_get(child, &size);
-	if (size_hints)
-	{
-		/* TODO calculate the geometry */ 
-		eon_renderable_geometry_set(child, &r->geometry);
-	}
-	else
-	{
-		eon_renderable_geometry_set(child, &r->geometry);
-	}
-	egueb_dom_element_process(child);
-	egueb_dom_node_unref(child);
-
-	thiz = EON_ELEMENT_EON(r);
-	/* update the renderable tree */
-	if (thiz->renderable_changed)
-	{
-		Enesim_Renderer *r;
-		Enesim_Renderer *r_child;
-
-		r = eon_drawer_widget_renderer_get(w->theme_widget);
-		enesim_renderer_compound_layer_clear(r);
-
-		/* update the backgrund */
-		eon_drawer_eon_update_background(w->theme_widget);
-		/* add our own child */
-		r_child = eon_renderable_renderer_get(child);
-		if (r_child)
-		{
-			Enesim_Renderer_Compound_Layer *l;
-
-			l = enesim_renderer_compound_layer_new();
-			enesim_renderer_compound_layer_renderer_set(l, r_child);
-			enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
-			enesim_renderer_compound_layer_add(r, l);
-		}
-		thiz->renderable_changed = EINA_FALSE;
-		enesim_renderer_unref(r);
-	}
-
-	return EINA_TRUE;
-}
-
-/*----------------------------------------------------------------------------*
- *                             Widget interface                               *
- *----------------------------------------------------------------------------*/
-static void _eon_element_eon_init(Eon_Widget *w)
+static void _eon_element_eon_init(Eon_Renderable *w)
 {
 	Eon_Element_Eon *thiz;
 	Egueb_Dom_Node *n;
@@ -339,6 +264,8 @@ static void _eon_element_eon_init(Eon_Widget *w)
 
 	thiz = EON_ELEMENT_EON(w);
 	thiz->input = egueb_dom_input_new(&_eon_element_eon_input_descriptor, n);
+	thiz->compound = enesim_renderer_compound_new();
+	thiz->theme_feature = eon_feature_themable_add(n);
 	/* register the features */
 	egueb_dom_feature_window_add(n,
 			&_eon_element_eon_window_descriptor);
@@ -351,7 +278,7 @@ static void _eon_element_eon_init(Eon_Widget *w)
 			&_eon_element_eon_animation_descriptor);
 }
 
-static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
+static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *w)
 {
 	Eon_Renderable *r;
 
@@ -371,9 +298,95 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Widget *w)
 	}
 	return EINA_TRUE;
 }
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
+static int _eon_element_eon_size_hints_get(Eon_Renderable *w, Eon_Renderable_Size *size)
+{
+	Eon_Element *e;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *child;
+	int ret;
+
+	e = EON_ELEMENT(w);
+	n = e->n;
+	/* get the hints from our child */
+	child = egueb_dom_element_child_first_get(n);
+	if (!child) return 0;
+
+	ret = eon_renderable_size_hints_get(child, size);
+	egueb_dom_node_unref(child);
+	return ret;
+}
+
+/* a process is called whenever we want to set a new geometry */
+static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
+{
+	Eon_Element_Eon *thiz;
+	Eon_Renderable_Size size;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *child = NULL;
+
+	n = (EON_ELEMENT(r))->n;
+	child = egueb_dom_element_child_first_get(n);
+	/* propagate the geometry */
+	if (child)
+	{
+		int size_hints;
+
+		size_hints = eon_renderable_size_hints_get(child, &size);
+		if (size_hints)
+		{
+			/* TODO calculate the geometry */ 
+			eon_renderable_geometry_set(child, &r->geometry);
+		}
+		else
+		{
+			eon_renderable_geometry_set(child, &r->geometry);
+		}
+		egueb_dom_element_process(child);
+	}
+
+	thiz = EON_ELEMENT_EON(r);
+	/* update the renderable tree */
+	if (thiz->renderable_changed)
+	{
+		Egueb_Dom_Node *theme_element;
+
+		enesim_renderer_compound_layer_clear(thiz->compound);
+		theme_element = eon_feature_themable_load(thiz->theme_feature);
+		if (theme_element)
+		{
+			Enesim_Renderer_Compound_Layer *l;
+			Enesim_Renderer *ren;
+
+			ren = eon_theme_renderable_renderer_get(theme_element);
+			l = enesim_renderer_compound_layer_new();
+			enesim_renderer_compound_layer_renderer_set(l, ren);
+			enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+			enesim_renderer_compound_layer_add(thiz->compound, l);
+			egueb_dom_node_unref(theme_element);
+		}
+
+		/* add our own child */
+		if (child)
+		{
+			Enesim_Renderer *ren_child;
+
+			ren_child = eon_renderable_renderer_get(child);
+			if (ren_child)
+			{
+				Enesim_Renderer_Compound_Layer *l;
+				l = enesim_renderer_compound_layer_new();
+				enesim_renderer_compound_layer_renderer_set(l, ren_child);
+				enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+				enesim_renderer_compound_layer_add(thiz->compound, l);
+			}
+		}
+		thiz->renderable_changed = EINA_FALSE;
+	}
+	egueb_dom_node_unref(child);
+
+	return EINA_TRUE;
+}
+
 static Egueb_Dom_Node * _eon_element_eon_element_at(Eon_Renderable *r,
 		Eina_Rectangle *cursor)
 {
@@ -392,6 +405,14 @@ static Egueb_Dom_Node * _eon_element_eon_element_at(Eon_Renderable *r,
 	if (!ret)
 		ret = egueb_dom_node_ref(n);
 	return ret;
+}
+
+static Enesim_Renderer * _eon_element_eon_renderer_get(Eon_Renderable *r)
+{
+	Eon_Element_Eon *thiz;
+
+	thiz = EON_ELEMENT_EON(r);
+	return enesim_renderer_ref(thiz->compound);
 }
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
@@ -439,16 +460,13 @@ static void _eon_element_eon_class_init(void *k)
 	klass->child_appendable = _eon_element_eon_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
-	r_klass->child_size_dependant = EINA_TRUE;
+	r_klass->init = _eon_element_eon_init;
+	r_klass->size_hints_get = _eon_element_eon_size_hints_get;
+	r_klass->pre_process = _eon_element_eon_pre_process;
 	r_klass->element_at = _eon_element_eon_element_at;
-
-	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->init = _eon_element_eon_init;
-	w_klass->pre_process = _eon_element_eon_pre_process;
-
-	wd_klass = EON_WIDGET_DRAWER_CLASS(k);
-	wd_klass->size_hints_get = _eon_element_eon_size_hints_get;
-	wd_klass->process = _eon_element_eon_process;
+	r_klass->renderer_get = _eon_element_eon_renderer_get;
+	r_klass->process = _eon_element_eon_process;
+	r_klass->child_size_dependant = EINA_TRUE;
 }
 
 static void _eon_element_eon_instance_init(void *o)
@@ -470,6 +488,8 @@ static void _eon_element_eon_instance_deinit(void *o)
 		free(theme);
 	}
 	egueb_dom_input_unref(thiz->input);
+	enesim_renderer_unref(thiz->compound);
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *

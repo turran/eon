@@ -19,8 +19,9 @@
 #include "eon_main.h"
 #include "eon_element_button.h"
 
+#include "eon_feature_themable_private.h"
 #include "eon_widget_drawer_private.h"
-#include "eon_drawer_button_private.h"
+#include "eon_theme_element_button_private.h"
 #include "eon_layout_frame_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -31,30 +32,39 @@
 
 typedef struct _Eon_Element_Button
 {
-	Eon_Widget_Drawer base;
+	Eon_Widget base;
+	Egueb_Dom_Feature *theme_feature;
 } Eon_Element_Button;
 
 typedef struct _Eon_Element_Button_Class
 {
-	Eon_Widget_Drawer_Class base;
+	Eon_Widget_Class base;
 } Eon_Element_Button_Class;
 
 /*----------------------------------------------------------------------------*
- *                        Widget Drawer interface                             *
+ *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
-static int _eon_element_button_size_hints_get(Eon_Widget_Drawer *w,
+/*----------------------------------------------------------------------------*
+ *                           Renderable interface                             *
+ *----------------------------------------------------------------------------*/
+static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size *size)
 {
+	Eon_Element_Button *thiz;
 	Eon_Box padding;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *theme_element;
 	int ret;
 
-	n = (EON_ELEMENT(w))->n;
+	n = (EON_ELEMENT(r))->n;
 
+	printf("size hings get\n");
 	ret = eon_layout_frame_size_hints_get(n, size);
 
 	/* finally add our padding */
-	eon_drawer_button_padding_get(w->theme_widget, &padding);
+	thiz = EON_ELEMENT_BUTTON(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	eon_theme_element_button_padding_get(theme_element, &padding);
 	/* a button can be of any size */
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
 	if (size->min_width > 0)
@@ -75,28 +85,33 @@ static int _eon_element_button_size_hints_get(Eon_Widget_Drawer *w,
 	return ret;
 }
 
-static Eina_Bool _eon_element_button_process(Eon_Widget_Drawer *w)
+static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 {
 	Eon_Element_Button *thiz;
 	Eon_Box padding;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
-	Enesim_Renderer *r;
+	Egueb_Dom_Node *theme_element;
+	Enesim_Renderer *ren;
 	Eina_Rectangle geometry;
 	Eina_Rectangle free_space;
 
-	n = (EON_ELEMENT(w))->n;
+	n = (EON_ELEMENT(r))->n;
+	thiz = EON_ELEMENT_BUTTON(r);
+
+	printf("process\n");
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	child = egueb_dom_element_child_first_get(n);
 	if (!child)
 	{
-		eon_drawer_button_content_set(w->theme_widget, NULL);
+		eon_theme_element_button_content_set(theme_element, NULL);
+		egueb_dom_node_unref(theme_element);
 		return EINA_TRUE;
 	}
 
-	thiz = EON_ELEMENT_BUTTON(w);
 	/* Set the geometry on the child */
-	eon_drawer_button_padding_get(w->theme_widget, &padding);
-	free_space = (EON_RENDERABLE(w))->geometry;
+	eon_theme_element_button_padding_get(theme_element, &padding);
+	free_space = r->geometry;
 	free_space.x += padding.left;
 	free_space.y += padding.top;
 	free_space.w -= padding.left + padding.right;
@@ -105,8 +120,9 @@ static Eina_Bool _eon_element_button_process(Eon_Widget_Drawer *w)
 	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
 
 	/* Set the content renderer */
-	r = eon_renderable_renderer_get(child);
-	eon_drawer_button_content_set(w->theme_widget, r);
+	ren = eon_renderable_renderer_get(child);
+	eon_theme_element_button_content_set(theme_element, ren);
+	egueb_dom_node_unref(theme_element);
 	egueb_dom_node_unref(child);
 
 	/* Our basic frame layout algorithm */
@@ -114,12 +130,7 @@ static Eina_Bool _eon_element_button_process(Eon_Widget_Drawer *w)
 	
 	return EINA_TRUE;
 }
-/*----------------------------------------------------------------------------*
- *                             Widget interface                               *
- *----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -151,24 +162,21 @@ static Eina_Bool _eon_element_button_child_appendable(Eon_Element *e, Egueb_Dom_
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Button,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Button,
 		Eon_Element_Button_Class, eon_element_button);
 
 static void _eon_element_button_class_init(void *k)
 {
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
-	Eon_Widget_Drawer_Class *w_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_button_tag_name_get;
 	klass->child_appendable = _eon_element_button_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
-
-	w_klass = EON_WIDGET_DRAWER_CLASS(k);
-	w_klass->size_hints_get = _eon_element_button_size_hints_get;
-	w_klass->process = _eon_element_button_process;
+	r_klass->size_hints_get = _eon_element_button_size_hints_get;
+	r_klass->process = _eon_element_button_process;
 }
 
 static void _eon_element_button_instance_init(void *o)
