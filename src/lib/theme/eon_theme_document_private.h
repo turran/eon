@@ -22,4 +22,8 @@ Egueb_Dom_Node * eon_theme_document_new(void);
 Egueb_Dom_Node * eon_theme_document_instance_new(Egueb_Dom_Node *n,
 		const char *id, Eina_Error *err);
 
+void eon_theme_document_init(void);
+void eon_theme_document_shutdown(void);
+Egueb_Dom_Node * eon_theme_document_load(Egueb_Dom_String *name);
+
 #endif

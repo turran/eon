@@ -17,6 +17,7 @@
  */
 #include "eon_theme_private.h"
 #include "eon_theme_main_private.h"
+#include "eon_theme_document_private.h"
 #include "eon_theme_namespace_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -50,6 +51,7 @@ void eon_theme_init(void)
  		EON_THEME_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
 		eon_theme_log_dom = eina_log_domain_register("eon-theme", NULL);
 		eon_theme_namespace_init();
+		eon_theme_document_init();
 		eon_drawer_init();
 	}
 }
@@ -59,6 +61,7 @@ void eon_theme_shutdown(void)
 	if (_init == 1)
 	{
 		eon_drawer_shutdown();
+		eon_theme_document_shutdown();
 		eon_theme_namespace_shutdown();
 		eina_log_domain_unregister(eon_theme_log_dom);
 		egueb_dom_string_unref(EON_THEME_NAME_ELEMENT_EOT);

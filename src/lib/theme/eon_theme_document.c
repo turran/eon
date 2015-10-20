@@ -28,6 +28,8 @@
 typedef struct _Eon_Theme_Document
 {
 } Eon_Theme_Document;
+
+static Eina_Hash *_docs = NULL;
 /*----------------------------------------------------------------------------*
  *                     The exernal document interface                         *
  *----------------------------------------------------------------------------*/
@@ -137,6 +139,44 @@ Egueb_Dom_Node * eon_theme_document_instance_new(Egueb_Dom_Node *n,
 	eon_theme_element_instance_relative_set(ret, rel);
 	egueb_dom_node_unref(topmost);
 
+	return ret;
+}
+
+void eon_theme_document_init(void)
+{
+	_docs = eina_hash_string_superfast_new(EINA_FREE_CB(egueb_dom_node_unref));
+}
+
+void eon_theme_document_shutdown(void)
+{
+	eina_hash_free(_docs);
+}
+
+Egueb_Dom_Node * eon_theme_document_load(Egueb_Dom_String *name)
+{
+	Egueb_Dom_Node *ret = NULL;
+	Enesim_Stream *s;
+	const char *theme_path;
+	char path[PATH_MAX];
+
+	ret = eina_hash_find(_docs, egueb_dom_string_string_get(name));
+	if (ret) return egueb_dom_node_ref(ret);
+		
+	/* load the file based from the fs */
+	theme_path = getenv("EON_THEME_PATH");
+	if (!theme_path)
+	{
+		theme_path = "/usr/local/share/eon/themes";
+	}
+	snprintf(path, PATH_MAX, "%s/%s.eot", theme_path, egueb_dom_string_string_get(name));
+	DBG("Loading theme at '%s'", path);
+	s = enesim_stream_file_new(path, "r");
+	if (!s) return NULL;
+
+	ret = eon_theme_document_new();
+	egueb_dom_parser_parse(s, &ret);
+	eina_hash_add(_docs, egueb_dom_string_string_get(name),
+			egueb_dom_node_ref(ret));
 	return ret;
 }
 /*============================================================================*
