@@ -58,6 +58,7 @@ typedef void (*Eon_Free_Cb)(void *data);
 EAPI int eon_init(void);
 EAPI int eon_shutdown(void);
 
+EAPI extern Egueb_Dom_String *EON_NAME_ID;
 EAPI extern Egueb_Dom_String *EON_MIN_WIDTH;
 EAPI extern Egueb_Dom_String *EON_MIN_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_MAX_WIDTH;
@@ -65,6 +66,7 @@ EAPI extern Egueb_Dom_String *EON_MAX_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_WIDTH;
 EAPI extern Egueb_Dom_String *EON_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_THEME;
+EAPI extern Egueb_Dom_String *EON_NAME_THEME_ID;
 EAPI extern Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
 EAPI extern Egueb_Dom_String *EON_ATTR_VALIGN;
 EAPI extern Egueb_Dom_String *EON_ATTR_HALIGN;
@@ -74,8 +76,8 @@ EAPI extern Egueb_Dom_String *EON_ATTR_ENABLED;
 EAPI extern Egueb_Dom_String *EON_STOCK;
 
 EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
-EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON;
-EAPI extern Egueb_Dom_String *EON_ELEMENT_BUTTON_STOCK;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_LABEL;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_LABEL_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_STACK;

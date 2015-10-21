@@ -44,6 +44,21 @@ typedef struct _Eon_Element_Button_Class
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
+static void _eon_element_button_init(Eon_Widget *w)
+{
+	Eon_Element_Button *thiz;
+	Eon_Element *e;
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(w))->n;
+	thiz = EON_ELEMENT_BUTTON(w);
+
+	thiz->theme_feature = eon_feature_themable_add(n);
+
+	e = EON_ELEMENT(w);
+	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			EON_NAME_ELEMENT_BUTTON);
+}
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -58,7 +73,6 @@ static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 
 	n = (EON_ELEMENT(r))->n;
 
-	printf("size hings get\n");
 	ret = eon_layout_frame_size_hints_get(n, size);
 
 	/* finally add our padding */
@@ -99,7 +113,6 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	n = (EON_ELEMENT(r))->n;
 	thiz = EON_ELEMENT_BUTTON(r);
 
-	printf("process\n");
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	child = egueb_dom_element_child_first_get(n);
 	if (!child)
@@ -136,7 +149,7 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_button_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_BUTTON);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_BUTTON);
 }
 
 static Eina_Bool _eon_element_button_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)
@@ -169,6 +182,7 @@ static void _eon_element_button_class_init(void *k)
 {
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
+	Eon_Widget_Class *w_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_button_tag_name_get;
@@ -177,6 +191,9 @@ static void _eon_element_button_class_init(void *k)
 	r_klass = EON_RENDERABLE_CLASS(k);
 	r_klass->size_hints_get = _eon_element_button_size_hints_get;
 	r_klass->process = _eon_element_button_process;
+
+	w_klass = EON_WIDGET_CLASS(k);
+	w_klass->init = _eon_element_button_init;
 }
 
 static void _eon_element_button_instance_init(void *o)

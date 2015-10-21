@@ -4,9 +4,9 @@
   xmlns:mars="http://www.eon.org/theme/mars">
 
   <stack padding="20px" separator="20px"/>
-  <basic:button id="button" border-color="#555" fill-color="green">
+  <basic:button id="button-basic" border-color="#555" fill-color="green">
     <set attributeName="fill-color" to="darkgreen" start="mousedown"/>
     <set attributeName="fill-color" to="green" start="mouseup"/>
   </basic:button>
-  <mars:button id="button-mars" color="green"/>
+  <mars:button id="button" color="green"/>
 </eot>

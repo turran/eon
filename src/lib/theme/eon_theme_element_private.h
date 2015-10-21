@@ -36,6 +36,7 @@ typedef struct _Eon_Theme_Element
 {
 	Enesim_Object_Instance base;
 	/* private */
+	Egueb_Dom_Node *id;
 	Egueb_Dom_Node *n;
 } Eon_Theme_Element;
 
@@ -60,6 +61,7 @@ typedef struct _Eon_Theme_Element_Class
 	Eon_Theme_Element_Process process;
 } Eon_Theme_Element_Class;
 
+Eina_Bool eon_theme_is_element(Egueb_Dom_Node *n);
 Egueb_Dom_Node * eon_theme_element_new(Enesim_Object_Descriptor *descriptor,
 		Enesim_Object_Class *klass);
 

@@ -39,6 +39,9 @@ typedef struct _Eon_Theme_Element_Eon_Class
 } Eon_Theme_Element_Eon_Class;
 
 /*----------------------------------------------------------------------------*
+ *                            Element  interface                              *
+ *----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _eon_theme_element_eon_renderer_get(Eon_Theme_Renderable *w)

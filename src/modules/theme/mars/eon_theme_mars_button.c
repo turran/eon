@@ -70,11 +70,11 @@ static Enesim_Renderer * _eon_theme_mars_button_renderer_get(void *data)
 static Eon_Theme_Element_Button_Descriptor _descriptor = {
 	/* .version_get		= */ _eon_theme_mars_button_version_get,
 	/* .free 		= */ _eon_theme_mars_button_free,
-	/* .tag_name_get	= */ _eon_theme_mars_button_tag_name_get,
-	/* .process 		= */ _eon_theme_mars_button_process,
 	/* .content_set		= */ _eon_theme_mars_button_content_set,
 	/* .padding_get		= */ _eon_theme_mars_button_padding_get,
 	/* .renderer_get	= */ _eon_theme_mars_button_renderer_get,
+	/* .tag_name_get	= */ _eon_theme_mars_button_tag_name_get,
+	/* .process 		= */ _eon_theme_mars_button_process,
 };
 
 /*============================================================================*

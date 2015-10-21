@@ -84,7 +84,7 @@ static Eina_Bool _eon_theme_document_child_appendable(Egueb_Dom_Node *n,
 	Eina_Bool ret;
 
 	name = egueb_dom_node_name_get(child);
-	ret = egueb_dom_string_is_equal(name, EON_THEME_ELEMENT_EON_THEME);
+	ret = egueb_dom_string_is_equal(name, EON_THEME_NAME_ELEMENT_EOT);
 	egueb_dom_string_unref(name);
 	return ret;
 }

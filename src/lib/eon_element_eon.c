@@ -446,15 +446,13 @@ static Eina_Bool _eon_element_eon_child_appendable(Eon_Element *e, Egueb_Dom_Nod
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Eon,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_RENDERABLE_DESCRIPTOR, Eon_Element_Eon,
 		Eon_Element_Eon_Class, eon_element_eon);
 
 static void _eon_element_eon_class_init(void *k)
 {
 	Eon_Element_Class *klass = k;
 	Eon_Renderable_Class *r_klass;
-	Eon_Widget_Class *w_klass;
-	Eon_Widget_Drawer_Class *wd_klass;
 
 	klass->tag_name_get = _eon_element_eon_tag_name_get;
 	klass->child_appendable = _eon_element_eon_child_appendable;

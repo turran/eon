@@ -132,11 +132,6 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	n = egueb_dom_element_external_new(&_descriptor, thiz);
 	thiz->n = n;
 
-	/* finally initialize */
-	k = EON_ELEMENT_CLASS_GET(thiz);
-
-	if (k->init)
-		k->init(thiz);
 	/* add the attributes */
 	default_theme = getenv("EON_THEME");
 	if (!default_theme)
@@ -146,9 +141,16 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	theme = egueb_dom_string_new_with_static_string(default_theme);
 	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
 			NULL, theme, EINA_FALSE, EINA_TRUE, EINA_TRUE);
-	thiz->theme_id = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
-			NULL, theme, EINA_FALSE, EINA_TRUE, EINA_FALSE);
+	thiz->theme_id = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_NAME_THEME_ID),
+			NULL, NULL, EINA_FALSE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->theme), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->theme_id), NULL);
+
+	/* finally initialize */
+	k = EON_ELEMENT_CLASS_GET(thiz);
+
+	if (k->init)
+		k->init(thiz);
 
 	return n;
 }

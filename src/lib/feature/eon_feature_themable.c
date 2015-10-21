@@ -104,6 +104,7 @@ Egueb_Dom_Feature * eon_feature_themable_add(Egueb_Dom_Node *n)
 
 	/* create the feature */
 	thiz = ENESIM_OBJECT_INSTANCE_NEW(eon_feature_themable);
+	thiz->n = n;
 	thiz->f = egueb_dom_feature_external_new(&_descriptor, thiz);
 	/* assign it */
 	egueb_dom_node_feature_add(n, NULL, NULL, egueb_dom_feature_ref(thiz->f));

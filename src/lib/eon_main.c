@@ -61,6 +61,7 @@ static void _strings_init(void)
 	/* mime */
 	_eon_mime = egueb_dom_string_new_with_static_string("application/eon+xml");
 	/* attributes */
+	EON_NAME_ID = egueb_dom_string_new_with_static_string("id");
 	EON_MIN_WIDTH = egueb_dom_string_new_with_static_string("min-width");
 	EON_MIN_HEIGHT = egueb_dom_string_new_with_static_string("min-height");
 	EON_MAX_WIDTH = egueb_dom_string_new_with_static_string("max-width");
@@ -68,6 +69,7 @@ static void _strings_init(void)
 	EON_WIDTH = egueb_dom_string_new_with_static_string("width");
 	EON_HEIGHT = egueb_dom_string_new_with_static_string("height");
 	EON_THEME = egueb_dom_string_new_with_static_string("theme");
+	EON_NAME_THEME_ID = egueb_dom_string_new_with_static_string("theme-id");
 	EON_ATTR_ELLIPSIZE = egueb_dom_string_new_with_static_string("ellipsize");
 	EON_ATTR_VALIGN = egueb_dom_string_new_with_static_string("valign");
 	EON_ATTR_HALIGN = egueb_dom_string_new_with_static_string("halign");
@@ -77,8 +79,8 @@ static void _strings_init(void)
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
 	EON_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
-	EON_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
-	EON_ELEMENT_BUTTON_STOCK = egueb_dom_string_new_with_static_string("stockButton");
+	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
+	EON_NAME_ELEMENT_BUTTON_STOCK = egueb_dom_string_new_with_static_string("stockButton");
 	EON_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
 	EON_ELEMENT_LABEL_STOCK = egueb_dom_string_new_with_static_string("stockLabel");
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
@@ -93,6 +95,7 @@ static void _strings_shutdown(void)
 	/* mime */
 	egueb_dom_string_unref(_eon_mime);
 	/* attributes */
+	egueb_dom_string_unref(EON_NAME_ID);
 	egueb_dom_string_unref(EON_MIN_WIDTH);
 	egueb_dom_string_unref(EON_MIN_HEIGHT);
 	egueb_dom_string_unref(EON_MAX_WIDTH);
@@ -100,6 +103,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_WIDTH);
 	egueb_dom_string_unref(EON_HEIGHT);
 	egueb_dom_string_unref(EON_THEME);
+	egueb_dom_string_unref(EON_NAME_THEME_ID);
 	egueb_dom_string_unref(EON_ATTR_ELLIPSIZE);
 	egueb_dom_string_unref(EON_ATTR_VALIGN);
 	egueb_dom_string_unref(EON_ATTR_HALIGN);
@@ -109,8 +113,8 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
 	egueb_dom_string_unref(EON_ELEMENT_EON);
-	egueb_dom_string_unref(EON_ELEMENT_BUTTON);
-	egueb_dom_string_unref(EON_ELEMENT_BUTTON_STOCK);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_LABEL);
 	egueb_dom_string_unref(EON_ELEMENT_LABEL_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
@@ -127,6 +131,7 @@ int eon_main_log = -1;
  *                                   API                                      *
  *============================================================================*/
 /* attributes */
+Egueb_Dom_String *EON_NAME_ID;
 Egueb_Dom_String *EON_MIN_WIDTH;
 Egueb_Dom_String *EON_MIN_HEIGHT;
 Egueb_Dom_String *EON_MAX_WIDTH;
@@ -134,6 +139,7 @@ Egueb_Dom_String *EON_MAX_HEIGHT;
 Egueb_Dom_String *EON_WIDTH;
 Egueb_Dom_String *EON_HEIGHT;
 Egueb_Dom_String *EON_THEME;
+Egueb_Dom_String *EON_NAME_THEME_ID;
 Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
 Egueb_Dom_String *EON_ATTR_VALIGN;
 Egueb_Dom_String *EON_ATTR_HALIGN;
@@ -143,8 +149,8 @@ Egueb_Dom_String *EON_ATTR_ENABLED;
 Egueb_Dom_String *EON_STOCK;
 /* elements */
 Egueb_Dom_String *EON_ELEMENT_EON;
-Egueb_Dom_String *EON_ELEMENT_BUTTON;
-Egueb_Dom_String *EON_ELEMENT_BUTTON_STOCK;
+Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
+Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
 Egueb_Dom_String *EON_ELEMENT_LABEL;
 Egueb_Dom_String *EON_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;

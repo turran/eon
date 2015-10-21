@@ -45,19 +45,12 @@ static Egueb_Dom_String * _eon_theme_element_eot_tag_name_get(
 	return egueb_dom_string_ref(EON_THEME_NAME_ELEMENT_EOT);
 }
 
-static Eina_Bool _eon_theme_element_eot_child_appendable(
-		Eon_Theme_Element *e, Egueb_Dom_Node *child)
-{
-	Egueb_Dom_String *name;
-	Eina_Bool ret = EINA_FALSE;
-
-	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_ELEMENT)
-		return ret;
-
-	name = egueb_dom_element_name_get(child);
-	egueb_dom_string_unref(name);
-
-	return ret;
+static Eina_Bool _eon_theme_element_eot_child_appendable(Eon_Theme_Element *e,
+		Egueb_Dom_Node *child)
+{	
+	if (eon_theme_is_element(child))
+		return EINA_TRUE;
+	return EINA_FALSE;
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *

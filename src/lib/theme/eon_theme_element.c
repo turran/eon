@@ -95,6 +95,20 @@ static Egueb_Dom_Element_External_Descriptor _descriptor = {
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eina_Bool eon_theme_is_element(Egueb_Dom_Node *n)
+{
+	void *data;
+
+	if (!n) return EINA_FALSE;
+	if (!egueb_dom_element_is_external(n))
+		return EINA_FALSE;
+	data = egueb_dom_element_external_data_get(n);
+	if (!enesim_object_instance_inherits(ENESIM_OBJECT_INSTANCE(data),
+			EON_THEME_ELEMENT_DESCRIPTOR))
+		return EINA_FALSE;
+	return EINA_TRUE;
+}
+
 Egueb_Dom_Node * eon_theme_element_new(Enesim_Object_Descriptor *descriptor,
 		Enesim_Object_Class *klass)
 {
@@ -106,6 +120,11 @@ Egueb_Dom_Node * eon_theme_element_new(Enesim_Object_Descriptor *descriptor,
 	thiz = enesim_object_descriptor_instance_new(descriptor, klass);
 	n = egueb_dom_element_external_new(&_descriptor, thiz);
 	thiz->n = n;
+
+	/* add the attributes */
+	thiz->id = egueb_dom_attr_string_new(
+			egueb_dom_string_ref(EON_NAME_ID), NULL, NULL,
+			EINA_FALSE, EINA_FALSE, EINA_FALSE);
 
 	/* finally initialize */
 	k = EON_THEME_ELEMENT_CLASS_GET(thiz);
