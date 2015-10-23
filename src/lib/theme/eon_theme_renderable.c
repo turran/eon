@@ -53,10 +53,6 @@ void eon_theme_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geomet
 	thiz->geometry = *geometry;
 
 	klass = EON_THEME_RENDERABLE_CLASS_GET(thiz);
-	if (klass->geometry_set)
-	{
-		klass->geometry_set(thiz, geometry);
-	}
 }
 
 Enesim_Renderer * eon_theme_renderable_renderer_get(Egueb_Dom_Node *n)
@@ -74,3 +70,10 @@ Enesim_Renderer * eon_theme_renderable_renderer_get(Egueb_Dom_Node *n)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+EAPI void eon_theme_renderable_geometry_get(Egueb_Dom_Node *n, Eina_Rectangle *geom)
+{
+	Eon_Theme_Renderable *thiz;
+
+	thiz = EON_THEME_RENDERABLE(egueb_dom_element_external_data_get(n));
+	*geom = thiz->geometry;
+}

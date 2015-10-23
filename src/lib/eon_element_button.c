@@ -21,6 +21,7 @@
 
 #include "eon_feature_themable_private.h"
 #include "eon_widget_drawer_private.h"
+#include "eon_theme_renderable_private.h"
 #include "eon_theme_element_button_private.h"
 #include "eon_layout_frame_private.h"
 /*============================================================================*
@@ -62,6 +63,19 @@ static void _eon_element_button_init(Eon_Widget *w)
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_element_button_renderer_get(Eon_Renderable *r)
+{
+	Eon_Element_Button *thiz;
+	Egueb_Dom_Node *theme_element;
+	Enesim_Renderer *ren;
+
+	thiz = EON_ELEMENT_BUTTON(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	ren = eon_theme_renderable_renderer_get(theme_element);
+	egueb_dom_node_unref(theme_element);
+	return ren;
+}
+
 static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size *size)
 {
@@ -102,11 +116,10 @@ static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 {
 	Eon_Element_Button *thiz;
-	Eon_Box padding;
+	Eon_Box padding = { 0, 0, 0, 0 };
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	Egueb_Dom_Node *theme_element;
-	Enesim_Renderer *ren;
 	Eina_Rectangle geometry;
 	Eina_Rectangle free_space;
 
@@ -114,13 +127,6 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	thiz = EON_ELEMENT_BUTTON(r);
 
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	child = egueb_dom_element_child_first_get(n);
-	if (!child)
-	{
-		eon_theme_element_button_content_set(theme_element, NULL);
-		egueb_dom_node_unref(theme_element);
-		return EINA_TRUE;
-	}
 
 	/* Set the geometry on the child */
 	eon_theme_element_button_padding_get(theme_element, &padding);
@@ -131,15 +137,29 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	free_space.h -= padding.bottom + padding.top;
 
 	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
+	eon_theme_renderable_geometry_set(theme_element, &free_space);
 
 	/* Set the content renderer */
-	ren = eon_renderable_renderer_get(child);
-	eon_theme_element_button_content_set(theme_element, ren);
-	egueb_dom_node_unref(theme_element);
-	egueb_dom_node_unref(child);
+	child = egueb_dom_element_child_first_get(n);
+	if (child)
+	{
+		Enesim_Renderer *ren;
+
+		ren = eon_renderable_renderer_get(child);
+		eon_theme_element_button_content_set(theme_element, ren);
+		egueb_dom_node_unref(child);
+	}
+	else
+	{
+		eon_theme_element_button_content_set(theme_element, NULL);
+	}
 
 	/* Our basic frame layout algorithm */
 	eon_layout_frame_size_geometry_set(n, &free_space);
+
+	/* Finally process our theme */
+	egueb_dom_element_process(theme_element);
+	egueb_dom_node_unref(theme_element);
 	
 	return EINA_TRUE;
 }
@@ -189,6 +209,7 @@ static void _eon_element_button_class_init(void *k)
 	klass->child_appendable = _eon_element_button_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->renderer_get = _eon_element_button_renderer_get;
 	r_klass->size_hints_get = _eon_element_button_size_hints_get;
 	r_klass->process = _eon_element_button_process;
 

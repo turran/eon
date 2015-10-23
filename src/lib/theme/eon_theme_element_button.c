@@ -50,13 +50,6 @@ static Enesim_Renderer * _eon_theme_element_button_renderer_get(Eon_Theme_Render
 		return thiz->d->renderer_get(thiz->data);
 	return NULL;
 }
-
-static void _eon_theme_element_button_geometry_set(Eon_Theme_Renderable *r, Eina_Rectangle *geom)
-{
-	Eon_Theme_Element_Button *thiz;
-
-	thiz = EON_THEME_ELEMENT_BUTTON(r);
-}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -106,7 +99,6 @@ static void _eon_theme_element_button_class_init(void *k)
 
 	klass = EON_THEME_RENDERABLE_CLASS(k);
 	klass->renderer_get = _eon_theme_element_button_renderer_get;
-	klass->geometry_set = _eon_theme_element_button_geometry_set;
 
 	e_klass = EON_THEME_ELEMENT_CLASS(k);
 	e_klass->ctor = _eon_theme_element_button_ctor;

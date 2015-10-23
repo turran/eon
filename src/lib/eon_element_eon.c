@@ -359,6 +359,7 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 			Enesim_Renderer_Compound_Layer *l;
 			Enesim_Renderer *ren;
 
+			eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 			ren = eon_theme_renderable_renderer_get(theme_element);
 			l = enesim_renderer_compound_layer_new();
 			enesim_renderer_compound_layer_renderer_set(l, ren);

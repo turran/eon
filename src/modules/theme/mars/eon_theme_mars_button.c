@@ -25,6 +25,7 @@ typedef struct _Eon_Theme_Mars_Button
 	Enesim_Renderer *button;
 	Enesim_Renderer *blur;
 	Enesim_Renderer *content;
+	Egueb_Dom_Node *n;
 } Eon_Theme_Mars_Button;
 
 /*----------------------------------------------------------------------------*
@@ -32,7 +33,7 @@ typedef struct _Eon_Theme_Mars_Button
  *----------------------------------------------------------------------------*/
 static int _eon_theme_mars_button_version_get(void)
 {
-
+	return EON_THEME_ELEMENT_BUTTON_VERSION;
 }
 
 static void _eon_theme_mars_button_dtor(void *data)
@@ -52,6 +53,17 @@ static const char * _eon_theme_mars_button_tag_name_get(void)
 
 static Eina_Bool _eon_theme_mars_button_process(void *data)
 {
+	Eon_Theme_Mars_Button *thiz;
+	Eina_Rectangle geom;
+
+	thiz = data;
+	eon_theme_renderable_geometry_get(thiz->n, &geom);
+	enesim_renderer_rectangle_position_set(thiz->button, geom.x, geom.y);
+	enesim_renderer_rectangle_size_set(thiz->button, geom.w, geom.h);
+	enesim_renderer_shape_fill_color_set(thiz->button, 0x00000000);
+	enesim_renderer_shape_stroke_color_set(thiz->button, 0xff0f3b65);
+	enesim_renderer_shape_stroke_weight_set(thiz->button, 1.5);
+	enesim_renderer_shape_draw_mode_set(thiz->button, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
 	/* get the geometry */
 	/* set the rounded rectangle area */
 	/* set the border color */
@@ -104,6 +116,7 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 	thiz->button = enesim_renderer_rectangle_new();
 	thiz->blur = enesim_renderer_blur_new();
 	n = eon_theme_element_button_new(&_descriptor, thiz);
+	thiz->n = n;
 
 	return n;
 }

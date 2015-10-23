@@ -1,3 +1,10 @@
+dist_installed_headers_DATA += \
+src/lib/theme/eon_theme_element.h \
+src/lib/theme/eon_theme_renderable.h \
+src/lib/theme/eon_theme_element_button.h \
+src/lib/theme/eon_theme_element_eon.h
+
+
 src_lib_libeon_la_SOURCES += \
 src/lib/theme/eon_theme_main.c \
 src/lib/theme/eon_theme_document.c \

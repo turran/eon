@@ -43,7 +43,6 @@ typedef Enesim_Renderer * (*Eon_Theme_Renderable_Renderer_Get)(Eon_Theme_Rendera
 typedef struct _Eon_Theme_Renderable_Class
 {
 	Eon_Theme_Element_Class base;
-	Eon_Theme_Renderable_Geometry_Set geometry_set;
 	Eon_Theme_Renderable_Renderer_Get renderer_get;
 } Eon_Theme_Renderable_Class;
 

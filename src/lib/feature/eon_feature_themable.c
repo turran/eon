@@ -125,7 +125,7 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 	Egueb_Dom_Node *ret = NULL;
 	Egueb_Dom_String *curr_theme = NULL;
 	Egueb_Dom_String *curr_theme_id = NULL;
-	Eina_Bool theme_changed;
+	Eina_Bool theme_changed = EINA_FALSE;
 
 	thiz = EON_FEATURE_THEMABLE(egueb_dom_feature_external_data_get(f));
 	e = EON_ELEMENT(egueb_dom_element_external_data_get(thiz->n));

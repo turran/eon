@@ -24,10 +24,11 @@ typedef struct _Eon_Theme_Mars_Eon
 {
 	Enesim_Renderer *background;
 	Egueb_Dom_Node *color;
+	Egueb_Dom_Node *n;
 } Eon_Theme_Mars_Eon;
 
 /*----------------------------------------------------------------------------*
- *                              Eon interface                              *
+ *                              Eon interface                                 *
  *----------------------------------------------------------------------------*/
 static int _eon_theme_mars_eon_version_get(void)
 {
@@ -50,9 +51,19 @@ static const char * _eon_theme_mars_eon_tag_name_get(void)
 static Eina_Bool _eon_theme_mars_eon_process(void *data)
 {
 	Eon_Theme_Mars_Eon *thiz = data;
+	Enesim_Renderer_Gradient_Stop stop;
+	Eina_Rectangle geom;
 
 	/* TODO get the value of the attribute, set it here */
-	enesim_renderer_background_color_set(thiz->background, 0xff000000);
+	eon_theme_renderable_geometry_get(thiz->n, &geom);
+	enesim_renderer_gradient_repeat_mode_set(thiz->background, ENESIM_REPEAT_MODE_PAD);
+	enesim_renderer_gradient_linear_position_set(thiz->background, 0, 0, 0, geom.h);
+	stop.argb = enesim_color_argb_to(0xff0d2d50);
+	stop.pos = 0;
+	enesim_renderer_gradient_stop_add(thiz->background, &stop);
+	stop.argb = enesim_color_argb_to(0xff050c1c);
+	stop.pos = 1;
+	enesim_renderer_gradient_stop_add(thiz->background, &stop);
 	return EINA_TRUE;
 }
 
@@ -80,9 +91,9 @@ Egueb_Dom_Node * eon_theme_mars_eon_new(void)
 	Eon_Theme_Mars_Eon *thiz;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Eon));
-	thiz->background = enesim_renderer_background_new();
-	enesim_renderer_background_color_set(thiz->background, 0xff000000);
+	thiz->background = enesim_renderer_gradient_linear_new();
 	n = eon_theme_element_eon_new(&_descriptor, thiz);
+	thiz->n = n;
 	/* TODO add the color attribute */
 
 	return n;

@@ -120,54 +120,12 @@ static void _eon_widget_init(Eon_Renderable *r)
 
 static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 {
-	Eon_Element *e;
 	Eon_Widget_Class *klass;
 	Eon_Widget *thiz;
-	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *parent;
 
 	thiz = EON_WIDGET(r);
 	klass = EON_WIDGET_CLASS_GET(r);
 
-	e = EON_ELEMENT(r);
-	n = e->n;
-	/* in case the theme value has been modifed, invalide the geometry */
-	if (egueb_dom_attr_has_changed(e->theme))
-	{
-		DBG_ELEMENT(e->n, "Widget's theme is different");
-		if (klass->theme_changed)
-			klass->theme_changed(thiz);
-		eon_renderable_invalidate_geometry(n);
-		goto done;
-	}
-	/* in case the parent's theme is different than the previous
-	 * theme, invalidate it too
-	 */
-	parent = egueb_dom_node_parent_get(n);
-	if (parent && (egueb_dom_node_type_get(parent) == EGUEB_DOM_NODE_TYPE_ELEMENT))
-	{
-		Eon_Element *other;
-		Egueb_Dom_String *theme = NULL;
-
-		other = EON_ELEMENT(egueb_dom_element_external_data_get(parent));
-		egueb_dom_attr_final_get(other->theme, &theme);
-		if (!egueb_dom_string_is_equal(theme, thiz->last_parent_theme))
-		{
-			DBG_ELEMENT(e->n, "Parent's theme is different than last one ('%s', '%s')",
-					egueb_dom_string_string_get(theme),
-					egueb_dom_string_string_get(thiz->last_parent_theme));
-			if (thiz->last_parent_theme)
-				egueb_dom_string_unref(thiz->last_parent_theme);
-			thiz->last_parent_theme = egueb_dom_string_dup(theme);
-			if (klass->theme_changed)
-				klass->theme_changed(thiz);
-			eon_renderable_invalidate_geometry(n);
-		}
-		// FIX this egueb_dom_string_unref(theme);
-	}
-	egueb_dom_node_unref(parent);
-
-done:
 	if (klass->pre_process)
 	{
 		if (!klass->pre_process(thiz))
