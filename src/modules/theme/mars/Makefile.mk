@@ -1,5 +1,6 @@
 EON_THEME_MARS_SOURCES = \
 src/modules/theme/mars/eon_theme_mars_button.c \
+src/modules/theme/mars/eon_theme_mars_eon.c \
 src/modules/theme/mars/eon_theme_mars_main.c
 
 if BUILD_STATIC_MODULE_THEME_MARS

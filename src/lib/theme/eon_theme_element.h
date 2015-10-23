@@ -16,10 +16,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_MARS_MAIN_PRIVATE_H_
-#define _EON_THEME_MARS_MAIN_PRIVATE_H_
+#ifndef _EON_THEME_ELEMENT_H_
+#define _EON_THEME_ELEMENT_H_
 
-Egueb_Dom_Node * eon_theme_mars_eon_new(void);
-Egueb_Dom_Node * eon_theme_mars_button_new(void);
+typedef int (*Eon_Theme_Element_Version_Get_Cb)(void);
+typedef Egueb_Dom_Node * (*Eon_Theme_Element_Ctor_Cb)(void);
+typedef void (*Eon_Theme_Element_Dtor_Cb)(void *d);
+typedef const char * (*Eon_Theme_Element_Tag_Name_Get_Cb)(void);
+typedef Eina_Bool (*Eon_Theme_Element_Process_Cb)(void *d);
 
 #endif

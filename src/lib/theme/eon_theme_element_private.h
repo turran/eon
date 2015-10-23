@@ -40,6 +40,9 @@ typedef struct _Eon_Theme_Element
 	Egueb_Dom_Node *n;
 } Eon_Theme_Element;
 
+/* Create the element */
+typedef Egueb_Dom_Node * (*Eon_Theme_Element_Ctor)(Eon_Theme_Element *thiz);
+
 /* Initialize the element. In this moment the element already has the private
  * node
  */
@@ -55,6 +58,7 @@ typedef Eina_Bool (*Eon_Theme_Element_Child_Appendable)(Eon_Theme_Element *thiz,
 typedef struct _Eon_Theme_Element_Class
 {
 	Enesim_Object_Class base;
+	Eon_Theme_Element_Ctor ctor;
 	Eon_Theme_Element_Init init;
 	Eon_Theme_Element_Tag_Name_Get tag_name_get;
 	Eon_Theme_Element_Child_Appendable child_appendable;

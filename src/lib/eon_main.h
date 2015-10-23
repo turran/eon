@@ -52,9 +52,6 @@ typedef enum _Eon_Orientation
 	EON_ORIENTATION_VERTICAL,
 } Eon_Orientation;
 
-typedef int (*Eon_Version_Get_Cb)(void);
-typedef void (*Eon_Free_Cb)(void *data);
-
 EAPI int eon_init(void);
 EAPI int eon_shutdown(void);
 
@@ -75,7 +72,7 @@ EAPI extern Egueb_Dom_String *EON_ATTR_ORIENTATION;
 EAPI extern Egueb_Dom_String *EON_ATTR_ENABLED;
 EAPI extern Egueb_Dom_String *EON_STOCK;
 
-EAPI extern Egueb_Dom_String *EON_ELEMENT_EON;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_LABEL;

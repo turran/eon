@@ -252,7 +252,7 @@ void eon_renderable_invalidate_geometry(Egueb_Dom_Node *n)
 	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	DBG_ELEMENT(((EON_ELEMENT(thiz))->n), "Invalidating geometry");
+	DBG_ELEMENT(n, "Invalidating geometry");
 
 	ev = eon_event_geometry_invalidate_new();
 	et = EGUEB_DOM_EVENT_TARGET((EON_ELEMENT(thiz))->n);

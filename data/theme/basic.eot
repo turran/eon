@@ -8,5 +8,6 @@
     <set attributeName="fill-color" to="darkgreen" start="mousedown"/>
     <set attributeName="fill-color" to="green" start="mouseup"/>
   </basic:button>
+  <mars:eon id="eon" color="black"/>
   <mars:button id="button" color="green"/>
 </eot>

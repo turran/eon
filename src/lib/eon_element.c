@@ -45,6 +45,11 @@ static void _eon_element_instance_deinit(void *o)
 /*----------------------------------------------------------------------------*
  *                      The exernal element interface                         *
  *----------------------------------------------------------------------------*/
+static Egueb_Dom_Node * _eon_element_ctor(void *data)
+{
+	return NULL;
+}
+
 static void _eon_element_init(Egueb_Dom_Node *n, void *data)
 {
 }
@@ -109,6 +114,7 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
 	/* .version		= */ EGUEB_DOM_ELEMENT_EXTERNAL_DESCRIPTOR_VERSION,
+	/* ctor 		= */ _eon_element_ctor,
 	/* init 		= */ _eon_element_init,
 	/* deinit 		= */ _eon_element_deinit,
 	/* tag_name_get		= */ _eon_element_tag_name_get,

@@ -38,8 +38,19 @@ static void _eon_theme_element_instance_deinit(void *o)
 {
 }
 /*----------------------------------------------------------------------------*
- *                      The exernal element interface                         *
+ *                     The external element interface                         *
  *----------------------------------------------------------------------------*/
+static Egueb_Dom_Node * _eon_theme_element_ctor(void *data)
+{
+	Eon_Theme_Element *thiz = data;
+	Eon_Theme_Element_Class *klass;
+
+	klass = EON_THEME_ELEMENT_CLASS_GET(data);
+	if (klass->ctor)
+		return klass->ctor(thiz);
+	return NULL;
+}
+
 static void _eon_theme_element_init(Egueb_Dom_Node *n, void *data)
 {
 }
@@ -86,11 +97,12 @@ static Eina_Bool _eon_theme_element_process(Egueb_Dom_Node *n, void *data)
 
 static Egueb_Dom_Element_External_Descriptor _descriptor = {
 	/* .version		= */ EGUEB_DOM_ELEMENT_EXTERNAL_DESCRIPTOR_VERSION,
-	/* init 		= */ _eon_theme_element_init,
-	/* deinit 		= */ _eon_theme_element_deinit,
-	/* tag_name_get		= */ _eon_theme_element_tag_name_get,
-	/* child_appendable 	= */ _eon_theme_element_child_appendable,
-	/* process 		= */ _eon_theme_element_process,
+	/* .ctor 		= */ _eon_theme_element_ctor,
+	/* .init 		= */ _eon_theme_element_init,
+	/* .deinit 		= */ _eon_theme_element_deinit,
+	/* .tag_name_get	= */ _eon_theme_element_tag_name_get,
+	/* .child_appendable 	= */ _eon_theme_element_child_appendable,
+	/* .process 		= */ _eon_theme_element_process,
 };
 /*============================================================================*
  *                                 Global                                     *

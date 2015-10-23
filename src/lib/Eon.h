@@ -71,6 +71,7 @@ extern "C" {
 
 /* theme */
 #include "eon_theme_namespace.h"
+#include "eon_theme_element.h"
 #include "eon_theme_element_button.h"
 #include "eon_theme_element_eon.h"
 

@@ -135,12 +135,14 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 	egueb_dom_attr_final_get(e->theme_id, &curr_theme_id);
 	if (!egueb_dom_string_is_equal(curr_theme, thiz->last_theme))
 	{
+		DBG_ELEMENT(thiz->n, "Theme changed"); 
 		theme_changed = EINA_TRUE;
 		goto changed;
 	}
 
 	if (!egueb_dom_string_is_equal(curr_theme_id, thiz->last_theme_id))
 	{
+		DBG_ELEMENT(thiz->n, "Theme id changed"); 
 		theme_changed = EINA_TRUE;
 		goto changed;
 	}
@@ -150,6 +152,7 @@ changed:
 	{
 		Egueb_Dom_Node *theme_doc;
 		Egueb_Dom_Node *theme_element;
+		Egueb_Dom_Node *doc;
 
 		/* for element that are renderable, make sure to invalidate
 		 * the geometry
@@ -191,8 +194,17 @@ changed:
 		DBG_ELEMENT(thiz->n, "Loading theme '%s' with id '%s'",
 				egueb_dom_string_string_get(curr_theme),
 				egueb_dom_string_string_get(curr_theme_id));
+		doc = egueb_dom_node_owner_document_get(thiz->n);
+		if (!doc)
+		{
+			egueb_dom_node_unref(theme_element);
+			goto done;
+		}
 		thiz->theme_element = egueb_dom_node_clone(theme_element, EINA_TRUE, EINA_FALSE, NULL);
-		/* TODO adopt it to the new document */
+		/* adopt it to the new document */
+		egueb_dom_document_node_adopt(doc, thiz->theme_element, NULL);
+		egueb_dom_element_enqueue(egueb_dom_node_ref(thiz->theme_element));
+		egueb_dom_node_unref(doc);
 	}
 done:
 	egueb_dom_string_unref(curr_theme);

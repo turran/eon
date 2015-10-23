@@ -39,35 +39,79 @@ typedef struct _Eon_Theme_Element_Button_Class
 } Eon_Theme_Element_Button_Class;
 
 /*----------------------------------------------------------------------------*
- *                              Widget interface                              *
+ *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_theme_element_button_renderer_get(Eon_Theme_Renderable *w)
+static Enesim_Renderer * _eon_theme_element_button_renderer_get(Eon_Theme_Renderable *r)
 {
 	Eon_Theme_Element_Button *thiz;
 
-	thiz = EON_THEME_ELEMENT_BUTTON(w);
+	thiz = EON_THEME_ELEMENT_BUTTON(r);
 	if (thiz->d->renderer_get)
 		return thiz->d->renderer_get(thiz->data);
 	return NULL;
 }
 
-static void _eon_theme_element_button_geometry_set(Eon_Theme_Renderable *w, Eina_Rectangle *geom)
+static void _eon_theme_element_button_geometry_set(Eon_Theme_Renderable *r, Eina_Rectangle *geom)
 {
 	Eon_Theme_Element_Button *thiz;
 
-	thiz = EON_THEME_ELEMENT_BUTTON(w);
+	thiz = EON_THEME_ELEMENT_BUTTON(r);
+}
+/*----------------------------------------------------------------------------*
+ *                             Element interface                              *
+ *----------------------------------------------------------------------------*/
+static Egueb_Dom_Node * _eon_theme_element_button_ctor(Eon_Theme_Element *e)
+{
+	Eon_Theme_Element_Button *thiz;
+
+	thiz = EON_THEME_ELEMENT_BUTTON(e);
+	if (thiz->d->ctor)
+		return thiz->d->ctor();
+	return NULL;
 }
 
+static Eina_Bool _eon_theme_element_button_process(Eon_Theme_Element *e)
+{
+	Eon_Theme_Element_Button *thiz;
+
+	thiz = EON_THEME_ELEMENT_BUTTON(e);
+	if (thiz->d->process)
+		return thiz->d->process(thiz->data);
+	return EINA_TRUE;
+}
+
+static Egueb_Dom_String * _eon_theme_element_button_tag_name_get(Eon_Theme_Element *e)
+{
+	Eon_Theme_Element_Button *thiz;
+
+	thiz = EON_THEME_ELEMENT_BUTTON(e);
+	if (thiz->d->tag_name_get)
+	{
+		const char *name;
+		name = thiz->d->tag_name_get();
+		return egueb_dom_string_new_with_static_string(name);
+	}
+	return NULL;
+}
+/*----------------------------------------------------------------------------*
+ *                              Object interface                              *
+ *----------------------------------------------------------------------------*/
 ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_RENDERABLE_DESCRIPTOR,
 		Eon_Theme_Element_Button, Eon_Theme_Element_Button_Class, eon_theme_element_button);
 
 static void _eon_theme_element_button_class_init(void *k)
 {
 	Eon_Theme_Renderable_Class *klass;
+	Eon_Theme_Element_Class *e_klass;
 
 	klass = EON_THEME_RENDERABLE_CLASS(k);
 	klass->renderer_get = _eon_theme_element_button_renderer_get;
 	klass->geometry_set = _eon_theme_element_button_geometry_set;
+
+	e_klass = EON_THEME_ELEMENT_CLASS(k);
+	e_klass->ctor = _eon_theme_element_button_ctor;
+	e_klass->tag_name_get = _eon_theme_element_button_tag_name_get;
+	e_klass->process = _eon_theme_element_button_process;
 }
 
 static void _eon_theme_element_button_instance_init(void *o)
@@ -79,8 +123,8 @@ static void _eon_theme_element_button_instance_deinit(void *o)
 	Eon_Theme_Element_Button *thiz;
 
 	thiz = EON_THEME_ELEMENT_BUTTON(o);
-	if (thiz->d->free)
-		thiz->d->free(thiz->data);
+	if (thiz->d->dtor)
+		thiz->d->dtor(thiz->data);
 }
 /*============================================================================*
  *                                 Global                                     *

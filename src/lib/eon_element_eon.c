@@ -240,29 +240,31 @@ _eon_element_eon_render_descriptor = {
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static void _eon_element_eon_init(Eon_Renderable *w)
+static void _eon_element_eon_init(Eon_Renderable *r)
 {
 	Eon_Element_Eon *thiz;
+	Eon_Element *e;
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Event_Target *e;
+	Egueb_Dom_Event_Target *et;
 
-	n = (EON_ELEMENT(w))->n;
+	n = (EON_ELEMENT(r))->n;
 
-	e = EGUEB_DOM_EVENT_TARGET(n);
-	egueb_dom_event_target_event_listener_add(e,
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_eon_tree_modified_cb,
-			EINA_FALSE, w);
-	egueb_dom_event_target_event_listener_add(e,
+			EINA_FALSE, r);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_eon_tree_modified_cb,
-			EINA_FALSE, w);
-	egueb_dom_event_target_event_listener_add(e,
+			EINA_FALSE, r);
+	egueb_dom_event_target_event_listener_add(et,
 			EON_EVENT_GEOMETRY_INVALIDATE,
 			_eon_element_eon_geometry_invalidate_cb, EINA_FALSE,
-			w);
+			r);
 
-	thiz = EON_ELEMENT_EON(w);
+	thiz = EON_ELEMENT_EON(r);
+	thiz->renderable_changed = EINA_TRUE;
 	thiz->input = egueb_dom_input_new(&_eon_element_eon_input_descriptor, n);
 	thiz->compound = enesim_renderer_compound_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
@@ -276,13 +278,13 @@ static void _eon_element_eon_init(Eon_Renderable *w)
 	egueb_dom_feature_io_add(n);
 	egueb_smil_feature_animation_add(n,
 			&_eon_element_eon_animation_descriptor);
+	e = EON_ELEMENT(r);
+	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			EON_NAME_ELEMENT_EON);
 }
 
-static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *w)
+static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *r)
 {
-	Eon_Renderable *r;
-
-	r = EON_RENDERABLE(w);
 	/* set the size based on the user provided size */
 	if (r->needs_geometry)
 	{
@@ -290,7 +292,7 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *w)
 		Egueb_Dom_Node *n;
 		Eina_Rectangle geom;
 
-		thiz = EON_ELEMENT_EON(w);
+		thiz = EON_ELEMENT_EON(r);
 
 		n = (EON_ELEMENT(r))->n;
 		eina_rectangle_coords_from(&geom, 0, 0, thiz->width, thiz->height);
@@ -298,14 +300,14 @@ static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *w)
 	}
 	return EINA_TRUE;
 }
-static int _eon_element_eon_size_hints_get(Eon_Renderable *w, Eon_Renderable_Size *size)
+static int _eon_element_eon_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
 {
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	int ret;
 
-	e = EON_ELEMENT(w);
+	e = EON_ELEMENT(r);
 	n = e->n;
 	/* get the hints from our child */
 	child = egueb_dom_element_child_first_get(n);
@@ -419,7 +421,7 @@ static Enesim_Renderer * _eon_element_eon_renderer_get(Eon_Renderable *r)
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_eon_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_EON);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_EON);
 }
 
 static Eina_Bool _eon_element_eon_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)

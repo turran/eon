@@ -78,7 +78,7 @@ static void _strings_init(void)
 	EON_ATTR_ENABLED = egueb_dom_string_new_with_static_string("enabled");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
-	EON_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
+	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
 	EON_NAME_ELEMENT_BUTTON_STOCK = egueb_dom_string_new_with_static_string("stockButton");
 	EON_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
@@ -112,7 +112,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_ATTR_ENABLED);
 	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
-	egueb_dom_string_unref(EON_ELEMENT_EON);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_LABEL);
@@ -148,7 +148,7 @@ Egueb_Dom_String *EON_ATTR_ORIENTATION;
 Egueb_Dom_String *EON_ATTR_ENABLED;
 Egueb_Dom_String *EON_STOCK;
 /* elements */
-Egueb_Dom_String *EON_ELEMENT_EON;
+Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
 Egueb_Dom_String *EON_ELEMENT_LABEL;
