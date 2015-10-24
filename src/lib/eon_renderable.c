@@ -39,7 +39,7 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 		return;
 	/* check if the attribute is the width or the height */
 	attr = egueb_dom_event_mutation_related_get(ev);
-	if ((thiz->width == attr) || (thiz->height == attr))
+	if ((thiz->hexpand == attr) || (thiz->vexpand == attr))
 	{
 		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
 		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
@@ -97,14 +97,14 @@ static void _eon_renderable_init(Eon_Element *e)
 
  	thiz = EON_RENDERABLE(e);
 	/* add the attributes */
-	thiz->width = egueb_dom_attr_int_new(
+	thiz->hexpand = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_WIDTH), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->width, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
-	thiz->height = egueb_dom_attr_int_new(
+	egueb_dom_attr_set(thiz->hexpand, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
+	thiz->vexpand = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_HEIGHT), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_DEFAULT, -1);
+	egueb_dom_attr_set(thiz->vexpand, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
 
 	thiz->valign = eon_vertical_align_attr_new();
 	egueb_dom_attr_set(thiz->valign, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_VERTICAL_ALIGN_MIDDLE);
@@ -113,8 +113,8 @@ static void _eon_renderable_init(Eon_Element *e)
 	egueb_dom_attr_set(thiz->halign, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_HORIZONTAL_ALIGN_CENTER);
 
 	n = e->n;
-	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->width), NULL);
-	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->height), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->vexpand), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->hexpand), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->valign), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->halign), NULL);
 
@@ -193,8 +193,8 @@ static void _eon_renderable_instance_deinit(void *o)
 {
 	Eon_Renderable *thiz = o;
 
-	egueb_dom_node_unref(thiz->width);
-	egueb_dom_node_unref(thiz->height);
+	egueb_dom_node_unref(thiz->vexpand);
+	egueb_dom_node_unref(thiz->hexpand);
 	egueb_dom_node_unref(thiz->valign);
 	egueb_dom_node_unref(thiz->halign);
 }
@@ -355,48 +355,48 @@ Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
  *                                   API                                      *
  *============================================================================*/
 /**
- * Sets the width of a renderable
- * @param[in] n The renderable node to set the width
- * @param[in] w The width to set
+ * Sets the vexpand of a renderable
+ * @param[in] n The renderable node to set the vexpand
+ * @param[in] w The vexpand to set
  */
-EAPI void eon_renderable_width_set(Egueb_Dom_Node *n, int w)
+EAPI void eon_renderable_vexpand_set(Egueb_Dom_Node *n, Eina_Bool expand)
 {
 	Eon_Renderable *thiz;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	egueb_dom_attr_set(thiz->width, EGUEB_DOM_ATTR_TYPE_BASE, w);
+	egueb_dom_attr_set(thiz->vexpand, EGUEB_DOM_ATTR_TYPE_BASE, expand);
 }
 
-EAPI int eon_renderable_width_get(Egueb_Dom_Node *n)
+EAPI Eina_Bool eon_renderable_vexpand_get(Egueb_Dom_Node *n)
 {
 	Eon_Renderable *thiz;
-	int ret;
+	Eina_Bool ret;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	egueb_dom_attr_final_get(thiz->width, &ret);
+	egueb_dom_attr_final_get(thiz->vexpand, &ret);
 	return ret;
 }
 
 /**
- * Sets the height of a renderable
- * @param[in] n The renderable node to set the height
- * @param[in] h The height to set
+ * Sets the hexpand of a renderable
+ * @param[in] n The renderable node to set the hexpand
+ * @param[in] h The hexpand to set
  */
-EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h)
+EAPI void eon_renderable_hexpand_set(Egueb_Dom_Node *n, Eina_Bool expand)
 {
 	Eon_Renderable *thiz;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	egueb_dom_attr_set(thiz->height, EGUEB_DOM_ATTR_TYPE_BASE, h);
+	egueb_dom_attr_set(thiz->hexpand, EGUEB_DOM_ATTR_TYPE_BASE, expand);
 }
 
-EAPI int eon_renderable_height_get(Egueb_Dom_Node *n)
+EAPI Eina_Bool eon_renderable_hexpand_get(Egueb_Dom_Node *n)
 {
 	Eon_Renderable *thiz;
-	int ret;
+	Eina_Bool ret;
 
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	egueb_dom_attr_final_get(thiz->height, &ret);
+	egueb_dom_attr_final_get(thiz->hexpand, &ret);
 	return ret;
 }
 

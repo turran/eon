@@ -40,14 +40,18 @@ typedef struct _Eon_Renderable_Size
 	int pref_height;
 } Eon_Renderable_Size;
 
-EAPI void eon_renderable_width_set(Egueb_Dom_Node *n, int w);
-EAPI int eon_renderable_width_get(Egueb_Dom_Node *n);
-EAPI void eon_renderable_height_set(Egueb_Dom_Node *n, int h);
-EAPI int eon_renderable_height_get(Egueb_Dom_Node *n);
+EAPI void eon_renderable_vexpand_set(Egueb_Dom_Node *n, Eina_Bool expand);
+EAPI Eina_Bool eon_renderable_vexpand_get(Egueb_Dom_Node *n);
+
+EAPI void eon_renderable_hexpand_set(Egueb_Dom_Node *n, Eina_Bool expand);
+EAPI Eina_Bool eon_renderable_hexpand_get(Egueb_Dom_Node *n);
+
 EAPI void eon_renderable_valign_set(Egueb_Dom_Node *n, Eon_Vertical_Align valign);
 EAPI Eon_Vertical_Align eon_renderable_valign_get(Egueb_Dom_Node *n);
+
 EAPI void eon_renderable_halign_set(Egueb_Dom_Node *n, Eon_Horizontal_Align halign);
 EAPI Eon_Horizontal_Align eon_renderable_halign_get(Egueb_Dom_Node *n);
+
 EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
 
 #endif
