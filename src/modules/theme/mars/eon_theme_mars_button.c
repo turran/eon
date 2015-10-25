@@ -22,9 +22,9 @@
  *============================================================================*/
 typedef struct _Eon_Theme_Mars_Button
 {
+	Enesim_Renderer *inner_button;
 	Enesim_Renderer *button;
 	Enesim_Renderer *blur;
-	Enesim_Renderer *content;
 	Egueb_Dom_Node *n;
 } Eon_Theme_Mars_Button;
 
@@ -40,9 +40,9 @@ static void _eon_theme_mars_button_dtor(void *data)
 {
 	Eon_Theme_Mars_Button *thiz = data;
 
+	enesim_renderer_unref(thiz->inner_button);
 	enesim_renderer_unref(thiz->button);
 	enesim_renderer_unref(thiz->blur);
-	enesim_renderer_unref(thiz->content);
 	free(thiz);
 }
 
@@ -57,16 +57,18 @@ static Eina_Bool _eon_theme_mars_button_process(void *data)
 	Eina_Rectangle geom;
 
 	thiz = data;
+	/* get the geometry */
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
+	/* set the rectangle area */
+	enesim_renderer_rectangle_position_set(thiz->inner_button, geom.x + 10, geom.y + 10);
+	enesim_renderer_rectangle_size_set(thiz->inner_button, geom.w - 20, geom.h - 20);
+	enesim_renderer_shape_fill_color_set(thiz->inner_button, 0xff0f3b65);
+
 	enesim_renderer_rectangle_position_set(thiz->button, geom.x, geom.y);
 	enesim_renderer_rectangle_size_set(thiz->button, geom.w, geom.h);
-	enesim_renderer_shape_fill_color_set(thiz->button, 0x00000000);
-	enesim_renderer_shape_stroke_color_set(thiz->button, 0xff0f3b65);
-	enesim_renderer_shape_stroke_weight_set(thiz->button, 1.5);
-	enesim_renderer_shape_draw_mode_set(thiz->button, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
-	/* get the geometry */
-	/* set the rounded rectangle area */
 	/* set the border color */
+	enesim_renderer_shape_stroke_color_set(thiz->button, 0xff0f3b65);
+	enesim_renderer_shape_stroke_weight_set(thiz->button, 3);
 	/* apply the blur value */
 	return EINA_TRUE;
 }
@@ -79,12 +81,7 @@ static void _eon_theme_mars_button_padding_get(void *data, Eon_Box *padding)
 static void _eon_theme_mars_button_content_set(void *data, Enesim_Renderer *r)
 {
 	Eon_Theme_Mars_Button *thiz = data;
-	if (thiz->content)
-	{
-		enesim_renderer_unref(thiz->content);
-		thiz->content = NULL;
-	}
-	thiz->content = r;
+	enesim_renderer_shape_fill_renderer_set(thiz->inner_button, r);
 }
 
 static Enesim_Renderer * _eon_theme_mars_button_renderer_get(void *data)
@@ -113,7 +110,13 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 	Eon_Theme_Mars_Button *thiz;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Button));
+	thiz->inner_button = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_draw_mode_set(thiz->inner_button, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+
 	thiz->button = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_fill_renderer_set(thiz->button, enesim_renderer_ref(thiz->inner_button));
+	enesim_renderer_shape_draw_mode_set(thiz->button, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
+
 	thiz->blur = enesim_renderer_blur_new();
 	n = eon_theme_element_button_new(&_descriptor, thiz);
 	thiz->n = n;
