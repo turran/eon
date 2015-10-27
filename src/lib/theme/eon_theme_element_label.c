@@ -16,7 +16,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_theme_private.h"
-#include "eon_theme_element_label.h"
+#include "eon_theme_element_label_private.h"
 #include "eon_theme_main_private.h"
 #include "eon_theme_renderable_private.h"
 /*============================================================================*
@@ -28,39 +28,32 @@
 
 typedef struct _Eon_Theme_Element_Label
 {
-	Eon_Theme_Renderable base;
-	const Eon_Theme_Element_Label_Descriptor *d;
-	void *data;
+	Eon_Theme_Element base;
+	/* properties */
+	Egueb_Dom_Node *font;
 } Eon_Theme_Element_Label;
 
 typedef struct _Eon_Theme_Element_Label_Class
 {
-	Eon_Theme_Renderable_Class base;
+	Eon_Theme_Element_Class base;
 } Eon_Theme_Element_Label_Class;
-
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
-static Enesim_Renderer * _eon_theme_element_label_renderer_get(Eon_Theme_Renderable *r)
-{
-	Eon_Theme_Element_Label *thiz;
-
-	thiz = EON_THEME_ELEMENT_LABEL(r);
-	if (thiz->d->renderer_get)
-		return thiz->d->renderer_get(thiz->data);
-	return NULL;
-}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_Node * _eon_theme_element_label_ctor(Eon_Theme_Element *e)
 {
+	return eon_theme_element_label_new();
+}
+
+static void _eon_theme_element_label_init(Eon_Theme_Element *e)
+{
 	Eon_Theme_Element_Label *thiz;
+	Egueb_Dom_Node *n;
 
 	thiz = EON_THEME_ELEMENT_LABEL(e);
-	if (thiz->d->ctor)
-		return thiz->d->ctor();
-	return NULL;
+	/* create the attributes */
+	thiz->font = egueb_css_attr_font_new(NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->font), NULL);
 }
 
 static Eina_Bool _eon_theme_element_label_process(Eon_Theme_Element *e)
@@ -68,42 +61,29 @@ static Eina_Bool _eon_theme_element_label_process(Eon_Theme_Element *e)
 	Eon_Theme_Element_Label *thiz;
 
 	thiz = EON_THEME_ELEMENT_LABEL(e);
-	if (thiz->d->process)
-		return thiz->d->process(thiz->data);
 	return EINA_TRUE;
 }
 
-static Egueb_Dom_String * _eon_theme_element_label_tag_name_get(Eon_Theme_Element *e)
+static Egueb_Dom_String * _eon_theme_element_label_tag_name_get(
+		Eon_Theme_Element *e)
 {
-	Eon_Theme_Element_Label *thiz;
-
-	thiz = EON_THEME_ELEMENT_LABEL(e);
-	if (thiz->d->tag_name_get)
-	{
-		const char *name;
-		name = thiz->d->tag_name_get();
-		return egueb_dom_string_new_with_static_string(name);
-	}
-	return NULL;
+	return egueb_dom_string_ref(EON_ELEMENT_LABEL);
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_RENDERABLE_DESCRIPTOR,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_ELEMENT_DESCRIPTOR,
 		Eon_Theme_Element_Label, Eon_Theme_Element_Label_Class, eon_theme_element_label);
 
 static void _eon_theme_element_label_class_init(void *k)
 {
-	Eon_Theme_Renderable_Class *klass;
-	Eon_Theme_Element_Class *e_klass;
+	Eon_Theme_Element_Class *klass;
 
-	klass = EON_THEME_RENDERABLE_CLASS(k);
-	klass->renderer_get = _eon_theme_element_label_renderer_get;
-
-	e_klass = EON_THEME_ELEMENT_CLASS(k);
-	e_klass->ctor = _eon_theme_element_label_ctor;
-	e_klass->tag_name_get = _eon_theme_element_label_tag_name_get;
-	e_klass->process = _eon_theme_element_label_process;
+	klass = EON_THEME_ELEMENT_CLASS(k);
+	klass->ctor = _eon_theme_element_label_ctor;
+	klass->init = _eon_theme_element_label_init;
+	klass->tag_name_get = _eon_theme_element_label_tag_name_get;
+	klass->process = _eon_theme_element_label_process;
 }
 
 static void _eon_theme_element_label_instance_init(void *o)
@@ -115,49 +95,20 @@ static void _eon_theme_element_label_instance_deinit(void *o)
 	Eon_Theme_Element_Label *thiz;
 
 	thiz = EON_THEME_ELEMENT_LABEL(o);
-	if (thiz->d->dtor)
-		thiz->d->dtor(thiz->data);
+	egueb_dom_node_unref(thiz->font);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-/**
- * Creates a new label theme
- * @param d The set of functions the theme implemenation must implement
- * @param data The private data passed in on the descriptor functions 
- */
-EAPI Egueb_Dom_Node * eon_theme_element_label_new(
-		const Eon_Theme_Element_Label_Descriptor *d, void *data)
+Egueb_Dom_Node * eon_theme_element_label_new(void)
 {
 	Eon_Theme_Element_Label *thiz;
-	Eon_Theme_Element *e;
 	Egueb_Dom_Node *n;
 
 	n = EON_THEME_ELEMENT_NEW(eon_theme_element_label);
 	thiz = egueb_dom_element_external_data_get(n);
-	thiz->d = d;
-	thiz->data = data;
-
-	e = EON_THEME_ELEMENT(thiz);
-	return e->n;
+	return n;
 }
-
-/**
- * Gets the private data of a label
- * @param w The label to get the data from
- * @return The private data
- */
-EAPI void * eon_theme_element_label_data_get(Egueb_Dom_Node *n)
-{
-	Eon_Theme_Element_Label *thiz;
-	Eon_Theme_Element *e;
-
-	e = EON_THEME_ELEMENT(egueb_dom_element_external_data_get(n));
-	thiz = EON_THEME_ELEMENT_LABEL(e);
-
-	return thiz->data;
-}
-
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/

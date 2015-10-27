@@ -13,8 +13,9 @@ src/lib/theme/eon_theme_element_private.h \
 src/lib/theme/eon_theme_element_eon.c \
 src/lib/theme/eon_theme_element_eot.c \
 src/lib/theme/eon_theme_element_eot_private.h \
+src/lib/theme/eon_theme_element_label.c \
+src/lib/theme/eon_theme_element_label_private.h \
 src/lib/theme/eon_theme_element_button.c \
-src/lib/theme/eon_theme_element_button.h \
 src/lib/theme/eon_theme_element_button_private.h \
 src/lib/theme/eon_theme_element_object.c \
 src/lib/theme/eon_theme_element_eon_theme.c \

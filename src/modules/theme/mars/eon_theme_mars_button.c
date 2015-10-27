@@ -24,6 +24,7 @@ typedef struct _Eon_Theme_Mars_Button
 {
 	Enesim_Renderer *inner_button;
 	Enesim_Renderer *button;
+	Enesim_Renderer *button_content;
 	Enesim_Renderer *blur;
 	Egueb_Dom_Node *n;
 } Eon_Theme_Mars_Button;
@@ -81,7 +82,22 @@ static void _eon_theme_mars_button_padding_get(void *data, Eon_Box *padding)
 static void _eon_theme_mars_button_content_set(void *data, Enesim_Renderer *r)
 {
 	Eon_Theme_Mars_Button *thiz = data;
-	enesim_renderer_shape_fill_renderer_set(thiz->inner_button, r);
+	Enesim_Renderer_Compound_Layer *l;
+
+	enesim_renderer_compound_layer_clear(thiz->button_content);
+	/* the background */
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_renderer_set(l, enesim_renderer_ref(thiz->inner_button));
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_add(thiz->button_content, l);
+	/* the content */
+	if (r)
+	{
+		l = enesim_renderer_compound_layer_new();
+		enesim_renderer_compound_layer_renderer_set(l, r);
+		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+		enesim_renderer_compound_layer_add(thiz->button_content, l);
+	}
 }
 
 static Enesim_Renderer * _eon_theme_mars_button_renderer_get(void *data)
@@ -106,15 +122,23 @@ static Eon_Theme_Element_Button_Descriptor _descriptor = {
  *============================================================================*/
 Egueb_Dom_Node * eon_theme_mars_button_new(void)
 {
-	Egueb_Dom_Node *n;
 	Eon_Theme_Mars_Button *thiz;
+	Egueb_Dom_Node *n;
+	Enesim_Renderer_Compound_Layer *l;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Button));
 	thiz->inner_button = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->inner_button, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
 
+	thiz->button_content = enesim_renderer_compound_new();
+	/* the background */
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_renderer_set(l, thiz->inner_button);
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_add(thiz->button_content, l);
+
 	thiz->button = enesim_renderer_rectangle_new();
-	enesim_renderer_shape_fill_renderer_set(thiz->button, enesim_renderer_ref(thiz->inner_button));
+	enesim_renderer_shape_fill_renderer_set(thiz->button, enesim_renderer_ref(thiz->button_content));
 	enesim_renderer_shape_draw_mode_set(thiz->button, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
 
 	thiz->blur = enesim_renderer_blur_new();

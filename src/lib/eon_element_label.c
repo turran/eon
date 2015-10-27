@@ -19,6 +19,7 @@
 #include "eon_main.h"
 #include "eon_element_label.h"
 
+#include "eon_feature_themable_private.h"
 #include "eon_widget_drawer_private.h"
 #include "eon_drawer_label_private.h"
 /* Create our own text span renderer to pre-calculate the size of the ellipsized text
@@ -35,21 +36,22 @@
 
 typedef struct _Eon_Element_Label
 {
-	Eon_Widget_Drawer base;
+	Eon_Widget base;
 	/* properties */
 	Egueb_Dom_Node *ellipsize;
+	Egueb_Dom_Node *font;
 	/* private */
+	Egueb_Dom_Feature *theme_feature;
 	/* the text span renderer from the drawer */
 	Enesim_Renderer *r;
 	/* the text buffer used in case we can ellipsize */
 	Enesim_Text_Buffer *tb;
 	Eina_Bool text_changed;
-	Eina_Bool font_changed;
 } Eon_Element_Label;
 
 typedef struct _Eon_Element_Label_Class
 {
-	Eon_Widget_Drawer_Class base;
+	Eon_Widget_Class base;
 } Eon_Element_Label_Class;
 
 static void _eon_element_label_tree_modified_cb(Egueb_Dom_Event *e,
@@ -72,11 +74,11 @@ static void _eon_element_label_tree_modified_cb(Egueb_Dom_Event *e,
 	thiz->text_changed = EINA_TRUE;
 }
 
-static void _eon_element_label_drawer_propagate(Eon_Widget_Drawer *w)
+static void _eon_element_label_drawer_propagate(Eon_Renderable *r)
 {
 	Eon_Element_Label *thiz;
 
-	thiz = EON_ELEMENT_LABEL(w);
+	thiz = EON_ELEMENT_LABEL(r);
 	if (thiz->text_changed)
 	{
 		Egueb_Dom_Node *n;
@@ -99,12 +101,6 @@ static void _eon_element_label_drawer_propagate(Eon_Widget_Drawer *w)
 			enesim_renderer_text_span_real_buffer_set(thiz->r, NULL);
 		}
 		thiz->text_changed = EINA_FALSE;
-	}
-
-	if (thiz->font_changed)
-	{
-		/* Pass any font related attribute to the widget drawer */
-		thiz->font_changed = EINA_FALSE;
 	}
 }
 
@@ -144,7 +140,7 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 
 	return min_width < boundings.w ? min_width : boundings.w;
 }
-#endif
+
 /*----------------------------------------------------------------------------*
  *                        Widget Drawer interface                             *
  *----------------------------------------------------------------------------*/
@@ -213,39 +209,45 @@ static Eina_Bool _eon_element_label_process(Eon_Widget_Drawer *w)
 
 	return EINA_TRUE;
 }
+#endif
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
 static void _eon_element_label_init(Eon_Widget *w)
 {
 	Eon_Element_Label *thiz;
+	Eon_Element *e;
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Event_Target *e;
+	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_ELEMENT_LABEL(w);
+	thiz->r = enesim_renderer_text_span_new();
+
+	/* attributes */
 	thiz->ellipsize = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_ATTR_ELLIPSIZE), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->ellipsize, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
-	
+
+	thiz->font = egueb_css_attr_font_new(NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
+
 	n = (EON_ELEMENT(w))->n;
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->ellipsize), NULL);
-	/* attributes */
-	/* TODO add:
-	 * font family
-	 * font size
-	 * font weight
-	 * font style
-	 * font variant
-	 */
-	
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->font), NULL);
+	/* TODO add: font family, font size, font weight, font style, font variant */
+
+	e = EON_ELEMENT(w);
+	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			EON_ELEMENT_LABEL);
+	/* features */
+	thiz->theme_feature = eon_feature_themable_add(n);
 	/* events */
-	e = EGUEB_DOM_EVENT_TARGET(n);
-	egueb_dom_event_target_event_listener_add(e,
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_label_tree_modified_cb,
 			EINA_FALSE, w);
-	egueb_dom_event_target_event_listener_add(e,
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_label_tree_modified_cb,
 			EINA_FALSE, w);
@@ -253,6 +255,76 @@ static void _eon_element_label_init(Eon_Widget *w)
 /*----------------------------------------------------------------------------*
  *                            Renderable interface                            *
  *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_element_label_renderer_get(Eon_Renderable *r)
+{
+	Eon_Element_Label *thiz;
+
+	thiz = EON_ELEMENT_LABEL(r);
+	return enesim_renderer_ref(thiz->r);
+}
+
+static int _eon_element_label_size_hints_get(Eon_Renderable *r,
+		Eon_Renderable_Size *size)
+{
+	Eon_Element_Label *thiz;
+	Enesim_Text_Font *font;
+	Enesim_Rectangle geom;
+
+	thiz = EON_ELEMENT_LABEL(r);
+	/* Get the font */
+	font = egueb_css_attr_font_resolve(thiz->font, 0, 0);
+	if (!font)
+	{
+		Egueb_Dom_Node *theme_element;
+
+		/* if it is not set, get the theme and use the default one */
+		theme_element = eon_feature_themable_load(thiz->theme_feature);
+		if (theme_element)
+		{
+			Egueb_Dom_Node *font_attr;
+			font_attr = egueb_dom_element_attribute_node_get(
+					theme_element, EGUEB_CSS_NAME_FONT);
+			if (font_attr)
+			{
+				font = egueb_css_attr_font_resolve(thiz->font,
+						0, 0);
+				egueb_dom_node_unref(font_attr);
+			}
+			egueb_dom_node_unref(theme_element);
+		}
+	}
+
+	if (!font)
+	{
+		ERR("No font set");
+		return 0;
+	}
+
+	/* Set the font */
+	enesim_renderer_text_span_font_set(thiz->r, font);
+	/* If the tree has changed add replace the text */
+	_eon_element_label_drawer_propagate(r);
+
+	/* Get the bounds of the text, return it */
+	if (enesim_renderer_bounds_get(thiz->r, &geom, NULL))
+	{
+		size->min_width = geom.w;
+		size->min_height = geom.h;
+		size->max_width = geom.w;
+		size->max_height = geom.h;
+		size->pref_width = geom.w;
+		size->pref_height = geom.h;
+		return EON_RENDERABLE_HINT_MIN_MAX | EON_RENDERABLE_HINT_PREFERRED;
+	}
+
+	return 0;
+}
+
+static Eina_Bool _eon_element_label_process(Eon_Renderable *r)
+{
+	return EINA_TRUE;
+}
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -284,7 +356,7 @@ static Eina_Bool _eon_element_label_child_appendable(Eon_Element *e, Egueb_Dom_N
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Label,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Label,
 		Eon_Element_Label_Class, eon_element_label);
 
 static void _eon_element_label_class_init(void *k)
@@ -299,14 +371,12 @@ static void _eon_element_label_class_init(void *k)
 	klass->child_appendable = _eon_element_label_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->renderer_get = _eon_element_label_renderer_get;
+	r_klass->size_hints_get = _eon_element_label_size_hints_get;
+	r_klass->process = _eon_element_label_process;
 
 	w_klass = EON_WIDGET_CLASS(k);
 	w_klass->init = _eon_element_label_init;
-
-	wd_klass = EON_WIDGET_DRAWER_CLASS(k);
-	wd_klass->theme_instance_created = _eon_element_label_theme_instance_created;
-	wd_klass->size_hints_get = _eon_element_label_size_hints_get;
-	wd_klass->process = _eon_element_label_process;
 }
 
 static void _eon_element_label_instance_init(void *o)
@@ -318,7 +388,9 @@ static void _eon_element_label_instance_deinit(void *o)
 	Eon_Element_Label *thiz;
 
 	thiz = EON_ELEMENT_LABEL(o);
+	enesim_renderer_unref(thiz->r);
 	egueb_dom_node_unref(thiz->ellipsize);
+	egueb_dom_node_unref(thiz->font);
 }
 /*============================================================================*
  *                                 Global                                     *

@@ -20,6 +20,7 @@
 #include "eon_theme_document_private.h"
 #include "eon_theme_namespace_private.h"
 #include "eon_theme_element_eot_private.h"
+#include "eon_theme_element_label_private.h"
 #include "eon_theme_element_instance_private.h"
 #include "eon_theme_element_object_private.h"
 /*============================================================================*
@@ -42,6 +43,10 @@ static Egueb_Dom_Node * _eon_theme_document_element_create(Egueb_Dom_Node *n,
 	if (!strcmp(name, "eot"))
 	{
 		return eon_theme_element_eot_new();
+	}
+	else if (!strcmp(name, "label"))
+	{
+		return eon_theme_element_label_new();
 	}
 	else if (!strcmp(name, "set"))
 	{
