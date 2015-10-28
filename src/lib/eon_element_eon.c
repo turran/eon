@@ -318,6 +318,7 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 {
 	Eon_Element_Eon *thiz;
 	Eon_Renderable_Size size;
+	Egueb_Dom_Node *theme_element;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child = NULL;
 
@@ -344,25 +345,21 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 	}
 
 	thiz = EON_ELEMENT_EON(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	/* update the renderable tree */
 	if (thiz->renderable_changed)
 	{
-		Egueb_Dom_Node *theme_element;
-
 		enesim_renderer_compound_layer_clear(thiz->compound);
-		theme_element = eon_feature_themable_load(thiz->theme_feature);
 		if (theme_element)
 		{
 			Enesim_Renderer_Compound_Layer *l;
 			Enesim_Renderer *ren;
 
-			eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 			ren = eon_theme_renderable_renderer_get(theme_element);
 			l = enesim_renderer_compound_layer_new();
 			enesim_renderer_compound_layer_renderer_set(l, ren);
 			enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 			enesim_renderer_compound_layer_add(thiz->compound, l);
-			egueb_dom_node_unref(theme_element);
 		}
 
 		/* add our own child */
@@ -381,6 +378,13 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 			}
 		}
 		thiz->renderable_changed = EINA_FALSE;
+	}
+
+	if (theme_element)
+	{
+		eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+		egueb_dom_element_process(theme_element);
+		egueb_dom_node_unref(theme_element);
 	}
 	egueb_dom_node_unref(child);
 
