@@ -74,7 +74,7 @@ static void _eon_element_label_tree_modified_cb(Egueb_Dom_Event *e,
 	thiz->text_changed = EINA_TRUE;
 }
 
-static void _eon_element_label_drawer_propagate(Eon_Renderable *r)
+static void _eon_element_label_renderer_propagate(Eon_Renderable *r)
 {
 	Eon_Element_Label *thiz;
 
@@ -141,25 +141,6 @@ static double _eon_theme_label_min_width_ellipsized_get(Eon_Element *ee)
 	return min_width < boundings.w ? min_width : boundings.w;
 }
 
-/*----------------------------------------------------------------------------*
- *                        Widget Drawer interface                             *
- *----------------------------------------------------------------------------*/
-static void _eon_element_label_theme_instance_created(Eon_Widget_Drawer *w)
-{
-	Eon_Element_Label *thiz;
-
-	thiz = EON_ELEMENT_LABEL(w);
-	/* Destroy our renderer copy */
-	if (thiz->r)
-	{
-		enesim_renderer_unref(thiz->r);
-	}
-	thiz->r = eon_drawer_label_text_renderer_get(w->theme_widget);
-	/* Get the new one */
-	thiz->font_changed = EINA_TRUE;
-	thiz->text_changed = EINA_TRUE;
-}
-
 static int _eon_element_label_size_hints_get(Eon_Widget_Drawer *w,
 		Eon_Renderable_Size *size)
 {
@@ -197,17 +178,6 @@ static int _eon_element_label_size_hints_get(Eon_Widget_Drawer *w,
 	size->pref_width = geom.w;
 	size->pref_height = geom.h;
 	return EON_RENDERABLE_HINT_MIN_MAX | EON_RENDERABLE_HINT_PREFERRED;
-}
-
-
-static Eina_Bool _eon_element_label_process(Eon_Widget_Drawer *w)
-{
-	Eon_Element_Label *thiz;
-
-	thiz = EON_ELEMENT_LABEL(w);
-	/* set the correct text buffer, text font, text color */
-
-	return EINA_TRUE;
 }
 #endif
 /*----------------------------------------------------------------------------*
@@ -286,7 +256,7 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 					theme_element, EGUEB_CSS_NAME_FONT);
 			if (font_attr)
 			{
-				font = egueb_css_attr_font_resolve(thiz->font,
+				font = egueb_css_attr_font_resolve(font_attr,
 						0, 0);
 				egueb_dom_node_unref(font_attr);
 			}
@@ -303,7 +273,7 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 	/* Set the font */
 	enesim_renderer_text_span_font_set(thiz->r, font);
 	/* If the tree has changed add replace the text */
-	_eon_element_label_drawer_propagate(r);
+	_eon_element_label_renderer_propagate(r);
 
 	/* Get the bounds of the text, return it */
 	if (enesim_renderer_bounds_get(thiz->r, &geom, NULL))
@@ -322,6 +292,10 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 
 static Eina_Bool _eon_element_label_process(Eon_Renderable *r)
 {
+	Eon_Element_Label *thiz;
+
+	thiz = EON_ELEMENT_LABEL(r);
+	enesim_renderer_origin_set(thiz->r, r->geometry.x, r->geometry.y);
 	return EINA_TRUE;
 }
 
