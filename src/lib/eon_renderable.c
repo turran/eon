@@ -267,18 +267,41 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 	Eon_Renderable_Size size;
 	Eina_Bool w_set = EINA_FALSE;
 	Eina_Bool h_set = EINA_FALSE;
+	Eina_Bool hexpand, vexpand;
 	int size_hints;
 	int w = -1, h = -1;
 
 	size_hints = eon_renderable_size_hints_get(n, &size);
 	valign = eon_renderable_valign_get(n);
 	halign = eon_renderable_halign_get(n);
+	hexpand = eon_renderable_hexpand_get(n);
+	vexpand = eon_renderable_vexpand_get(n);
 
 	DBG_ELEMENT(n, "Solving free space %" EINA_RECTANGLE_FORMAT
-			" halign: %d, valign :%d", EINA_RECTANGLE_ARGS(fs),
-			halign, valign);
+			" halign: %d, valign: %d, hexpand: %d, vexpand :%d",
+			EINA_RECTANGLE_ARGS(fs), halign, valign, hexpand, vexpand);
 	w = fs->w;
 	h = fs->h;
+	/* handle the size */
+	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		if (w > size.pref_width && size.pref_width > 0)
+		{
+			if (!hexpand)
+			{
+				w = size.pref_width;
+			}
+		}
+
+		if (h > size.pref_height && size.pref_height > 0)
+		{
+			if (!vexpand)
+			{
+				h = size.pref_height;
+			}
+		}
+	}
+
 	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
 	{
 		if (w < size.min_width)
@@ -302,7 +325,7 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 			h = size.max_height;
 	}
 
-	/* handle halign, valign */
+	/* handle the position */
 	switch (halign)
 	{
 		case EON_HORIZONTAL_ALIGN_LEFT:
