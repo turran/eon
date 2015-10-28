@@ -62,6 +62,7 @@ EAPI extern Egueb_Dom_String *EON_MAX_WIDTH;
 EAPI extern Egueb_Dom_String *EON_MAX_HEIGHT;
 EAPI extern Egueb_Dom_String *EON_NAME_HEXPAND;
 EAPI extern Egueb_Dom_String *EON_NAME_VEXPAND;
+EAPI extern Egueb_Dom_String *EON_NAME_COLOR;
 EAPI extern Egueb_Dom_String *EON_THEME;
 EAPI extern Egueb_Dom_String *EON_NAME_THEME_ID;
 EAPI extern Egueb_Dom_String *EON_ATTR_ELLIPSIZE;
