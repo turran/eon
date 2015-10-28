@@ -43,6 +43,28 @@ typedef struct _Eon_Feature_Themable_Class
 {
 	Enesim_Object_Class base;
 } Eon_Feature_Themable_Class;
+
+static void _eon_feature_themable_event_propagate_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Feature_Themable *thiz = data;
+
+	if (!thiz->theme_element)
+		return;
+	egueb_dom_node_event_propagate(thiz->theme_element, e);
+}
+
+static void _eon_feature_themable_event_monitor_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Feature_Themable *thiz = data;
+
+	if (!egueb_smil_event_is_timeline(e))
+		return;
+
+	DBG("Theme element requesting a timeline");
+	egueb_dom_node_event_propagate(thiz->n, e);
+}
 /*----------------------------------------------------------------------------*
  *                              Feature interface                             *
  *----------------------------------------------------------------------------*/
@@ -101,6 +123,7 @@ Egueb_Dom_Feature * eon_feature_themable_add(Egueb_Dom_Node *n)
 {
 	Eon_Feature_Themable *thiz;
 	Egueb_Dom_Feature *f;
+	Egueb_Dom_Event_Target *et;
 
 	/* create the feature */
 	thiz = ENESIM_OBJECT_INSTANCE_NEW(eon_feature_themable);
@@ -109,12 +132,37 @@ Egueb_Dom_Feature * eon_feature_themable_add(Egueb_Dom_Node *n)
 	/* assign it */
 	egueb_dom_node_feature_add(n, NULL, NULL, egueb_dom_feature_ref(thiz->f));
 	/* TODO in case a node has been added/removed from a document make
-	 * sure to seti/unset the new/old document too
+	 * sure to set/unset the new/old document too
 	 */
 	/* TODO add events for every 'state' that needs to be propagated
 	 * like mousein, mouseodown, click, focusin, etc
 	 */
 	/* return it */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_DOWN,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_UP,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_OVER,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_MOVE,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_OUT,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
 	return thiz->f;
 }
 
@@ -205,6 +253,9 @@ changed:
 		egueb_dom_document_node_adopt(doc, thiz->theme_element, NULL);
 		egueb_dom_element_enqueue(egueb_dom_node_ref(thiz->theme_element));
 		egueb_dom_node_unref(doc);
+		/* add the monitor */
+		egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(thiz->theme_element),
+				_eon_feature_themable_event_monitor_cb, thiz);
 	}
 done:
 	egueb_dom_string_unref(curr_theme);
