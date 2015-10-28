@@ -137,7 +137,7 @@ Egueb_Dom_Node * eon_theme_element_new(Enesim_Object_Descriptor *descriptor,
 	thiz->id = egueb_dom_attr_string_new(
 			egueb_dom_string_ref(EON_NAME_ID), NULL, NULL,
 			EINA_FALSE, EINA_FALSE, EINA_FALSE);
-
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->id), NULL);
 	/* finally initialize */
 	k = EON_THEME_ELEMENT_CLASS_GET(thiz);
 
