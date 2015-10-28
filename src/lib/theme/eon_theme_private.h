@@ -23,6 +23,7 @@
 #endif
 
 #include <Egueb_Dom.h>
+#include <Egueb_Css.h>
 #include <Egueb_Smil.h>
 #include "Eon.h"
 
