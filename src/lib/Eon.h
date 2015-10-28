@@ -20,6 +20,7 @@
 #define EON_H_
 
 #include "Egueb_Dom.h"
+#include "Egueb_Css.h"
 #include "Egueb_Xlink.h"
 
 #ifdef EAPI
