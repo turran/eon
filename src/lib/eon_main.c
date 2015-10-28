@@ -170,6 +170,7 @@ EAPI int eon_init(void)
 		eina_init();
 		eon_main_log = eina_log_domain_register("eon", NULL);
 		egueb_dom_init();
+		egueb_css_init();
 		egueb_smil_init();
 		eon_theme_init();
 		_strings_init();
@@ -191,6 +192,7 @@ EAPI int eon_shutdown(void)
 	_strings_shutdown();
 	eon_theme_shutdown();
 	egueb_smil_shutdown();
+	egueb_css_shutdown();
 	egueb_dom_shutdown();
 	eina_log_domain_unregister(eon_main_log);
 	eon_main_log = -1;
