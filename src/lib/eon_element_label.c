@@ -238,7 +238,7 @@ static void _eon_element_label_init(Eon_Widget *w)
 
 	e = EON_ELEMENT(w);
 	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
-			EON_ELEMENT_LABEL);
+			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL));
 	/* features */
 	thiz->theme_feature = eon_feature_themable_add(n);
 	/* events */
@@ -330,7 +330,7 @@ static Eina_Bool _eon_element_label_process(Eon_Renderable *r)
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_label_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_LABEL);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL);
 }
 
 static Eina_Bool _eon_element_label_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)

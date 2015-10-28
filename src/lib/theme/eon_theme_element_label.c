@@ -59,7 +59,6 @@ static void _eon_theme_element_label_init(Eon_Theme_Element *e)
 static Eina_Bool _eon_theme_element_label_process(Eon_Theme_Element *e)
 {
 	Eon_Theme_Element_Label *thiz;
-
 	thiz = EON_THEME_ELEMENT_LABEL(e);
 	return EINA_TRUE;
 }
@@ -67,7 +66,7 @@ static Eina_Bool _eon_theme_element_label_process(Eon_Theme_Element *e)
 static Egueb_Dom_String * _eon_theme_element_label_tag_name_get(
 		Eon_Theme_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_LABEL);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL);
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
