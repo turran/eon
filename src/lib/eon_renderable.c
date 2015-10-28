@@ -98,11 +98,11 @@ static void _eon_renderable_init(Eon_Element *e)
  	thiz = EON_RENDERABLE(e);
 	/* add the attributes */
 	thiz->hexpand = egueb_dom_attr_boolean_new(
-			egueb_dom_string_ref(EON_WIDTH), EINA_FALSE,
+			egueb_dom_string_ref(EON_NAME_HEXPAND), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->hexpand, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
 	thiz->vexpand = egueb_dom_attr_boolean_new(
-			egueb_dom_string_ref(EON_HEIGHT), EINA_FALSE,
+			egueb_dom_string_ref(EON_NAME_VEXPAND), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->vexpand, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
 
