@@ -130,6 +130,8 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 
 	/* Set the geometry on the child */
 	eon_theme_element_button_padding_get(theme_element, &padding);
+	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+
 	free_space = r->geometry;
 	free_space.x += padding.left;
 	free_space.y += padding.top;
@@ -137,8 +139,6 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	free_space.h -= padding.bottom + padding.top;
 
 	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
-	eon_theme_renderable_geometry_set(theme_element, &free_space);
-
 	/* Set the content renderer */
 	child = egueb_dom_element_child_first_get(n);
 	if (child)
