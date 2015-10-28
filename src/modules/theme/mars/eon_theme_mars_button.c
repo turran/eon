@@ -22,11 +22,14 @@
  *============================================================================*/
 typedef struct _Eon_Theme_Mars_Button
 {
+	Egueb_Dom_Node *n;
+	/* attributes */
+	Egueb_Dom_Node *color;
+	/* private */
 	Enesim_Renderer *inner_button;
 	Enesim_Renderer *button;
 	Enesim_Renderer *button_content;
 	Enesim_Renderer *blur;
-	Egueb_Dom_Node *n;
 } Eon_Theme_Mars_Button;
 
 /*----------------------------------------------------------------------------*
@@ -41,6 +44,7 @@ static void _eon_theme_mars_button_dtor(void *data)
 {
 	Eon_Theme_Mars_Button *thiz = data;
 
+	egueb_dom_node_unref(thiz->color);
 	enesim_renderer_unref(thiz->inner_button);
 	enesim_renderer_unref(thiz->button);
 	enesim_renderer_unref(thiz->blur);
@@ -56,19 +60,24 @@ static Eina_Bool _eon_theme_mars_button_process(void *data)
 {
 	Eon_Theme_Mars_Button *thiz;
 	Eina_Rectangle geom;
+	Enesim_Argb argb;
+	Enesim_Color color;
 
 	thiz = data;
+	/* get the final attributes */
+	egueb_dom_attr_final_get(thiz->color, &argb);
+	color = enesim_color_argb_from(argb);
 	/* get the geometry */
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
 	/* set the rectangle area */
 	enesim_renderer_rectangle_position_set(thiz->inner_button, geom.x + 10, geom.y + 10);
 	enesim_renderer_rectangle_size_set(thiz->inner_button, geom.w - 20, geom.h - 20);
-	enesim_renderer_shape_fill_color_set(thiz->inner_button, 0xff0f3b65);
+	enesim_renderer_shape_fill_color_set(thiz->inner_button, color);
 
 	enesim_renderer_rectangle_position_set(thiz->button, geom.x, geom.y);
 	enesim_renderer_rectangle_size_set(thiz->button, geom.w, geom.h);
 	/* set the border color */
-	enesim_renderer_shape_stroke_color_set(thiz->button, 0xff0f3b65);
+	enesim_renderer_shape_stroke_color_set(thiz->button, color);
 	enesim_renderer_shape_stroke_weight_set(thiz->button, 3);
 	/* apply the blur value */
 	return EINA_TRUE;
@@ -146,6 +155,11 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 
 	thiz->blur = enesim_renderer_blur_new();
 	n = eon_theme_element_button_new(&_descriptor, thiz);
+	/* the attributes */
+	thiz->color = egueb_css_attr_color_new(
+			egueb_dom_string_ref(EON_NAME_COLOR), NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->color), NULL);
 	thiz->n = n;
 
 	return n;
