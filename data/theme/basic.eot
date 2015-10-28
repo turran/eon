@@ -6,9 +6,12 @@
   <stack padding="20px" separator="20px"/>
   <label id="label" font="Verdana 11pt"/>
   <basic:button id="button-basic" border-color="#555" fill-color="green">
-    <set attributeName="fill-color" to="darkgreen" start="mousedown"/>
-    <set attributeName="fill-color" to="green" start="mouseup"/>
+    <set attributeName="color" to="darkgreen" start="mousedown"/>
+    <set attributeName="color" to="green" start="mouseup"/>
   </basic:button>
   <mars:eon id="eon" color="black"/>
-  <mars:button id="button" color="green"/>
+  <mars:button id="button" color="#ff0f3b65">
+    <set attributeName="color" to="darkgreen" begin="mousedown"/>
+    <set attributeName="color" to="green" begin="mouseup"/>
+  </mars:button>
 </eot>
