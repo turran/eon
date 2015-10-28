@@ -200,7 +200,7 @@ changed:
 			egueb_dom_node_unref(theme_element);
 			goto done;
 		}
-		thiz->theme_element = egueb_dom_node_clone(theme_element, EINA_TRUE, EINA_FALSE, NULL);
+		thiz->theme_element = egueb_dom_node_clone(theme_element, EINA_FALSE, EINA_TRUE, NULL);
 		/* adopt it to the new document */
 		egueb_dom_document_node_adopt(doc, thiz->theme_element, NULL);
 		egueb_dom_element_enqueue(egueb_dom_node_ref(thiz->theme_element));
