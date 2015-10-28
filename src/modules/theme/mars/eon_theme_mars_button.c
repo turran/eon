@@ -76,7 +76,10 @@ static Eina_Bool _eon_theme_mars_button_process(void *data)
 
 static void _eon_theme_mars_button_padding_get(void *data, Eon_Box *padding)
 {
-
+	padding->top = 15;
+	padding->bottom = 15;
+	padding->left = 15;
+	padding->right = 15;
 }
 
 static void _eon_theme_mars_button_content_set(void *data, Enesim_Renderer *r)
