@@ -1,6 +1,6 @@
 <eon>
-  <stack orientation="vertical">
-    <button id="button01" weight="2">
+  <stack orientation="vertical" hexpand="true">
+    <button id="button01" weight="2" valign="top">
       <label>My very own label</label>
     </button>
     <button id="button02">
@@ -9,7 +9,7 @@
     <button id="button03" enabled="false">
       <label>My third button</label>
     </button>
-    <button id="button04">
+    <button id="button04" hexpand="true">
       <label>Button 4th</label>
     </button>
   </stack>
