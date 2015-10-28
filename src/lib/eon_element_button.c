@@ -58,7 +58,7 @@ static void _eon_element_button_init(Eon_Widget *w)
 
 	e = EON_ELEMENT(w);
 	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
-			EON_NAME_ELEMENT_BUTTON);
+			egueb_dom_string_ref(EON_NAME_ELEMENT_BUTTON));
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *

@@ -280,7 +280,7 @@ static void _eon_element_eon_init(Eon_Renderable *r)
 			&_eon_element_eon_animation_descriptor);
 	e = EON_ELEMENT(r);
 	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
-			EON_NAME_ELEMENT_EON);
+			egueb_dom_string_ref(EON_NAME_ELEMENT_EON));
 }
 
 static Eina_Bool _eon_element_eon_pre_process(Eon_Renderable *r)
