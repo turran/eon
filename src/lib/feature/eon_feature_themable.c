@@ -245,6 +245,7 @@ changed:
 		doc = egueb_dom_node_owner_document_get(thiz->n);
 		if (!doc)
 		{
+			WARN_ELEMENT(thiz->n, "No document set");
 			egueb_dom_node_unref(theme_element);
 			goto done;
 		}
