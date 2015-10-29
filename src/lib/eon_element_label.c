@@ -262,6 +262,11 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 			}
 			egueb_dom_node_unref(theme_element);
 		}
+		else
+		{
+			WARN("No theme element found");
+			return 0;
+		}
 	}
 
 	if (!font)
