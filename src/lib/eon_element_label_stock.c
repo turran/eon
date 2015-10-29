@@ -36,7 +36,7 @@
 
 typedef struct _Eon_Element_Label_Stock
 {
-	Eon_Widget_Proxy base;
+	Eon_Widget base;
 	/* attributes */
 	Egueb_Dom_Node *stock;
 	/* private */
@@ -46,9 +46,10 @@ typedef struct _Eon_Element_Label_Stock
 
 typedef struct _Eon_Element_Label_Stock_Class
 {
-	Eon_Widget_Proxy_Class base;
+	Eon_Widget_Class base;
 } Eon_Element_Label_Stock_Class;
 
+#if 0
 static Egueb_Dom_Node * _eon_element_label_stock_theme_instance_create(
 		Eon_Widget_Drawer *wd, Egueb_Dom_Node *theme_document,
 		void *data)
@@ -75,6 +76,35 @@ static Egueb_Dom_Node * _eon_element_label_stock_theme_instance_create(
 	return ret;
 }
 
+static void _eon_element_label_stock_geometry_propagate(Eon_Widget *w)
+{
+	Eon_Element_Label_Stock *thiz;
+
+	thiz = EON_ELEMENT_LABEL_STOCK(w);
+}
+
+#endif
+
+/* Whenever the element is removed/inserted from/to a document, make sure
+ * to adopt our own proxied element to it too
+ */
+static void _eon_element_label_stock_inserted_into_doc_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Label_Stock *thiz = data;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *doc;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+
+	n = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
+	doc = egueb_dom_node_owner_document_get(n);
+	egueb_dom_document_node_adopt(doc, thiz->label, NULL);
+	egueb_dom_node_unref(n);
+	egueb_dom_node_unref(doc);
+}
+
 /* Whenever the 'stock' attribute is modifed be sure to invalidate the
  * geometry. A new 'stock' value implies a new geometry
  */
@@ -98,16 +128,16 @@ static void _eon_element_label_stock_attr_modified_cb(Egueb_Dom_Event *e,
 }
 
 /*----------------------------------------------------------------------------*
- *                          Widget Proxy interface                            *
+ *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
-static void _eon_element_label_stock_init(Eon_Widget_Proxy *wp)
+static void _eon_element_label_stock_init(Eon_Widget *w)
 {
 	Eon_Element_Label_Stock *thiz;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Event_Target *e;
 
-	thiz = EON_ELEMENT_LABEL_STOCK(wp);
-	n = (EON_ELEMENT(wp))->n;
+	thiz = EON_ELEMENT_LABEL_STOCK(w);
+	n = (EON_ELEMENT(w))->n;
 
 	thiz->stock = eon_stock_attr_new();
 	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
@@ -118,38 +148,17 @@ static void _eon_element_label_stock_init(Eon_Widget_Proxy *wp)
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_label_stock_attr_modified_cb,
 			EINA_FALSE, thiz);
+	/* to keep track of the owner document */
+	egueb_dom_event_target_event_listener_add(e,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED_INTO_DOCUMENT,
+			_eon_element_label_stock_inserted_into_doc_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(e,
+			EGUEB_DOM_EVENT_MUTATION_NODE_DOCUMENT_UNSET,
+			_eon_element_label_stock_inserted_into_doc_cb,
+			EINA_FALSE, thiz);
 }
 
-static Egueb_Dom_Node * _eon_element_label_stock_proxied_get(
-		Eon_Widget_Proxy *wp)
-{
-	Eon_Element_Label_Stock *thiz;
-
-	thiz = EON_ELEMENT_LABEL_STOCK(wp);
-	return egueb_dom_node_ref(thiz->label);
-}
-
-static void _eon_element_label_stock_geometry_propagate(Eon_Widget_Proxy *wp)
-{
-	Eon_Element_Label_Stock *thiz;
-
-	thiz = EON_ELEMENT_LABEL_STOCK(wp);
-	/* in case the stock has changed, use the new label */
-	if (egueb_dom_attr_has_changed(thiz->stock))
-	{
-		Egueb_Dom_String *s;
-
-		egueb_dom_attr_final_string_get(thiz->stock, &s);
-		/* FIXME freeze the node to not send any event, this will skip the mutation */
-		egueb_dom_character_data_data_append(thiz->text, s, NULL);
-		egueb_dom_string_unref(s);
-		/* FIXME thaw back */
-		/* FIXME mark it as processed */
-	}
-}
-/*----------------------------------------------------------------------------*
- *                             Widget interface                               *
- *----------------------------------------------------------------------------*/
 static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
 {
 	Eon_Element_Label_Stock *thiz;
@@ -192,6 +201,44 @@ static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_element_label_stock_renderer_get(Eon_Renderable *r)
+{
+	Eon_Element_Label_Stock *thiz;
+
+	thiz = EON_ELEMENT_LABEL_STOCK(r);
+	return eon_renderable_renderer_get(thiz->label);
+}
+
+static int _eon_element_label_stock_size_hints_get(Eon_Renderable *r,
+		Eon_Renderable_Size *size)
+{
+	Eon_Element_Label_Stock *thiz;
+
+	thiz = EON_ELEMENT_LABEL_STOCK(r);
+	/* in case the stock has changed, use the new label */
+	if (egueb_dom_attr_has_changed(thiz->stock))
+	{
+		Egueb_Dom_String *s;
+
+		egueb_dom_attr_final_string_get(thiz->stock, &s);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_character_data_data_append(thiz->text, s, NULL);
+		egueb_dom_string_unref(s);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
+	return eon_renderable_size_hints_get(thiz->label, size);
+}
+
+static Eina_Bool _eon_element_label_stock_process(Eon_Renderable *r)
+{
+	Eon_Element_Label_Stock *thiz;
+
+	thiz = EON_ELEMENT_LABEL_STOCK(r);
+	eon_renderable_geometry_set(thiz->label, &r->geometry);
+	egueb_dom_element_process(thiz->label);
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -202,26 +249,27 @@ static Egueb_Dom_String * _eon_element_label_stock_tag_name_get(Eon_Element *e)
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_PROXY_DESCRIPTOR,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR,
 		Eon_Element_Label_Stock, Eon_Element_Label_Stock_Class,
 		eon_element_label_stock);
 
 static void _eon_element_label_stock_class_init(void *k)
 {
 	Eon_Element_Class *klass;
+	Eon_Renderable_Class *r_klass;
 	Eon_Widget_Class *w_klass;
-	Eon_Widget_Proxy_Class *wp_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_label_stock_tag_name_get;
 
-	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->pre_process = _eon_element_label_stock_pre_process;
+	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->renderer_get = _eon_element_label_stock_renderer_get;
+	r_klass->size_hints_get = _eon_element_label_stock_size_hints_get;
+	r_klass->process = _eon_element_label_stock_process;
 
-	wp_klass = EON_WIDGET_PROXY_CLASS(k);
-	wp_klass->init = _eon_element_label_stock_init;
-	wp_klass->proxied_get = _eon_element_label_stock_proxied_get;
-	wp_klass->geometry_propagate = _eon_element_label_stock_geometry_propagate;
+	w_klass = EON_WIDGET_CLASS(k);
+	w_klass->init = _eon_element_label_stock_init;
+	w_klass->pre_process = _eon_element_label_stock_pre_process;
 }
 
 static void _eon_element_label_stock_instance_init(void *o)
@@ -232,12 +280,9 @@ static void _eon_element_label_stock_instance_init(void *o)
 	thiz->label = eon_element_label_new();
 	eon_renderable_halign_set(thiz->label, EON_HORIZONTAL_ALIGN_CENTER);
 	eon_renderable_valign_set(thiz->label, EON_VERTICAL_ALIGN_MIDDLE);
-	thiz->text = egueb_dom_text_new();
 
+	thiz->text = egueb_dom_text_new();
 	egueb_dom_node_child_append(thiz->label, egueb_dom_node_ref(thiz->text), NULL);
-	/* Set the function to be able to set our own theme */
-	eon_widget_drawer_theme_instance_create_set(thiz->label,
-			_eon_element_label_stock_theme_instance_create, thiz);
 }
 
 static void _eon_element_label_stock_instance_deinit(void *o)
@@ -272,4 +317,3 @@ EAPI Eon_Stock eon_element_label_stock_type_get(Egueb_Dom_Node *n)
 {
 
 }
-
