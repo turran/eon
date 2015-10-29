@@ -197,7 +197,7 @@ static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_label_stock_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_LABEL_STOCK);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL_STOCK);
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *

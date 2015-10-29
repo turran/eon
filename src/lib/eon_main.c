@@ -78,7 +78,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
 	EON_NAME_ELEMENT_BUTTON_STOCK = egueb_dom_string_new_with_static_string("stockButton");
 	EON_NAME_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
-	EON_ELEMENT_LABEL_STOCK = egueb_dom_string_new_with_static_string("stockLabel");
+	EON_NAME_ELEMENT_LABEL_STOCK = egueb_dom_string_new_with_static_string("stockLabel");
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
 	EON_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
 	/* events */
@@ -113,7 +113,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON_STOCK);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_LABEL);
-	egueb_dom_string_unref(EON_ELEMENT_LABEL_STOCK);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_LABEL_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
 	egueb_dom_string_unref(EON_ELEMENT_OBJECT);
 	/* events */
@@ -150,7 +150,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
 Egueb_Dom_String *EON_NAME_ELEMENT_LABEL;
-Egueb_Dom_String *EON_ELEMENT_LABEL_STOCK;
+Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;
 Egueb_Dom_String *EON_ELEMENT_OBJECT;
 /* events */
