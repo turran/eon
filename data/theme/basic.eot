@@ -4,9 +4,9 @@
   xmlns:mars="http://www.eon.org/theme/mars">
 
   <stack padding="20px" separator="20px"/>
-  <label id="label" font="Verdana 11pt"/>
-  <label id="stockLabel" font="Verdana 16pt"/>
-  <label id="stockLabel-ok" font="Verdana 10pt"/>
+  <label id="label" font="Verdana 11pt" color="white"/>
+  <label id="stockLabel" font="Verdana 16pt" color="white"/>
+  <label id="stockLabel-ok" font="Verdana 10pt" color="white"/>
   <basic:button id="button-basic" border-color="#555" fill-color="green">
     <set attributeName="color" to="darkgreen" start="mousedown"/>
     <set attributeName="color" to="green" start="mouseup"/>

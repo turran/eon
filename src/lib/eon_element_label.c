@@ -40,6 +40,7 @@ typedef struct _Eon_Element_Label
 	/* properties */
 	Egueb_Dom_Node *ellipsize;
 	Egueb_Dom_Node *font;
+	Egueb_Dom_Node *color;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
 	/* the text span renderer from the drawer */
@@ -198,12 +199,16 @@ static void _eon_element_label_init(Eon_Widget *w)
 			egueb_dom_string_ref(EON_ATTR_ELLIPSIZE), EINA_FALSE,
 			EINA_FALSE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->ellipsize, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
+	thiz->color = egueb_css_attr_color_new(
+			egueb_dom_string_ref(EON_NAME_COLOR), NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
 
 	thiz->font = egueb_css_attr_font_new(NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
 
 	n = (EON_ELEMENT(w))->n;
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->ellipsize), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->font), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->color), NULL);
 	/* TODO add: font family, font size, font weight, font style, font variant */
 
 	e = EON_ELEMENT(w);
@@ -298,8 +303,34 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 static Eina_Bool _eon_element_label_process(Eon_Renderable *r)
 {
 	Eon_Element_Label *thiz;
+	Egueb_Dom_Node *color_node = NULL;
+	Enesim_Argb argb;
+	Enesim_Color color = 0xff000000;
 
 	thiz = EON_ELEMENT_LABEL(r);
+	if (egueb_dom_attr_is_set(thiz->color))
+		color_node = egueb_dom_node_ref(thiz->color);
+	else
+	{
+		Egueb_Dom_Node *theme_element;
+
+		/* if it is not set, get the theme and use the default one */
+		theme_element = eon_feature_themable_load(thiz->theme_feature);
+		if (theme_element)
+		{
+			color_node = egueb_dom_element_attribute_node_get(
+					theme_element, EON_NAME_COLOR);
+		}
+	}
+
+	if (color_node)
+	{
+		egueb_dom_attr_final_get(color_node, &argb);
+		color = enesim_color_argb_from(argb);
+		egueb_dom_node_unref(color_node);
+	}
+
+	enesim_renderer_color_set(thiz->r, color);
 	enesim_renderer_origin_set(thiz->r, r->geometry.x, r->geometry.y);
 	return EINA_TRUE;
 }
@@ -367,9 +398,12 @@ static void _eon_element_label_instance_deinit(void *o)
 	Eon_Element_Label *thiz;
 
 	thiz = EON_ELEMENT_LABEL(o);
-	enesim_renderer_unref(thiz->r);
+	/* attributes */
 	egueb_dom_node_unref(thiz->ellipsize);
 	egueb_dom_node_unref(thiz->font);
+	egueb_dom_node_unref(thiz->color);
+	/* private */
+	enesim_renderer_unref(thiz->r);
 }
 /*============================================================================*
  *                                 Global                                     *

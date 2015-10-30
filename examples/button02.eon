@@ -10,7 +10,7 @@
       <stockLabel stock="ok"/>
     </button>
     <button id="button04" hexpand="true">
-      <label>Button 4th</label>
+      <label color="green">Button 4th</label>
     </button>
   </stack>
 </eon>

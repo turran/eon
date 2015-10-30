@@ -31,6 +31,7 @@ typedef struct _Eon_Theme_Element_Label
 	Eon_Theme_Element base;
 	/* properties */
 	Egueb_Dom_Node *font;
+	Egueb_Dom_Node *color;
 } Eon_Theme_Element_Label;
 
 typedef struct _Eon_Theme_Element_Label_Class
@@ -48,11 +49,14 @@ static Egueb_Dom_Node * _eon_theme_element_label_ctor(Eon_Theme_Element *e)
 static void _eon_theme_element_label_init(Eon_Theme_Element *e)
 {
 	Eon_Theme_Element_Label *thiz;
-	Egueb_Dom_Node *n;
 
 	thiz = EON_THEME_ELEMENT_LABEL(e);
 	/* create the attributes */
 	thiz->font = egueb_css_attr_font_new(NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	thiz->color = egueb_css_attr_color_new(
+			egueb_dom_string_ref(EON_NAME_COLOR), NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
+	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->color), NULL);
 	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->font), NULL);
 }
 
@@ -94,7 +98,9 @@ static void _eon_theme_element_label_instance_deinit(void *o)
 	Eon_Theme_Element_Label *thiz;
 
 	thiz = EON_THEME_ELEMENT_LABEL(o);
+	/* attributes */
 	egueb_dom_node_unref(thiz->font);
+	egueb_dom_node_unref(thiz->color);
 }
 /*============================================================================*
  *                                 Global                                     *
