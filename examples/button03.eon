@@ -1,9 +1,9 @@
 <eon>
-  <stack orientation="vertical">
+  <stack orientation="vertical" hexpand="true">
     <button id="button01">
       <label>My very own label</label>
     </button>
-    <stockButton id="stockButton01" stock="ok"/>
+    <stockButton id="stockButton01" stock="ok" hexpand="true"/>
     <stockButton id="stockButton02" stock="cancel"/>
     <stockButton id="stockButton02" stock="help"/>
   </stack>

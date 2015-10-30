@@ -179,6 +179,32 @@ static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
 		/* FIXME thaw back */
 		/* FIXME mark it as processed */
 	}
+
+	if (egueb_dom_attr_has_changed(r->hexpand))
+	{
+		Eon_Renderable *p_r;
+		Eina_Bool hexpand;
+
+		p_r = EON_RENDERABLE(proxied);
+		egueb_dom_attr_final_get(r->hexpand, &hexpand);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_attr_set(p_r->valign, EGUEB_DOM_ATTR_TYPE_BASE, hexpand);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
+
+	if (egueb_dom_attr_has_changed(r->vexpand))
+	{
+		Eon_Renderable *p_r;
+		Eina_Bool vexpand;
+
+		p_r = EON_RENDERABLE(proxied);
+		egueb_dom_attr_final_get(r->vexpand, &vexpand);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_attr_set(p_r->valign, EGUEB_DOM_ATTR_TYPE_BASE, vexpand);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
 	/* widget attributes */
 
 	return EINA_TRUE;

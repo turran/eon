@@ -145,10 +145,68 @@ static void _eon_element_button_stock_init(Eon_Widget *w)
 static Eina_Bool _eon_element_button_stock_pre_process(Eon_Widget *w)
 {
 	Eon_Element_Button_Stock *thiz;
+	Eon_Renderable *r;
+	Eon_Element *proxied;
 
 	thiz = EON_ELEMENT_BUTTON_STOCK(w);
+	proxied = egueb_dom_element_external_data_get(thiz->button);
+
+	/* element attributes */
 	/* renderable attributes */
+	r = EON_RENDERABLE(w);
+	if (egueb_dom_attr_has_changed(r->halign))
+	{
+		Eon_Renderable *p_r;
+		Eon_Horizontal_Align halign;
+
+		p_r = EON_RENDERABLE(proxied);
+		egueb_dom_attr_final_get(r->halign, &halign);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_attr_set(p_r->halign, EGUEB_DOM_ATTR_TYPE_BASE, halign);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
+
+	if (egueb_dom_attr_has_changed(r->valign))
+	{
+		Eon_Renderable *p_r;
+		Eon_Vertical_Align valign;
+
+		p_r = EON_RENDERABLE(proxied);
+		egueb_dom_attr_final_get(r->valign, &valign);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_attr_set(p_r->valign, EGUEB_DOM_ATTR_TYPE_BASE, valign);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
+
+	if (egueb_dom_attr_has_changed(r->hexpand))
+	{
+		Eon_Renderable *p_r;
+		Eina_Bool hexpand;
+
+		p_r = EON_RENDERABLE(proxied);
+		egueb_dom_attr_final_get(r->hexpand, &hexpand);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_attr_set(p_r->valign, EGUEB_DOM_ATTR_TYPE_BASE, hexpand);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
+
+	if (egueb_dom_attr_has_changed(r->vexpand))
+	{
+		Eon_Renderable *p_r;
+		Eina_Bool vexpand;
+
+		p_r = EON_RENDERABLE(proxied);
+		egueb_dom_attr_final_get(r->vexpand, &vexpand);
+		/* FIXME freeze the node to not send any event, this will skip the mutation */
+		egueb_dom_attr_set(p_r->valign, EGUEB_DOM_ATTR_TYPE_BASE, vexpand);
+		/* FIXME thaw back */
+		/* FIXME mark it as processed */
+	}
 	/* widget attributes */
+
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
