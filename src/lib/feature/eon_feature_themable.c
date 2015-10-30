@@ -80,16 +80,29 @@ static void _eon_feature_themable_event_propagate_cb(Egueb_Dom_Event *e,
 	egueb_dom_node_event_propagate(thiz->theme_element, e);
 }
 
+/*
+ * Some events need to arrive to the topmost element
+ * The smil timeline event to make the topmost element provide a timeline
+ * The mutation events in case we need to process again the element
+ * The request process to process again the element
+ */
 static void _eon_feature_themable_event_monitor_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Feature_Themable *thiz = data;
 
-	if (!egueb_smil_event_is_timeline(e))
+	if (egueb_smil_event_is_timeline(e))
+	{
+		DBG("Theme element requesting a timeline");
+		egueb_dom_node_event_propagate(thiz->n, e);
 		return;
-
-	DBG("Theme element requesting a timeline");
-	egueb_dom_node_event_propagate(thiz->n, e);
+	}
+	else if (egueb_dom_event_is_mutation(e))
+	{
+		DBG("Theme element triggered a mutation event");
+		egueb_dom_node_event_propagate(thiz->n, e);
+		return;
+	}
 }
 /*----------------------------------------------------------------------------*
  *                              Feature interface                             *
