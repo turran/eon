@@ -49,42 +49,6 @@ typedef struct _Eon_Element_Label_Stock_Class
 	Eon_Widget_Class base;
 } Eon_Element_Label_Stock_Class;
 
-#if 0
-static Egueb_Dom_Node * _eon_element_label_stock_theme_instance_create(
-		Eon_Widget_Drawer *wd, Egueb_Dom_Node *theme_document,
-		void *data)
-{
-	Eon_Element_Label_Stock *thiz = data;
-	Eon_Stock stock;
-	Egueb_Dom_Node *ret;
-	Egueb_Dom_String *s;
-	char *name = NULL;
-
-	thiz = EON_ELEMENT_LABEL_STOCK(data);
-	if (!egueb_dom_attr_final_string_get(thiz->stock, &s))
-		return NULL;
-	/* prepend the label */
-	if (asprintf(&name, "label-%s", egueb_dom_string_string_get(s)) < 0)
-	{
-		egueb_dom_string_unref(s);
-		return NULL;
-	}
-
-	ret = eon_theme_document_instance_new(theme_document, name, NULL);
-	free(name);
-
-	return ret;
-}
-
-static void _eon_element_label_stock_geometry_propagate(Eon_Widget *w)
-{
-	Eon_Element_Label_Stock *thiz;
-
-	thiz = EON_ELEMENT_LABEL_STOCK(w);
-}
-
-#endif
-
 /* Whenever the element is removed/inserted from/to a document, make sure
  * to adopt our own proxied element to it too
  */
@@ -218,14 +182,32 @@ static int _eon_element_label_stock_size_hints_get(Eon_Renderable *r,
 	/* in case the stock has changed, use the new label */
 	if (egueb_dom_attr_has_changed(thiz->stock))
 	{
+		Eon_Element *e;
 		Egueb_Dom_String *s;
+		char *name = NULL;
 
 		egueb_dom_attr_final_string_get(thiz->stock, &s);
 		/* FIXME freeze the node to not send any event, this will skip the mutation */
-		egueb_dom_character_data_data_append(thiz->text, s, NULL);
-		egueb_dom_string_unref(s);
+		egueb_dom_character_data_data_append(thiz->text, egueb_dom_string_ref(s), NULL);
 		/* FIXME thaw back */
 		/* FIXME mark it as processed */
+
+		/* clear the list of theme-ids and set the new one */
+		e = EON_ELEMENT(egueb_dom_element_external_data_get(thiz->label));
+		egueb_dom_attr_string_list_clear(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT);
+		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL));
+		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL_STOCK));
+		/* prepend the stock */
+		if (asprintf(&name, "stockLabel-%s", egueb_dom_string_string_get(s)) < 0)
+		{
+			egueb_dom_string_unref(s);
+			return 0;
+		}
+		egueb_dom_string_unref(s);
+		s = egueb_dom_string_steal(name);
+		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT, s);
 	}
 	return eon_renderable_size_hints_get(thiz->label, size);
 }
