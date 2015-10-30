@@ -5,13 +5,19 @@
 
   <stack padding="20px" separator="20px"/>
   <label id="label" font="Verdana 11pt" color="white"/>
-  <label id="stockLabel" font="Verdana 16pt" color="white"/>
-  <label id="stockLabel-ok" font="Verdana 10pt" color="white"/>
+  <label id="stockLabel" font="Verdana 11pt" color="white"/>
+  <label id="stockLabel-ok" font="Verdana 11pt" color="white"/>
   <basic:button id="button-basic" border-color="darkgreen" fill-color="green">
     <set attributeName="color" to="darkgreen" begin="mousedown" end="mouseup" fill="remove"/>
   </basic:button>
   <mars:eon id="eon" color="black"/>
   <mars:button id="button" color="#ff0f3b65">
+    <set attributeName="color" to="darkgreen" begin="mousedown" end="mouseup" fill="remove"/>
+  </mars:button>
+  <mars:button id="stockButton-cancel" color="red">
+    <set attributeName="color" to="darkred" begin="mousedown" end="mouseup" fill="remove"/>
+  </mars:button>
+  <mars:button id="stockButton-ok" color="green">
     <set attributeName="color" to="darkgreen" begin="mousedown" end="mouseup" fill="remove"/>
   </mars:button>
 </eot>

@@ -36,7 +36,7 @@
 
 typedef struct _Eon_Element_Button_Stock
 {
-	Eon_Widget_Proxy base;
+	Eon_Widget base;
 	/* attributes */
 	Egueb_Dom_Node *stock;
 	/* private */
@@ -46,92 +46,173 @@ typedef struct _Eon_Element_Button_Stock
 
 typedef struct _Eon_Element_Button_Stock_Class
 {
-	Eon_Widget_Proxy_Class base;
+	Eon_Widget_Class base;
 } Eon_Element_Button_Stock_Class;
 
-static Egueb_Dom_Node * _eon_element_button_stock_theme_instance_create(
-		Eon_Widget_Drawer *wd, Egueb_Dom_Node *theme_document,
+static void _eon_element_button_stock_monitor_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Button_Stock *thiz = data;
-	Eon_Stock stock;
-	Egueb_Dom_Node *ret;
-	Egueb_Dom_String *s;
-	char *name = NULL;
-
-	thiz = EON_ELEMENT_BUTTON_STOCK(data);
-	if (!egueb_dom_attr_final_string_get(thiz->stock, &s))
-		return NULL;
-	/* prepend the button */
-	if (asprintf(&name, "button-%s", egueb_dom_string_string_get(s)) < 0)
-	{
-		egueb_dom_string_unref(s);
-		return NULL;
-	}
-
-	ret = eon_theme_document_instance_new(theme_document, name, NULL);
-	free(name);
-
-	return ret;
-}
-
-/*----------------------------------------------------------------------------*
- *                          Widget Proxy interface                            *
- *----------------------------------------------------------------------------*/
-static void _eon_element_button_stock_init(Eon_Widget_Proxy *wp)
-{
-	Eon_Element_Button_Stock *thiz;
 	Egueb_Dom_Node *n;
 
-	thiz = EON_ELEMENT_BUTTON_STOCK(wp);
-	n = (EON_ELEMENT(wp))->n;
+	if (!egueb_smil_event_is_timeline(e))
+		return;
 
-	thiz->stock = eon_stock_attr_new();
-	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
-	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->stock), NULL);
+	DBG("Proxied element requesting a timeline");
+	n = (EON_ELEMENT(thiz))->n;
+	egueb_dom_node_event_propagate(n, e);
 }
 
-static Egueb_Dom_Node * _eon_element_button_stock_proxied_get(
-		Eon_Widget_Proxy *wp)
-{
-	Eon_Element_Button_Stock *thiz;
-
-	thiz = EON_ELEMENT_BUTTON_STOCK(wp);
-	return egueb_dom_node_ref(thiz->button);
-}
-
-/* We need to propagate the 'stock' value because it will change the hints
- * of the element
+/* Whenever the element is removed/inserted from/to a document, make sure
+ * to adopt our own proxied element to it too
  */
-static void _eon_element_button_stock_geometry_propagate(Eon_Widget_Proxy *wp)
+static void _eon_element_button_stock_inserted_into_doc_cb(Egueb_Dom_Event *e,
+		void *data)
 {
-	Eon_Element_Button_Stock *thiz;
+	Eon_Element_Button_Stock *thiz = data;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *doc;
 
-	thiz = EON_ELEMENT_BUTTON_STOCK(wp);
-	if (egueb_dom_attr_has_changed(thiz->stock))
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+
+	n = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
+	doc = egueb_dom_node_owner_document_get(n);
+	egueb_dom_document_node_adopt(doc, thiz->button, NULL);
+	egueb_dom_node_unref(n);
+	egueb_dom_node_unref(doc);
+}
+
+/* Whenever the 'stock' attribute is modifed be sure to invalidate the
+ * geometry. A new 'stock' value implies a new geometry
+ */
+static void _eon_element_button_stock_attr_modified_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Button_Stock *thiz = data;
+	Egueb_Dom_Node *attr;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+
+	attr = egueb_dom_event_mutation_related_get(e);
+	if (thiz->stock == attr)
 	{
-		Eon_Stock stock;
-
-		egueb_dom_attr_final_get(thiz->stock, &stock);
-		egueb_dom_element_attribute_masked_set(thiz->label, EON_STOCK,
-				EGUEB_DOM_ATTR_TYPE_BASE, stock);
-		/* FIXME mark it as processed */
+		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Stock changed, "
+				"invalidating geometry");
+		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
 	}
+	egueb_dom_node_unref(attr);
 }
 
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
+static void _eon_element_button_stock_init(Eon_Widget *w)
+{
+	Eon_Element_Button_Stock *thiz;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *et;
+
+	thiz = EON_ELEMENT_BUTTON_STOCK(w);
+	n = (EON_ELEMENT(w))->n;
+
+	/* attributes */
+	thiz->stock = eon_stock_attr_new();
+	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->stock), NULL);
+
+	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_element_button_stock_attr_modified_cb,
+			EINA_FALSE, thiz);
+	/* to keep track of the owner document */
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED_INTO_DOCUMENT,
+			_eon_element_button_stock_inserted_into_doc_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_DOCUMENT_SET,
+			_eon_element_button_stock_inserted_into_doc_cb,
+			EINA_FALSE, thiz);
+	/* propagate events from the proxy */
+	egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(thiz->button),
+			_eon_element_button_stock_monitor_cb, thiz);
+}
+
 static Eina_Bool _eon_element_button_stock_pre_process(Eon_Widget *w)
 {
 	Eon_Element_Button_Stock *thiz;
 
 	thiz = EON_ELEMENT_BUTTON_STOCK(w);
+	/* renderable attributes */
+	/* widget attributes */
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_element_button_stock_renderer_get(Eon_Renderable *r)
+{
+	Eon_Element_Button_Stock *thiz;
+
+	thiz = EON_ELEMENT_BUTTON_STOCK(r);
+	return eon_renderable_renderer_get(thiz->button);
+}
+
+static int _eon_element_button_stock_size_hints_get(Eon_Renderable *r,
+		Eon_Renderable_Size *size)
+{
+	Eon_Element_Button_Stock *thiz;
+
+	thiz = EON_ELEMENT_BUTTON_STOCK(r);
+	/* We need to propagate the 'stock' value because it will change the
+	 * hints of the element
+	 */
+	if (egueb_dom_attr_has_changed(thiz->stock))
+	{
+		Eon_Stock stock;
+		Egueb_Dom_String *s;
+		Eon_Element *e;
+		char *name = NULL;
+
+		/* propagate the attributes */
+		egueb_dom_attr_final_get(thiz->stock, &stock);
+		egueb_dom_element_attribute_masked_set(thiz->label, EON_STOCK,
+				EGUEB_DOM_ATTR_TYPE_BASE, stock);
+		egueb_dom_attr_final_string_get(thiz->stock, &s);
+
+		/* clear the list of theme-ids and set the new one */
+		e = EON_ELEMENT(egueb_dom_element_external_data_get(thiz->button));
+		egueb_dom_attr_string_list_clear(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT);
+		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_BUTTON));
+		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_BUTTON_STOCK));
+		/* prepend the stock */
+		if (asprintf(&name, "stockButton-%s", egueb_dom_string_string_get(s)) < 0)
+		{
+			egueb_dom_string_unref(s);
+			return 0;
+		}
+		egueb_dom_string_unref(s);
+		s = egueb_dom_string_steal(name);
+		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT, s);
+	}
+	return eon_renderable_size_hints_get(thiz->button, size);
+}
+
+static Eina_Bool _eon_element_button_stock_process(Eon_Renderable *r)
+{
+	Eon_Element_Button_Stock *thiz;
+
+	thiz = EON_ELEMENT_BUTTON_STOCK(r);
+	eon_renderable_geometry_set(thiz->button, &r->geometry);
+	egueb_dom_element_process(thiz->button);
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -142,38 +223,43 @@ static Egueb_Dom_String * _eon_element_button_stock_tag_name_get(Eon_Element *e)
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_PROXY_DESCRIPTOR,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR,
 		Eon_Element_Button_Stock, Eon_Element_Button_Stock_Class,
 		eon_element_button_stock);
 
 static void _eon_element_button_stock_class_init(void *k)
 {
 	Eon_Element_Class *klass;
+	Eon_Renderable_Class *r_klass;
 	Eon_Widget_Class *w_klass;
-	Eon_Widget_Proxy_Class *wp_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_button_stock_tag_name_get;
 
-	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->pre_process = _eon_element_button_stock_pre_process;
+	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->renderer_get = _eon_element_button_stock_renderer_get;
+	r_klass->size_hints_get = _eon_element_button_stock_size_hints_get;
+	r_klass->process = _eon_element_button_stock_process;
 
-	wp_klass = EON_WIDGET_PROXY_CLASS(k);
-	wp_klass->init = _eon_element_button_stock_init;
-	wp_klass->proxied_get = _eon_element_button_stock_proxied_get;
-	wp_klass->geometry_propagate = _eon_element_button_stock_geometry_propagate;
+	w_klass = EON_WIDGET_CLASS(k);
+	w_klass->init = _eon_element_button_stock_init;
+	w_klass->pre_process = _eon_element_button_stock_pre_process;
 }
 
 static void _eon_element_button_stock_instance_init(void *o)
 {
 	Eon_Element_Button_Stock *thiz;
+	Eon_Element *e;
 
 	thiz = EON_ELEMENT_BUTTON_STOCK(o);
 	thiz->button = eon_element_button_new();
+	/* prepend the 'stockButton' theme id */
+	e = EON_ELEMENT(egueb_dom_element_external_data_get(thiz->button));
+	egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_BUTTON_STOCK));
+
 	thiz->label = eon_element_label_stock_new();
 	egueb_dom_node_child_append(thiz->button, egueb_dom_node_ref(thiz->label), NULL);
-
-	eon_widget_drawer_theme_instance_create_set(thiz->button, _eon_element_button_stock_theme_instance_create, thiz);
 }
 
 static void _eon_element_button_stock_instance_deinit(void *o)

@@ -243,6 +243,8 @@ changed:
 
 		/* Make sure to process the attr to not enter again */
 		egueb_dom_attr_process(e->theme_id);
+		/* FIXME it might be renderables that must not trigger and invalidate geometry i.e element_eon
+		 */
 		/* for element that are renderable, make sure to invalidate
 		 * the geometry
 		 */

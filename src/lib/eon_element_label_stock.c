@@ -49,6 +49,20 @@ typedef struct _Eon_Element_Label_Stock_Class
 	Eon_Widget_Class base;
 } Eon_Element_Label_Stock_Class;
 
+static void _eon_element_label_stock_monitor_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Label_Stock *thiz = data;
+	Egueb_Dom_Node *n;
+
+	if (!egueb_smil_event_is_timeline(e))
+		return;
+
+	DBG("Proxied element requesting a timeline");
+	n = (EON_ELEMENT(thiz))->n;
+	egueb_dom_node_event_propagate(n, e);
+}
+
 /* Whenever the element is removed/inserted from/to a document, make sure
  * to adopt our own proxied element to it too
  */
@@ -98,29 +112,34 @@ static void _eon_element_label_stock_init(Eon_Widget *w)
 {
 	Eon_Element_Label_Stock *thiz;
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Event_Target *e;
+	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_ELEMENT_LABEL_STOCK(w);
 	n = (EON_ELEMENT(w))->n;
 
+	/* attributes */
 	thiz->stock = eon_stock_attr_new();
 	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->stock), NULL);
 
-	e = EGUEB_DOM_EVENT_TARGET(n);
-	egueb_dom_event_target_event_listener_add(e,
+	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_label_stock_attr_modified_cb,
 			EINA_FALSE, thiz);
 	/* to keep track of the owner document */
-	egueb_dom_event_target_event_listener_add(e,
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED_INTO_DOCUMENT,
 			_eon_element_label_stock_inserted_into_doc_cb,
 			EINA_FALSE, thiz);
-	egueb_dom_event_target_event_listener_add(e,
-			EGUEB_DOM_EVENT_MUTATION_NODE_DOCUMENT_UNSET,
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_DOCUMENT_SET,
 			_eon_element_label_stock_inserted_into_doc_cb,
 			EINA_FALSE, thiz);
+	/* propagate events from the proxy */
+	egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(thiz->label),
+			_eon_element_label_stock_monitor_cb, thiz);
 }
 
 static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
@@ -132,6 +151,7 @@ static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
 	thiz = EON_ELEMENT_LABEL_STOCK(w);
 	proxied = egueb_dom_element_external_data_get(thiz->label);
 
+	/* element attributes */
 	/* renderable attributes */
 	r = EON_RENDERABLE(w);
 	if (egueb_dom_attr_has_changed(r->halign))
@@ -159,6 +179,7 @@ static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
 		/* FIXME thaw back */
 		/* FIXME mark it as processed */
 	}
+	/* widget attributes */
 
 	return EINA_TRUE;
 }
