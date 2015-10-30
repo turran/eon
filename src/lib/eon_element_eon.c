@@ -274,7 +274,7 @@ static void _eon_element_eon_init(Eon_Renderable *r)
 	egueb_smil_feature_animation_add(n,
 			&_eon_element_eon_animation_descriptor);
 	e = EON_ELEMENT(r);
-	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_EON));
 }
 

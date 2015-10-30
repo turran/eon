@@ -7,7 +7,7 @@
       <label>My second button</label>
     </button>
     <button id="button03" enabled="false">
-      <label>My third button</label>
+      <stockLabel stock="ok"/>
     </button>
     <button id="button04" hexpand="true">
       <label>Button 4th</label>

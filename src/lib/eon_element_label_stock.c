@@ -275,9 +275,15 @@ static void _eon_element_label_stock_class_init(void *k)
 static void _eon_element_label_stock_instance_init(void *o)
 {
 	Eon_Element_Label_Stock *thiz;
+	Eon_Element *e;
 
 	thiz = EON_ELEMENT_LABEL_STOCK(o);
 	thiz->label = eon_element_label_new();
+	/* prepend the 'stockLabel' theme id */
+	e = EON_ELEMENT(egueb_dom_element_external_data_get(thiz->label));
+	egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL_STOCK));
+
 	eon_renderable_halign_set(thiz->label, EON_HORIZONTAL_ALIGN_CENTER);
 	eon_renderable_valign_set(thiz->label, EON_VERTICAL_ALIGN_MIDDLE);
 

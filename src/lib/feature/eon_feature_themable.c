@@ -36,13 +36,39 @@ typedef struct _Eon_Feature_Themable
 	Egueb_Dom_Feature *f;
 	Egueb_Dom_Node *theme_element;
 	Egueb_Dom_String *last_theme;
-	Egueb_Dom_String *last_theme_id;
 } Eon_Feature_Themable;
 
 typedef struct _Eon_Feature_Themable_Class
 {
 	Enesim_Object_Class base;
 } Eon_Feature_Themable_Class;
+
+typedef struct _Eon_Feature_Themable_Theme_Id_Foreach_Data
+{
+	Eon_Feature_Themable *thiz;
+	Egueb_Dom_Node *theme_doc;
+} Eon_Feature_Themable_Theme_Id_Foreach_Data;
+
+static Eina_Bool _eon_feature_themable_load_theme_id_cb(void *data, void *user_data)
+{
+	Eon_Feature_Themable_Theme_Id_Foreach_Data *fdata = user_data;
+	Eon_Feature_Themable *thiz = fdata->thiz;
+	Egueb_Dom_Node *theme_doc = fdata->theme_doc;
+	Egueb_Dom_Node *theme_element;
+	Egueb_Dom_String *theme_id = data;
+
+	theme_element = egueb_dom_document_element_get_by_id(theme_doc, theme_id, NULL);
+	DBG_ELEMENT(thiz->n, "Loading theme id '%s'",
+			egueb_dom_string_string_get(theme_id));
+	if (theme_element)
+	{
+		DBG_ELEMENT(thiz->n, "Theme element for id '%s' found",
+				egueb_dom_string_string_get(theme_id));
+		thiz->theme_element = theme_element;
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
+}
 
 static void _eon_feature_themable_event_propagate_cb(Egueb_Dom_Event *e,
 		void *data)
@@ -83,8 +109,8 @@ static void _eon_feature_themable_deinit(void *data)
 	Eon_Feature_Themable *thiz;
 
 	thiz = EON_FEATURE_THEMABLE(data);
-	if (thiz->theme_element)
-		egueb_dom_node_unref(thiz->theme_element);
+	egueb_dom_node_unref(thiz->theme_element);
+	egueb_dom_string_unref(thiz->last_theme);
 }
 
 static Egueb_Dom_Feature_External_Descriptor _descriptor = {
@@ -172,7 +198,7 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 	Eon_Element *e;
 	Egueb_Dom_Node *ret = NULL;
 	Egueb_Dom_String *curr_theme = NULL;
-	Egueb_Dom_String *curr_theme_id = NULL;
+	Egueb_Dom_List *curr_theme_id = NULL;
 	Eina_Bool theme_changed = EINA_FALSE;
 
 	thiz = EON_FEATURE_THEMABLE(egueb_dom_feature_external_data_get(f));
@@ -188,7 +214,7 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 		goto changed;
 	}
 
-	if (!egueb_dom_string_is_equal(curr_theme_id, thiz->last_theme_id))
+	if (egueb_dom_attr_has_changed(e->theme_id))
 	{
 		DBG_ELEMENT(thiz->n, "Theme id changed"); 
 		theme_changed = EINA_TRUE;
@@ -198,10 +224,12 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 changed:
 	if (theme_changed)
 	{
+		Eon_Feature_Themable_Theme_Id_Foreach_Data theme_id_fdata;
 		Egueb_Dom_Node *theme_doc;
-		Egueb_Dom_Node *theme_element;
 		Egueb_Dom_Node *doc;
 
+		/* Make sure to process the attr to not enter again */
+		egueb_dom_attr_process(e->theme_id);
 		/* for element that are renderable, make sure to invalidate
 		 * the geometry
 		 */
@@ -221,35 +249,35 @@ changed:
 		egueb_dom_string_unref(thiz->last_theme);
 		thiz->last_theme = egueb_dom_string_dup(curr_theme);
 
-		egueb_dom_string_unref(thiz->last_theme_id);
-		thiz->last_theme_id = egueb_dom_string_dup(curr_theme_id);
-
 		/* get the theme node */
+		DBG_ELEMENT(thiz->n, "Loading theme '%s'", egueb_dom_string_string_get(curr_theme));
 		theme_doc = eon_theme_document_load(curr_theme);
 		if (!theme_doc)
 		{
 			ERR_ELEMENT(thiz->n, "Theme '%s' does not exist", egueb_dom_string_string_get(curr_theme));
 			goto done;
 		}
-		theme_element = egueb_dom_document_element_get_by_id(theme_doc, curr_theme_id, NULL);
+
+		theme_id_fdata.thiz = thiz;
+		theme_id_fdata.theme_doc = theme_doc;
+		egueb_dom_list_foreach(curr_theme_id, _eon_feature_themable_load_theme_id_cb, &theme_id_fdata);
+
 		egueb_dom_node_unref(theme_doc);
-		if (!theme_element)
+		if (!thiz->theme_element)
 		{
-			ERR_ELEMENT(thiz->n, "Theme id '%s' does not exist", egueb_dom_string_string_get(curr_theme_id));
+			ERR_ELEMENT(thiz->n, "Theme id does not exist");
 			goto done;
 		}
 		/* clone it */
-		DBG_ELEMENT(thiz->n, "Loading theme '%s' with id '%s'",
-				egueb_dom_string_string_get(curr_theme),
-				egueb_dom_string_string_get(curr_theme_id));
 		doc = egueb_dom_node_owner_document_get(thiz->n);
 		if (!doc)
 		{
 			WARN_ELEMENT(thiz->n, "No document set");
-			egueb_dom_node_unref(theme_element);
+			egueb_dom_node_unref(thiz->theme_element);
+			thiz->theme_element = NULL;
 			goto done;
 		}
-		thiz->theme_element = egueb_dom_node_clone(theme_element, EINA_FALSE, EINA_TRUE, NULL);
+		thiz->theme_element = egueb_dom_node_clone(thiz->theme_element, EINA_FALSE, EINA_TRUE, NULL);
 		/* adopt it to the new document */
 		egueb_dom_document_node_adopt(doc, thiz->theme_element, NULL);
 		egueb_dom_element_enqueue(egueb_dom_node_ref(thiz->theme_element));
@@ -260,7 +288,7 @@ changed:
 	}
 done:
 	egueb_dom_string_unref(curr_theme);
-	egueb_dom_string_unref(curr_theme_id);
+	egueb_dom_list_unref(curr_theme_id);
 	return egueb_dom_node_ref(thiz->theme_element);
 }
 /*============================================================================*

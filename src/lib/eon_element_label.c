@@ -207,7 +207,7 @@ static void _eon_element_label_init(Eon_Widget *w)
 	/* TODO add: font family, font size, font weight, font style, font variant */
 
 	e = EON_ELEMENT(w);
-	egueb_dom_attr_string_set(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL));
 	/* features */
 	thiz->theme_feature = eon_feature_themable_add(n);
