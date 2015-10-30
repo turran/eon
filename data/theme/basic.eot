@@ -20,4 +20,7 @@
   <mars:button id="stockButton-ok" color="green">
     <set attributeName="color" to="darkgreen" begin="mousedown" end="mouseup" fill="remove"/>
   </mars:button>
+  <mars:button id="stockButton-help" color="lightblue">
+    <set attributeName="color" to="lightskyblue" begin="mousedown" end="mouseup" fill="remove"/>
+  </mars:button>
 </eot>
