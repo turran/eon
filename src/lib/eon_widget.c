@@ -25,61 +25,6 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static void _eon_widget_ui_mouse_cb(Egueb_Dom_Event *e, void *data)
-{
-	Eon_Widget *thiz = data;
-	Eon_Widget_Class *klass;
-	Egueb_Dom_String *type;
-	int enabled;
-
-	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
-		return;
-	egueb_dom_attr_final_get(thiz->enabled, &enabled);
-	if (!enabled)
-		return;
-
-	klass = EON_WIDGET_CLASS_GET(thiz);
-	if (!klass->state_set)
-		return;
-
-	type = egueb_dom_event_type_get(e);
-	klass->state_set(thiz, type);
-	egueb_dom_string_unref(type);
-}
-
-static void _eon_widget_enabled_modified_cb(Egueb_Dom_Event *ev,
-		void *data)
-{
-	Eon_Widget *thiz = EON_WIDGET(data);
-	Egueb_Dom_Event_Phase phase;
-	Egueb_Dom_Node *attr;
-
-	attr = egueb_dom_event_mutation_related_get(ev);
-	/* check if we are at the target */
-	phase = egueb_dom_event_phase_get(ev);
-	if (phase != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
-		return;
-	/* check if the attribute is the width or the height */
-	attr = egueb_dom_event_mutation_related_get(ev);
-	if (thiz->enabled == attr)
-	{
-		Eon_Widget_Class *klass;
-
-		klass = EON_WIDGET_CLASS_GET(thiz);
-		if (klass->state_set)
-		{
-			int enabled;
-			Egueb_Dom_String *state;
-
-			egueb_dom_attr_final_get(thiz->enabled, &enabled);
-			state = egueb_dom_string_new_with_static_string(enabled ? "enabled" : "disabled");
-			klass->state_set(thiz, state);
-			egueb_dom_string_unref(state);
-		}
-	}
-	egueb_dom_node_unref(attr);
-}
-
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -88,31 +33,19 @@ static void _eon_widget_init(Eon_Renderable *r)
 	Eon_Widget *thiz;
 	Eon_Widget_Class *klass;
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Event_Target *e;
+	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_WIDGET(r);
 	n = (EON_ELEMENT(r))->n;
 
-	e = EGUEB_DOM_EVENT_TARGET(n);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_CLICK,
-			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_UP,
-			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_DOWN,
-			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_OVER,
-			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_OUT,
-			_eon_widget_ui_mouse_cb, EINA_FALSE, r);
-	egueb_dom_event_target_event_listener_add(e,
-			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
-			_eon_widget_enabled_modified_cb, EINA_FALSE, r);
-
+	/* private */
+	/* attributes */
 	thiz->enabled = egueb_dom_attr_boolean_new(egueb_dom_string_ref(EON_ATTR_ENABLED),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->enabled, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_TRUE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->enabled), NULL);
 
+	/* events */
 	klass = EON_WIDGET_CLASS_GET(thiz);
 	if (klass->init)
 		klass->init(thiz);
@@ -120,8 +53,8 @@ static void _eon_widget_init(Eon_Renderable *r)
 
 static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 {
-	Eon_Widget_Class *klass;
 	Eon_Widget *thiz;
+	Eon_Widget_Class *klass;
 
 	thiz = EON_WIDGET(r);
 	klass = EON_WIDGET_CLASS_GET(r);
@@ -134,6 +67,24 @@ static Eina_Bool _eon_widget_pre_process(Eon_Renderable *r)
 	return EINA_TRUE;
 }
 
+static Egueb_Dom_Node * _eon_widget_element_at(Eon_Renderable *r, Eina_Rectangle *cursor)
+{
+	Eon_Widget *thiz;
+	Eon_Widget_Class *klass;
+	Egueb_Dom_Node *n;
+	Eina_Bool enabled;
+
+	thiz = EON_WIDGET(r);
+	egueb_dom_attr_final_get(thiz->enabled, &enabled);
+	if (!enabled)
+		return NULL;
+	klass = EON_WIDGET_CLASS_GET(r);
+	if (klass->element_at)
+		return klass->element_at(thiz, cursor);
+
+	n = (EON_ELEMENT(r))->n;	
+	return egueb_dom_node_ref(n);
+}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -151,6 +102,7 @@ static void _eon_widget_class_init(void *k)
 	r_klass = EON_RENDERABLE_CLASS(k);
 	r_klass->init = _eon_widget_init;
 	r_klass->pre_process = _eon_widget_pre_process;
+	r_klass->element_at = _eon_widget_element_at;
 }
 
 static void _eon_widget_instance_init(void *o)
@@ -163,26 +115,12 @@ static void _eon_widget_instance_deinit(void *o)
 
 	thiz = EON_WIDGET(o);
 
+	/* attributes */
 	egueb_dom_node_unref(thiz->enabled);
-
-	if (thiz->last_theme)
-		egueb_dom_string_unref(thiz->last_theme);
-	if (thiz->last_parent_theme)
-		egueb_dom_string_unref(thiz->last_parent_theme);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void eon_widget_state_set(Egueb_Dom_Node *n, Egueb_Dom_String *state)
-{
-	Eon_Widget *thiz;
-	Eon_Widget_Class *klass;
-
-	thiz = EON_WIDGET(egueb_dom_element_external_data_get(n));
-	klass = EON_WIDGET_CLASS_GET(thiz);
-	if (klass->state_set)
-		klass->state_set(thiz, state);
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

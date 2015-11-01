@@ -38,24 +38,18 @@ typedef struct _Eon_Widget
 	/* attributes */
 	Egueb_Dom_Node *enabled;
 	/* private */
-	Egueb_Dom_String *last_theme;
-	Egueb_Dom_String *last_parent_theme;
 } Eon_Widget;
 
 typedef void (*Eon_Widget_Init)(Eon_Widget *thiz);
 typedef Eina_Bool (*Eon_Widget_Pre_Process)(Eon_Widget *thiz);
-typedef void (*Eon_Widget_State_Set)(Eon_Widget *thiz, Egueb_Dom_String *state);
-typedef void (*Eon_Widget_Theme_Changed)(Eon_Widget *thiz);
+typedef Egueb_Dom_Node * (*Eon_Widget_Element_At)(Eon_Widget *thiz, Eina_Rectangle *cursor);
 
 typedef struct _Eon_Widget_Class
 {
 	Eon_Renderable_Class base;
 	Eon_Widget_Init init;
-	Eon_Widget_State_Set state_set;
 	Eon_Widget_Pre_Process pre_process;
-	Eon_Widget_Theme_Changed theme_changed;
+	Eon_Widget_Element_At element_at;
 } Eon_Widget_Class;
-
-void eon_widget_state_set(Egueb_Dom_Node *n, Egueb_Dom_String *state);
 
 #endif
