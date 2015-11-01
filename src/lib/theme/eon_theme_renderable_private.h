@@ -37,7 +37,6 @@ typedef struct _Eon_Theme_Renderable
 	Eina_Rectangle geometry;
 } Eon_Theme_Renderable;
 
-typedef void (*Eon_Theme_Renderable_Geometry_Set)(Eon_Theme_Renderable *thiz, Eina_Rectangle *geom);
 typedef Enesim_Renderer * (*Eon_Theme_Renderable_Renderer_Get)(Eon_Theme_Renderable *thiz);
 
 typedef struct _Eon_Theme_Renderable_Class

@@ -47,12 +47,9 @@ static void _eon_theme_renderable_instance_deinit(void *o)
 void eon_theme_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 {
 	Eon_Theme_Renderable *thiz;
-	Eon_Theme_Renderable_Class *klass;
 
 	thiz = EON_THEME_RENDERABLE(egueb_dom_element_external_data_get(n));
 	thiz->geometry = *geometry;
-
-	klass = EON_THEME_RENDERABLE_CLASS_GET(thiz);
 }
 
 Enesim_Renderer * eon_theme_renderable_renderer_get(Egueb_Dom_Node *n)
