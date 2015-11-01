@@ -27,6 +27,7 @@
 #include "eon_widget_drawer_private.h"
 #include "eon_widget_proxy_private.h"
 #include "eon_theme_document_private.h"
+#include "eon_feature_proxy_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -40,6 +41,7 @@ typedef struct _Eon_Element_Button_Stock
 	/* attributes */
 	Egueb_Dom_Node *stock;
 	/* private */
+	Egueb_Dom_Feature *proxy;
 	Egueb_Dom_Node *button;
 	Egueb_Dom_Node *label;
 } Eon_Element_Button_Stock;
@@ -48,40 +50,6 @@ typedef struct _Eon_Element_Button_Stock_Class
 {
 	Eon_Widget_Class base;
 } Eon_Element_Button_Stock_Class;
-
-static void _eon_element_button_stock_monitor_cb(Egueb_Dom_Event *e,
-		void *data)
-{
-	Eon_Element_Button_Stock *thiz = data;
-	Egueb_Dom_Node *n;
-
-	if (!egueb_smil_event_is_timeline(e))
-		return;
-
-	DBG("Proxied element requesting a timeline");
-	n = (EON_ELEMENT(thiz))->n;
-	egueb_dom_node_event_propagate(n, e);
-}
-
-/* Whenever the element is removed/inserted from/to a document, make sure
- * to adopt our own proxied element to it too
- */
-static void _eon_element_button_stock_inserted_into_doc_cb(Egueb_Dom_Event *e,
-		void *data)
-{
-	Eon_Element_Button_Stock *thiz = data;
-	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *doc;
-
-	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
-		return;
-
-	n = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
-	doc = egueb_dom_node_owner_document_get(n);
-	egueb_dom_document_node_adopt(doc, thiz->button, NULL);
-	egueb_dom_node_unref(n);
-	egueb_dom_node_unref(doc);
-}
 
 /* Whenever the 'stock' attribute is modifed be sure to invalidate the
  * geometry. A new 'stock' value implies a new geometry
@@ -117,6 +85,9 @@ static void _eon_element_button_stock_init(Eon_Widget *w)
 	thiz = EON_ELEMENT_BUTTON_STOCK(w);
 	n = (EON_ELEMENT(w))->n;
 
+	/* private */
+	thiz->proxy = eon_feature_proxy_add(n, thiz->button);
+
 	/* attributes */
 	thiz->stock = eon_stock_attr_new();
 	egueb_dom_attr_set(thiz->stock, EGUEB_DOM_ATTR_TYPE_DEFAULT, EON_STOCK_OK);
@@ -128,18 +99,6 @@ static void _eon_element_button_stock_init(Eon_Widget *w)
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_button_stock_attr_modified_cb,
 			EINA_FALSE, thiz);
-	/* to keep track of the owner document */
-	egueb_dom_event_target_event_listener_add(et,
-			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED_INTO_DOCUMENT,
-			_eon_element_button_stock_inserted_into_doc_cb,
-			EINA_FALSE, thiz);
-	egueb_dom_event_target_event_listener_add(et,
-			EGUEB_DOM_EVENT_MUTATION_NODE_DOCUMENT_SET,
-			_eon_element_button_stock_inserted_into_doc_cb,
-			EINA_FALSE, thiz);
-	/* propagate events from the proxy */
-	egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(thiz->button),
-			_eon_element_button_stock_monitor_cb, thiz);
 }
 
 static Eina_Bool _eon_element_button_stock_pre_process(Eon_Widget *w)
@@ -325,6 +284,7 @@ static void _eon_element_button_stock_instance_deinit(void *o)
 	Eon_Element_Button_Stock *thiz;
 
 	thiz = EON_ELEMENT_BUTTON_STOCK(o);
+	egueb_dom_feature_unref(thiz->proxy);
 	egueb_dom_node_unref(thiz->stock);
 	egueb_dom_node_unref(thiz->button);
 	if (thiz->label)
