@@ -18,7 +18,7 @@
 #include "eon_theme_private.h"
 #include "eon_theme_element_button.h"
 #include "eon_theme_main_private.h"
-#include "eon_theme_renderable_private.h"
+#include "eon_theme_widget_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -28,14 +28,14 @@
 
 typedef struct _Eon_Theme_Element_Button
 {
-	Eon_Theme_Renderable base;
+	Eon_Theme_Widget base;
 	const Eon_Theme_Element_Button_Descriptor *d;
 	void *data;
 } Eon_Theme_Element_Button;
 
 typedef struct _Eon_Theme_Element_Button_Class
 {
-	Eon_Theme_Renderable_Class base;
+	Eon_Theme_Widget_Class base;
 } Eon_Theme_Element_Button_Class;
 
 /*----------------------------------------------------------------------------*
@@ -89,7 +89,7 @@ static Egueb_Dom_String * _eon_theme_element_button_tag_name_get(Eon_Theme_Eleme
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_RENDERABLE_DESCRIPTOR,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_WIDGET_DESCRIPTOR,
 		Eon_Theme_Element_Button, Eon_Theme_Element_Button_Class, eon_theme_element_button);
 
 static void _eon_theme_element_button_class_init(void *k)

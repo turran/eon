@@ -116,12 +116,14 @@ static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 {
 	Eon_Element_Button *thiz;
+	Eon_Widget *w;
 	Eon_Box padding = { 0, 0, 0, 0 };
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	Egueb_Dom_Node *theme_element;
 	Eina_Rectangle geometry;
 	Eina_Rectangle free_space;
+	Eina_Bool enabled;
 
 	n = (EON_ELEMENT(r))->n;
 	thiz = EON_ELEMENT_BUTTON(r);
@@ -131,6 +133,10 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	/* Set the geometry on the child */
 	eon_theme_element_button_padding_get(theme_element, &padding);
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+	/* Set the enabled */
+	w = EON_WIDGET(r);
+	egueb_dom_attr_final_get(w->enabled, &enabled);
+	eon_theme_widget_enabled_set(theme_element, enabled);
 
 	free_space = r->geometry;
 	free_space.x += padding.left;
