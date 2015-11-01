@@ -74,6 +74,7 @@ extern "C" {
 #include "eon_theme_namespace.h"
 #include "eon_theme_element.h"
 #include "eon_theme_renderable.h"
+#include "eon_theme_widget.h"
 #include "eon_theme_element_button.h"
 #include "eon_theme_element_eon.h"
 

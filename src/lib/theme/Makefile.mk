@@ -1,6 +1,7 @@
 dist_installed_headers_DATA += \
 src/lib/theme/eon_theme_element.h \
 src/lib/theme/eon_theme_renderable.h \
+src/lib/theme/eon_theme_widget.h \
 src/lib/theme/eon_theme_element_button.h \
 src/lib/theme/eon_theme_element_eon.h
 
@@ -26,4 +27,6 @@ src/lib/theme/eon_theme_element_instance.c \
 src/lib/theme/eon_theme_namespace.c \
 src/lib/theme/eon_theme_namespace_private.h \
 src/lib/theme/eon_theme_renderable.c \
-src/lib/theme/eon_theme_renderable_private.h
+src/lib/theme/eon_theme_renderable_private.h \
+src/lib/theme/eon_theme_widget.c \
+src/lib/theme/eon_theme_widget_private.h
