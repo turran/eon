@@ -51,11 +51,7 @@ src/lib/eon_orientation.c \
 src/lib/eon_orientation_private.h \
 src/lib/eon_stock.c \
 src/lib/eon_widget.c \
-src/lib/eon_widget_private.h \
-src/lib/eon_widget_drawer.c \
-src/lib/eon_widget_drawer_private.h \
-src/lib/eon_widget_proxy.c \
-src/lib/eon_widget_proxy_private.h
+src/lib/eon_widget_private.h
 
 src_lib_libeon_la_LIBADD = \
 @EON_LIBS@
