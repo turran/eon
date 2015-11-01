@@ -99,7 +99,19 @@ static void _eon_feature_themable_event_monitor_cb(Egueb_Dom_Event *e,
 	}
 	else if (egueb_dom_event_is_mutation(e))
 	{
-		DBG("Theme element triggered a mutation event");
+		Egueb_Dom_String *type;
+		type = egueb_dom_event_type_get(e);
+		if (type == EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED ||
+				type == EGUEB_DOM_EVENT_MUTATION_CHARACTER_DATA_MODIFIED)
+		{
+			DBG("Theme element triggered a mutation event");
+			egueb_dom_node_event_propagate(thiz->n, e);
+		}
+		egueb_dom_string_unref(type);
+	}
+	else if (egueb_dom_event_is_process(e))
+	{
+		DBG("Theme element triggered a process event");
 		egueb_dom_node_event_propagate(thiz->n, e);
 		return;
 	}
@@ -170,14 +182,14 @@ Egueb_Dom_Feature * eon_feature_themable_add(Egueb_Dom_Node *n)
 	thiz->f = egueb_dom_feature_external_new(&_descriptor, thiz);
 	/* assign it */
 	egueb_dom_node_feature_add(n, NULL, NULL, egueb_dom_feature_ref(thiz->f));
+	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
 	/* TODO in case a node has been added/removed from a document make
 	 * sure to set/unset the new/old document too
 	 */
-	/* TODO add events for every 'state' that needs to be propagated
+	/* add events for every 'state' that needs to be propagated
 	 * like mousein, mouseodown, click, focusin, etc
 	 */
-	/* return it */
-	et = EGUEB_DOM_EVENT_TARGET(n);
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MOUSE_CLICK,
 			_eon_feature_themable_event_propagate_cb,
@@ -202,6 +214,7 @@ Egueb_Dom_Feature * eon_feature_themable_add(Egueb_Dom_Node *n)
 			EGUEB_DOM_EVENT_MOUSE_OUT,
 			_eon_feature_themable_event_propagate_cb,
 			EINA_FALSE, thiz);
+	/* return it */
 	return thiz->f;
 }
 
