@@ -7,6 +7,5 @@ src/lib/drawer/eon_drawer_attr_primitive.c \
 src/lib/drawer/eon_drawer_main.c \
 src/lib/drawer/eon_drawer_namespace.c \
 src/lib/drawer/eon_drawer_button.c \
-src/lib/drawer/eon_drawer_label.c \
 src/lib/drawer/eon_drawer_eon.c \
 src/lib/drawer/eon_drawer_widget.c

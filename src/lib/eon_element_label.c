@@ -21,7 +21,6 @@
 
 #include "eon_feature_themable_private.h"
 #include "eon_widget_drawer_private.h"
-#include "eon_drawer_label_private.h"
 /* Create our own text span renderer to pre-calculate the size of the ellipsized text
  * In acse the text of the character data has changed, be sure to notify upstream too
  */
