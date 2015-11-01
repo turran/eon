@@ -26,8 +26,6 @@
 #include "eon_widget_drawer_private.h"
 #include "eon_element_eon_private.h"
 #include "eon_event_geometry_private.h"
-#include "eon_drawer_widget_private.h"
-#include "eon_drawer_eon_private.h"
 #include "eon_theme_document_private.h"
 /*============================================================================*
  *                                  Local                                     *

@@ -29,6 +29,5 @@
 #include "eon_drawer_instance.h"
 #include "eon_drawer_namespace.h"
 #include "eon_drawer_widget.h"
-#include "eon_drawer_eon.h"
 
 #endif
