@@ -215,6 +215,49 @@ Eina_Bool eon_is_renderable(Egueb_Dom_Node *n)
 	return EINA_TRUE;
 }
 
+void eon_renderable_attrs_propagate(Egueb_Dom_Node *n, Egueb_Dom_Node *other_n)
+{
+	Eon_Renderable *thiz;
+	Eon_Renderable *other;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	other = EON_RENDERABLE(egueb_dom_element_external_data_get(other_n));
+	if (egueb_dom_attr_has_changed(thiz->halign))
+	{
+		Eon_Renderable *other;
+		Eon_Horizontal_Align halign;
+
+		egueb_dom_attr_final_get(thiz->halign, &halign);
+		egueb_dom_attr_set(other->halign, EGUEB_DOM_ATTR_TYPE_BASE, halign);
+	}
+
+	if (egueb_dom_attr_has_changed(thiz->valign))
+	{
+		Eon_Renderable *other;
+		Eon_Vertical_Align valign;
+
+		egueb_dom_attr_final_get(thiz->valign, &valign);
+		egueb_dom_attr_set(other->valign, EGUEB_DOM_ATTR_TYPE_BASE, valign);
+	}
+
+	if (egueb_dom_attr_has_changed(thiz->hexpand))
+	{
+		Eon_Renderable *other;
+		Eina_Bool hexpand;
+
+		egueb_dom_attr_final_get(thiz->hexpand, &hexpand);
+		egueb_dom_attr_set(other->valign, EGUEB_DOM_ATTR_TYPE_BASE, hexpand);
+	}
+
+	if (egueb_dom_attr_has_changed(thiz->vexpand))
+	{
+		Eina_Bool vexpand;
+
+		egueb_dom_attr_final_get(thiz->vexpand, &vexpand);
+		egueb_dom_attr_set(other->valign, EGUEB_DOM_ATTR_TYPE_BASE, vexpand);
+	}
+}
+
 void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 {
 	Eon_Renderable *thiz;
