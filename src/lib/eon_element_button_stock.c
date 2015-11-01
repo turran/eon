@@ -23,9 +23,8 @@
 #include "eon_element_label_stock.h"
 #include "eon_element_button_stock.h"
 
+#include "eon_widget_private.h"
 #include "eon_stock_private.h"
-#include "eon_widget_drawer_private.h"
-#include "eon_widget_proxy_private.h"
 #include "eon_theme_document_private.h"
 #include "eon_feature_proxy_private.h"
 /*============================================================================*

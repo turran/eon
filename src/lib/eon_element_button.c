@@ -20,7 +20,7 @@
 #include "eon_element_button.h"
 
 #include "eon_feature_themable_private.h"
-#include "eon_widget_drawer_private.h"
+#include "eon_widget_private.h"
 #include "eon_theme_renderable_private.h"
 #include "eon_theme_element_button_private.h"
 #include "eon_layout_frame_private.h"

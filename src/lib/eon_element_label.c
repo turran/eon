@@ -19,8 +19,8 @@
 #include "eon_main.h"
 #include "eon_element_label.h"
 
+#include "eon_widget_private.h"
 #include "eon_feature_themable_private.h"
-#include "eon_widget_drawer_private.h"
 /* Create our own text span renderer to pre-calculate the size of the ellipsized text
  * In acse the text of the character data has changed, be sure to notify upstream too
  */
@@ -373,7 +373,6 @@ static void _eon_element_label_class_init(void *k)
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
 	Eon_Widget_Class *w_klass;
-	Eon_Widget_Drawer_Class *wd_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_label_tag_name_get;
