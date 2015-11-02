@@ -21,8 +21,6 @@
 #include "eon_theme_namespace_private.h"
 #include "eon_theme_element_eot_private.h"
 #include "eon_theme_element_label_private.h"
-#include "eon_theme_element_instance_private.h"
-#include "eon_theme_element_object_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -111,40 +109,6 @@ Egueb_Dom_Node * eon_theme_document_new(void)
 	thiz = calloc(1, sizeof(Eon_Theme_Document));
 
 	return egueb_dom_document_external_new(&_descriptor, thiz);
-}
-
-Egueb_Dom_Node * eon_theme_document_instance_new(Egueb_Dom_Node *n,
-		const char *id, Eina_Error *err)
-{
-	Egueb_Dom_Node *ret;
-	Egueb_Dom_Node *rel;
-	Egueb_Dom_Node *topmost;
-	Egueb_Dom_String *sid;
-	
-	sid = egueb_dom_string_new_with_static_string(id);
-	rel = egueb_dom_document_element_get_by_id(n, sid, err);
-	egueb_dom_string_unref(sid);
-	if (!rel) return NULL;
-
-	if (!eon_theme_element_is_object(rel))
-	{
-		egueb_dom_node_unref(rel);
-		return NULL;
-	}
-
-	ret = egueb_dom_document_element_create(n, EON_THEME_ELEMENT_INSTANCE, err);
-	if (!ret)
-	{
-		egueb_dom_node_unref(rel);
-		return NULL;
-	}
-
-	topmost = egueb_dom_document_document_element_get(n);
-	egueb_dom_node_child_append(topmost, egueb_dom_node_ref(ret), NULL);
-	eon_theme_element_instance_relative_set(ret, rel);
-	egueb_dom_node_unref(topmost);
-
-	return ret;
 }
 
 void eon_theme_document_init(void)
