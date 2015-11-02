@@ -54,8 +54,8 @@ static void _eon_element_button_init(Eon_Widget *w)
 	n = (EON_ELEMENT(w))->n;
 	thiz = EON_ELEMENT_BUTTON(w);
 
+	/* private */
 	thiz->theme_feature = eon_feature_themable_add(n);
-
 	e = EON_ELEMENT(w);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_BUTTON));
@@ -71,6 +71,11 @@ static Enesim_Renderer * _eon_element_button_renderer_get(Eon_Renderable *r)
 
 	thiz = EON_ELEMENT_BUTTON(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return NULL;
+	}
 	ren = eon_theme_renderable_renderer_get(theme_element);
 	egueb_dom_node_unref(theme_element);
 	return ren;
@@ -128,7 +133,14 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	n = (EON_ELEMENT(r))->n;
 	thiz = EON_ELEMENT_BUTTON(r);
 
+	free_space = r->geometry;
+
+	/* get the theme */
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		goto done;
+	}
 
 	/* Set the geometry on the child */
 	eon_theme_element_button_padding_get(theme_element, &padding);
@@ -138,7 +150,6 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	egueb_dom_attr_final_get(w->enabled, &enabled);
 	eon_theme_widget_enabled_set(theme_element, enabled);
 
-	free_space = r->geometry;
 	free_space.x += padding.left;
 	free_space.y += padding.top;
 	free_space.w -= padding.left + padding.right;
@@ -160,12 +171,13 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 		eon_theme_element_button_content_set(theme_element, NULL);
 	}
 
-	/* Our basic frame layout algorithm */
-	eon_layout_frame_size_geometry_set(n, &free_space);
-
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
 	egueb_dom_node_unref(theme_element);
+
+done:
+	/* Our basic frame layout algorithm */
+	eon_layout_frame_size_geometry_set(n, &free_space);
 	
 	return EINA_TRUE;
 }
