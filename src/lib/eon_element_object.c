@@ -87,20 +87,32 @@ static void _eon_element_object_document_cleanup(Eon_Element_Object *thiz)
 static void _eon_element_object_document_setup(Eon_Element_Object *thiz, Egueb_Dom_Node *doc)
 {
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *topmost;
 
 	n = (EON_ELEMENT(thiz))->n;
+
+	topmost = egueb_dom_document_document_element_get(doc);
+	if (!topmost)
+	{
+		WARN("No topmost element found in document, nothing to do");
+		egueb_dom_node_unref(doc);
+		return;
+	}
+
 	thiz->doc = doc;
+
 	/* get every possible feature */
-	thiz->ui = egueb_dom_node_feature_get(thiz->doc,
+	thiz->ui = egueb_dom_node_feature_get(topmost,
 			EGUEB_DOM_FEATURE_UI_NAME, NULL);
-	thiz->window = egueb_dom_node_feature_get(thiz->doc,
+	thiz->window = egueb_dom_node_feature_get(topmost,
 			EGUEB_DOM_FEATURE_WINDOW_NAME, NULL);
-	thiz->render = egueb_dom_node_feature_get(thiz->doc,
+	thiz->render = egueb_dom_node_feature_get(topmost,
 			EGUEB_DOM_FEATURE_RENDER_NAME, NULL);
+	egueb_dom_node_unref(topmost);
 	/* The data has been fetched, invalidete the geometry so we can inform
 	 * about the new hints, size, etc
 	 */
-	eon_renderable_invalidate_geometry(EON_RENDERABLE(thiz));
+	eon_renderable_invalidate_geometry(n);
 	egueb_dom_element_request_process(n);
 }
 
@@ -135,9 +147,12 @@ static void _eon_element_object_attr_modified_cb(Egueb_Dom_Event *ev,
 	attr = egueb_dom_event_mutation_related_get(ev);
 	if (thiz->xlink_href == attr)
 	{
-		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Object xlink href modified");
+		Egueb_Dom_Node *n;
+
+		n = (EON_ELEMENT(thiz))->n;
+		DBG_ELEMENT(n, "Object xlink href modified");
 		thiz->xlink_href_changed = EINA_TRUE;
-		eon_renderable_invalidate_geometry(EON_RENDERABLE(thiz));
+		eon_renderable_invalidate_geometry(n);
 	}
 	egueb_dom_node_unref(attr);
 }
@@ -226,28 +241,31 @@ static void _eon_element_object_init(Eon_Renderable *r)
 	Eon_Element_Object *thiz;
 	Eon_Element_Object_Class *klass;
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Event_Target *e;
+	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_ELEMENT_OBJECT(r);
 	n = (EON_ELEMENT(r))->n;
 
+	/* attributes */
 	thiz->xlink_href = egueb_dom_attr_string_new(
 			egueb_dom_string_ref(EGUEB_XLINK_NAME_HREF), NULL, NULL,
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->xlink_href), NULL);
 
+	/* events */
 	/* in case the attribute xlink href has changed be sure to invalidate
 	 * the geometry
 	 */
-	e = EGUEB_DOM_EVENT_TARGET(n);
-	egueb_dom_event_target_event_listener_add(e,
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_object_attr_modified_cb, EINA_FALSE, thiz);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_UP,
+	/* Forward the mouse events to the new document */
+	egueb_dom_event_target_event_listener_add(et, EGUEB_DOM_EVENT_MOUSE_UP,
 			_eon_element_object_ui_mouse_up_cb, EINA_FALSE, thiz);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_DOWN,
+	egueb_dom_event_target_event_listener_add(et, EGUEB_DOM_EVENT_MOUSE_DOWN,
 			_eon_element_object_ui_mouse_down_cb, EINA_FALSE, thiz);
-	egueb_dom_event_target_event_listener_add(e, EGUEB_DOM_EVENT_MOUSE_MOVE,
+	egueb_dom_event_target_event_listener_add(et, EGUEB_DOM_EVENT_MOUSE_MOVE,
 			_eon_element_object_ui_mouse_move_cb, EINA_FALSE, thiz);
 }
 
@@ -408,7 +426,7 @@ static Eina_Bool _eon_element_object_process(Eon_Renderable *r)
 	 * to always process ourselves.
 	 */
 done:
-	egueb_dom_element_enqueue(egueb_dom_node_ref(n));
+	//egueb_dom_element_enqueue(egueb_dom_node_ref(n));
 
 	return EINA_TRUE;
 }
@@ -424,10 +442,16 @@ static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_
 	thiz = EON_ELEMENT_OBJECT(r);
 	/* first resolve every property to get the doc */
 	if (!_eon_element_object_pre_process(r))
+	{
+		WARN("The pre-processing failed");
 		return 0;
+	}
 	
 	if (!thiz->doc || !thiz->window)
+	{
+		WARN("No doc or window");
 		return 0;
+	}
 
 	egueb_dom_feature_window_type_get(thiz->window, &type);
 	if (type == EGUEB_DOM_FEATURE_WINDOW_TYPE_MASTER)
@@ -435,11 +459,9 @@ static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_
 		egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
 		if (cw >= 0 && ch >= 0)
 		{
-			ret |= EON_RENDERABLE_HINT_MIN_MAX;
-			size->min_width = cw;
-			size->min_height = ch;
-			size->max_width = cw;
-			size->max_height = ch;
+			ret |= EON_RENDERABLE_HINT_MIN_MAX | EON_RENDERABLE_HINT_PREFERRED;
+			size->min_width = size->max_width = size->pref_width = cw;
+			size->min_height = size->max_height = size->pref_height = ch;
 		}
 		else
 		{
@@ -450,6 +472,15 @@ static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_
 			size->max_height = -1;
 		}
 	}
+	else
+	{
+		ret |= EON_RENDERABLE_HINT_MIN_MAX;
+		size->min_width = 1;
+		size->min_height = 1;
+		size->max_width = -1;
+		size->max_height = -1;
+	}
+
 	return ret;
 }
 
@@ -458,7 +489,7 @@ static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_object_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_OBJECT);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_OBJECT);
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
@@ -488,6 +519,7 @@ static void _eon_element_object_instance_init(void *o)
 	Eon_Element_Object *thiz;
 
 	thiz = EON_ELEMENT_OBJECT(o);
+	/* private */
 	thiz->image = enesim_renderer_image_new();
 	thiz->clipper = enesim_renderer_clipper_new();
 	enesim_renderer_clipper_clipped_set(thiz->clipper, enesim_renderer_ref(thiz->image));

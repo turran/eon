@@ -80,7 +80,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_LABEL = egueb_dom_string_new_with_static_string("label");
 	EON_NAME_ELEMENT_LABEL_STOCK = egueb_dom_string_new_with_static_string("stockLabel");
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
-	EON_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
+	EON_NAME_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
 	/* events */
 	EON_EVENT_GEOMETRY_REQUEST = egueb_dom_string_new_with_static_string("EONGeometryRequest");
 	EON_EVENT_GEOMETRY_INVALIDATE = egueb_dom_string_new_with_static_string("EONGeometryInvalidate");
@@ -115,7 +115,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_LABEL);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_LABEL_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
-	egueb_dom_string_unref(EON_ELEMENT_OBJECT);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_OBJECT);
 	/* events */
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY_REQUEST);
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY_INVALIDATE);
@@ -152,7 +152,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
 Egueb_Dom_String *EON_NAME_ELEMENT_LABEL;
 Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;
-Egueb_Dom_String *EON_ELEMENT_OBJECT;
+Egueb_Dom_String *EON_NAME_ELEMENT_OBJECT;
 /* events */
 Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;
