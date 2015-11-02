@@ -72,6 +72,9 @@ static void _strings_init(void)
 	EON_ATTR_WEIGHT = egueb_dom_string_new_with_static_string("weight");
 	EON_ATTR_ORIENTATION = egueb_dom_string_new_with_static_string("orientation");
 	EON_ATTR_ENABLED = egueb_dom_string_new_with_static_string("enabled");
+	EON_NAME_ATTR_ACTIVE = egueb_dom_string_new_with_static_string("active");
+	EON_NAME_ATTR_INACTIVE = egueb_dom_string_new_with_static_string("inactive");
+	EON_NAME_ATTR_ACTIVATED = egueb_dom_string_new_with_static_string("activated");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
@@ -82,6 +85,10 @@ static void _strings_init(void)
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
 	EON_NAME_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
 	EON_NAME_ELEMENT_CHECKBOX = egueb_dom_string_new_with_static_string("checkbox");
+	EON_NAME_ELEMENT_SWITCH = egueb_dom_string_new_with_static_string("switch");
+	/* generic */
+	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
+	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
 	/* events */
 	EON_EVENT_GEOMETRY_REQUEST = egueb_dom_string_new_with_static_string("EONGeometryRequest");
 	EON_EVENT_GEOMETRY_INVALIDATE = egueb_dom_string_new_with_static_string("EONGeometryInvalidate");
@@ -108,6 +115,9 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_ATTR_WEIGHT);
 	egueb_dom_string_unref(EON_ATTR_ORIENTATION);
 	egueb_dom_string_unref(EON_ATTR_ENABLED);
+	egueb_dom_string_unref(EON_NAME_ATTR_ACTIVE);
+	egueb_dom_string_unref(EON_NAME_ATTR_INACTIVE);
+	egueb_dom_string_unref(EON_NAME_ATTR_ACTIVATED);
 	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
@@ -118,6 +128,10 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_OBJECT);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_CHECKBOX);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_SWITCH);
+	/* generic */
+	egueb_dom_string_unref(EON_NAME_ON);
+	egueb_dom_string_unref(EON_NAME_OFF);
 	/* events */
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY_REQUEST);
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY_INVALIDATE);
@@ -146,6 +160,9 @@ Egueb_Dom_String *EON_ATTR_HALIGN;
 Egueb_Dom_String *EON_ATTR_WEIGHT;
 Egueb_Dom_String *EON_ATTR_ORIENTATION;
 Egueb_Dom_String *EON_ATTR_ENABLED;
+Egueb_Dom_String *EON_NAME_ATTR_ACTIVE;
+Egueb_Dom_String *EON_NAME_ATTR_INACTIVE;
+Egueb_Dom_String *EON_NAME_ATTR_ACTIVATED;
 Egueb_Dom_String *EON_STOCK;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
@@ -156,6 +173,10 @@ Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;
 Egueb_Dom_String *EON_NAME_ELEMENT_OBJECT;
 Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
+Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
+/* generic */
+Egueb_Dom_String *EON_NAME_ON;
+Egueb_Dom_String *EON_NAME_OFF;
 /* events */
 Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;

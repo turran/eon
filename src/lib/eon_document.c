@@ -27,6 +27,7 @@
 #include "eon_element_stack.h"
 #include "eon_element_object.h"
 #include "eon_element_checkbox.h"
+#include "eon_element_switch.h"
 
 #include "eon_renderable_private.h"
 #include "eon_element_eon_private.h"
@@ -62,6 +63,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_object_new();
 	else if (!strcmp(name, "checkbox"))
 		ret = eon_element_checkbox_new();
+	else if (!strcmp(name, "switch"))
+		ret = eon_element_switch_new();
 	return ret;
 }
 

@@ -71,7 +71,13 @@ EAPI extern Egueb_Dom_String *EON_ATTR_HALIGN;
 EAPI extern Egueb_Dom_String *EON_ATTR_WEIGHT;
 EAPI extern Egueb_Dom_String *EON_ATTR_ORIENTATION;
 EAPI extern Egueb_Dom_String *EON_ATTR_ENABLED;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_ACTIVE;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_INACTIVE;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_ACTIVATED;
 EAPI extern Egueb_Dom_String *EON_STOCK;
+
+EAPI extern Egueb_Dom_String *EON_NAME_ON;
+EAPI extern Egueb_Dom_String *EON_NAME_OFF;
 
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
@@ -81,6 +87,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_STACK;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_OBJECT;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;
