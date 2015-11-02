@@ -191,7 +191,11 @@ static void _eon_element_label_init(Eon_Widget *w)
 	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_ELEMENT_LABEL(w);
+	/* private */
 	thiz->r = enesim_renderer_text_span_new();
+	e = EON_ELEMENT(w);
+	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL));
 
 	/* attributes */
 	thiz->ellipsize = egueb_dom_attr_boolean_new(
@@ -210,9 +214,6 @@ static void _eon_element_label_init(Eon_Widget *w)
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->color), NULL);
 	/* TODO add: font family, font size, font weight, font style, font variant */
 
-	e = EON_ELEMENT(w);
-	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
-			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL));
 	/* features */
 	thiz->theme_feature = eon_feature_themable_add(n);
 	/* events */
