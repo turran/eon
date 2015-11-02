@@ -1,3 +1,4 @@
+<?xml version="1.0" standalone="no"?>
 <eon>
   <button id="button01" hexpand="true">
     <label valign="middle" halign="right" ellipsize="true">My very own label</label>
