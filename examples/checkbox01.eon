@@ -1,0 +1,11 @@
+<eon>
+  <stack orientation="vertical" hexpand="true">
+    <checkbox id="checkbox01" hexpand="true">
+      <label halign="right" ellipsize="true">My first checkbox entry</label>
+    </checkbox>
+    <checkbox id="checkbox02" hexpand="true">
+      <label halign="left" ellipsize="true">My second checkbox entry</label>
+    </checkbox>
+  </stack>
+</eon>
+
