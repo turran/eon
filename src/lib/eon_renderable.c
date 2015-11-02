@@ -328,6 +328,8 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 	/* handle the size */
 	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
 	{
+		DBG_ELEMENT(n, "Has preferred hints, width: %d, height: %d",
+				size.pref_width, size.pref_height);
 		if (w > size.pref_width && size.pref_width > 0)
 		{
 			if (!hexpand)
@@ -347,6 +349,10 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 
 	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
 	{
+		DBG_ELEMENT(n, "Has min/max hints, min width: %d, max width: %d, "
+				"min height: %d, max height: %d",
+				size.min_width, size.max_width,
+				size.min_height, size.max_height);
 		if (w < size.min_width)
 		{
 			ERR_ELEMENT(n, "Parent set a width %d less than min %d",
