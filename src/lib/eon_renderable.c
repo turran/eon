@@ -381,6 +381,7 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 
 		case EON_HORIZONTAL_ALIGN_RIGHT:
 		out->x = fs->x + (fs->w - w);
+		break;
 	}
 	switch (valign)
 	{
