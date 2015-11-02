@@ -493,61 +493,6 @@ static void _eon_element_eon_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Egueb_Dom_Node * eon_element_eon_theme_load(Egueb_Dom_Node *n, Egueb_Dom_String *theme_name)
-{
-	Eon_Element_Eon *thiz;
-	Eon_Element_Eon_Theme *theme;
-	Egueb_Dom_Node *ret = NULL;
-	Eina_List *l;
-
-	if (!theme_name) return NULL;
-
-	thiz = egueb_dom_element_external_data_get(n);
-	EINA_LIST_FOREACH(thiz->themes, l, theme)
-	{
-		if (!strcmp(egueb_dom_string_string_get(theme_name), theme->name))
-		{
-			ret = egueb_dom_node_ref(theme->doc);
-			break;
-		}
-	}
-
-	/* load the file based from the fs */
-	if (!ret)
-	{
-		Enesim_Stream *s;
-		Egueb_Dom_Node *doc;
-		const char *theme_path;
-		char path[PATH_MAX];
-		
-
-		theme_path = getenv("EON_THEME_PATH");
-		if (!theme_path)
-		{
-			theme_path = "/usr/local/share/eon/themes";
-		}
-		snprintf(path, PATH_MAX, "%s/%s.eot", theme_path, egueb_dom_string_string_get(theme_name));
-		DBG("Loading theme at '%s'", path);
-		s = enesim_stream_file_new(path, "r");
-		if (!s) return NULL;
-
-		doc = eon_theme_document_new();
-		egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(doc),
-				_eon_element_eon_monitor_cb, thiz);
-		egueb_dom_parser_parse(s, &doc);
-
-		theme = calloc(1, sizeof(Eon_Element_Eon_Theme));
-		theme->doc = doc;
-		theme->name = strdup(egueb_dom_string_string_get(theme_name));
-		thiz->themes = eina_list_append(thiz->themes, theme);
-
-		ret = egueb_dom_node_ref(doc);
-	}
-
-	return ret;
-
-}
-
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
