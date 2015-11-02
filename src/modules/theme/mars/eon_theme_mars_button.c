@@ -177,7 +177,6 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 	thiz->blur = enesim_renderer_blur_new();
 	enesim_renderer_blur_radius_x_set(thiz->blur, 3);
 	enesim_renderer_blur_radius_y_set(thiz->blur, 3);
-	enesim_renderer_blur_source_renderer_set(thiz->blur, enesim_renderer_ref(thiz->button));
 
 	thiz->proxy = enesim_renderer_proxy_new();
 	enesim_renderer_proxy_proxied_set(thiz->proxy, enesim_renderer_ref(thiz->button));
