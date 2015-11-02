@@ -1,22 +1,13 @@
-+ Rename drawer_namespace ns to drawer collection
 + Change the ns attribute on the theme
 + Refactor the theme files to be simple, no need to use the external interface directly
 + Make the theme be the theme files only
 + Move the register part of the theme to the drawer
-+ Remove the wrapper element
 + We need to create some common code for widgets that are in fact compound widgets, like the color_button for example.
   Basically we need to create some kind of wrapper of the theme ender element which will just add the same properties
   the theme of the widgets that are used by the new widget has, or at least what it exposes. this way the theme editor
   will automatically have the new properties and wont need to create a new theme for it. On the widget case, we also need
   a way to handle such stuff automatically? or just let it do manually?
-+ Refactor the widget to make the theme usage configurable
-+ Add a simple widget one can inherit from to make "instances" of widgets, like an Ok button, a Cancel button, a Color button, etc.
 + Add parent, sibling, etc information on every eon element, we need that for focus handling
-+ Add events to the input, the input should trigger events whenever something happens, like a new focus element or a new grabbed element. This input event should be registered
-  on the window? on the input?
-+ Now that we are building more widgets we need a way to actually set themes based on its class/child-parent relation, maybe we can create something similar to css?
-+ Add a scaler element, the scaler should be an element that can scale renderers or other elements by using a WIP property on enesim called scale which should scale the geometry not the final rendering process, ie. before applying the transformation matrix
-+ Change the static const attributes on the different basic theme implementation into properties
 + List of widgets we should have:
   button (DONE)
   radio (DONE)
