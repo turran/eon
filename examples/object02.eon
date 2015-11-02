@@ -1,0 +1,8 @@
+<eon>
+  <stack orientation="vertical">
+    <label>An animated SVG file!!!</label>
+    <object xlink:href="http://www.w3.org/TR/2003/REC-SVG11-20030114/images/animate/anim01.svg"/>
+    <label>Is on the middle</label>
+  </stack>
+</eon>
+
