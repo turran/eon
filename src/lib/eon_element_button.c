@@ -123,7 +123,7 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	Egueb_Dom_Node *theme_element;
 	Eina_Rectangle geometry;
 	Eina_Rectangle free_space;
-	Eina_Bool enabled;
+	int enabled;
 
 	n = (EON_ELEMENT(r))->n;
 	thiz = EON_ELEMENT_BUTTON(r);
