@@ -29,7 +29,7 @@
 typedef struct _Eon_Theme_Element_Label
 {
 	Eon_Theme_Element base;
-	/* properties */
+	/* attributes */
 	Egueb_Dom_Node *font;
 	Egueb_Dom_Node *color;
 } Eon_Theme_Element_Label;
@@ -51,7 +51,7 @@ static void _eon_theme_element_label_init(Eon_Theme_Element *e)
 	Eon_Theme_Element_Label *thiz;
 
 	thiz = EON_THEME_ELEMENT_LABEL(e);
-	/* create the attributes */
+	/* attributes */
 	thiz->font = egueb_css_attr_font_new(NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	thiz->color = egueb_css_attr_color_new(
 			egueb_dom_string_ref(EON_NAME_COLOR), NULL, EINA_TRUE,
