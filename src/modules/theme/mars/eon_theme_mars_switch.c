@@ -20,6 +20,22 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Eon_Theme_Mars_Switch_Part
+{
+	Enesim_Renderer *txt;
+	Enesim_Renderer *bkg;
+	Enesim_Renderer *box;
+	Enesim_Renderer *compound;
+} Eon_Theme_Mars_Switch_Part;
+
+typedef struct _Eon_Theme_Mars_Switch_Full
+{
+	Eon_Theme_Mars_Switch_Part left;
+	Eon_Theme_Mars_Switch_Part right;
+	Enesim_Renderer *box;
+	Enesim_Renderer *box_content;
+} Eon_Theme_Mars_Switch_Full;
+
 typedef struct _Eon_Theme_Mars_Switch
 {
 	Egueb_Dom_Node *n;
@@ -30,13 +46,118 @@ typedef struct _Eon_Theme_Mars_Switch
 	/* private */
 	Enesim_Renderer *proxy;
 	Enesim_Renderer *blur;
-	Enesim_Renderer *box;
-	Enesim_Renderer *box_content;
-	Enesim_Renderer *active_txt;
-	Enesim_Renderer *active_box;
-	Enesim_Renderer *inactive_txt;
-	Enesim_Renderer *inactive_box;
+	Eon_Theme_Mars_Switch_Full full;
 } Eon_Theme_Mars_Switch;
+
+static inline void _eon_theme_mars_switch_part_init(
+		Eon_Theme_Mars_Switch_Part *thiz)
+
+{
+	Enesim_Renderer_Compound_Layer *l;
+
+	thiz->txt = enesim_renderer_text_span_new();
+	thiz->bkg = enesim_renderer_background_new();
+
+	thiz->compound = enesim_renderer_compound_new();
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->bkg));
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_add(thiz->compound, l);
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->txt));
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+	enesim_renderer_compound_layer_add(thiz->compound, l);
+
+	thiz->box = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_draw_mode_set(thiz->box,
+			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_shape_fill_renderer_set(thiz->box,
+			enesim_renderer_ref(thiz->compound));
+}
+
+static inline void _eon_theme_mars_switch_part_deinit(
+		Eon_Theme_Mars_Switch_Part *thiz)
+{
+	enesim_renderer_unref(thiz->txt);
+	enesim_renderer_unref(thiz->box);
+	enesim_renderer_unref(thiz->bkg);
+	enesim_renderer_unref(thiz->compound);
+}
+
+static inline void _eon_theme_mars_switch_part_setup(
+		Eon_Theme_Mars_Switch_Part *thiz,
+		Enesim_Color active, Enesim_Color inactive,
+		Eina_Rectangle *geom)
+{
+	Enesim_Rectangle bounds;
+	double x, y;
+
+	enesim_renderer_shape_geometry_get(thiz->txt, &bounds);
+	/* center the text */
+	x = (geom->w - bounds.w) / 2;
+	y = (geom->h - bounds.h) / 2;
+	enesim_renderer_origin_set(thiz->txt, geom->x + x, geom->y + y);
+	enesim_renderer_color_set(thiz->txt, inactive);
+	enesim_renderer_rectangle_position_set(thiz->box, geom->x, geom->y);
+	enesim_renderer_rectangle_size_set(thiz->box, geom->w, geom->h);
+	enesim_renderer_background_color_set(thiz->bkg, active);
+}
+
+static inline void _eon_theme_mars_switch_full_init(
+		Eon_Theme_Mars_Switch_Full *thiz)
+{
+	Enesim_Renderer_Compound_Layer *l;
+
+	_eon_theme_mars_switch_part_init(&thiz->left);
+	_eon_theme_mars_switch_part_init(&thiz->right);
+	/* the box content, where the active/inactive texts/boxes lay */
+	thiz->box_content = enesim_renderer_compound_new();
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->left.box));
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_add(thiz->box_content, l);
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->right.box));
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_add(thiz->box_content, l);
+	/* the real switch */
+	thiz->box = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_stroke_weight_set(thiz->box, 1);
+	enesim_renderer_shape_fill_renderer_set(thiz->box,
+			enesim_renderer_ref(thiz->box_content));
+	enesim_renderer_shape_draw_mode_set(thiz->box,
+			ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
+}
+
+static inline void _eon_theme_mars_switch_full_deinit(
+		Eon_Theme_Mars_Switch_Full *thiz)
+{
+	_eon_theme_mars_switch_part_deinit(&thiz->left);
+	_eon_theme_mars_switch_part_deinit(&thiz->right);
+	enesim_renderer_unref(thiz->box);
+	enesim_renderer_unref(thiz->box_content);
+}
+
+static inline void _eon_theme_mars_switch_full_setup(
+		Eon_Theme_Mars_Switch_Full *thiz, Enesim_Color active,
+		Enesim_Color inactive, Eina_Rectangle *geom)
+{
+	enesim_renderer_shape_stroke_color_set(thiz->box, active);
+	enesim_renderer_rectangle_position_set(thiz->box, geom->x, geom->y);
+	enesim_renderer_rectangle_size_set(thiz->box, geom->w, geom->h);
+
+	/* left side */
+	geom->w /= 2;
+	_eon_theme_mars_switch_part_setup(&thiz->left, active, inactive, geom); 
+
+	/* right side */
+	geom->x += geom->w;
+	_eon_theme_mars_switch_part_setup(&thiz->right, inactive, active, geom); 
+}
 /*----------------------------------------------------------------------------*
  *                              Switch interface                              *
  *----------------------------------------------------------------------------*/
@@ -54,12 +175,7 @@ static void _eon_theme_mars_switch_dtor(void *data)
 	egueb_dom_node_unref(thiz->level);
 	enesim_renderer_unref(thiz->proxy);
 	enesim_renderer_unref(thiz->blur);
-	enesim_renderer_unref(thiz->box);
-	enesim_renderer_unref(thiz->box_content);
-	enesim_renderer_unref(thiz->active_txt);
-	enesim_renderer_unref(thiz->active_box);
-	enesim_renderer_unref(thiz->inactive_txt);
-	enesim_renderer_unref(thiz->inactive_box);
+	_eon_theme_mars_switch_full_deinit(&thiz->full);
 	free(thiz);
 }
 
@@ -88,28 +204,12 @@ static Eina_Bool _eon_theme_mars_switch_process(void *data)
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
 	/* set the position of the elements */
-	enesim_renderer_shape_stroke_color_set(thiz->box, active_color);
-	enesim_renderer_rectangle_position_set(thiz->box, geom.x, geom.y);
-	enesim_renderer_rectangle_size_set(thiz->box, geom.w, geom.h);
-
-	enesim_renderer_shape_geometry_get(thiz->active_txt, &bounds);
-	enesim_renderer_origin_set(thiz->active_txt, geom.x, geom.y);
-	enesim_renderer_color_set(thiz->active_txt, inactive_color);
-	enesim_renderer_rectangle_position_set(thiz->active_box, geom.x, geom.y);
-	enesim_renderer_rectangle_size_set(thiz->active_box, bounds.w, bounds.h);
-	enesim_renderer_shape_fill_color_set(thiz->active_box, active_color);
-
-	enesim_renderer_origin_set(thiz->inactive_txt, geom.x + bounds.w, geom.y);
-	enesim_renderer_color_set(thiz->inactive_txt, active_color);
-	enesim_renderer_rectangle_position_set(thiz->inactive_box, geom.x + bounds.w, geom.y);
-	enesim_renderer_rectangle_size_set(thiz->inactive_box, geom.w - bounds.w, bounds.h);
-	enesim_renderer_shape_fill_color_set(thiz->inactive_box, inactive_color);
-
+	_eon_theme_mars_switch_full_setup(&thiz->full, active_color, inactive_color, &geom);
 	/* apply the blur value */
 	if (!enabled)
 	{
 		enesim_renderer_blur_source_renderer_set(thiz->blur,
-				enesim_renderer_ref(thiz->box));
+				enesim_renderer_ref(thiz->full.box));
 		enesim_renderer_proxy_proxied_set(thiz->proxy,
 				enesim_renderer_ref(thiz->blur));
 	}
@@ -117,7 +217,7 @@ static Eina_Bool _eon_theme_mars_switch_process(void *data)
 	{
 		enesim_renderer_blur_source_renderer_set(thiz->blur, NULL);
 		enesim_renderer_proxy_proxied_set(thiz->proxy,
-				enesim_renderer_ref(thiz->box));
+				enesim_renderer_ref(thiz->full.box));
 	}
 	enesim_renderer_origin_set(thiz->blur, geom.x, geom.y);
 
@@ -127,13 +227,13 @@ static Eina_Bool _eon_theme_mars_switch_process(void *data)
 static void _eon_theme_mars_switch_active_text_set(void *data, const char *txt)
 {
 	Eon_Theme_Mars_Switch *thiz = data;
-	enesim_renderer_text_span_text_set(thiz->active_txt, txt);
+	enesim_renderer_text_span_text_set(thiz->full.left.txt, txt);
 }
 
 static void _eon_theme_mars_switch_inactive_text_set(void *data, const char *txt)
 {
 	Eon_Theme_Mars_Switch *thiz = data;
-	enesim_renderer_text_span_text_set(thiz->inactive_txt, txt);
+	enesim_renderer_text_span_text_set(thiz->full.right.txt, txt);
 }
 
 static int _eon_theme_mars_switch_size_hints_get(void *data, Eon_Renderable_Size *size)
@@ -159,20 +259,24 @@ static int _eon_theme_mars_switch_size_hints_get(void *data, Eon_Renderable_Size
 		}
 	}
 	egueb_dom_node_unref(font_attr);
-	enesim_renderer_text_span_font_set(thiz->active_txt, enesim_text_font_ref(font));
-	enesim_renderer_text_span_font_set(thiz->inactive_txt, enesim_text_font_ref(font));
+	enesim_renderer_text_span_font_set(thiz->full.left.txt, enesim_text_font_ref(font));
+	enesim_renderer_text_span_font_set(thiz->full.right.txt, enesim_text_font_ref(font));
 	enesim_text_font_unref(font);
 
-	if (enesim_renderer_destination_bounds_get(thiz->active_txt, &bounds, 0, 0, NULL))
+	if (enesim_renderer_destination_bounds_get(thiz->full.left.txt, &bounds, 0, 0, NULL))
 	{
 		w = bounds.w;
 		h = bounds.h;
 	}
-	if (enesim_renderer_destination_bounds_get(thiz->inactive_txt, &bounds, 0, 0, NULL))
+	if (enesim_renderer_destination_bounds_get(thiz->full.right.txt, &bounds, 0, 0, NULL))
 	{
 		w = bounds.w > w ? bounds.w * 2 : w * 2;
 		h = bounds.h > h ? bounds.h : h;
 	}
+
+	/* add the padding */
+	w += 20;
+	h += 10;
 
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
 	size->min_width = size->max_width = w;
@@ -210,46 +314,7 @@ Egueb_Dom_Node * eon_theme_mars_switch_new(void)
 	Enesim_Renderer_Compound_Layer *l;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Switch));
-	/* the active part */
-	thiz->active_txt = enesim_renderer_text_span_new();
-	thiz->active_box = enesim_renderer_rectangle_new();
-	enesim_renderer_shape_draw_mode_set(thiz->active_box,
-			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
-	/* the inactive part */
-	thiz->inactive_txt = enesim_renderer_text_span_new();
-	thiz->inactive_box = enesim_renderer_rectangle_new();
-	enesim_renderer_shape_draw_mode_set(thiz->inactive_box,
-			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
-	/* the box content, where the active/inactive texts/boxes lay */
-	thiz->box_content = enesim_renderer_compound_new();
-	l = enesim_renderer_compound_layer_new();
-	enesim_renderer_compound_layer_renderer_set(l,
-			enesim_renderer_ref(thiz->active_box));
-	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
-	enesim_renderer_compound_layer_add(thiz->box_content, l);
-	l = enesim_renderer_compound_layer_new();
-	enesim_renderer_compound_layer_renderer_set(l,
-			enesim_renderer_ref(thiz->active_txt));
-	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
-	enesim_renderer_compound_layer_add(thiz->box_content, l);
-	l = enesim_renderer_compound_layer_new();
-	enesim_renderer_compound_layer_renderer_set(l,
-			enesim_renderer_ref(thiz->inactive_box));
-	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
-	enesim_renderer_compound_layer_add(thiz->box_content, l);
-	l = enesim_renderer_compound_layer_new();
-	enesim_renderer_compound_layer_renderer_set(l,
-			enesim_renderer_ref(thiz->inactive_txt));
-	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
-	enesim_renderer_compound_layer_add(thiz->box_content, l);
-	/* the real switch */
-	thiz->box = enesim_renderer_rectangle_new();
-	enesim_renderer_shape_stroke_weight_set(thiz->box, 1);
-	enesim_renderer_shape_fill_renderer_set(thiz->box,
-			enesim_renderer_ref(thiz->box_content));
-	enesim_renderer_shape_draw_mode_set(thiz->box,
-			ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
-
+	_eon_theme_mars_switch_full_init(&thiz->full);
 	/* the blur effect for disabled switchs */
 	thiz->blur = enesim_renderer_blur_new();
 	enesim_renderer_blur_radius_x_set(thiz->blur, 3);
@@ -257,7 +322,7 @@ Egueb_Dom_Node * eon_theme_mars_switch_new(void)
 
 	thiz->proxy = enesim_renderer_proxy_new();
 	enesim_renderer_proxy_proxied_set(thiz->proxy,
-		enesim_renderer_ref(thiz->box));
+		enesim_renderer_ref(thiz->full.box));
 
 	n = eon_theme_element_switch_new(&_descriptor, thiz);
 	/* the attributes */
