@@ -23,4 +23,5 @@
   <mars:button id="stockButton-help" color="lightblue">
     <set attributeName="color" to="lightskyblue" begin="mousedown" end="mouseup" fill="remove"/>
   </mars:button>
+  <mars:switch id="switch" font="Verdana 10pt" active-color="white" inactive-color="black">
 </eot>

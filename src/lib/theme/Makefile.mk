@@ -3,7 +3,8 @@ src/lib/theme/eon_theme_element.h \
 src/lib/theme/eon_theme_renderable.h \
 src/lib/theme/eon_theme_widget.h \
 src/lib/theme/eon_theme_element_button.h \
-src/lib/theme/eon_theme_element_eon.h
+src/lib/theme/eon_theme_element_eon.h \
+src/lib/theme/eon_theme_element_switch.h
 
 
 src_lib_libeon_la_SOURCES += \
@@ -18,6 +19,8 @@ src/lib/theme/eon_theme_element_label.c \
 src/lib/theme/eon_theme_element_label_private.h \
 src/lib/theme/eon_theme_element_button.c \
 src/lib/theme/eon_theme_element_button_private.h \
+src/lib/theme/eon_theme_element_switch.c \
+src/lib/theme/eon_theme_element_switch_private.h \
 src/lib/theme/eon_theme_namespace.c \
 src/lib/theme/eon_theme_namespace_private.h \
 src/lib/theme/eon_theme_renderable.c \

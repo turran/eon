@@ -47,6 +47,25 @@ typedef struct _Eon_Element_Switch_Class
 	Eon_Widget_Class base;
 } Eon_Element_Switch_Class;
 
+/* Inform of a geometry change */
+static void _eon_element_switch_attr_modified_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Switch *thiz = data;
+	Egueb_Dom_Node *attr;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+
+	attr = egueb_dom_event_mutation_related_get(e);
+	if (thiz->active == attr || thiz->inactive == attr)
+	{
+		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Geometry related attr changed, "
+				"invalidating geometry");
+		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
+	}
+	egueb_dom_node_unref(attr);
+}
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -55,31 +74,38 @@ static void _eon_element_switch_init(Eon_Widget *w)
 	Eon_Element_Switch *thiz;
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *et;
 
-	n = (EON_ELEMENT(w))->n;
 	thiz = EON_ELEMENT_SWITCH(w);
 
-	/* private */
-	thiz->theme_feature = eon_feature_themable_add(n);
-	e = EON_ELEMENT(w);
-	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
-			egueb_dom_string_ref(EON_NAME_ELEMENT_SWITCH));
 	/* attributes */
 	thiz->active = egueb_dom_attr_string_new(
 			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVE), NULL,
 			egueb_dom_string_ref(EON_NAME_ON),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	thiz->inactive = egueb_dom_attr_string_new(
-			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVE), NULL,
+			egueb_dom_string_ref(EON_NAME_ATTR_INACTIVE), NULL,
 			egueb_dom_string_ref(EON_NAME_OFF),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	thiz->activated = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVATED),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
+	n = (EON_ELEMENT(w))->n;
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->active), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->inactive), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->activated), NULL);
+	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_element_switch_attr_modified_cb,
+			EINA_FALSE, thiz);
+	/* private */
+	thiz->theme_feature = eon_feature_themable_add(n);
+	e = EON_ELEMENT(w);
+	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_SWITCH));
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
@@ -111,31 +137,30 @@ static int _eon_element_switch_size_hints_get(Eon_Renderable *r,
 	Egueb_Dom_Node *theme_element;
 	int ret;
 
-	n = (EON_ELEMENT(r))->n;
-
-	ret = eon_layout_frame_size_hints_get(n, size);
-
-	/* finally add our padding */
 	thiz = EON_ELEMENT_SWITCH(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	//eon_theme_element_switch_padding_get(theme_element, &padding);
-	/* a switch can be of any size */
-	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	if (size->min_width > 0)
-		size->min_width += padding.left + padding.right;
-	if (size->min_height > 0)
-		size->min_height += padding.top + padding.bottom;
-	size->max_width = -1;
-	size->max_height = -1;
-
-	if (ret & EON_RENDERABLE_HINT_PREFERRED)
+	if (!theme_element)
 	{
-		if (size->pref_width > 0)
-			size->pref_width += padding.left + padding.right;
-		if (size->pref_height > 0)
-			size->pref_height += padding.top + padding.bottom;
+		WARN("No theme element found");
+		return 0;
 	}
 
+	/* propagate the active/inactive values if needed */
+	if (egueb_dom_attr_has_changed(thiz->active))
+	{
+		Egueb_Dom_String *s = NULL;
+		egueb_dom_attr_final_get(thiz->active, &s);
+		eon_theme_element_switch_active_text_set(theme_element, s);
+	}
+	if (egueb_dom_attr_has_changed(thiz->inactive))
+	{
+		Egueb_Dom_String *s = NULL;
+		egueb_dom_attr_final_get(thiz->inactive, &s);
+		eon_theme_element_switch_inactive_text_set(theme_element, s);
+	}
+
+	n = (EON_ELEMENT(r))->n;
+	ret = eon_theme_element_switch_size_hints_get(theme_element, size);
 	return ret;
 }
 
@@ -160,46 +185,21 @@ static Eina_Bool _eon_element_switch_process(Eon_Renderable *r)
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	if (!theme_element)
 	{
-		goto done;
+		WARN("No theme element found");
+		return EINA_FALSE;
 	}
 
 	/* Set the geometry on the child */
-	//eon_theme_element_switch_padding_get(theme_element, &padding);
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 	/* Set the enabled */
 	w = EON_WIDGET(r);
 	egueb_dom_attr_final_get(w->enabled, &enabled);
 	eon_theme_widget_enabled_set(theme_element, enabled);
 
-	free_space.x += padding.left;
-	free_space.y += padding.top;
-	free_space.w -= padding.left + padding.right;
-	free_space.h -= padding.bottom + padding.top;
-
-	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
-	/* Set the content renderer */
-	child = egueb_dom_element_child_first_get(n);
-	if (child)
-	{
-		Enesim_Renderer *ren;
-
-		ren = eon_renderable_renderer_get(child);
-		//eon_theme_element_switch_content_set(theme_element, ren);
-		egueb_dom_node_unref(child);
-	}
-	else
-	{
-		//eon_theme_element_switch_content_set(theme_element, NULL);
-	}
-
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
 	egueb_dom_node_unref(theme_element);
 
-done:
-	/* Our basic frame layout algorithm */
-	eon_layout_frame_size_geometry_set(n, &free_space);
-	
 	return EINA_TRUE;
 }
 
@@ -243,6 +243,9 @@ static void _eon_element_switch_instance_deinit(void *o)
 	Eon_Element_Switch *thiz;
 
 	thiz = EON_ELEMENT_SWITCH(o);
+	egueb_dom_node_unref(thiz->active);
+	egueb_dom_node_unref(thiz->inactive);
+	egueb_dom_node_unref(thiz->activated);
 }
 /*============================================================================*
  *                                 Global                                     *

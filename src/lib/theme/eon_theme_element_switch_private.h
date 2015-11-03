@@ -16,11 +16,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_MARS_MAIN_PRIVATE_H_
-#define _EON_THEME_MARS_MAIN_PRIVATE_H_
+#ifndef _EON_THEME_ELEMENT_SWITCH_PRIVATE_H
+#define _EON_THEME_ELEMENT_SWITCH_PRIVATE_H
 
-Egueb_Dom_Node * eon_theme_mars_eon_new(void);
-Egueb_Dom_Node * eon_theme_mars_button_new(void);
-Egueb_Dom_Node * eon_theme_mars_switch_new(void);
+int eon_theme_element_switch_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *size);
+void eon_theme_element_switch_active_text_set(Egueb_Dom_Node *n, Egueb_Dom_String *s);
+void eon_theme_element_switch_inactive_text_set(Egueb_Dom_Node *n, Egueb_Dom_String *s);
 
 #endif
+
