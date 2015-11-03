@@ -164,7 +164,7 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 	thiz->button_content = enesim_renderer_compound_new();
 	/* the background */
 	l = enesim_renderer_compound_layer_new();
-	enesim_renderer_compound_layer_renderer_set(l, thiz->inner_button);
+	enesim_renderer_compound_layer_renderer_set(l, enesim_renderer_ref(thiz->inner_button));
 	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 	enesim_renderer_compound_layer_add(thiz->button_content, l);
 
