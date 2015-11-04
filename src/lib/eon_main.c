@@ -92,6 +92,8 @@ static void _strings_init(void)
 	/* events */
 	EON_EVENT_GEOMETRY_REQUEST = egueb_dom_string_new_with_static_string("EONGeometryRequest");
 	EON_EVENT_GEOMETRY_INVALIDATE = egueb_dom_string_new_with_static_string("EONGeometryInvalidate");
+	EON_NAME_EVENT_ACTIVATE = egueb_dom_string_new_with_static_string("activate");
+	EON_NAME_EVENT_DEACTIVATE = egueb_dom_string_new_with_static_string("deactivate");
 }
 
 static void _strings_shutdown(void)
@@ -135,6 +137,8 @@ static void _strings_shutdown(void)
 	/* events */
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY_REQUEST);
 	egueb_dom_string_unref(EON_EVENT_GEOMETRY_INVALIDATE);
+	egueb_dom_string_unref(EON_NAME_EVENT_ACTIVATE);
+	egueb_dom_string_unref(EON_NAME_EVENT_DEACTIVATE);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -180,6 +184,8 @@ Egueb_Dom_String *EON_NAME_OFF;
 /* events */
 Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;
+Egueb_Dom_String *EON_NAME_EVENT_ACTIVATE;
+Egueb_Dom_String *EON_NAME_EVENT_DEACTIVATE;
 
 /**
  *

@@ -91,5 +91,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;
+EAPI extern Egueb_Dom_String *EON_NAME_EVENT_ACTIVATE;
+EAPI extern Egueb_Dom_String *EON_NAME_EVENT_DEACTIVATE;
 
 #endif
