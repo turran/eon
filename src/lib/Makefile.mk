@@ -24,6 +24,7 @@ src_lib_libeon_la_CPPFLAGS = \
 -I$(top_srcdir)/src/lib/drawer \
 -I$(top_srcdir)/src/lib/theme \
 -I$(top_srcdir)/src/lib/feature \
+-I$(top_srcdir)/src/lib/event \
 -DPACKAGE_LIB_DIR=\"$(libdir)\" \
 @EON_BUILD@ \
 @EON_CFLAGS@
