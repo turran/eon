@@ -22,8 +22,9 @@
 #include "eon_feature_themable_private.h"
 #include "eon_widget_private.h"
 #include "eon_theme_renderable_private.h"
-//#include "eon_theme_element_switch_private.h"
-#include "eon_layout_frame_private.h"
+#include "eon_theme_element_switch_private.h"
+#include "eon_event_activate_private.h"
+#include "eon_event_deactivate_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -66,6 +67,34 @@ static void _eon_element_switch_attr_modified_cb(Egueb_Dom_Event *e,
 	}
 	egueb_dom_node_unref(attr);
 }
+
+static void _eon_element_switch_click_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Switch *thiz = data;
+	Egueb_Dom_Event_Target *et;
+	Egueb_Dom_Event *ev;
+	Egueb_Dom_Node *n;
+	int activated = 0;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* first set the new value */
+	egueb_dom_attr_final_get(thiz->activated, &activated);
+	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_BASE, !activated);
+	/* trigger the events */
+	et = egueb_dom_event_target_get(e);
+	if (activated)
+	{
+		ev = eon_event_activate_new();
+	}
+	else
+	{
+		ev = eon_event_deactivate_new();
+	}
+	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
+	egueb_dom_node_unref(n);
+}
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -101,8 +130,16 @@ static void _eon_element_switch_init(Eon_Widget *w)
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
 			_eon_element_switch_attr_modified_cb,
 			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_eon_element_switch_click_cb,
+			EINA_FALSE, thiz);
 	/* private */
 	thiz->theme_feature = eon_feature_themable_add(n);
+	eon_feature_themable_event_propagate(thiz->theme_feature,
+			EON_NAME_EVENT_ACTIVATE);
+	eon_feature_themable_event_propagate(thiz->theme_feature,
+			EON_NAME_EVENT_DEACTIVATE);
 	e = EON_ELEMENT(w);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_SWITCH));
