@@ -40,6 +40,7 @@ typedef struct _Eon_Theme_Mars_Switch
 {
 	Egueb_Dom_Node *n;
 	/* attributes */
+	Egueb_Dom_Node *border_color;
 	Egueb_Dom_Node *active_color;
 	Egueb_Dom_Node *inactive_color;
 	Egueb_Dom_Node *level;
@@ -143,10 +144,11 @@ static inline void _eon_theme_mars_switch_full_deinit(
 }
 
 static inline void _eon_theme_mars_switch_full_setup(
-		Eon_Theme_Mars_Switch_Full *thiz, Enesim_Color active,
-		Enesim_Color inactive, Eina_Rectangle *geom)
+		Eon_Theme_Mars_Switch_Full *thiz, Enesim_Color border,
+		Enesim_Color active, Enesim_Color inactive,
+		Eina_Rectangle *geom)
 {
-	enesim_renderer_shape_stroke_color_set(thiz->box, active);
+	enesim_renderer_shape_stroke_color_set(thiz->box, border);
 	enesim_renderer_rectangle_position_set(thiz->box, geom->x, geom->y);
 	enesim_renderer_rectangle_size_set(thiz->box, geom->w, geom->h);
 
@@ -193,6 +195,7 @@ static Eina_Bool _eon_theme_mars_switch_process(void *data)
 	Enesim_Argb argb;
 	Enesim_Color inactive_color;
 	Enesim_Color active_color;
+	Enesim_Color border_color;
 
 	thiz = data;
 	/* get the final attributes */
@@ -200,11 +203,14 @@ static Eina_Bool _eon_theme_mars_switch_process(void *data)
 	active_color = enesim_color_argb_from(argb);
 	egueb_dom_attr_final_get(thiz->inactive_color, &argb);
 	inactive_color = enesim_color_argb_from(argb);
+	egueb_dom_attr_final_get(thiz->border_color, &argb);
+	border_color = enesim_color_argb_from(argb);
 	/* get the inherited members */
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
 	/* set the position of the elements */
-	_eon_theme_mars_switch_full_setup(&thiz->full, active_color, inactive_color, &geom);
+	_eon_theme_mars_switch_full_setup(&thiz->full, border_color,
+			active_color, inactive_color, &geom);
 	/* apply the blur value */
 	if (!enabled)
 	{
@@ -335,10 +341,14 @@ Egueb_Dom_Node * eon_theme_mars_switch_new(void)
 	s = egueb_dom_string_new_with_static_string("inactive-color");
 	thiz->inactive_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
+	s = egueb_dom_string_new_with_static_string("border-color");
+	thiz->border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
 	/* FIXME the level can be on the theme element switch itself? */
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->level), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->active_color), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->inactive_color), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->border_color), NULL);
 	thiz->n = n;
 
 	return n;
