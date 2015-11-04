@@ -77,6 +77,8 @@ static void _eon_feature_themable_event_propagate_cb(Egueb_Dom_Event *e,
 
 	if (!thiz->theme_element)
 		return;
+	Egueb_Dom_String *s;
+	s = egueb_dom_event_type_get(e);
 	egueb_dom_node_event_propagate(thiz->theme_element, e);
 }
 
@@ -318,6 +320,19 @@ done:
 	egueb_dom_string_unref(curr_theme);
 	egueb_dom_list_unref(curr_theme_id);
 	return egueb_dom_node_ref(thiz->theme_element);
+}
+
+void eon_feature_themable_event_propagate(Egueb_Dom_Feature *f,
+		Egueb_Dom_String *ev)
+{
+	Eon_Feature_Themable *thiz;
+	Egueb_Dom_Event_Target *et;
+
+	thiz = egueb_dom_feature_external_data_get(f);
+	et = EGUEB_DOM_EVENT_TARGET(thiz->n);
+	egueb_dom_event_target_event_listener_add(et, ev,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
 }
 /*============================================================================*
  *                                   API                                      *
