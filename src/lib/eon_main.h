@@ -82,6 +82,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_OFF;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_STOCK;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON_TOGGLE;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_LABEL;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_STACK;
