@@ -403,6 +403,7 @@ static void _eon_element_label_instance_deinit(void *o)
 	egueb_dom_node_unref(thiz->color);
 	/* private */
 	enesim_renderer_unref(thiz->r);
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *

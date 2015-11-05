@@ -41,12 +41,33 @@ typedef struct _Eon_Element_Switch
 	Egueb_Dom_Node *activated;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Eina_Bool first_run;
 } Eon_Element_Switch;
 
 typedef struct _Eon_Element_Switch_Class
 {
 	Eon_Widget_Class base;
 } Eon_Element_Switch_Class;
+
+static void _eon_element_switch_dispatch(
+		Eon_Element_Switch *thiz, Eina_Bool activated)
+{
+	Egueb_Dom_Event_Target *et;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Event *ev;
+
+	n = (EON_ELEMENT(thiz))->n;
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	if (activated)
+	{
+		ev = eon_event_activate_new();
+	}
+	else
+	{
+		ev = eon_event_deactivate_new();
+	}
+	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
+}
 
 /* Inform of a geometry change */
 static void _eon_element_switch_attr_modified_cb(Egueb_Dom_Event *e,
@@ -72,9 +93,6 @@ static void _eon_element_switch_click_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Switch *thiz = data;
-	Egueb_Dom_Event_Target *et;
-	Egueb_Dom_Event *ev;
-	Egueb_Dom_Node *n;
 	int activated = 0;
 
 	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
@@ -83,17 +101,7 @@ static void _eon_element_switch_click_cb(Egueb_Dom_Event *e,
 	egueb_dom_attr_final_get(thiz->activated, &activated);
 	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_BASE, !activated);
 	/* trigger the events */
-	et = egueb_dom_event_target_get(e);
-	if (activated)
-	{
-		ev = eon_event_activate_new();
-	}
-	else
-	{
-		ev = eon_event_deactivate_new();
-	}
-	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
-	egueb_dom_node_unref(n);
+	_eon_element_switch_dispatch(thiz, !activated);
 }
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
@@ -135,6 +143,7 @@ static void _eon_element_switch_init(Eon_Widget *w)
 			_eon_element_switch_click_cb,
 			EINA_FALSE, thiz);
 	/* private */
+	thiz->first_run = EINA_TRUE;
 	thiz->theme_feature = eon_feature_themable_add(n);
 	eon_feature_themable_event_propagate(thiz->theme_feature,
 			EON_NAME_EVENT_ACTIVATE);
@@ -235,6 +244,15 @@ static Eina_Bool _eon_element_switch_process(Eon_Renderable *r)
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
+	/* Trigger the initial attribute signal in case we haven't done it yet */
+	if (thiz->first_run)
+	{
+		int activated;
+
+		egueb_dom_attr_final_get(thiz->activated, &activated);
+		_eon_element_switch_dispatch(thiz, activated);
+		thiz->first_run = EINA_FALSE;
+	}
 	egueb_dom_node_unref(theme_element);
 
 	return EINA_TRUE;

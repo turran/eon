@@ -24,6 +24,7 @@ typedef struct _Eon_Theme_Mars_Button
 {
 	Egueb_Dom_Node *n;
 	/* attributes */
+	Egueb_Dom_Node *border_color;
 	Egueb_Dom_Node *color;
 	/* private */
 	Enesim_Renderer *inner_button;
@@ -65,24 +66,27 @@ static Eina_Bool _eon_theme_mars_button_process(void *data)
 	Eina_Bool enabled;
 	Enesim_Argb argb;
 	Enesim_Color color;
+	Enesim_Color border_color;
 
 	thiz = data;
 	/* get the final attributes */
 	egueb_dom_attr_final_get(thiz->color, &argb);
 	color = enesim_color_argb_from(argb);
+	egueb_dom_attr_final_get(thiz->border_color, &argb);
+	border_color = enesim_color_argb_from(argb);
 	/* get the inherited members */
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
 	/* set the rectangle area */
-	enesim_renderer_rectangle_position_set(thiz->inner_button, geom.x + 10, geom.y + 10);
-	enesim_renderer_rectangle_size_set(thiz->inner_button, geom.w - 20, geom.h - 20);
+	enesim_renderer_rectangle_position_set(thiz->inner_button, geom.x + 6, geom.y + 6);
+	enesim_renderer_rectangle_size_set(thiz->inner_button, geom.w - 12, geom.h - 12);
 	enesim_renderer_shape_fill_color_set(thiz->inner_button, color);
 
 	enesim_renderer_rectangle_position_set(thiz->button, geom.x, geom.y);
 	enesim_renderer_rectangle_size_set(thiz->button, geom.w, geom.h);
 	/* set the border color */
-	enesim_renderer_shape_stroke_color_set(thiz->button, color);
-	enesim_renderer_shape_stroke_weight_set(thiz->button, 3);
+	enesim_renderer_shape_stroke_color_set(thiz->button, border_color);
+	enesim_renderer_shape_stroke_weight_set(thiz->button, 2);
 	/* apply the blur value */
 	if (!enabled)
 	{
@@ -155,6 +159,7 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 {
 	Eon_Theme_Mars_Button *thiz;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_String *s;
 	Enesim_Renderer_Compound_Layer *l;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Button));
@@ -186,7 +191,11 @@ Egueb_Dom_Node * eon_theme_mars_button_new(void)
 	thiz->color = egueb_css_attr_color_new(
 			egueb_dom_string_ref(EON_NAME_COLOR), NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
+	s = egueb_dom_string_new_with_static_string("border-color");
+	thiz->border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->color), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->border_color), NULL);
 	thiz->n = n;
 
 	return n;

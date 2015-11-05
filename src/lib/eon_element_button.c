@@ -34,6 +34,8 @@
 typedef struct _Eon_Element_Button
 {
 	Eon_Widget base;
+	/* attributes */
+	/* private */
 	Egueb_Dom_Feature *theme_feature;
 } Eon_Element_Button;
 
@@ -94,15 +96,14 @@ static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 
 	ret = eon_layout_frame_size_hints_get(n, size);
 
-	/* finally add our padding */
 	thiz = EON_ELEMENT_BUTTON(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	eon_theme_element_button_padding_get(theme_element, &padding);
 	/* a button can be of any size */
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	if (size->min_width > 0)
+	if (size->min_width >= 0)
 		size->min_width += padding.left + padding.right;
-	if (size->min_height > 0)
+	if (size->min_height >= 0)
 		size->min_height += padding.top + padding.bottom;
 	size->max_width = -1;
 	size->max_height = -1;
@@ -143,13 +144,14 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	}
 
 	/* Set the geometry on the child */
-	eon_theme_element_button_padding_get(theme_element, &padding);
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 	/* Set the enabled */
 	w = EON_WIDGET(r);
 	egueb_dom_attr_final_get(w->enabled, &enabled);
 	eon_theme_widget_enabled_set(theme_element, enabled);
 
+	/* finally add our padding */
+	eon_theme_element_button_padding_get(theme_element, &padding);
 	free_space.x += padding.left;
 	free_space.y += padding.top;
 	free_space.w -= padding.left + padding.right;
@@ -244,6 +246,9 @@ static void _eon_element_button_instance_deinit(void *o)
 	Eon_Element_Button *thiz;
 
 	thiz = EON_ELEMENT_BUTTON(o);
+	/* attributes */
+	/* private */
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *
