@@ -7,6 +7,9 @@
     <stockButton id="stockButton01" stock="ok" hexpand="true"/>
     <stockButton id="stockButton02" stock="cancel"/>
     <stockButton id="stockButton02" stock="help"/>
+    <toggleButton id="toggleButton01" activated="true">
+      <label>A toggle button</label>
+    </toggleButton>
   </stack>
 </eon>
 
