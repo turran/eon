@@ -85,6 +85,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_LABEL_STOCK = egueb_dom_string_new_with_static_string("stockLabel");
 	EON_ELEMENT_STACK = egueb_dom_string_new_with_static_string("stack");
 	EON_NAME_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
+	EON_NAME_ELEMENT_RADIO = egueb_dom_string_new_with_static_string("radio");
 	EON_NAME_ELEMENT_CHECKBOX = egueb_dom_string_new_with_static_string("checkbox");
 	EON_NAME_ELEMENT_SWITCH = egueb_dom_string_new_with_static_string("switch");
 	/* generic */
@@ -131,6 +132,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_LABEL_STOCK);
 	egueb_dom_string_unref(EON_ELEMENT_STACK);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_OBJECT);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_RADIO);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_CHECKBOX);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_SWITCH);
 	/* generic */
@@ -179,6 +181,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_LABEL;
 Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 Egueb_Dom_String *EON_ELEMENT_STACK;
 Egueb_Dom_String *EON_NAME_ELEMENT_OBJECT;
+Egueb_Dom_String *EON_NAME_ELEMENT_RADIO;
 Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
 Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 /* generic */

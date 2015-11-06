@@ -27,6 +27,7 @@
 #include "eon_element_label_stock.h"
 #include "eon_element_stack.h"
 #include "eon_element_object.h"
+#include "eon_element_radio.h"
 #include "eon_element_checkbox.h"
 #include "eon_element_switch.h"
 
@@ -68,6 +69,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_switch_new();
 	else if (!strcmp(name, "toggleButton"))
 		ret = eon_element_button_toggle_new();
+	else if (!strcmp(name, "radio"))
+		ret = eon_element_radio_new();
 	return ret;
 }
 

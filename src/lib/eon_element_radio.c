@@ -19,8 +19,8 @@
 #include "eon_main.h"
 #include "eon_element_radio.h"
 
-#include "eon_widget_drawer_private.h"
-#include "eon_drawer_radio_private.h"
+#include "eon_feature_themable_private.h"
+#include "eon_widget_private.h"
 #include "eon_layout_frame_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -31,18 +31,17 @@
 
 typedef struct _Eon_Element_Radio
 {
-	Eon_Widget_Drawer base;
+	Eon_Widget base;
+	Egueb_Dom_Feature *theme_feature;
 } Eon_Element_Radio;
 
 typedef struct _Eon_Element_Radio_Class
 {
-	Eon_Widget_Drawer_Class base;
+	Eon_Widget_Class base;
 } Eon_Element_Radio_Class;
 
-/*----------------------------------------------------------------------------*
- *                        Widget Drawer interface                             *
- *----------------------------------------------------------------------------*/
-static int _eon_element_radio_size_hints_get(Eon_Widget_Drawer *w,
+#if 0
+static int _eon_element_radio_size_hints_get(Eon_Widget *w,
 		Eon_Renderable_Size *size)
 {
 	Eon_Box padding;
@@ -75,7 +74,7 @@ static int _eon_element_radio_size_hints_get(Eon_Widget_Drawer *w,
 	return ret;
 }
 
-static Eina_Bool _eon_element_radio_process(Eon_Widget_Drawer *w)
+static Eina_Bool _eon_element_radio_process(Eon_Widget *w)
 {
 	Eon_Element_Radio *thiz;
 	Eon_Box padding;
@@ -114,9 +113,27 @@ static Eina_Bool _eon_element_radio_process(Eon_Widget_Drawer *w)
 	
 	return EINA_TRUE;
 }
+#endif
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
+static void _eon_element_radio_init(Eon_Widget *w)
+{
+	Eon_Element_Radio *thiz;
+	Eon_Element *e;
+	Egueb_Dom_Node *n;
+
+	thiz = EON_ELEMENT_RADIO(w);
+
+	/* attributes */
+	n = (EON_ELEMENT(w))->n;
+	/* events */
+	/* private */
+	thiz->theme_feature = eon_feature_themable_add(n);
+	e = EON_ELEMENT(w);
+	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
+			egueb_dom_string_ref(EON_NAME_ELEMENT_RADIO));
+}
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -125,7 +142,7 @@ static Eina_Bool _eon_element_radio_process(Eon_Widget_Drawer *w)
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_radio_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_RADIO);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_RADIO);
 }
 
 static Eina_Bool _eon_element_radio_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)
@@ -151,14 +168,14 @@ static Eina_Bool _eon_element_radio_child_appendable(Eon_Element *e, Egueb_Dom_N
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DRAWER_DESCRIPTOR, Eon_Element_Radio,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Radio,
 		Eon_Element_Radio_Class, eon_element_radio);
 
 static void _eon_element_radio_class_init(void *k)
 {
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
-	Eon_Widget_Drawer_Class *w_klass;
+	Eon_Widget_Class *w_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_radio_tag_name_get;
@@ -166,9 +183,12 @@ static void _eon_element_radio_class_init(void *k)
 
 	r_klass = EON_RENDERABLE_CLASS(k);
 
-	w_klass = EON_WIDGET_DRAWER_CLASS(k);
+	w_klass = EON_WIDGET_CLASS(k);
+	w_klass->init = _eon_element_radio_init;
+#if 0
 	w_klass->size_hints_get = _eon_element_radio_size_hints_get;
 	w_klass->process = _eon_element_radio_process;
+#endif
 }
 
 static void _eon_element_radio_instance_init(void *o)
@@ -180,6 +200,9 @@ static void _eon_element_radio_instance_deinit(void *o)
 	Eon_Element_Radio *thiz;
 
 	thiz = EON_ELEMENT_RADIO(o);
+	/* attributes */
+	/* private */
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *

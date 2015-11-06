@@ -68,6 +68,7 @@ extern "C" {
 #include "eon_element_button_toggle.h"
 #include "eon_element_label.h"
 #include "eon_element_object.h"
+#include "eon_element_radio.h"
 #include "eon_element_stack.h"
 #include "eon_element_switch.h"
 #include "eon_renderable.h"

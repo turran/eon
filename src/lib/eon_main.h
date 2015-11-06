@@ -87,6 +87,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_LABEL;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_LABEL_STOCK;
 EAPI extern Egueb_Dom_String *EON_ELEMENT_STACK;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_OBJECT;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_RADIO;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 
