@@ -22,5 +22,6 @@
 Egueb_Dom_Node * eon_theme_mars_eon_new(void);
 Egueb_Dom_Node * eon_theme_mars_button_new(void);
 Egueb_Dom_Node * eon_theme_mars_switch_new(void);
+Egueb_Dom_Node * eon_theme_mars_radio_new(void);
 
 #endif

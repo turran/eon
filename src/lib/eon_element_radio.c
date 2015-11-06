@@ -21,6 +21,8 @@
 
 #include "eon_feature_themable_private.h"
 #include "eon_widget_private.h"
+#include "eon_theme_renderable_private.h"
+#include "eon_theme_element_button_private.h"
 #include "eon_layout_frame_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -32,6 +34,7 @@
 typedef struct _Eon_Element_Radio
 {
 	Eon_Widget base;
+	Egueb_Dom_Node *group;
 	Egueb_Dom_Feature *theme_feature;
 } Eon_Element_Radio;
 
@@ -40,80 +43,6 @@ typedef struct _Eon_Element_Radio_Class
 	Eon_Widget_Class base;
 } Eon_Element_Radio_Class;
 
-#if 0
-static int _eon_element_radio_size_hints_get(Eon_Widget *w,
-		Eon_Renderable_Size *size)
-{
-	Eon_Box padding;
-	Egueb_Dom_Node *n;
-	int ret;
-
-	n = (EON_ELEMENT(w))->n;
-
-	ret = eon_layout_frame_size_hints_get(n, size);
-
-	/* finally add our padding */
-	eon_drawer_radio_padding_get(w->theme_widget, &padding);
-	/* a radio can be of any size */
-	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	if (size->min_width > 0)
-		size->min_width += padding.left + padding.right;
-	if (size->min_height > 0)
-		size->min_height += padding.top + padding.bottom;
-	size->max_width = -1;
-	size->max_height = -1;
-
-	if (ret & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		if (size->pref_width > 0)
-			size->pref_width += padding.left + padding.right;
-		if (size->pref_height > 0)
-			size->pref_height += padding.top + padding.bottom;
-	}
-
-	return ret;
-}
-
-static Eina_Bool _eon_element_radio_process(Eon_Widget *w)
-{
-	Eon_Element_Radio *thiz;
-	Eon_Box padding;
-	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *child;
-	Enesim_Renderer *r;
-	Eina_Rectangle geometry;
-	Eina_Rectangle free_space;
-
-	n = (EON_ELEMENT(w))->n;
-	child = egueb_dom_element_child_first_get(n);
-	if (!child)
-	{
-		eon_drawer_radio_content_set(w->theme_widget, NULL);
-		return EINA_TRUE;
-	}
-
-	thiz = EON_ELEMENT_RADIO(w);
-	/* Set the geometry on the child */
-	eon_drawer_radio_padding_get(w->theme_widget, &padding);
-	free_space = (EON_RENDERABLE(w))->geometry;
-	free_space.x += padding.left;
-	free_space.y += padding.top;
-	free_space.w -= padding.left + padding.right;
-	free_space.h -= padding.bottom + padding.top;
-
-	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
-
-	/* Set the content renderer */
-	r = eon_renderable_renderer_get(child);
-	eon_drawer_radio_content_set(w->theme_widget, r);
-	egueb_dom_node_unref(child);
-
-	/* Our basic frame layout algorithm */
-	eon_layout_frame_size_geometry_set(n, &free_space);
-	
-	return EINA_TRUE;
-}
-#endif
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -137,6 +66,131 @@ static void _eon_element_radio_init(Eon_Widget *w)
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
+static Enesim_Renderer * _eon_element_radio_renderer_get(Eon_Renderable *r)
+{
+	Eon_Element_Radio *thiz;
+	Egueb_Dom_Node *theme_element;
+	Enesim_Renderer *ren;
+
+	thiz = EON_ELEMENT_RADIO(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return NULL;
+	}
+	ren = eon_theme_renderable_renderer_get(theme_element);
+	egueb_dom_node_unref(theme_element);
+	return ren;
+}
+
+static int _eon_element_radio_size_hints_get(Eon_Renderable *r,
+		Eon_Renderable_Size *size)
+{
+	Eon_Element_Radio *thiz;
+	Eon_Box padding;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *theme_element;
+	int ret;
+
+	/* get the hints of the content */
+	n = (EON_ELEMENT(r))->n;
+	ret = eon_layout_frame_size_hints_get(n, size);
+
+	/* get the padding of the theme */
+	thiz = EON_ELEMENT_RADIO(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return 0;
+	}
+	eon_theme_element_button_padding_get(theme_element, &padding);
+
+	/* a radio can be of any size */
+	ret |= EON_RENDERABLE_HINT_MIN_MAX;
+	if (size->min_width > 0)
+		size->min_width += padding.left + padding.right;
+	if (size->min_height > 0)
+		size->min_height += padding.top + padding.bottom;
+	size->max_width = -1;
+	size->max_height = -1;
+
+	if (ret & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		if (size->pref_width > 0)
+			size->pref_width += padding.left + padding.right;
+		if (size->pref_height > 0)
+			size->pref_height += padding.top + padding.bottom;
+	}
+
+	return ret;
+}
+
+static Eina_Bool _eon_element_radio_process(Eon_Renderable *r)
+{
+	Eon_Element_Radio *thiz;
+	Eon_Widget *w;
+	Eon_Box padding = { 0, 0, 0, 0 };
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *child;
+	Egueb_Dom_Node *theme_element;
+	Eina_Rectangle geometry;
+	Eina_Rectangle free_space;
+	int enabled;
+
+	n = (EON_ELEMENT(r))->n;
+	thiz = EON_ELEMENT_RADIO(r);
+
+	free_space = r->geometry;
+
+	/* get the theme */
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		goto done;
+	}
+
+	/* Set the geometry on the child */
+	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+	/* Set the enabled */
+	w = EON_WIDGET(r);
+	egueb_dom_attr_final_get(w->enabled, &enabled);
+	eon_theme_widget_enabled_set(theme_element, enabled);
+
+	/* finally add our padding */
+	eon_theme_element_button_padding_get(theme_element, &padding);
+	free_space.x += padding.left;
+	free_space.y += padding.top;
+	free_space.w -= padding.left + padding.right;
+	free_space.h -= padding.bottom + padding.top;
+
+	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
+	/* Set the content renderer */
+	child = egueb_dom_element_child_first_get(n);
+	if (child)
+	{
+		Enesim_Renderer *ren;
+
+		ren = eon_renderable_renderer_get(child);
+		eon_theme_element_button_content_set(theme_element, ren);
+		egueb_dom_node_unref(child);
+	}
+	else
+	{
+		eon_theme_element_button_content_set(theme_element, NULL);
+	}
+
+	/* Finally process our theme */
+	egueb_dom_element_process(theme_element);
+	egueb_dom_node_unref(theme_element);
+
+done:
+	/* Our basic frame layout algorithm */
+	eon_layout_frame_size_geometry_set(n, &free_space);
+	
+	return EINA_TRUE;
+}
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -182,13 +236,12 @@ static void _eon_element_radio_class_init(void *k)
 	klass->child_appendable = _eon_element_radio_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->renderer_get = _eon_element_radio_renderer_get;
+	r_klass->size_hints_get = _eon_element_radio_size_hints_get;
+	r_klass->process = _eon_element_radio_process;
 
 	w_klass = EON_WIDGET_CLASS(k);
 	w_klass->init = _eon_element_radio_init;
-#if 0
-	w_klass->size_hints_get = _eon_element_radio_size_hints_get;
-	w_klass->process = _eon_element_radio_process;
-#endif
 }
 
 static void _eon_element_radio_instance_init(void *o)

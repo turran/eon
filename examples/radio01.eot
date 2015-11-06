@@ -1,14 +1,20 @@
 <?xml version="1.0" standalone="no"?>
 <eon>
-  <stack direction="vertical">
-    <radio id="radio01">
+  <stack orientation="vertical" vexpand="true">
+    <radio id="radio01" group="rg01">
       <label>Option 1</label>
     </radio>
-    <radio id="radio02">
+    <radio id="radio02" activated="false" enabled="false" group="rg01">
       <label>Option 2</label>
     </radio>
-    <radio id="radio03">
+    <radio id="radio03" group="rg01">
       <label>Option 3</label>
+    </radio>
+    <radio id="radio04" group="rg02">
+      <label>Option 4</label>
+    </radio>
+    <radio id="radio05" group="rg02">
+      <label>Option 5</label>
     </radio>
   </stack>
 </eon>
