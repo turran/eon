@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <stack direction="vertical">
+    <radio id="radio01">
+      <label>Option 1</label>
+    </radio>
+    <radio id="radio02">
+      <label>Option 2</label>
+    </radio>
+    <radio id="radio03">
+      <label>Option 3</label>
+    </radio>
+  </stack>
+</eon>
+

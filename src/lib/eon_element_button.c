@@ -92,13 +92,20 @@ static int _eon_element_button_size_hints_get(Eon_Renderable *r,
 	Egueb_Dom_Node *theme_element;
 	int ret;
 
+	/* get the hints of the content */
 	n = (EON_ELEMENT(r))->n;
-
 	ret = eon_layout_frame_size_hints_get(n, size);
 
+	/* get the padding of the theme */
 	thiz = EON_ELEMENT_BUTTON(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return 0;
+	}
 	eon_theme_element_button_padding_get(theme_element, &padding);
+
 	/* a button can be of any size */
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
 	if (size->min_width >= 0)
