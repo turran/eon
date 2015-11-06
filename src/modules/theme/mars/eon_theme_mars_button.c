@@ -46,9 +46,13 @@ static void _eon_theme_mars_button_dtor(void *data)
 {
 	Eon_Theme_Mars_Button *thiz = data;
 
+	/* attributes */
+	egueb_dom_node_unref(thiz->border_color);
 	egueb_dom_node_unref(thiz->color);
+	/* private */
 	enesim_renderer_unref(thiz->inner_button);
 	enesim_renderer_unref(thiz->button);
+	enesim_renderer_unref(thiz->button_content);
 	enesim_renderer_unref(thiz->blur);
 	enesim_renderer_unref(thiz->proxy);
 	free(thiz);
