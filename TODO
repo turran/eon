@@ -1,15 +1,13 @@
++ Add a scale attribute to should be inherited to be able to adapt to other DPIs
++ Add a font-face element/css rule
 + Change the ns attribute on the theme
 + Refactor the theme files to be simple, no need to use the external interface directly
-+ Make the theme be the theme files only
-+ Move the register part of the theme to the drawer
 + We need to create some common code for widgets that are in fact compound widgets, like the color_button for example.
   Basically we need to create some kind of wrapper of the theme ender element which will just add the same properties
   the theme of the widgets that are used by the new widget has, or at least what it exposes. this way the theme editor
   will automatically have the new properties and wont need to create a new theme for it. On the widget case, we also need
   a way to handle such stuff automatically? or just let it do manually?
-+ Add parent, sibling, etc information on every eon element, we need that for focus handling
 + List of widgets we should have:
-  button (DONE)
   radio (DONE)
   checkbox (DONE)
   frame (DONE)
