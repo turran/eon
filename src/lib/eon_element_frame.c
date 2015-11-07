@@ -189,6 +189,20 @@ static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
 		if (minh > size->min_height)
 			size->min_height = minh;
 	}
+	else
+	{
+		ret |= EON_RENDERABLE_HINT_MIN_MAX;
+		size->min_width = minw;
+		size->min_height = minh;
+	}
+
+	if (ret & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		if (size->pref_width >= 0)
+			size->pref_width += padding.left + padding.right; 
+		if (size->pref_height >= 0)
+			size->pref_height += padding.top + padding.bottom;
+	}
 
 	return ret;
 }
