@@ -31,6 +31,7 @@ typedef struct _Eon_Theme_Element_Frame
 	Eon_Theme_Widget base;
 	/* attributes */
 	Egueb_Dom_Node *font;
+	Egueb_Dom_Node *color;
 	/* private */
 	const Eon_Theme_Element_Frame_Descriptor *d;
 	void *data;
@@ -62,6 +63,10 @@ static void _eon_theme_element_frame_init(Eon_Theme_Element *e)
 
 	/* attributes */
 	thiz->font = egueb_css_attr_font_new(NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	thiz->color = egueb_css_attr_color_new(
+			egueb_dom_string_ref(EON_NAME_COLOR), NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
+	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->color), NULL);
 	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->font), NULL);
 }
 
@@ -132,6 +137,7 @@ static void _eon_theme_element_frame_instance_deinit(void *o)
 		thiz->d->dtor(thiz->data);
 	/* attributes */
 	egueb_dom_node_unref(thiz->font);
+	egueb_dom_node_unref(thiz->color);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -151,6 +157,24 @@ void eon_theme_element_frame_title_set(Egueb_Dom_Node *n, Egueb_Dom_String *s)
 	thiz = EON_THEME_ELEMENT_FRAME(egueb_dom_element_external_data_get(n));
 	thiz->d->title_set(thiz->data, egueb_dom_string_string_get(s));
 	egueb_dom_string_unref(s);
+}
+
+void eon_theme_element_frame_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
+{
+	Eon_Theme_Element_Frame *thiz;
+
+	thiz = EON_THEME_ELEMENT_FRAME(egueb_dom_element_external_data_get(n));
+	if (thiz->d->padding_get)
+		thiz->d->padding_get(thiz->data, padding);
+}
+
+void eon_theme_element_frame_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
+{
+	Eon_Theme_Element_Frame *thiz;
+
+	thiz = EON_THEME_ELEMENT_FRAME(egueb_dom_element_external_data_get(n));
+	if (thiz->d->content_set)
+		thiz->d->content_set(thiz->data, r);
 }
 /*============================================================================*
  *                                   API                                      *

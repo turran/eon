@@ -1,15 +1,17 @@
 <?xml version="1.0" standalone="no"?>
 <eon>
-  <stack orientation="vertical" hexpand="true">
-    <button id="button01">
-      <label>My very own label</label>
-    </button>
-    <stockButton id="stockButton01" stock="ok" hexpand="true"/>
-    <stockButton id="stockButton02" stock="cancel"/>
-    <stockButton id="stockButton02" stock="help"/>
-    <toggleButton id="toggleButton01" activated="true">
-      <label>A toggle button</label>
-    </toggleButton>
-  </stack>
+  <frame title="Stack of buttons">
+    <stack orientation="vertical" hexpand="true">
+      <button id="button01">
+        <label>My very own label</label>
+      </button>
+      <stockButton id="stockButton01" stock="ok" hexpand="true"/>
+      <stockButton id="stockButton02" stock="cancel"/>
+      <stockButton id="stockButton02" stock="help"/>
+      <toggleButton id="toggleButton01" activated="true">
+        <label>A toggle button</label>
+      </toggleButton>
+    </stack>
+  </frame>
 </eon>
 

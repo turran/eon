@@ -96,6 +96,30 @@ static void _eon_element_frame_init(Eon_Widget *w)
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_FRAME));
 }
+
+static Egueb_Dom_Node * _eon_element_frame_element_at(Eon_Widget *w,
+		Eina_Rectangle *cursor)
+{
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *child;
+	Egueb_Dom_Node *found;
+
+	n = (EON_ELEMENT(w))->n;
+	/* if no childs, is just inside ourselves */	
+	child = egueb_dom_element_child_first_get(n);
+	if (!child)
+	{
+		return egueb_dom_node_ref(n);
+	}
+	/* is inside some child */
+	found = eon_renderable_element_at(child, cursor);
+	if (found)
+	{
+		return found;
+	}
+	return egueb_dom_node_ref(n);
+}
+
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -180,24 +204,73 @@ static Eina_Bool _eon_element_frame_process(Eon_Renderable *r)
 
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+
 	/* Set the enabled */
 	w = EON_WIDGET(r);
 	egueb_dom_attr_final_get(w->enabled, &enabled);
 	eon_theme_widget_enabled_set(theme_element, enabled);
 
+	/* finally add our padding */
+	eon_theme_element_frame_padding_get(theme_element, &padding);
+	free_space.x += padding.left;
+	free_space.y += padding.top;
+	free_space.w -= padding.left + padding.right;
+	free_space.h -= padding.bottom + padding.top;
+
+	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
+
+	/* Set the content renderer */
+	child = egueb_dom_element_child_first_get(n);
+	if (child)
+	{
+		Enesim_Renderer *ren;
+
+		ren = eon_renderable_renderer_get(child);
+		eon_theme_element_frame_content_set(theme_element, ren);
+		egueb_dom_node_unref(child);
+	}
+	else
+	{
+		eon_theme_element_frame_content_set(theme_element, NULL);
+	}
+
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
 	egueb_dom_node_unref(theme_element);
 
+done:
+	/* Our basic frame layout algorithm */
+	eon_layout_frame_size_geometry_set(n, &free_space);
+
 	return EINA_TRUE;
 }
-
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_frame_tag_name_get(Eon_Element *e)
 {
 	return egueb_dom_string_ref(EON_NAME_ELEMENT_FRAME);
+}
+
+static Eina_Bool _eon_element_frame_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)
+{
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *our_child;
+
+	/* only accept one child */
+	if (!eon_is_renderable(child))
+		return EINA_FALSE;
+
+	/* check if we already have one child */
+	n = e->n;
+	our_child = egueb_dom_element_child_first_get(n);
+	if (our_child)
+	{
+		WARN("Only one child supported");
+		egueb_dom_node_unref(our_child);
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
@@ -213,6 +286,7 @@ static void _eon_element_frame_class_init(void *k)
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_frame_tag_name_get;
+	klass->child_appendable = _eon_element_frame_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
 	r_klass->renderer_get = _eon_element_frame_renderer_get;
@@ -221,6 +295,7 @@ static void _eon_element_frame_class_init(void *k)
 
 	w_klass = EON_WIDGET_CLASS(k);
 	w_klass->init = _eon_element_frame_init;
+	w_klass->element_at = _eon_element_frame_element_at;
 }
 
 static void _eon_element_frame_instance_init(void *o)
