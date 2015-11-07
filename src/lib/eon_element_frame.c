@@ -207,7 +207,6 @@ static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
 static Eina_Bool _eon_element_frame_process(Eon_Renderable *r)
 {
 	Eon_Element_Frame *thiz;
-	Eon_Widget *w;
 	Eon_Box padding = { 0, 0, 0, 0 };
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
@@ -231,11 +230,6 @@ static Eina_Bool _eon_element_frame_process(Eon_Renderable *r)
 
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
-
-	/* Set the enabled */
-	w = EON_WIDGET(r);
-	egueb_dom_attr_final_get(w->enabled, &enabled);
-	eon_theme_widget_enabled_set(theme_element, enabled);
 
 	/* finally add our padding */
 	eon_theme_element_frame_padding_get(theme_element, &padding);
