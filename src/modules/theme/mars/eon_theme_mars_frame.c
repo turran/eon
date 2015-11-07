@@ -55,6 +55,7 @@ static Eina_Bool _eon_theme_mars_frame_process(void *data)
 {
 	Eon_Theme_Mars_Frame *thiz;
 	Eina_Rectangle geom;
+	Eina_Rectangle txt_geom;
 	Enesim_Rectangle bounds;
 	Enesim_Argb argb;
 	Enesim_Color border_color;
@@ -68,21 +69,32 @@ static Eina_Bool _eon_theme_mars_frame_process(void *data)
 
 	/* setup the whole rectangle */
 	enesim_renderer_shape_stroke_color_set(thiz->rectangle, border_color);
-	enesim_renderer_rectangle_position_set(thiz->rectangle, geom.x, geom.y);
-	enesim_renderer_rectangle_size_set(thiz->rectangle, geom.w, geom.h);
 
 	/* setup the text */
-	enesim_renderer_origin_set(thiz->txt, geom.x, geom.y);
+	/* FIXME this depends on the position of the title */
+	enesim_renderer_origin_set(thiz->txt,
+			geom.x + EON_THEME_MARS_MARGIN + EON_THEME_MARS_MARGIN,
+			geom.y + EON_THEME_MARS_MARGIN);
 
 	/* setup the text background */
-	if (enesim_renderer_destination_bounds_get(thiz->txt, &geom, 0, 0, NULL))
+	if (enesim_renderer_destination_bounds_get(thiz->txt, &txt_geom, 0, 0, NULL))
 	{
-		enesim_renderer_rectangle_position_set(thiz->txt_bkg, geom.x - 5, geom.y - 5);
-		enesim_renderer_rectangle_size_set(thiz->txt_bkg, geom.w + 10, geom.h + 10);
+		/* FIXME this depends on the position of the title */
+		enesim_renderer_rectangle_position_set(thiz->txt_bkg,
+				geom.x + EON_THEME_MARS_MARGIN, geom.y);
+		enesim_renderer_rectangle_size_set(thiz->txt_bkg,
+				txt_geom.w + EON_THEME_MARS_MARGIN + EON_THEME_MARS_MARGIN,
+				txt_geom.h + EON_THEME_MARS_MARGIN + EON_THEME_MARS_MARGIN);
+		enesim_renderer_rectangle_position_set(thiz->rectangle,
+				geom.x, geom.y + (txt_geom.h / 2) + EON_THEME_MARS_MARGIN);
+		enesim_renderer_rectangle_size_set(thiz->rectangle, geom.w,
+				geom.h - ((txt_geom.h / 2) + EON_THEME_MARS_MARGIN));
 	}
 	else
 	{
 		enesim_renderer_rectangle_size_set(thiz->txt_bkg, 0, 0);
+		enesim_renderer_rectangle_position_set(thiz->rectangle,
+				geom.x, geom.y);
 	}
 
 	return EINA_TRUE;
@@ -96,10 +108,18 @@ static Enesim_Renderer * _eon_theme_mars_frame_renderer_get(void *data)
 
 static void _eon_theme_mars_frame_padding_get(void *data, Eon_Box *padding)
 {
-	padding->top = 15;
-	padding->bottom = 15;
-	padding->left = 15;
-	padding->right = 15;
+	Eon_Theme_Mars_Frame *thiz = data;
+	Eina_Rectangle bounds;
+
+	padding->top = EON_THEME_MARS_MARGIN;
+	padding->bottom = EON_THEME_MARS_MARGIN;
+	padding->left = EON_THEME_MARS_MARGIN;
+	padding->right = EON_THEME_MARS_MARGIN;
+	if (enesim_renderer_destination_bounds_get(thiz->txt, &bounds, 0, 0, NULL))
+	{
+		/* FIXME this depends on the position of the title */
+		padding->top += bounds.h + EON_THEME_MARS_MARGIN;
+	}
 }
 
 static void _eon_theme_mars_frame_content_set(void *data, Enesim_Renderer *r)
@@ -147,8 +167,8 @@ static void _eon_theme_mars_frame_min_size_get(void *data, int *minw, int *minh)
 	}
 done:
 	/* add the text padding */
-	w += 20;
-	h += 10;
+	w += EON_THEME_MARS_MARGIN * 4;
+	h += EON_THEME_MARS_MARGIN * 2;
 
 	*minw = w;
 	*minh = h;
@@ -183,7 +203,7 @@ Egueb_Dom_Node * eon_theme_mars_frame_new(void)
 	thiz->txt_bkg = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->txt_bkg,
 			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_shape_fill_color_set(thiz->txt_bkg, 0xff000000);
+	enesim_renderer_shape_fill_color_set(thiz->txt_bkg, 0x00000000);
 
 	thiz->rectangle = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->rectangle,
