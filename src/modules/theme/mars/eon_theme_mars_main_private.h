@@ -19,6 +19,11 @@
 #ifndef _EON_THEME_MARS_MAIN_PRIVATE_H_
 #define _EON_THEME_MARS_MAIN_PRIVATE_H_
 
+/* Some helpful defines */
+#define EON_THEME_MARS_MARGIN 5
+#define EON_THEME_MARS_BORDER 2
+
+/* The constructors for the registration */
 Egueb_Dom_Node * eon_theme_mars_eon_new(void);
 Egueb_Dom_Node * eon_theme_mars_button_new(void);
 Egueb_Dom_Node * eon_theme_mars_switch_new(void);
