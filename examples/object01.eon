@@ -1,8 +1,10 @@
 <?xml version="1.0" standalone="no"?>
 <eon>
-  <stack orientation="vertical">
-    <label>A SVG file!!!</label>
-    <object xlink:href="http://www.w3.org/TR/2003/REC-SVG11-20030114/images/shapes/rect02.svg"/>
-    <label>Is on the middle</label>
-  </stack>
+  <frame title="SVG example">
+    <stack orientation="vertical">
+      <label>A SVG file!!!</label>
+      <object xlink:href="http://www.w3.org/TR/2003/REC-SVG11-20030114/images/shapes/rect02.svg"/>
+      <label>Is on the middle</label>
+    </stack>
+  </frame>
 </eon>
