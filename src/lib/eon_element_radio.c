@@ -24,6 +24,8 @@
 #include "eon_theme_renderable_private.h"
 #include "eon_theme_element_button_private.h"
 #include "eon_layout_frame_private.h"
+#include "eon_event_activate_private.h"
+#include "eon_event_deactivate_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -34,8 +36,12 @@
 typedef struct _Eon_Element_Radio
 {
 	Eon_Widget base;
+	/* attributes */
 	Egueb_Dom_Node *group;
+	Egueb_Dom_Node *activated;
+	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Eina_Bool first_run;
 } Eon_Element_Radio;
 
 typedef struct _Eon_Element_Radio_Class
@@ -43,6 +49,44 @@ typedef struct _Eon_Element_Radio_Class
 	Eon_Widget_Class base;
 } Eon_Element_Radio_Class;
 
+/* TODO handle the deletion of the hash */
+/* Used to keep track of every group */
+static Eina_Hash *_groups = NULL;
+
+static void _eon_element_radio_dispatch(
+		Eon_Element_Radio *thiz, Eina_Bool activated)
+{
+	Egueb_Dom_Event_Target *et;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Event *ev;
+
+	n = (EON_ELEMENT(thiz))->n;
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	if (activated)
+	{
+		ev = eon_event_activate_new();
+	}
+	else
+	{
+		ev = eon_event_deactivate_new();
+	}
+	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
+}
+
+static void _eon_element_radio_click_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Radio *thiz = data;
+	int activated = 0;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* first set the new value */
+	egueb_dom_attr_final_get(thiz->activated, &activated);
+	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_BASE, !activated);
+	/* trigger the events */
+	_eon_element_radio_dispatch(thiz, !activated);
+}
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -50,15 +94,36 @@ static void _eon_element_radio_init(Eon_Widget *w)
 {
 	Eon_Element_Radio *thiz;
 	Eon_Element *e;
+	Egueb_Dom_Event_Target *et;
 	Egueb_Dom_Node *n;
 
 	thiz = EON_ELEMENT_RADIO(w);
 
 	/* attributes */
+	thiz->group = egueb_dom_attr_string_new(
+			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVE), NULL,
+			egueb_dom_string_ref(EON_NAME_ON),
+			EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	thiz->activated = egueb_dom_attr_boolean_new(
+			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVATED),
+			EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
 	n = (EON_ELEMENT(w))->n;
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->group), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->activated), NULL);
 	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_eon_element_radio_click_cb,
+			EINA_FALSE, thiz);
 	/* private */
+	thiz->first_run = EINA_TRUE;
 	thiz->theme_feature = eon_feature_themable_add(n);
+	eon_feature_themable_event_propagate(thiz->theme_feature,
+			EON_NAME_EVENT_ACTIVATE);
+	eon_feature_themable_event_propagate(thiz->theme_feature,
+			EON_NAME_EVENT_DEACTIVATE);
 	e = EON_ELEMENT(w);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_RADIO));
@@ -183,6 +248,15 @@ static Eina_Bool _eon_element_radio_process(Eon_Renderable *r)
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
+	/* Trigger the initial attribute signal in case we haven't done it yet */
+	if (thiz->first_run)
+	{
+		int activated;
+
+		egueb_dom_attr_final_get(thiz->activated, &activated);
+		_eon_element_radio_dispatch(thiz, activated);
+		thiz->first_run = EINA_FALSE;
+	}
 	egueb_dom_node_unref(theme_element);
 
 done:
@@ -254,6 +328,8 @@ static void _eon_element_radio_instance_deinit(void *o)
 
 	thiz = EON_ELEMENT_RADIO(o);
 	/* attributes */
+	egueb_dom_node_unref(thiz->group);
+	egueb_dom_node_unref(thiz->activated);
 	/* private */
 	egueb_dom_feature_unref(thiz->theme_feature);
 }

@@ -33,5 +33,8 @@
     <set attributeName="color" to="#ff0f3b65" begin="activate" dur="1s" end="mousedown"/>
     <set attributeName="color" to="#ff081e33" begin="deactivate" dur="1s" end="mousedown"/>
   </mars:button>
-  <mars:radio id="radio" border-color="#ff0f3b65" button-color="#ff0f3b65"/>
+  <mars:radio id="radio" border-color="#ff0f3b65" button-color="#ff0f3b65">
+    <set attributeName="button-color" to="#ff0f3b65" begin="activate" dur="1s" end="mousedown"/>
+    <set attributeName="button-color" to="#00000000" begin="deactivate" dur="1s" end="mousedown"/>
+  </mars:radio>
 </eot>

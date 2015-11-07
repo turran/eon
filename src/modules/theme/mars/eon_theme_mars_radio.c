@@ -27,6 +27,7 @@ typedef struct _Eon_Theme_Mars_Radio
 	Egueb_Dom_Node *border_color;
 	Egueb_Dom_Node *button_color;
 	/* private */
+	Enesim_Renderer *area;
 	Enesim_Renderer *border;
 	Enesim_Renderer *button;
 	Enesim_Renderer *radio;
@@ -50,6 +51,7 @@ static void _eon_theme_mars_radio_dtor(void *data)
 	egueb_dom_node_unref(thiz->border_color);
 	egueb_dom_node_unref(thiz->button_color);
 	/* private */
+	enesim_renderer_unref(thiz->area);
 	enesim_renderer_unref(thiz->border);
 	enesim_renderer_unref(thiz->button);
 	enesim_renderer_unref(thiz->radio);
@@ -82,8 +84,12 @@ static Eina_Bool _eon_theme_mars_radio_process(void *data)
 	/* get the inherited members */
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
-	cx = geom.x + 10;
+	/* rad + padding */
+	cx = geom.x + 12;
 	cy = geom.y + (geom.h / 2);
+	/* set the area */
+	enesim_renderer_rectangle_position_set(thiz->area, geom.x, geom.y);
+	enesim_renderer_rectangle_size_set(thiz->area, geom.w, geom.h);
 	/* set the border */
 	enesim_renderer_shape_stroke_color_set(thiz->border, border_color);
 	enesim_renderer_circle_center_set(thiz->border, cx, cy);
@@ -94,7 +100,7 @@ static Eina_Bool _eon_theme_mars_radio_process(void *data)
 	if (!enabled)
 	{
 		enesim_renderer_blur_source_renderer_set(thiz->blur,
-				enesim_renderer_ref(thiz->radio));
+				enesim_renderer_ref(thiz->area));
 		enesim_renderer_proxy_proxied_set(thiz->proxy,
 				enesim_renderer_ref(thiz->blur));
 	}
@@ -102,19 +108,20 @@ static Eina_Bool _eon_theme_mars_radio_process(void *data)
 	{
 		enesim_renderer_blur_source_renderer_set(thiz->blur, NULL);
 		enesim_renderer_proxy_proxied_set(thiz->proxy,
-				enesim_renderer_ref(thiz->radio));
+				enesim_renderer_ref(thiz->area));
 	}
-	enesim_renderer_origin_set(thiz->blur, geom.x, geom.y);
+	enesim_renderer_origin_set(thiz->blur, geom.x + 1, geom.y);
 
 	return EINA_TRUE;
 }
 
 static void _eon_theme_mars_radio_padding_get(void *data, Eon_Box *padding)
 {
-	padding->top = 15;
-	padding->bottom = 15;
-	padding->left = 35;
-	padding->right = 15;
+	padding->top = 5;
+	padding->bottom = 5;
+	/* rad + padding + rad + padding */
+	padding->left = 24;
+	padding->right = 5;
 }
 
 static void _eon_theme_mars_radio_content_set(void *data, Enesim_Renderer *r)
@@ -168,21 +175,26 @@ Egueb_Dom_Node * eon_theme_mars_radio_new(void)
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Radio));
 	/* the radio button */
 	thiz->button = enesim_renderer_circle_new();
-	enesim_renderer_circle_radius_set(thiz->button, 5);
+	enesim_renderer_circle_radius_set(thiz->button, 3);
 	enesim_renderer_shape_draw_mode_set(thiz->button, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
 
 	thiz->border = enesim_renderer_circle_new();
-	enesim_renderer_circle_radius_set(thiz->border, 9);
+	enesim_renderer_circle_radius_set(thiz->border, 7);
 	enesim_renderer_shape_stroke_weight_set(thiz->border, 2);
 	enesim_renderer_shape_draw_mode_set(thiz->border, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_fill_renderer_set(thiz->border, enesim_renderer_ref(thiz->button));
 
-	/* the whole widget */
+	/* the button and the content */
 	thiz->radio = enesim_renderer_compound_new();
 	l = enesim_renderer_compound_layer_new();
 	enesim_renderer_compound_layer_renderer_set(l, enesim_renderer_ref(thiz->border));
 	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
 	enesim_renderer_compound_layer_add(thiz->radio, l);
+
+	/* the widget area */
+	thiz->area = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_draw_mode_set(thiz->area, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_shape_fill_renderer_set(thiz->area, enesim_renderer_ref(thiz->radio));
 
 	/* the blur effect for disabled buttons */
 	thiz->blur = enesim_renderer_blur_new();
@@ -190,7 +202,7 @@ Egueb_Dom_Node * eon_theme_mars_radio_new(void)
 	enesim_renderer_blur_radius_y_set(thiz->blur, 3);
 
 	thiz->proxy = enesim_renderer_proxy_new();
-	enesim_renderer_proxy_proxied_set(thiz->proxy, enesim_renderer_ref(thiz->radio));
+	enesim_renderer_proxy_proxied_set(thiz->proxy, enesim_renderer_ref(thiz->area));
 
 	n = eon_theme_element_button_new(&_descriptor, thiz);
 	/* the attributes */
