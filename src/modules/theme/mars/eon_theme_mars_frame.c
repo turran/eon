@@ -191,6 +191,8 @@ Egueb_Dom_Node * eon_theme_mars_frame_new(void)
 	enesim_renderer_shape_stroke_weight_set(thiz->rectangle, 2);
 
 	thiz->compound = enesim_renderer_compound_new();
+	enesim_renderer_compound_background_enable_set(thiz->compound, EINA_TRUE);
+	enesim_renderer_compound_background_color_set(thiz->compound, 0x000000);
 	l = enesim_renderer_compound_layer_new();
 	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 	enesim_renderer_compound_layer_renderer_set(l,
