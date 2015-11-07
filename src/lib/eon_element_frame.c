@@ -34,7 +34,7 @@
 
 typedef struct _Eon_Element_Frame
 {
-	Eon_Widget base;
+	Eon_Renderable base;
 	/* attributes */
 	Egueb_Dom_Node *title;
 	/* private */
@@ -43,7 +43,7 @@ typedef struct _Eon_Element_Frame
 
 typedef struct _Eon_Element_Frame_Class
 {
-	Eon_Widget_Class base;
+	Eon_Renderable_Class base;
 } Eon_Element_Frame_Class;
 
 /* Inform of a geometry change */
@@ -66,23 +66,23 @@ static void _eon_element_frame_attr_modified_cb(Egueb_Dom_Event *e,
 	egueb_dom_node_unref(attr);
 }
 /*----------------------------------------------------------------------------*
- *                             Widget interface                               *
+ *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static void _eon_element_frame_init(Eon_Widget *w)
+static void _eon_element_frame_init(Eon_Renderable *r)
 {
 	Eon_Element_Frame *thiz;
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Event_Target *et;
 
-	thiz = EON_ELEMENT_FRAME(w);
+	thiz = EON_ELEMENT_FRAME(r);
 
 	/* attributes */
 	thiz->title = egueb_dom_attr_string_new(
 			egueb_dom_string_ref(EON_NAME_ATTR_TITLE), NULL,
 			egueb_dom_string_ref(EON_NAME_ON),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
-	n = (EON_ELEMENT(w))->n;
+	n = (EON_ELEMENT(r))->n;
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->title), NULL);
 	/* events */
 	et = EGUEB_DOM_EVENT_TARGET(n);
@@ -92,19 +92,19 @@ static void _eon_element_frame_init(Eon_Widget *w)
 			EINA_FALSE, thiz);
 	/* private */
 	thiz->theme_feature = eon_feature_themable_add(n);
-	e = EON_ELEMENT(w);
+	e = EON_ELEMENT(r);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_FRAME));
 }
 
-static Egueb_Dom_Node * _eon_element_frame_element_at(Eon_Widget *w,
+static Egueb_Dom_Node * _eon_element_frame_element_at(Eon_Renderable *r,
 		Eina_Rectangle *cursor)
 {
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *child;
 	Egueb_Dom_Node *found;
 
-	n = (EON_ELEMENT(w))->n;
+	n = (EON_ELEMENT(r))->n;
 	/* if no childs, is just inside ourselves */	
 	child = egueb_dom_element_child_first_get(n);
 	if (!child)
@@ -120,9 +120,6 @@ static Egueb_Dom_Node * _eon_element_frame_element_at(Eon_Widget *w,
 	return egueb_dom_node_ref(n);
 }
 
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _eon_element_frame_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Frame *thiz;
@@ -305,27 +302,24 @@ static Eina_Bool _eon_element_frame_child_appendable(Eon_Element *e, Egueb_Dom_N
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR, Eon_Element_Frame,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_RENDERABLE_DESCRIPTOR, Eon_Element_Frame,
 		Eon_Element_Frame_Class, eon_element_frame);
 
 static void _eon_element_frame_class_init(void *k)
 {
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
-	Eon_Widget_Class *w_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_frame_tag_name_get;
 	klass->child_appendable = _eon_element_frame_child_appendable;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->init = _eon_element_frame_init;
+	r_klass->element_at = _eon_element_frame_element_at;
 	r_klass->renderer_get = _eon_element_frame_renderer_get;
 	r_klass->size_hints_get = _eon_element_frame_size_hints_get;
 	r_klass->process = _eon_element_frame_process;
-
-	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->init = _eon_element_frame_init;
-	w_klass->element_at = _eon_element_frame_element_at;
 }
 
 static void _eon_element_frame_instance_init(void *o)
