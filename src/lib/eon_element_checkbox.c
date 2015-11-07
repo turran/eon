@@ -22,8 +22,10 @@
 #include "eon_feature_themable_private.h"
 #include "eon_widget_private.h"
 #include "eon_theme_renderable_private.h"
-//#include "eon_theme_element_checkbox_private.h"
+#include "eon_theme_element_button_private.h"
 #include "eon_layout_frame_private.h"
+#include "eon_event_activate_private.h"
+#include "eon_event_deactivate_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -35,9 +37,10 @@ typedef struct _Eon_Element_Checkbox
 {
 	Eon_Widget base;
 	/* attributes */
-	Egueb_Dom_Node *selected;
+	Egueb_Dom_Node *activated;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Eina_Bool first_run;
 } Eon_Element_Checkbox;
 
 typedef struct _Eon_Element_Checkbox_Class
@@ -45,6 +48,40 @@ typedef struct _Eon_Element_Checkbox_Class
 	Eon_Widget_Class base;
 } Eon_Element_Checkbox_Class;
 
+static void _eon_element_checkbox_dispatch(
+		Eon_Element_Checkbox *thiz, Eina_Bool activated)
+{
+	Egueb_Dom_Event_Target *et;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Event *ev;
+
+	n = (EON_ELEMENT(thiz))->n;
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	if (activated)
+	{
+		ev = eon_event_activate_new();
+	}
+	else
+	{
+		ev = eon_event_deactivate_new();
+	}
+	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
+}
+
+static void _eon_element_checkbox_click_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Checkbox *thiz = data;
+	int activated = 0;
+
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* first set the new value */
+	egueb_dom_attr_final_get(thiz->activated, &activated);
+	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_BASE, !activated);
+	/* trigger the events */
+	_eon_element_checkbox_dispatch(thiz, !activated);
+}
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -52,23 +89,34 @@ static void _eon_element_checkbox_init(Eon_Widget *w)
 {
 	Eon_Element_Checkbox *thiz;
 	Eon_Element *e;
+	Egueb_Dom_Event_Target *et;
 	Egueb_Dom_Node *n;
 
-	n = (EON_ELEMENT(w))->n;
 	thiz = EON_ELEMENT_CHECKBOX(w);
 
+	/* attributes */
+	thiz->activated = egueb_dom_attr_boolean_new(
+			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVATED),
+			EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
+	n = (EON_ELEMENT(w))->n;
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->activated), NULL);
+	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_eon_element_checkbox_click_cb,
+			EINA_FALSE, thiz);
 	/* private */
+	thiz->first_run = EINA_TRUE;
 	thiz->theme_feature = eon_feature_themable_add(n);
+	eon_feature_themable_event_propagate(thiz->theme_feature,
+			EON_NAME_EVENT_ACTIVATE);
+	eon_feature_themable_event_propagate(thiz->theme_feature,
+			EON_NAME_EVENT_DEACTIVATE);
 	e = EON_ELEMENT(w);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_CHECKBOX));
-
-	/* attributes */
-	thiz->selected = egueb_dom_attr_boolean_new(egueb_dom_string_ref(EON_ATTR_ENABLED),
-			EINA_TRUE, EINA_TRUE, EINA_FALSE);
-	egueb_dom_attr_set(thiz->selected, EGUEB_DOM_ATTR_TYPE_DEFAULT, EINA_FALSE);
-	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->selected), NULL);
-
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
@@ -100,14 +148,20 @@ static int _eon_element_checkbox_size_hints_get(Eon_Renderable *r,
 	Egueb_Dom_Node *theme_element;
 	int ret;
 
+	/* get the hints of the content */
 	n = (EON_ELEMENT(r))->n;
-
 	ret = eon_layout_frame_size_hints_get(n, size);
 
-	/* finally add our padding */
+	/* get the padding of the theme */
 	thiz = EON_ELEMENT_CHECKBOX(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	//eon_theme_element_checkbox_padding_get(theme_element, &padding);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return 0;
+	}
+	eon_theme_element_button_padding_get(theme_element, &padding);
+
 	/* a checkbox can be of any size */
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
 	if (size->min_width > 0)
@@ -153,13 +207,14 @@ static Eina_Bool _eon_element_checkbox_process(Eon_Renderable *r)
 	}
 
 	/* Set the geometry on the child */
-	//eon_theme_element_checkbox_padding_get(theme_element, &padding);
-	//eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 	/* Set the enabled */
 	w = EON_WIDGET(r);
 	egueb_dom_attr_final_get(w->enabled, &enabled);
 	eon_theme_widget_enabled_set(theme_element, enabled);
 
+	/* finally add our padding */
+	eon_theme_element_button_padding_get(theme_element, &padding);
 	free_space.x += padding.left;
 	free_space.y += padding.top;
 	free_space.w -= padding.left + padding.right;
@@ -173,16 +228,25 @@ static Eina_Bool _eon_element_checkbox_process(Eon_Renderable *r)
 		Enesim_Renderer *ren;
 
 		ren = eon_renderable_renderer_get(child);
-		//eon_theme_element_checkbox_content_set(theme_element, ren);
+		eon_theme_element_button_content_set(theme_element, ren);
 		egueb_dom_node_unref(child);
 	}
 	else
 	{
-		//eon_theme_element_checkbox_content_set(theme_element, NULL);
+		eon_theme_element_button_content_set(theme_element, NULL);
 	}
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
+	/* Trigger the initial attribute signal in case we haven't done it yet */
+	if (thiz->first_run)
+	{
+		int activated;
+
+		egueb_dom_attr_final_get(thiz->activated, &activated);
+		_eon_element_checkbox_dispatch(thiz, activated);
+		thiz->first_run = EINA_FALSE;
+	}
 	egueb_dom_node_unref(theme_element);
 
 done:
@@ -191,7 +255,6 @@ done:
 	
 	return EINA_TRUE;
 }
-
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -255,7 +318,9 @@ static void _eon_element_checkbox_instance_deinit(void *o)
 
 	thiz = EON_ELEMENT_CHECKBOX(o);
 	/* attributes */
-	egueb_dom_node_unref(thiz->selected);
+	egueb_dom_node_unref(thiz->activated);
+	/* private */
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -270,343 +335,3 @@ EAPI Egueb_Dom_Node * eon_element_checkbox_new(void)
 	return n;
 }
 
-EAPI void eon_element_checkbox_selected_set(Egueb_Dom_Node *n, Eina_Bool selected)
-{
-	Eon_Element_Checkbox *thiz;
-	int s = selected;
-
-	thiz = EON_ELEMENT_CHECKBOX(egueb_dom_element_external_data_get(n));
-	egueb_dom_attr_set(thiz->selected, EGUEB_DOM_ATTR_TYPE_BASE, s);
-}
-
-EAPI Eina_Bool eon_element_checkbox_selected_get(Egueb_Dom_Node *n)
-{
-	Eon_Element_Checkbox *thiz;
-	int s;
-
-	thiz = EON_ELEMENT_CHECKBOX(egueb_dom_element_external_data_get(n));
-	egueb_dom_attr_final_get(thiz->selected, &s);
-	return s ? EINA_TRUE : EINA_FALSE;
-}
-
-#if 0
-/*============================================================================*
- *                                  Local                                     *
- *============================================================================*/
-typedef struct _Eon_Checkbox
-{
-	/* properties */
-	/* private */
-	Ender_Element *e;
-	/* our own checkbox control */
-	Eon_Theme_Instance *control;
-	/* layout */
-	double min_length;
-} Eon_Checkbox;
-
-static inline Eon_Checkbox * _eon_checkbox_get(Eon_Element *ee)
-{
-	Eon_Checkbox *thiz;
-
-	thiz = eon_checkbox_base_data_get(ee);
-	return thiz;
-}
-/*----------------------------------------------------------------------------*
- *                             The checkbox layout                               *
- *----------------------------------------------------------------------------*/
-static void _checkbox_layout_child_padding_get(void *ref, void *child,
-		Eon_Margin *margin)
-{
-	margin->left = margin->top = margin->right = margin->bottom = 10;
-	/* TODO
-	*margin = thiz->padding;
-	*/
-}
-
-static void _checkbox_layout_child_geometry_set(void *ref, void *child,
-		Eon_Geometry *g)
-{
-	Eon_Checkbox *thiz;
-	Eon_Element *e = ref;
-
-	thiz = _eon_checkbox_get(e);
-	eon_theme_instance_property_set(thiz->control, "x", g->x, NULL);
-	eon_theme_instance_property_set(thiz->control, "y", g->y, NULL);
-	eon_theme_instance_property_set(thiz->control, "width", g->width, NULL);
-	eon_theme_instance_property_set(thiz->control, "height", g->height, NULL);
-}
-
-static void _checkbox_layout_child_hints_get(void *ref, void *child,
-		Eon_Hints *hints)
-{
-	Eon_Checkbox *thiz;
-	Eon_Element *e = ref;
-	Eon_Size size;
-
-	thiz = _eon_checkbox_get(e);
-	eon_theme_control_checkbox_size_get(thiz->control->object, &size);
-	eon_hints_sizes_values_set(hints, size.width, size.height,
-			size.width, size.height,
-			size.width, size.height);
-}
-
-static void _checkbox_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
-		 void *data)
-{
-	cb(ref, NULL, data);
-}
-
-static Eon_Layout_Frame_Descriptor _checkbox_layout = {
-	/* .child_padding_get 	= */ _checkbox_layout_child_padding_get,
-	/* .child_foreach 	= */ _checkbox_layout_child_foreach,
-	/* .child_hints_get 	= */ _checkbox_layout_child_hints_get,
-	/* .child_geometry_set 	= */ _checkbox_layout_child_geometry_set,
-};
-/*----------------------------------------------------------------------------*
- *                           The bin child layout                             *
- *----------------------------------------------------------------------------*/
-static void _child_layout_child_padding_get(void *ref, void *child,
-		Eon_Margin *margin)
-{
-	margin->left = margin->top = margin->right = margin->bottom = 10;
-	/* TODO
-	*margin = thiz->padding;
-	*/
-}
-
-static void _child_layout_child_geometry_set(void *ref, void *child,
-		Eon_Geometry *g)
-{
-	Eon_Element *e = child;
-	eon_element_geometry_set(e, g);
-}
-
-static void _child_layout_child_hints_get(void *ref, void *child,
-		Eon_Hints *hints)
-{
-	Eon_Element *e = child;
-	eon_element_hints_get(e, hints);
-}
-
-static void _child_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
-		 void *data)
-{
-	Eon_Element *e = ref;
-	Ender_Element *child;
-
-	child = eon_bin_internal_child_get(e);
-	if (!child) return;
-
-	e = ender_element_object_get(child);
-	cb(ref, e, data);
-}
-
-static Eon_Layout_Frame_Descriptor _child_layout = {
-	/* .child_padding_get 	= */ _child_layout_child_padding_get,
-	/* .child_foreach 	= */ _child_layout_child_foreach,
-	/* .child_hints_get 	= */ _child_layout_child_hints_get,
-	/* .child_geometry_set 	= */ _child_layout_child_geometry_set,
-};
-/*----------------------------------------------------------------------------*
- *                     The main stack layout descriptors                      *
- *----------------------------------------------------------------------------*/
-static void _checkbox_stack_layout_child_geometry_set(void *ref, void *child,
-		Eon_Geometry *g)
-{
-	Eon_Layout_Child_Data *lchild = child;
-	eon_layout_geometry_set(lchild->layout, lchild->descriptor, ref, g);
-}
-
-static void _checkbox_stack_layout_child_hints_get(void *ref, void *child,
-		Eon_Hints *hints)
-{
-	Eon_Layout_Child_Data *lchild = child;
-	eon_layout_hints_get(lchild->layout, lchild->descriptor, ref, hints);
-}
-
-static void _checkbox_stack_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
-		 void *data)
-{
-	Eon_Layout_Child_Data lchild;
-
-	/* the only children of this main stack are the two frames */
-	lchild.layout = &eon_layout_frame;
-	lchild.descriptor = &_checkbox_layout;
-	cb(ref, &lchild, data);
-
-	lchild.layout = &eon_layout_frame;
-	lchild.descriptor = &_child_layout;
-	cb(ref, &lchild, data);
-}
-
-static Eon_Orientation _checkbox_stack_layout_orientation_get(void *ref)
-{
-	return EON_ORIENTATION_HORIZONTAL;
-}
-
-static void _checkbox_stack_layout_min_length_get(void *ref, double *min)
-{
-	Eon_Element *e = ref;
-	Eon_Checkbox *thiz;
-
-	thiz = _eon_checkbox_get(e);
-	*min = thiz->min_length;
-}
-
-static void _checkbox_stack_layout_min_length_set(void *ref, double min)
-{
-	Eon_Element *e = ref;
-	Eon_Checkbox *thiz;
-
-	thiz = _eon_checkbox_get(e);
-	thiz->min_length = min;
-}
-
-static int _checkbox_stack_layout_child_weight_get(void *ref, void *child)
-{
-	Eon_Layout_Child_Data *lchild = child;
-	
-
-	/* the child frame always has priority */
-	if (lchild->descriptor == &_child_layout)
-		return 1;
-	else
-		return 0;
-}
-
-static Eon_Layout_Stack_Descriptor _stack_layout = {
-	/* .orientation_get 	= */ _checkbox_stack_layout_orientation_get,
-	/* .min_length_get 	= */ _checkbox_stack_layout_min_length_get,
-	/* .min_length_get 	= */ _checkbox_stack_layout_min_length_set,
-	/* .child_weight_get 	= */ _checkbox_stack_layout_child_weight_get,
-	/* .child_foreach 	= */ _checkbox_stack_layout_child_foreach,
-	/* .child_hints_get 	= */ _checkbox_stack_layout_child_hints_get,
-	/* .child_geometry_set 	= */ _checkbox_stack_layout_child_geometry_set,
-};
-/*----------------------------------------------------------------------------*
- *                     The main frame layout descriptors                      *
- *----------------------------------------------------------------------------*/
-static void _main_layout_child_padding_get(void *ref, void *child,
-		Eon_Margin *margin)
-{
-	margin->left = margin->top = margin->right = margin->bottom = 10;
-	/* TODO
-	*margin = thiz->padding;
-	*/
-}
-
-static void _main_layout_child_geometry_set(void *ref, void *child,
-		Eon_Geometry *g)
-{
-	eon_layout_geometry_set(&eon_layout_stack, &_stack_layout, ref, g);
-}
-
-static void _main_layout_child_hints_get(void *ref, void *child,
-		Eon_Hints *hints)
-{
-	eon_layout_hints_get(&eon_layout_stack, &_stack_layout, ref, hints);
-}
-
-static void _main_layout_child_foreach(void *ref, Eon_Layout_Child_Foreach_Cb cb,
-		 void *data)
-{
-	cb(ref, NULL, data);
-}
-
-static Eon_Layout_Frame_Descriptor _main_layout = {
-	/* .child_padding_get 	= */ _main_layout_child_padding_get,
-	/* .child_foreach 	= */ _main_layout_child_foreach,
-	/* .child_hints_get 	= */ _main_layout_child_hints_get,
-	/* .child_geometry_set 	= */ _main_layout_child_geometry_set,
-};
-/*----------------------------------------------------------------------------*
- *                                Event handlers                              *
- *----------------------------------------------------------------------------*/
-static void _eon_checkbox_mouse_click(Ender_Element *e,
-		const char *event_name,
-		void *event_data,
-		void *data)
-{
-	Eina_Bool selected;
-
-	eon_checkbox_selected_get(e, &selected);
-	eon_checkbox_selected_set(e, !selected);
-}
-
-static void _eon_checkbox_key_up(Ender_Element *e,
-		const char *event_name,
-		void *event_data,
-		void *data)
-{
-	Eon_Event_Key_Up *ev = event_data;
-	Eon_Navigation_Key nkey;
-	Eina_Bool enabled;
-	Eina_Bool selected;
-
-	/* check if the key is an enter key */
-	if (!eon_input_navigation_key_get(ev->input, ev->key, &nkey))
-		return;
-
-	if (nkey != EON_NAVIGATION_KEY_OK)
-		return;
-
-	eon_widget_enabled_get(e, &enabled);
-	if (!enabled)
-		return;
-
-	eon_checkbox_selected_get(e, &selected);
-	eon_checkbox_selected_set(e, !selected);
-}
-/*----------------------------------------------------------------------------*
- *                      The Eon's checkbox_base interface                         *
- *----------------------------------------------------------------------------*/
-static void _eon_checkbox_initialize(Ender_Element *e)
-{
-	Eon_Checkbox *thiz;
-	Eon_Element *ee;
-
-	ee = ender_element_object_get(e);
-	thiz = _eon_checkbox_get(ee);
-	thiz->e = e;
-	/* register every needed callback */
-	ender_event_listener_add(e,
-			eon_input_event_names[EON_INPUT_EVENT_MOUSE_CLICK],
-			_eon_checkbox_mouse_click, NULL);
-	ender_event_listener_add(e,
-			eon_input_event_names[EON_INPUT_EVENT_KEY_UP],
-			_eon_checkbox_key_up, NULL);
-}
-
-static void _eon_checkbox_geometry_set(Eon_Element *e, Eon_Geometry *g)
-{
-	eon_layout_geometry_set(&eon_layout_frame, &_main_layout, e, g);
-}
-
-static void _eon_checkbox_free(Eon_Element *e)
-{
-	Eon_Checkbox *thiz;
-
-	thiz = _eon_checkbox_get(e);
-	free(thiz);
-}
-
-static void _eon_checkbox_hints_get(Eon_Element *e, Eon_Theme_Instance *theme,
-		Eon_Hints *hints)
-{
-	eon_layout_hints_get(&eon_layout_frame, &_main_layout, e, hints);
-	hints->max.width = DBL_MAX;
-	hints->max.height = DBL_MAX;
-}
-
-
-static Eon_Checkbox_Base_Descriptor _descriptor = {
-	/* .initialize 		= */ _eon_checkbox_initialize,
-	/* .geometry_set 	= */ _eon_checkbox_geometry_set,
-	/* .free		= */ _eon_checkbox_free,
-	/* .name 		= */ "checkbox",
-	/* .hints_get 		= */ _eon_checkbox_hints_get,
-	/* .child_at 		= */ NULL,
-	/* .pass_events		= */ EINA_FALSE,
-};
-
-#endif
