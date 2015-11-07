@@ -356,7 +356,7 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 		if (w < size.min_width)
 		{
 			ERR_ELEMENT(n, "Parent set a width %d less than min %d",
-					fs->w, size.min_width);
+					w, size.min_width);
 			w = size.min_width;
 		}
 
@@ -366,7 +366,7 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 		if (h < size.min_height)
 		{
 			ERR_ELEMENT(n, "Parent set a height %d less than min %d",
-					fs->h, size.min_height);
+					h, size.min_height);
 			h = size.min_height;
 		}
 
