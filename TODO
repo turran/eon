@@ -1,3 +1,4 @@
++ Add a LTR attribute inheritable
 + Add a scale attribute to should be inherited to be able to adapt to other DPIs
 + Add a font-face element/css rule
 + Change the ns attribute on the theme
