@@ -151,6 +151,11 @@ static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
 	int ret = 0;
 	int minw, minh;
 
+	/* get the hints of the content */
+	n = (EON_ELEMENT(r))->n;
+	ret = eon_layout_frame_size_hints_get(n, size);
+
+	/* get the min size and padding of the theme */
 	thiz = EON_ELEMENT_FRAME(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	if (!theme_element)
@@ -168,11 +173,22 @@ static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
 	}
 
 	eon_theme_element_frame_min_size_get(theme_element, &minw, &minh);
-	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	size->min_width = minw;
-	size->min_height = minh;
-	size->max_width = -1;
-	size->max_height = -1;
+	eon_theme_element_frame_padding_get(theme_element, &padding);
+
+	/* the min size is the max of the content min size + padding
+	 * or the theme min size */
+	if (ret & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		if (size->min_width >= 0)
+			size->min_width += padding.left + padding.right;
+		if (size->min_height >= 0)
+			size->min_height += padding.top + padding.bottom;
+
+		if (minw > size->min_width)
+			size->min_width = minw;
+		if (minh > size->min_height)
+			size->min_height = minh;
+	}
 
 	return ret;
 }
