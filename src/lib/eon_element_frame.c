@@ -320,6 +320,7 @@ static void _eon_element_frame_class_init(void *k)
 	r_klass->renderer_get = _eon_element_frame_renderer_get;
 	r_klass->size_hints_get = _eon_element_frame_size_hints_get;
 	r_klass->process = _eon_element_frame_process;
+	r_klass->child_size_dependant = EINA_TRUE;
 }
 
 static void _eon_element_frame_instance_init(void *o)
