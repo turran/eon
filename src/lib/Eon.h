@@ -66,6 +66,7 @@ extern "C" {
 #include "eon_element_checkbox.h"
 #include "eon_element_button_stock.h"
 #include "eon_element_button_toggle.h"
+#include "eon_element_frame.h"
 #include "eon_element_label.h"
 #include "eon_element_object.h"
 #include "eon_element_radio.h"
@@ -81,6 +82,7 @@ extern "C" {
 #include "eon_theme_widget.h"
 #include "eon_theme_element_button.h"
 #include "eon_theme_element_eon.h"
+#include "eon_theme_element_frame.h"
 #include "eon_theme_element_switch.h"
 
 #ifdef __cplusplus

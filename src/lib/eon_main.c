@@ -75,6 +75,7 @@ static void _strings_init(void)
 	EON_NAME_ATTR_ACTIVE = egueb_dom_string_new_with_static_string("active");
 	EON_NAME_ATTR_INACTIVE = egueb_dom_string_new_with_static_string("inactive");
 	EON_NAME_ATTR_ACTIVATED = egueb_dom_string_new_with_static_string("activated");
+	EON_NAME_ATTR_TITLE = egueb_dom_string_new_with_static_string("title");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
@@ -88,6 +89,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_RADIO = egueb_dom_string_new_with_static_string("radio");
 	EON_NAME_ELEMENT_CHECKBOX = egueb_dom_string_new_with_static_string("checkbox");
 	EON_NAME_ELEMENT_SWITCH = egueb_dom_string_new_with_static_string("switch");
+	EON_NAME_ELEMENT_FRAME = egueb_dom_string_new_with_static_string("frame");
 	/* generic */
 	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
 	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
@@ -122,6 +124,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ATTR_ACTIVE);
 	egueb_dom_string_unref(EON_NAME_ATTR_INACTIVE);
 	egueb_dom_string_unref(EON_NAME_ATTR_ACTIVATED);
+	egueb_dom_string_unref(EON_NAME_ATTR_TITLE);
 	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
@@ -135,6 +138,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_RADIO);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_CHECKBOX);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_SWITCH);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_FRAME);
 	/* generic */
 	egueb_dom_string_unref(EON_NAME_ON);
 	egueb_dom_string_unref(EON_NAME_OFF);
@@ -171,6 +175,7 @@ Egueb_Dom_String *EON_ATTR_ENABLED;
 Egueb_Dom_String *EON_NAME_ATTR_ACTIVE;
 Egueb_Dom_String *EON_NAME_ATTR_INACTIVE;
 Egueb_Dom_String *EON_NAME_ATTR_ACTIVATED;
+Egueb_Dom_String *EON_NAME_ATTR_TITLE;
 Egueb_Dom_String *EON_STOCK;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
@@ -184,6 +189,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_OBJECT;
 Egueb_Dom_String *EON_NAME_ELEMENT_RADIO;
 Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
 Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
+Egueb_Dom_String *EON_NAME_ELEMENT_FRAME;
 /* generic */
 Egueb_Dom_String *EON_NAME_ON;
 Egueb_Dom_String *EON_NAME_OFF;
