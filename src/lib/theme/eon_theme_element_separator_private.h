@@ -16,19 +16,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_MARS_MAIN_PRIVATE_H_
-#define _EON_THEME_MARS_MAIN_PRIVATE_H_
+#ifndef _EON_THEME_ELEMENT_SEPARATOR_PRIVATE_H
+#define _EON_THEME_ELEMENT_SEPARATOR_PRIVATE_H
 
-/* Some helpful defines */
-#define EON_THEME_MARS_MARGIN 5
-#define EON_THEME_MARS_BORDER 2
-
-/* The constructors for the registration */
-Egueb_Dom_Node * eon_theme_mars_eon_new(void);
-Egueb_Dom_Node * eon_theme_mars_button_new(void);
-Egueb_Dom_Node * eon_theme_mars_switch_new(void);
-Egueb_Dom_Node * eon_theme_mars_radio_new(void);
-Egueb_Dom_Node * eon_theme_mars_frame_new(void);
-Egueb_Dom_Node * eon_theme_mars_separator_new(void);
+int eon_theme_element_separator_thickness_get(Egueb_Dom_Node *n);
+void eon_theme_element_separator_orientation_set(Egueb_Dom_Node *n, Eon_Orientation o);
 
 #endif
+
+

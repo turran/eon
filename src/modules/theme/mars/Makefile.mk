@@ -4,6 +4,7 @@ src/modules/theme/mars/eon_theme_mars_eon.c \
 src/modules/theme/mars/eon_theme_mars_frame.c \
 src/modules/theme/mars/eon_theme_mars_main.c \
 src/modules/theme/mars/eon_theme_mars_radio.c \
+src/modules/theme/mars/eon_theme_mars_separator.c \
 src/modules/theme/mars/eon_theme_mars_switch.c
 
 if BUILD_STATIC_MODULE_THEME_MARS

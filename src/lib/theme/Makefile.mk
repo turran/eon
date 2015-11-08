@@ -5,6 +5,7 @@ src/lib/theme/eon_theme_widget.h \
 src/lib/theme/eon_theme_element_button.h \
 src/lib/theme/eon_theme_element_eon.h \
 src/lib/theme/eon_theme_element_frame.h \
+src/lib/theme/eon_theme_element_separator.h \
 src/lib/theme/eon_theme_element_switch.h
 
 src_lib_libeon_la_SOURCES += \
@@ -21,6 +22,8 @@ src/lib/theme/eon_theme_element_frame.c \
 src/lib/theme/eon_theme_element_frame_private.h \
 src/lib/theme/eon_theme_element_label.c \
 src/lib/theme/eon_theme_element_label_private.h \
+src/lib/theme/eon_theme_element_separator.c \
+src/lib/theme/eon_theme_element_separator_private.h \
 src/lib/theme/eon_theme_element_switch.c \
 src/lib/theme/eon_theme_element_switch_private.h \
 src/lib/theme/eon_theme_namespace.c \

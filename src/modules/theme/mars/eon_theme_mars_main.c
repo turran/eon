@@ -47,6 +47,8 @@ static Eina_Bool eon_theme_mars_init(void)
 			eon_theme_mars_radio_new);
 	eon_theme_namespace_element_add(_namespace, "frame",
 			eon_theme_mars_frame_new);
+	eon_theme_namespace_element_add(_namespace, "separator",
+			eon_theme_mars_separator_new);
 	return EINA_TRUE;
 }
 
