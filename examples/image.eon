@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <frame title="Image in original size">
+    <image xlink:href=""/>
+  </frame>
+  <frame title="Image scalable">
+    <image xlink:href="" hexpand="true" vexpand="true"/>
+  </frame>
+</eon>
