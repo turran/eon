@@ -59,6 +59,8 @@ static Eina_Bool _eon_theme_mars_separator_process(void *data)
 	Eina_Rectangle geom;
 	Enesim_Argb argb;
 	Enesim_Color color;
+	Eon_Orientation orientation;
+	int x0, y0, x1, y1;
 
 	thiz = data;
 	/* get the final attributes */
@@ -66,6 +68,21 @@ static Eina_Bool _eon_theme_mars_separator_process(void *data)
 	color = enesim_color_argb_from(argb);
 	/* get the inherited members */
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
+	orientation = eon_theme_element_separator_orientation_get(thiz->n);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		x0 = geom.x + EON_THEME_MARS_MARGIN;
+		x1 = geom.x + geom.w - (EON_THEME_MARS_MARGIN * 2);
+		y0 = y1 = geom.y + (geom.h / 2);
+	}
+	else
+	{
+		y0 = geom.y + EON_THEME_MARS_MARGIN;
+		y1 = geom.y + geom.h - (EON_THEME_MARS_MARGIN * 2);
+		x0 = x1 = geom.x + (geom.w / 2);
+	}
+	enesim_renderer_line_coords_set(thiz->line, x0, y0, x1, y1);
+	enesim_renderer_shape_stroke_color_set(thiz->line, color);
 
 	return EINA_TRUE;
 }
@@ -104,7 +121,8 @@ Egueb_Dom_Node * eon_theme_mars_separator_new(void)
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Separator));
 	/* the separator button */
 	thiz->line = enesim_renderer_line_new();
-	enesim_renderer_circle_radius_set(thiz->line, EON_THEME_MARS_BORDER);
+	enesim_renderer_shape_draw_mode_set(thiz->line, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
+	enesim_renderer_shape_stroke_weight_set(thiz->line, EON_THEME_MARS_BORDER);
 
 	n = eon_theme_element_separator_new(&_descriptor, thiz);
 	/* the attributes */

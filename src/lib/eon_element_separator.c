@@ -22,6 +22,7 @@
 #include "eon_widget_private.h"
 #include "eon_feature_themable_private.h"
 #include "eon_theme_renderable_private.h"
+#include "eon_theme_element_separator_private.h"
 #include "eon_orientation_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -95,17 +96,55 @@ static int _eon_element_separator_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size *size)
 {
 	Eon_Element_Separator *thiz;
-	Enesim_Rectangle geom;
+	Eon_Orientation orientation;
+	Egueb_Dom_Node *theme_element;
+	int thickness = 0;
+	int ret = 0;
 
 	thiz = EON_ELEMENT_SEPARATOR(r);
-	return 0;
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return 0;
+	}
+
+	thickness = eon_theme_element_separator_thickness_get(theme_element);
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	ret |= EON_RENDERABLE_HINT_MIN_MAX;
+	size->min_width = size->max_width = -1;
+	size->min_height = size->max_height = -1;
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		size->min_height = thickness;
+	}
+	else
+	{
+		size->min_width = thickness;
+	}
+	egueb_dom_node_unref(theme_element);
+
+	return ret;
 }
 
 static Eina_Bool _eon_element_separator_process(Eon_Renderable *r)
 {
 	Eon_Element_Separator *thiz;
+	Egueb_Dom_Node *theme_element;
 
 	thiz = EON_ELEMENT_SEPARATOR(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return EINA_FALSE;
+	}
+	/* Set the geometry on the child */
+	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+	/* Finally process our theme */
+	egueb_dom_element_process(theme_element);
+	egueb_dom_node_unref(theme_element);
+	
 	return EINA_TRUE;
 }
 

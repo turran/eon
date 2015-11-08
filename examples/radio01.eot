@@ -11,6 +11,7 @@
       <radio id="radio03" group="rg01">
         <label>Option 3</label>
       </radio>
+      <separator/>
       <radio id="radio04" group="rg02">
         <label>Option 4</label>
       </radio>
