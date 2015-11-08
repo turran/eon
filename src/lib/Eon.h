@@ -85,6 +85,7 @@ extern "C" {
 #include "eon_theme_element_button.h"
 #include "eon_theme_element_eon.h"
 #include "eon_theme_element_frame.h"
+#include "eon_theme_element_image.h"
 #include "eon_theme_element_separator.h"
 #include "eon_theme_element_switch.h"
 

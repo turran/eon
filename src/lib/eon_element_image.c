@@ -22,7 +22,7 @@
 #include "eon_feature_themable_private.h"
 #include "eon_widget_private.h"
 #include "eon_theme_renderable_private.h"
-//#include "eon_theme_element_image_private.h"
+#include "eon_theme_element_image_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
