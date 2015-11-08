@@ -1,3 +1,6 @@
++ Add an image element
++ Add an image stock element similar to the button stock
++ Add an event handler on the theme element to replace the relative uris with absolute uris based on the path of the theme
 + Add a LTR attribute inheritable
 + Add a scale attribute to should be inherited to be able to adapt to other DPIs
 + Add a font-face element/css rule
