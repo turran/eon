@@ -11,6 +11,7 @@ src/lib/eon_element_button_toggle.h \
 src/lib/eon_element_checkbox.h \
 src/lib/eon_element_eon.h \
 src/lib/eon_element_frame.h \
+src/lib/eon_element_image.h \
 src/lib/eon_element_label.h \
 src/lib/eon_element_label_stock.h \
 src/lib/eon_element_object.h \
@@ -42,6 +43,7 @@ src/lib/eon_element_button_toggle.c \
 src/lib/eon_element_checkbox.c \
 src/lib/eon_element_eon.c \
 src/lib/eon_element_frame.c \
+src/lib/eon_element_image.c \
 src/lib/eon_element_label.c \
 src/lib/eon_element_label_stock.c \
 src/lib/eon_element_object.c \

@@ -67,6 +67,7 @@ extern "C" {
 #include "eon_element_button_stock.h"
 #include "eon_element_button_toggle.h"
 #include "eon_element_frame.h"
+#include "eon_element_image.h"
 #include "eon_element_label.h"
 #include "eon_element_object.h"
 #include "eon_element_radio.h"
