@@ -31,6 +31,7 @@
 #include "eon_element_checkbox.h"
 #include "eon_element_switch.h"
 #include "eon_element_frame.h"
+#include "eon_element_separator.h"
 
 #include "eon_renderable_private.h"
 #include "eon_element_eon_private.h"
@@ -74,6 +75,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_radio_new();
 	else if (!strcmp(name, "frame"))
 		ret = eon_element_frame_new();
+	else if (!strcmp(name, "separator"))
+		ret = eon_element_separator_new();
 	return ret;
 }
 

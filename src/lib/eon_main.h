@@ -92,6 +92,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_RADIO;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_FRAME;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SEPARATOR;
 
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;

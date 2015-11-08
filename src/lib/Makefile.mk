@@ -15,6 +15,7 @@ src/lib/eon_element_label.h \
 src/lib/eon_element_label_stock.h \
 src/lib/eon_element_object.h \
 src/lib/eon_element_radio.h \
+src/lib/eon_element_separator.h \
 src/lib/eon_element_stack.h \
 src/lib/eon_element_switch.h \
 src/lib/eon_event_geometry.h \
@@ -45,6 +46,7 @@ src/lib/eon_element_label.c \
 src/lib/eon_element_label_stock.c \
 src/lib/eon_element_object.c \
 src/lib/eon_element_radio.c \
+src/lib/eon_element_separator.c \
 src/lib/eon_element_stack.c \
 src/lib/eon_element_switch.c \
 src/lib/eon_event_geometry.c \

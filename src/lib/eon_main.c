@@ -90,6 +90,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_CHECKBOX = egueb_dom_string_new_with_static_string("checkbox");
 	EON_NAME_ELEMENT_SWITCH = egueb_dom_string_new_with_static_string("switch");
 	EON_NAME_ELEMENT_FRAME = egueb_dom_string_new_with_static_string("frame");
+	EON_NAME_ELEMENT_SEPARATOR = egueb_dom_string_new_with_static_string("separator");
 	/* generic */
 	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
 	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
@@ -139,6 +140,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_CHECKBOX);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_SWITCH);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_FRAME);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_SEPARATOR);
 	/* generic */
 	egueb_dom_string_unref(EON_NAME_ON);
 	egueb_dom_string_unref(EON_NAME_OFF);
@@ -190,6 +192,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_RADIO;
 Egueb_Dom_String *EON_NAME_ELEMENT_CHECKBOX;
 Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 Egueb_Dom_String *EON_NAME_ELEMENT_FRAME;
+Egueb_Dom_String *EON_NAME_ELEMENT_SEPARATOR;
 /* generic */
 Egueb_Dom_String *EON_NAME_ON;
 Egueb_Dom_String *EON_NAME_OFF;
