@@ -18,7 +18,7 @@
 #include "eon_theme_private.h"
 #include "eon_theme_element_frame.h"
 #include "eon_theme_main_private.h"
-#include "eon_theme_widget_private.h"
+#include "eon_theme_renderable_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -28,7 +28,7 @@
 
 typedef struct _Eon_Theme_Element_Frame
 {
-	Eon_Theme_Widget base;
+	Eon_Theme_Renderable base;
 	/* attributes */
 	Egueb_Dom_Node *font;
 	Egueb_Dom_Node *color;
@@ -39,7 +39,7 @@ typedef struct _Eon_Theme_Element_Frame
 
 typedef struct _Eon_Theme_Element_Frame_Class
 {
-	Eon_Theme_Widget_Class base;
+	Eon_Theme_Renderable_Class base;
 } Eon_Theme_Element_Frame_Class;
 
 /*----------------------------------------------------------------------------*
@@ -106,7 +106,7 @@ static Egueb_Dom_String * _eon_theme_element_frame_tag_name_get(Eon_Theme_Elemen
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_WIDGET_DESCRIPTOR,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_THEME_RENDERABLE_DESCRIPTOR,
 		Eon_Theme_Element_Frame, Eon_Theme_Element_Frame_Class, eon_theme_element_frame);
 
 static void _eon_theme_element_frame_class_init(void *k)
