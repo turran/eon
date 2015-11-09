@@ -1,9 +1,9 @@
 <?xml version="1.0" standalone="no"?>
-<eon>
+<eon xmlns:xlink="http://www.w3.org/1999/xlink">
   <frame title="Image in original size">
-    <image xlink:href=""/>
+    <image xlink:href="#id1"/>
   </frame>
   <frame title="Image scalable">
-    <image xlink:href="" hexpand="true" vexpand="true"/>
+    <image xlink:href="#id2" hexpand="true" vexpand="true"/>
   </frame>
 </eon>
