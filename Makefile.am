@@ -44,7 +44,7 @@ AUTHORS \
 COPYING \
 gendoc \
 Doxyfile \
-README \
+README.md \
 eon.pc.in \
 m4/efl_attributes \
 m4/efl_compiler.m4
