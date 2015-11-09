@@ -8,7 +8,7 @@ Dependencies
 
 Documentation
 =============
-For API reference check out the automatically generated [doxygen](https://turran.github.io/egueb/docs/index.html) documentation
+For API reference check out the automatically generated [doxygen](https://turran.github.io/eon/docs/index.html) documentation
 
 Take a look on the [wiki](https://github.com/turran/eon/wiki) pages for extra information about the project
 
@@ -18,4 +18,4 @@ In case something fails, use this github project to create an issue, or if you p
 
 Status
 ======
-[![Build Status](https://drone.io/github.com/turran/egueb/status.png)](https://drone.io/github.com/turran/egueb/latest)
+[![Build Status](https://drone.io/github.com/turran/eon/status.png)](https://drone.io/github.com/turran/eon/latest)
