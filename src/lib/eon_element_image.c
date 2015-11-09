@@ -38,6 +38,7 @@ typedef struct _Eon_Element_Image
 	Egueb_Dom_Node *xlink_href;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Enesim_Surface *s;
 } Eon_Element_Image;
 
 typedef struct _Eon_Element_Image_Class
@@ -82,7 +83,7 @@ static void _eon_element_image_init(Eon_Renderable *w)
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	thiz->xlink_href = egueb_xlink_attr_href_new(
 			egueb_dom_string_ref(EGUEB_XLINK_NAME_HREF),
-			NULL);
+			EGUEB_XLINK_ATTR_HREF_FLAG_REMOTE);
 	n = (EON_ELEMENT(w))->n;
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->scalable), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->xlink_href), NULL);
@@ -126,9 +127,26 @@ static int _eon_element_image_size_hints_get(Eon_Renderable *r,
 	Eon_Box padding;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
-	int ret;
+	Egueb_Dom_String *s;
+	int ret = 0;
 
 	thiz = EON_ELEMENT_IMAGE(r);
+	printf("size hints!!! %d\n", egueb_dom_attr_has_changed(thiz->xlink_href));
+	egueb_dom_attr_final_get(thiz->xlink_href, &s);
+	printf("value = %s\n", egueb_dom_string_string_get(s));
+	if (egueb_xlink_attr_href_has_changed(thiz->xlink_href))
+	{
+		printf("changed!!!\n");
+		egueb_xlink_attr_href_process(thiz->xlink_href);
+	}
+	/* in case the xlink:href attribute has changed
+	 * request the io_data_cb from the uri
+	 * return a simple hints
+	 * if it hasnt changed, return the size of the
+	 * current surface as preferred size
+	 * in case it has the scalable attribute
+	 * set the min/max too
+	 */
 	return ret;
 }
 
@@ -153,6 +171,8 @@ static Eina_Bool _eon_element_image_process(Eon_Renderable *r)
 
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
+
+	/* Set the surface on the image theme */
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
