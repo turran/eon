@@ -2,7 +2,7 @@
 <eon xmlns:xlink="http://www.w3.org/1999/xlink">
   <stack orientation="vertical" vexpand="true" hexpand="true">
     <frame title="Image in original size">
-      <image xlink:href="http://www.webmonkey.com/wp-content/uploads/2013/01/octobiwan.jpg"/>
+      <image xlink:href="http://www.webmonkey.com/wp-content/uploads/2013/01/octobiwan.jpg" scalable="false"/>
     </frame>
     <frame title="Image scalable">
       <image xlink:href="http://www.webmonkey.com/wp-content/uploads/2013/01/octobiwan.jpg" hexpand="true" vexpand="true"/>

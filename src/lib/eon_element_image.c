@@ -177,8 +177,24 @@ static int _eon_element_image_size_hints_get(Eon_Renderable *r,
 	 */
 	else if (thiz->s)
 	{
+		int scalable;
+
 		ret |= EON_RENDERABLE_HINT_PREFERRED;
 		enesim_surface_size_get(thiz->s, &size->pref_width, &size->pref_height);
+
+		egueb_dom_attr_final_get(thiz->scalable, &scalable);
+		ret |= EON_RENDERABLE_HINT_MIN_MAX;
+		if (scalable)
+		{
+			size->min_width = size->min_height = -1;
+			size->max_width = size->max_height = -1;
+		}
+		else
+		{
+			printf("non scalable\n");
+			size->min_width = size->max_width = size->pref_width;
+			size->min_height = size->max_height = size->pref_height;
+		}
 	}
 	return ret;
 }
