@@ -103,6 +103,9 @@ Egueb_Dom_Node * eon_theme_mars_image_new(void)
 	thiz->rect = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->rect, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_shape_fill_renderer_set(thiz->rect, enesim_renderer_ref(thiz->image));
+	enesim_renderer_rectangle_corner_radii_set(thiz->rect, EON_THEME_MARS_MARGIN, EON_THEME_MARS_MARGIN);
+	enesim_renderer_rectangle_corners_set(thiz->rect, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
+	
 	n = eon_theme_element_image_new(&_descriptor, thiz);
 	thiz->n = n;
 

@@ -65,26 +65,59 @@ static void _eon_element_image_attr_modified_cb(Egueb_Dom_Event *e,
 	}
 	egueb_dom_node_unref(attr);
 }
+
+static void _eon_element_image_image_received_cb(Egueb_Dom_Node *n,
+		Enesim_Surface *s)
+{
+	Eon_Element_Image *thiz;
+	
+	INFO("Image received");
+	/* once we have the image, invalidate the geometry */
+	thiz = EON_ELEMENT_IMAGE(egueb_dom_element_external_data_get(n));
+	thiz->s = s;
+	eon_renderable_invalidate_geometry(n);
+}
+
+static void _eon_element_image_data_received_cb(Egueb_Dom_Node *n)
+{
+	Egueb_Dom_Node *parent;
+	Egueb_Dom_Event *e;
+	Enesim_Stream *s;
+
+	s = egueb_xlink_attr_href_data_get(n);
+	if (!s)
+	{
+		ERR("No file found");
+		return;
+	}
+	parent = egueb_dom_attr_owner_get(n);
+	/* request the image loading */
+	e = egueb_dom_event_io_image_new(s, _eon_element_image_image_received_cb);
+	egueb_dom_event_target_event_dispatch(
+			EGUEB_DOM_EVENT_TARGET(parent), e, NULL, NULL);
+	egueb_dom_node_unref(parent);
+}
 /*----------------------------------------------------------------------------*
- *                             Renderable interface                               *
+ *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static void _eon_element_image_init(Eon_Renderable *w)
+static void _eon_element_image_init(Eon_Renderable *r)
 {
 	Eon_Element_Image *thiz;
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Event_Target *et;
 
-	thiz = EON_ELEMENT_IMAGE(w);
+	thiz = EON_ELEMENT_IMAGE(r);
 
 	/* attributes */
 	thiz->scalable = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_NAME_ATTR_SCALABLE),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	thiz->xlink_href = egueb_xlink_attr_href_new(
-			egueb_dom_string_ref(EGUEB_XLINK_NAME_HREF),
 			EGUEB_XLINK_ATTR_HREF_FLAG_REMOTE);
-	n = (EON_ELEMENT(w))->n;
+	egueb_xlink_attr_href_on_data_received_set(thiz->xlink_href,
+			_eon_element_image_data_received_cb);
+	n = (EON_ELEMENT(r))->n;
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->scalable), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->xlink_href), NULL);
 	/* events */
@@ -95,13 +128,11 @@ static void _eon_element_image_init(Eon_Renderable *w)
 			EINA_FALSE, thiz);
 	/* private */
 	thiz->theme_feature = eon_feature_themable_add(n);
-	e = EON_ELEMENT(w);
+	e = EON_ELEMENT(r);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_IMAGE));
 }
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
+
 static Enesim_Renderer * _eon_element_image_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Image *thiz;
@@ -131,34 +162,32 @@ static int _eon_element_image_size_hints_get(Eon_Renderable *r,
 	int ret = 0;
 
 	thiz = EON_ELEMENT_IMAGE(r);
-	printf("size hints!!! %d\n", egueb_dom_attr_has_changed(thiz->xlink_href));
 	egueb_dom_attr_final_get(thiz->xlink_href, &s);
-	printf("value = %s\n", egueb_dom_string_string_get(s));
+	/* in case the xlink:href attribute has changed
+	 * request the io_data_cb from the uri and return no hints
+	 */
 	if (egueb_xlink_attr_href_has_changed(thiz->xlink_href))
 	{
-		printf("changed!!!\n");
 		egueb_xlink_attr_href_process(thiz->xlink_href);
 	}
-	/* in case the xlink:href attribute has changed
-	 * request the io_data_cb from the uri
-	 * return a simple hints
-	 * if it hasnt changed, return the size of the
+	/* if it hasnt changed, return the size of the
 	 * current surface as preferred size
 	 * in case it has the scalable attribute
 	 * set the min/max too
 	 */
+	else if (thiz->s)
+	{
+		ret |= EON_RENDERABLE_HINT_PREFERRED;
+		enesim_surface_size_get(thiz->s, &size->pref_width, &size->pref_height);
+	}
 	return ret;
 }
 
 static Eina_Bool _eon_element_image_process(Eon_Renderable *r)
 {
 	Eon_Element_Image *thiz;
-	Eon_Renderable *w;
-	Eon_Box padding = { 0, 0, 0, 0 };
-	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
 
-	n = (EON_ELEMENT(r))->n;
 	thiz = EON_ELEMENT_IMAGE(r);
 
 	/* get the theme */
@@ -173,6 +202,8 @@ static Eina_Bool _eon_element_image_process(Eon_Renderable *r)
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 
 	/* Set the surface on the image theme */
+	eon_theme_element_image_surface_set(theme_element,
+			enesim_surface_ref(thiz->s));
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
@@ -220,6 +251,7 @@ static void _eon_element_image_instance_deinit(void *o)
 	thiz = EON_ELEMENT_IMAGE(o);
 	egueb_dom_node_unref(thiz->scalable);
 	egueb_dom_node_unref(thiz->xlink_href);
+	enesim_surface_unref(thiz->s);
 }
 /*============================================================================*
  *                                 Global                                     *
