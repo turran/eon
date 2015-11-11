@@ -61,7 +61,6 @@ static Enesim_Image_Finder_Descriptor _finder = {
  *----------------------------------------------------------------------------*/
 static Eina_Bool _enesim_image_eon_init(void)
 {
-	eon_init();
 	if (!enesim_image_finder_register(&_finder))
 	{
 		return EINA_FALSE;
@@ -72,7 +71,6 @@ static Eina_Bool _enesim_image_eon_init(void)
 static void _enesim_image_eon_shutdown(void)
 {
 	enesim_image_finder_unregister(&_finder);
-	eon_shutdown();
 }
 
 EINA_MODULE_INIT(_enesim_image_eon_init);
