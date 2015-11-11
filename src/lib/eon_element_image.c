@@ -191,7 +191,6 @@ static int _eon_element_image_size_hints_get(Eon_Renderable *r,
 		}
 		else
 		{
-			printf("non scalable\n");
 			size->min_width = size->max_width = size->pref_width;
 			size->min_height = size->max_height = size->pref_height;
 		}
