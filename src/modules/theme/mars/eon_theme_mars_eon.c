@@ -23,7 +23,6 @@
 typedef struct _Eon_Theme_Mars_Eon
 {
 	Enesim_Renderer *background;
-	Egueb_Dom_Node *color;
 	Egueb_Dom_Node *n;
 } Eon_Theme_Mars_Eon;
 
