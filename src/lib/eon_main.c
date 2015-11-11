@@ -224,8 +224,8 @@ EAPI int eon_init(void)
 		egueb_xlink_init();
 		egueb_css_init();
 		egueb_smil_init();
-		eon_theme_init();
 		_strings_init();
+		eon_theme_init();
 		/* register our own source */
 		i = egueb_dom_implementation_new(&_impl_descriptor);
 		egueb_dom_registry_implementation_add(i);
@@ -241,8 +241,8 @@ EAPI int eon_shutdown(void)
 	if (--_init_count != 0)
 		return _init_count;
 
-	_strings_shutdown();
 	eon_theme_shutdown();
+	_strings_shutdown();
 	egueb_smil_shutdown();
 	egueb_css_shutdown();
 	egueb_xlink_shutdown();
