@@ -25,6 +25,8 @@ typedef struct _Eon_Theme_Mars_Image
 	Egueb_Dom_Node *n;
 	/* attributes */
 	/* private */
+	Enesim_Renderer *pattern;
+	Enesim_Renderer *proxy;
 	Enesim_Renderer *rect;
 	Enesim_Renderer *image;
 } Eon_Theme_Mars_Image;
@@ -42,6 +44,8 @@ static void _eon_theme_mars_image_dtor(void *data)
 
 	enesim_renderer_unref(thiz->rect);
 	enesim_renderer_unref(thiz->image);
+	enesim_renderer_unref(thiz->pattern);
+	enesim_renderer_unref(thiz->proxy);
 	free(thiz);
 }
 
@@ -71,6 +75,12 @@ static Eina_Bool _eon_theme_mars_image_process(void *data)
 static void _eon_theme_mars_image_surface_set(void *data, Enesim_Surface *s)
 {
 	Eon_Theme_Mars_Image *thiz = data;
+	if (s)
+		enesim_renderer_proxy_proxied_set(thiz->proxy,
+				enesim_renderer_ref(thiz->image));
+	else
+		enesim_renderer_proxy_proxied_set(thiz->proxy,
+				enesim_renderer_ref(thiz->pattern));
 	enesim_renderer_image_source_surface_set(thiz->image, s);
 }
 
@@ -97,12 +107,25 @@ Egueb_Dom_Node * eon_theme_mars_image_new(void)
 {
 	Eon_Theme_Mars_Image *thiz;
 	Egueb_Dom_Node *n;
+	Enesim_Matrix m;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Image));
+	thiz->pattern = enesim_renderer_stripes_new();
+	enesim_renderer_stripes_even_thickness_set(thiz->pattern, EON_THEME_MARS_MARGIN);
+	enesim_renderer_stripes_even_color_set(thiz->pattern, 0xffeeeeee);
+	enesim_renderer_stripes_odd_thickness_set(thiz->pattern, EON_THEME_MARS_MARGIN);
+	enesim_renderer_stripes_odd_color_set(thiz->pattern, 0xffcccccc);
+	enesim_matrix_identity(&m);
+	enesim_matrix_rotate(&m, 0.785);
+	enesim_renderer_transformation_set(thiz->pattern, &m);
+
+	thiz->proxy = enesim_renderer_proxy_new();
+	enesim_renderer_proxy_proxied_set(thiz->proxy, enesim_renderer_ref(thiz->pattern));
+
 	thiz->image = enesim_renderer_image_new();
 	thiz->rect = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->rect, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
-	enesim_renderer_shape_fill_renderer_set(thiz->rect, enesim_renderer_ref(thiz->image));
+	enesim_renderer_shape_fill_renderer_set(thiz->rect, enesim_renderer_ref(thiz->proxy));
 	enesim_renderer_rectangle_corner_radii_set(thiz->rect, EON_THEME_MARS_MARGIN, EON_THEME_MARS_MARGIN);
 	enesim_renderer_rectangle_corners_set(thiz->rect, EINA_TRUE, EINA_TRUE, EINA_TRUE, EINA_TRUE);
 	
