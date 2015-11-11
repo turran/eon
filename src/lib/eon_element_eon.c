@@ -46,8 +46,6 @@ typedef struct _Eon_Element_Eon
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *compound;
 	Eina_Bool renderable_changed;
-	/* the theme system */
-	Eina_List *themes;
 	/* input */
 	Egueb_Dom_Input *input;
 	/* window */
@@ -59,20 +57,6 @@ typedef struct _Eon_Element_Eon_Class
 {
 	Eon_Renderable_Class base;
 } Eon_Element_Eon_Class;
-
-static void _eon_element_eon_monitor_cb(Egueb_Dom_Event *e,
-		void *data)
-{
-	Eon_Element_Eon *thiz = data;
-	Egueb_Dom_Node *n;
-
-	if (!egueb_smil_event_is_timeline(e))
-		return;
-
-	DBG("Theme document requesting a timeline");
-	n = (EON_ELEMENT(thiz))->n;
-	egueb_dom_node_event_propagate(n, e);
-}
 
 /* Whenever an invalidate geometry event reaches the topmost element,
  * just enqueue the element for later processing
@@ -478,14 +462,6 @@ static void _eon_element_eon_instance_deinit(void *o)
 	Eon_Element_Eon_Theme *theme;
 
 	thiz = EON_ELEMENT_EON(o);
-	EINA_LIST_FREE(thiz->themes, theme)
-	{
-		egueb_dom_event_target_monitor_remove(EGUEB_DOM_EVENT_TARGET(theme->doc),
-				_eon_element_eon_monitor_cb, thiz);
-		egueb_dom_node_unref(theme->doc);
-		free(theme->name);
-		free(theme);
-	}
 	egueb_dom_input_unref(thiz->input);
 	enesim_renderer_unref(thiz->compound);
 	egueb_dom_feature_unref(thiz->theme_feature);
