@@ -25,15 +25,13 @@
 
 #define EON_THEME_ELEMENT_EON_VERSION 0
 
-typedef Enesim_Renderer * (*Eon_Theme_Element_Eon_Descriptor_Renderer_Get_Cb)(void *data);
-
 typedef struct _Eon_Theme_Element_Eon_Descriptor {
 	Eon_Theme_Element_Version_Get_Cb version_get;
 	Eon_Theme_Element_Ctor_Cb ctor;
 	Eon_Theme_Element_Dtor_Cb dtor;
 	Eon_Theme_Element_Tag_Name_Get_Cb tag_name_get;
 	Eon_Theme_Element_Process_Cb process;
-	Eon_Theme_Element_Eon_Descriptor_Renderer_Get_Cb renderer_get;
+	Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb renderer_get;
 } Eon_Theme_Element_Eon_Descriptor;
 
 EAPI Egueb_Dom_Node * eon_theme_element_eon_new(

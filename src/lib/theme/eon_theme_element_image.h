@@ -25,8 +25,6 @@
 
 #define EON_THEME_ELEMENT_IMAGE_VERSION 0
 
-/* TODO share the eon_theme_renderable definition */
-typedef Enesim_Renderer * (*Eon_Theme_Element_Image_Descriptor_Renderer_Get_Cb)(void *data);
 typedef void (*Eon_Theme_Element_Image_Descriptor_Surface_Set_Cb)(void *data, Enesim_Surface *s);
 typedef struct _Eon_Theme_Element_Image_Descriptor {
 	Eon_Theme_Element_Version_Get_Cb version_get;
@@ -34,7 +32,7 @@ typedef struct _Eon_Theme_Element_Image_Descriptor {
 	Eon_Theme_Element_Dtor_Cb dtor;
 	Eon_Theme_Element_Tag_Name_Get_Cb tag_name_get;
 	Eon_Theme_Element_Process_Cb process;
-	Eon_Theme_Element_Image_Descriptor_Renderer_Get_Cb renderer_get;
+	Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb renderer_get;
 	Eon_Theme_Element_Image_Descriptor_Surface_Set_Cb surface_set;
 } Eon_Theme_Element_Image_Descriptor;
 

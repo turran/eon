@@ -25,7 +25,6 @@
 
 #define EON_THEME_ELEMENT_BUTTON_VERSION 0
 
-typedef Enesim_Renderer * (*Eon_Theme_Element_Button_Descriptor_Renderer_Get_Cb)(void *data);
 typedef void (*Eon_Theme_Element_Button_Descriptor_Content_Set_Cb)(void *data, Enesim_Renderer *r);
 typedef void (*Eon_Theme_Element_Button_Descriptor_Padding_Get_Cb)(void *data, Eon_Box *padding);
 
@@ -35,9 +34,9 @@ typedef struct _Eon_Theme_Element_Button_Descriptor {
 	Eon_Theme_Element_Dtor_Cb dtor;
 	Eon_Theme_Element_Tag_Name_Get_Cb tag_name_get;
 	Eon_Theme_Element_Process_Cb process;
+	Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb renderer_get;
 	Eon_Theme_Element_Button_Descriptor_Content_Set_Cb content_set;
 	Eon_Theme_Element_Button_Descriptor_Padding_Get_Cb padding_get;
-	Eon_Theme_Element_Button_Descriptor_Renderer_Get_Cb renderer_get;
 } Eon_Theme_Element_Button_Descriptor;
 
 EAPI Egueb_Dom_Node * eon_theme_element_button_new(

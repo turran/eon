@@ -157,9 +157,9 @@ static Eon_Theme_Element_Button_Descriptor _descriptor = {
 	/* .dtor 		= */ _eon_theme_mars_radio_dtor,
 	/* .tag_name_get	= */ _eon_theme_mars_radio_tag_name_get,
 	/* .process 		= */ _eon_theme_mars_radio_process,
+	/* .renderer_get	= */ _eon_theme_mars_radio_renderer_get,
 	/* .content_set		= */ _eon_theme_mars_radio_content_set,
 	/* .padding_get		= */ _eon_theme_mars_radio_padding_get,
-	/* .renderer_get	= */ _eon_theme_mars_radio_renderer_get,
 };
 
 /*============================================================================*

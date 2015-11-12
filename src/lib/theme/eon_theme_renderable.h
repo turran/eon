@@ -19,6 +19,7 @@
 #ifndef _EON_THEME_RENDERABLE_H_
 #define _EON_THEME_RENDERABLE_H_
 
+typedef Enesim_Renderer * (*Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb)(void *data);
 EAPI void eon_theme_renderable_geometry_get(Egueb_Dom_Node *n, Eina_Rectangle *geom);
 
 #endif

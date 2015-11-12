@@ -151,9 +151,9 @@ static Eon_Theme_Element_Button_Descriptor _descriptor = {
 	/* .dtor 		= */ _eon_theme_mars_button_dtor,
 	/* .tag_name_get	= */ _eon_theme_mars_button_tag_name_get,
 	/* .process 		= */ _eon_theme_mars_button_process,
+	/* .renderer_get	= */ _eon_theme_mars_button_renderer_get,
 	/* .content_set		= */ _eon_theme_mars_button_content_set,
 	/* .padding_get		= */ _eon_theme_mars_button_padding_get,
-	/* .renderer_get	= */ _eon_theme_mars_button_renderer_get,
 };
 
 /*============================================================================*
