@@ -288,7 +288,7 @@ static void _eon_element_object_geometry_set(Eon_Renderable *r, Eina_Rectangle *
 	enesim_renderer_clipper_size_set(thiz->clipper, geometry->w, geometry->h);
 
 	enesim_renderer_image_position_set(thiz->image, geometry->x, geometry->y);
-	egueb_dom_feature_window_content_size_set(thiz->window,
+	egueb_dom_feature_window_size_set(thiz->window,
 			geometry->w, geometry->h);
 }
 
@@ -378,8 +378,8 @@ static Eina_Bool _eon_element_object_process(Eon_Renderable *r)
 	if (!thiz->window)
 		goto done;
 
-	egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
-
+	cw = r->geometry.w;
+	ch = r->geometry.h;
 	if (thiz->s)
 	{
 		int sw, sh;
@@ -434,7 +434,8 @@ done:
 static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_Size *size)
 {
 	Eon_Element_Object *thiz;
-	Egueb_Dom_Feature_Window_Type type;
+	Egueb_Dom_Feature_Window_Hint_Data wdata;
+	int whints;
 	int ret = 0;
 	int cw, ch;
 
@@ -453,32 +454,21 @@ static int _eon_element_object_size_hints_get(Eon_Renderable *r, Eon_Renderable_
 		return 0;
 	}
 
-	egueb_dom_feature_window_type_get(thiz->window, &type);
-	if (type == EGUEB_DOM_FEATURE_WINDOW_TYPE_MASTER)
-	{
-		egueb_dom_feature_window_content_size_get(thiz->window, &cw, &ch);
-		if (cw >= 0 && ch >= 0)
-		{
-			ret |= EON_RENDERABLE_HINT_MIN_MAX | EON_RENDERABLE_HINT_PREFERRED;
-			size->min_width = size->max_width = size->pref_width = cw;
-			size->min_height = size->max_height = size->pref_height = ch;
-		}
-		else
-		{
-			ret |= EON_RENDERABLE_HINT_MIN_MAX;
-			size->min_width = 1;
-			size->min_height = 1;
-			size->max_width = -1;
-			size->max_height = -1;
-		}
-	}
-	else
+	whints = egueb_dom_feature_window_hints_get(thiz->window, &wdata);
+	if (whints & EGUEB_DOM_FEATURE_WINDOW_HINT_MIN_MAX)
 	{
 		ret |= EON_RENDERABLE_HINT_MIN_MAX;
-		size->min_width = 1;
-		size->min_height = 1;
-		size->max_width = -1;
-		size->max_height = -1;
+		size->min_width = wdata.min_width;
+		size->max_width = wdata.max_width;
+		size->min_height = wdata.min_height;
+		size->max_height = wdata.max_height;
+		
+	}
+	if (whints & EGUEB_DOM_FEATURE_WINDOW_HINT_PREFERRED)
+	{
+		ret |= EON_RENDERABLE_HINT_PREFERRED;
+		size->pref_width = wdata.pref_width;
+		size->pref_height = wdata.pref_height;
 	}
 
 	return ret;

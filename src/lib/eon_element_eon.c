@@ -153,14 +153,33 @@ _eon_element_eon_animation_descriptor = {
 /*----------------------------------------------------------------------------*
  *                        Window feature interface                            *
  *----------------------------------------------------------------------------*/
-static Eina_Bool _eon_element_eon_window_type_get(
-		Egueb_Dom_Node *n, Egueb_Dom_Feature_Window_Type *type)
+static int _eon_element_eon_window_hints_get(Egueb_Dom_Node *n,
+			Egueb_Dom_Feature_Window_Hint_Data *data)
 {
-	*type = EGUEB_DOM_FEATURE_WINDOW_TYPE_SLAVE;
-	return EINA_TRUE;
+	Eon_Element_Eon *thiz;
+	Eon_Renderable_Size size;
+	int size_hints;
+	int ret = 0;
+
+	size_hints = eon_renderable_size_hints_get(n, &size);
+	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		ret |= EGUEB_DOM_FEATURE_WINDOW_HINT_MIN_MAX;
+		data->min_width = size.min_width;
+		data->max_width = size.max_width;
+		data->min_height = size.min_height;
+		data->max_height = size.max_height;
+	}
+	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		ret |= EGUEB_DOM_FEATURE_WINDOW_HINT_PREFERRED;
+		data->pref_width = size.pref_width;
+		data->pref_height = size.pref_height;
+	}
+	return ret;
 }
 
-static Eina_Bool _eon_element_eon_window_content_size_set(
+static Eina_Bool _eon_element_eon_window_size_set(
 		Egueb_Dom_Node *n, int w, int h)
 {
 	Eon_Element_Eon *thiz;
@@ -169,22 +188,12 @@ static Eina_Bool _eon_element_eon_window_content_size_set(
 		return EINA_FALSE;
 
 	DBG("Setting content window to %d %d", w, h);
-	eon_renderable_invalidate_geometry(n);
 	thiz = egueb_dom_element_external_data_get(n);
+	if (thiz->width != w || thiz->height != h)
+		eon_renderable_invalidate_geometry(n);
+
 	thiz->width = w;
 	thiz->height = h;
-
-	return EINA_TRUE;
-}
-
-static Eina_Bool _eon_element_eon_window_content_size_get(
-		Egueb_Dom_Node *n, int *w, int *h)
-{
-	Eon_Element_Eon *thiz;
-
-	thiz = egueb_dom_element_external_data_get(n);
-	*h = thiz->height;
-	*w = thiz->width;
 
 	return EINA_TRUE;
 }
@@ -192,9 +201,8 @@ static Eina_Bool _eon_element_eon_window_content_size_get(
 static Egueb_Dom_Feature_Window_Descriptor 
 _eon_element_eon_window_descriptor = {
 	/* .version		= */ EGUEB_DOM_FEATURE_WINDOW_DESCRIPTOR_VERSION,
-	/* .type_get 		= */ _eon_element_eon_window_type_get,
-	/* .content_size_set 	= */ _eon_element_eon_window_content_size_set,
-	/* .content_size_get 	= */ _eon_element_eon_window_content_size_get,
+	/* .hints_get 		= */ _eon_element_eon_window_hints_get,
+	/* .size_set 		= */ _eon_element_eon_window_size_set,
 };
 /*----------------------------------------------------------------------------*
  *                        Render feature interface                            *
