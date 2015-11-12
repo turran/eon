@@ -1,8 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 descriptionsdir = @ENDER_DATADIR@
-descriptions_DATA = \
-eon_theme.ender \
-eon_basic.ender
+descriptions_DATA =
 
 EXTRA_DIST = $(descriptions_DATA)
