@@ -85,6 +85,42 @@ static void _eon_renderable_geometry_invalidate_cb(Egueb_Dom_Event *ev,
 	}
 }
 
+static Egueb_Dom_Node * _eon_renderable_focus_next(Egueb_Dom_Node *n)
+{
+	Egueb_Dom_Node *parent;
+	Egueb_Dom_Node *tmp;
+	Egueb_Dom_Node *next;
+
+	if (!n)
+		return NULL;
+	next = egueb_dom_element_sibling_next_get(n);
+	/* go down */
+	while (next)
+	{
+		tmp = eon_renderable_focus_first(next);
+		/* we find one going down */
+		if (tmp)
+		{
+			egueb_dom_node_unref(next);
+			return tmp;
+		}
+		/* continue with the next */
+		else
+		{
+			tmp = egueb_dom_element_sibling_next_get(next);
+			egueb_dom_node_unref(next);
+			next = tmp;
+		}
+	}
+	/* go up */
+	parent = egueb_dom_node_parent_get(n);		
+	tmp = _eon_renderable_focus_next(parent);
+	egueb_dom_node_unref(parent);
+
+	return tmp;
+}
+
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -420,6 +456,56 @@ Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
 	if (klass->element_at)
 		return klass->element_at(thiz, cursor);
 	return egueb_dom_node_ref(n);
+}
+
+Eina_Bool eon_renderable_is_focusable(Egueb_Dom_Node *n)
+{
+	Eon_Renderable *thiz;
+	Eon_Renderable_Class *klass;
+
+	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
+	klass = EON_RENDERABLE_CLASS_GET(thiz);
+	if (klass->is_focusable)
+		return klass->is_focusable(thiz);
+	else
+		return EINA_FALSE;
+}
+
+Egueb_Dom_Node * eon_renderable_focus_first(Egueb_Dom_Node *n)
+{
+	Egueb_Dom_Node *child;
+
+	if (eon_is_renderable(n) && eon_renderable_is_focusable(n))
+		return egueb_dom_node_ref(n);
+
+	child = egueb_dom_element_child_first_get(n);
+	while (child)
+	{
+		Egueb_Dom_Node *tmp;
+
+		/* go depth */
+		tmp = eon_renderable_focus_first(child);
+		if (tmp)
+		{
+			egueb_dom_node_unref(child);
+			return tmp;
+		}
+		/* pick next */
+		tmp = egueb_dom_element_sibling_next_get(child);
+		egueb_dom_node_unref(child);
+		child = tmp;
+	}
+	return NULL;
+}
+
+Egueb_Dom_Node * eon_renderable_focus_next(Egueb_Dom_Node *n)
+{
+	return _eon_renderable_focus_next(n);
+}
+
+Egueb_Dom_Node * eon_renderable_focus_prev(Egueb_Dom_Node *n)
+{
+
 }
 /*============================================================================*
  *                                   API                                      *

@@ -72,7 +72,7 @@ static Egueb_Dom_Node * _eon_widget_element_at(Eon_Renderable *r, Eina_Rectangle
 	Eon_Widget *thiz;
 	Eon_Widget_Class *klass;
 	Egueb_Dom_Node *n;
-	Eina_Bool enabled;
+	int enabled;
 
 	thiz = EON_WIDGET(r);
 	egueb_dom_attr_final_get(thiz->enabled, &enabled);
@@ -84,6 +84,19 @@ static Egueb_Dom_Node * _eon_widget_element_at(Eon_Renderable *r, Eina_Rectangle
 
 	n = (EON_ELEMENT(r))->n;	
 	return egueb_dom_node_ref(n);
+}
+
+static Eina_Bool _eon_widget_is_focusable(Eon_Renderable *r)
+{
+	Eon_Widget *thiz;
+	int enabled;
+
+	thiz = EON_WIDGET(r);
+	egueb_dom_attr_final_get(thiz->enabled, &enabled);
+	if (!enabled)
+		return EINA_FALSE;
+	else
+		return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
@@ -103,6 +116,7 @@ static void _eon_widget_class_init(void *k)
 	r_klass->init = _eon_widget_init;
 	r_klass->pre_process = _eon_widget_pre_process;
 	r_klass->element_at = _eon_widget_element_at;
+	r_klass->is_focusable = _eon_widget_is_focusable;
 }
 
 static void _eon_widget_instance_init(void *o)

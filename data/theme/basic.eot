@@ -10,15 +10,19 @@
   <mars:eon id="eon" color="black"/>
   <mars:button id="button" border-color="#ff0f3b65" color="#ff0f3b65">
     <set attributeName="color" to="#ff081e33" begin="mousedown" end="mouseup" fill="remove"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:button>
   <mars:button id="stockButton-cancel" border-color="#ff0f3b65" color="red">
     <set attributeName="color" to="darkred" begin="mousedown" end="mouseup" fill="remove"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:button>
   <mars:button id="stockButton-ok" border-color="#ff0f3b65" color="green">
     <set attributeName="color" to="darkgreen" begin="mousedown" end="mouseup" fill="remove"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:button>
   <mars:button id="stockButton-help" border-color="#ff0f3b65" color="lightblue">
     <set attributeName="color" to="lightskyblue" begin="mousedown" end="mouseup" fill="remove"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:button>
   <mars:switch id="switch" font="Verdana 10pt bold" border-color="white" active-color="white" inactive-color="black">
     <set attributeName="active-color" to="white" begin="activate" dur="1s" end="mousedown"/>
@@ -29,6 +33,7 @@
   <mars:button id="toggleButton" border-color="#ff0f3b65" color="#ff0f3b65">
     <set attributeName="color" to="#ff0f3b65" begin="activate" dur="1s" end="mousedown"/>
     <set attributeName="color" to="#ff081e33" begin="deactivate" dur="1s" end="mousedown"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:button>
   <mars:radio id="radio" border-color="#ff0f3b65" button-color="#ff0f3b65">
     <set attributeName="button-color" to="#ff0f3b65" begin="activate" dur="1s" end="mousedown"/>

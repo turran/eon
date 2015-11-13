@@ -119,11 +119,32 @@ static Egueb_Dom_Node * _eon_element_eon_input_element_at(Egueb_Dom_Node *parent
 	return ret;
 }
 
+static Egueb_Dom_Node * _eon_element_eon_input_focus_next(Egueb_Dom_Node *current, void *data)
+{
+	Egueb_Dom_Node *n = data;
+	Egueb_Dom_Node *ret;
+	if (current)
+	{
+		ret = eon_renderable_focus_next(current);
+	}
+	else
+	{
+		ret = eon_renderable_focus_first(n);
+	}
+	return ret;
+}
+
+static Egueb_Dom_Node * _eon_element_eon_input_focus_prev(Egueb_Dom_Node *current, void *data)
+{
+	ERR("focus prev");
+	return NULL;
+}
+
 static Egueb_Dom_Input_Descriptor _eon_element_eon_input_descriptor = {
 	/* .version		= */ EGUEB_DOM_INPUT_DESCRIPTOR_VERSION,
 	/* .element_at 		= */ _eon_element_eon_input_element_at,
-	/* .focus_next		= */ NULL,
-	/* .focus_prev		= */ NULL,
+	/* .focus_next		= */ _eon_element_eon_input_focus_next,
+	/* .focus_prev		= */ _eon_element_eon_input_focus_prev,
 };
 
 /*----------------------------------------------------------------------------*

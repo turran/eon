@@ -58,6 +58,7 @@ typedef Enesim_Renderer * (*Eon_Renderable_Renderer_Get)(Eon_Renderable *thiz);
 typedef Eina_Bool (*Eon_Renderable_Pre_Process)(Eon_Renderable *thiz);
 typedef Eina_Bool (*Eon_Renderable_Process)(Eon_Renderable *thiz);
 typedef Egueb_Dom_Node * (*Eon_Renderable_Element_At)(Eon_Renderable *thiz, Eina_Rectangle *cursor);
+typedef Eina_Bool (*Eon_Renderable_Is_Focusable)(Eon_Renderable *thiz);
 
 typedef struct _Eon_Renderable_Class
 {
@@ -71,6 +72,7 @@ typedef struct _Eon_Renderable_Class
 	Eon_Renderable_Pre_Process pre_process;
 	Eon_Renderable_Process process;
 	Eon_Renderable_Element_At element_at;
+	Eon_Renderable_Is_Focusable is_focusable;
 	Eina_Bool child_size_dependant;
 } Eon_Renderable_Class;
 
@@ -82,6 +84,11 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 Enesim_Renderer * eon_renderable_renderer_get(Egueb_Dom_Node *n);
 Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
 		Eina_Rectangle *cursor);
+
+Egueb_Dom_Node * eon_renderable_focus_first(Egueb_Dom_Node *n);
+Egueb_Dom_Node * eon_renderable_focus_next(Egueb_Dom_Node *n);
+Egueb_Dom_Node * eon_renderable_focus_prev(Egueb_Dom_Node *n);
+Eina_Bool eon_renderable_is_focusable(Egueb_Dom_Node *n);
 
 static inline void eon_renderable_size_init(Eon_Renderable_Size *s)
 {

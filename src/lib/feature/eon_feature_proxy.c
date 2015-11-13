@@ -204,6 +204,14 @@ Egueb_Dom_Feature * eon_feature_proxy_add(Egueb_Dom_Node *n, Egueb_Dom_Node *pro
 			EGUEB_DOM_EVENT_MOUSE_OUT,
 			_eon_feature_proxy_event_propagate_cb,
 			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_FOCUS_IN,
+			_eon_feature_proxy_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_FOCUS_OUT,
+			_eon_feature_proxy_event_propagate_cb,
+			EINA_FALSE, thiz);
 	/* add the monitor */
 	egueb_dom_event_target_monitor_add(EGUEB_DOM_EVENT_TARGET(thiz->proxy),
 			_eon_feature_proxy_event_monitor_cb, thiz);

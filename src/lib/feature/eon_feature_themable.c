@@ -216,6 +216,14 @@ Egueb_Dom_Feature * eon_feature_themable_add(Egueb_Dom_Node *n)
 			EGUEB_DOM_EVENT_MOUSE_OUT,
 			_eon_feature_themable_event_propagate_cb,
 			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_FOCUS_IN,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_FOCUS_OUT,
+			_eon_feature_themable_event_propagate_cb,
+			EINA_FALSE, thiz);
 	/* return it */
 	return thiz->f;
 }
