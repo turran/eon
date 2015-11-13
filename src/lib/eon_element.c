@@ -162,7 +162,21 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 	return n;
 }
 
+void eon_element_attrs_propagate(Egueb_Dom_Node *n, Egueb_Dom_Node *other_n)
+{
+	Eon_Element *thiz;
+	Eon_Element *other;
 
+	thiz = EON_ELEMENT(egueb_dom_element_external_data_get(n));
+	other = EON_ELEMENT(egueb_dom_element_external_data_get(other_n));
+	if (egueb_dom_attr_has_changed(thiz->theme))
+	{
+		Egueb_Dom_String *theme;
+
+		egueb_dom_attr_final_get(thiz->theme, &theme);
+		egueb_dom_attr_set(other->theme, EGUEB_DOM_ATTR_TYPE_BASE, theme);
+	}
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

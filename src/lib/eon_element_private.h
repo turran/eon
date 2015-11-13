@@ -65,5 +65,6 @@ typedef struct _Eon_Element_Class
 
 Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 		Enesim_Object_Class *klass);
+void eon_element_attrs_propagate(Egueb_Dom_Node *n, Egueb_Dom_Node *other_n);
 
 #endif
