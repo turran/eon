@@ -38,6 +38,9 @@ include src/modules/egueb_implementation/Makefile.mk
 ### Themes
 include data/theme/Makefile.mk
 
+### Documentation
+include common/Makefile_doxygen.mk
+
 EXTRA_DIST += \
 AUTHORS \
 COPYING \

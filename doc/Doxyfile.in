@@ -1,0 +1,7 @@
+# Doxyfile 1.8.3.1
+
+@INCLUDE = common/doc/Doxyfile_common
+
+INPUT                  = @abs_srcdir@/../src/lib
+EXCLUDE_PATTERNS       = *_private.h
+

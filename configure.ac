@@ -157,8 +157,13 @@ ENS_MODULE([theme_mars], [static], [yes])
 
 ## Make the debug preprocessor configurable
 
+# doxygen program for documentation building
+ENS_CHECK_DOXYGEN([build_doc="yes"], [build_doc="no"])
+ 
 AC_CONFIG_FILES([
 Makefile
+common/doc/Doxyfile_common
+doc/Doxyfile
 ])
 
 AC_OUTPUT
@@ -182,8 +187,6 @@ echo "Remote: ..................: $build_backend_remote"
 echo
 echo "Themes:"
 echo "Mars: ....................: ${build_module_theme_mars}"
-echo "Drawers:"
-echo "Basic: ...................: ${build_module_drawer_basic}"
 echo
 echo "Installation Path.........: $prefix"
 echo
