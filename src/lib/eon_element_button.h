@@ -18,6 +18,23 @@
 #ifndef _EON_ELEMENT_BUTTON_H_
 #define _EON_ELEMENT_BUTTON_H_
 
+/**
+ * @file
+ * @ender_group{Eon_Element_Button}
+ */
+
+/**
+ * @defgroup Eon_Element_Button Button
+ * @brief Button @ender_inherits{Eon_Widget}
+ * @image html eon_button01.png
+ * @ingroup Eon_Widget
+ * @{
+ */
+
 EAPI Egueb_Dom_Node * eon_element_button_new(void);
+
+/**
+ * @}
+ */
 
 #endif
