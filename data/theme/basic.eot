@@ -11,6 +11,7 @@
   <mars:button id="button" border-color="#ff0f3b65" color="#ff0f3b65">
     <set attributeName="color" to="#ff081e33" begin="mousedown" end="mouseup" fill="remove"/>
     <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
+    <animate attributeName="color" dur="0.2s" values="#ff0f3b65; #ff081e33; #ff0f3b65" calcMode="discrete" keyTimes="0; 0.5; 1" begin="click"/>
   </mars:button>
   <mars:button id="stockButton-cancel" border-color="#ff0f3b65" color="red">
     <set attributeName="color" to="darkred" begin="mousedown" end="mouseup" fill="remove"/>
@@ -36,8 +37,8 @@
     <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:button>
   <mars:radio id="radio" border-color="#ff0f3b65" button-color="#ff0f3b65">
-    <set attributeName="button-color" to="#ff0f3b65" begin="activate" dur="1s" end="mousedown"/>
-    <set attributeName="button-color" to="#00000000" begin="deactivate" dur="1s" end="mousedown"/>
+    <set attributeName="button-color" to="#ff0f3b65" begin="activate" dur="1s" end="deactivate"/>
+    <set attributeName="button-color" to="#00000000" begin="deactivate" dur="1s" end="activate"/>
   </mars:radio>
   <mars:frame id="frame" font="Verdana 10pt bold" border-color="#ff0f3b65"/>
   <mars:separator id="separator" color="#ff0f3b65"/>
