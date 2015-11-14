@@ -24,7 +24,7 @@
 #include "eon_element_label_stock.h"
 
 #include "eon_stock_private.h"
-#include "eon_widget_private.h"
+#include "eon_renderable_private.h"
 #include "eon_theme_document_private.h"
 #include "eon_feature_proxy_private.h"
 /*============================================================================*
@@ -36,7 +36,7 @@
 
 typedef struct _Eon_Element_Label_Stock
 {
-	Eon_Widget base;
+	Eon_Renderable base;
 	/* attributes */
 	Egueb_Dom_Node *stock;
 	/* private */
@@ -47,7 +47,7 @@ typedef struct _Eon_Element_Label_Stock
 
 typedef struct _Eon_Element_Label_Stock_Class
 {
-	Eon_Widget_Class base;
+	Eon_Renderable_Class base;
 } Eon_Element_Label_Stock_Class;
 
 /* Whenever the 'stock' attribute is modifed be sure to invalidate the
@@ -71,18 +71,17 @@ static void _eon_element_label_stock_attr_modified_cb(Egueb_Dom_Event *e,
 	}
 	egueb_dom_node_unref(attr);
 }
-
 /*----------------------------------------------------------------------------*
- *                             Widget interface                               *
+ *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
-static void _eon_element_label_stock_init(Eon_Widget *w)
+static void _eon_element_label_stock_init(Eon_Renderable *r)
 {
 	Eon_Element_Label_Stock *thiz;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Event_Target *et;
 
-	thiz = EON_ELEMENT_LABEL_STOCK(w);
-	n = (EON_ELEMENT(w))->n;
+	thiz = EON_ELEMENT_LABEL_STOCK(r);
+	n = (EON_ELEMENT(r))->n;
 
 	/* private */
 	thiz->proxy = eon_feature_proxy_add(n, thiz->label);
@@ -100,18 +99,16 @@ static void _eon_element_label_stock_init(Eon_Widget *w)
 			EINA_FALSE, thiz);
 }
 
-static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
+static Eina_Bool _eon_element_label_stock_pre_process(Eon_Renderable *r)
 {
 	Eon_Element_Label_Stock *thiz;
-	Eon_Renderable *r;
 	Eon_Element *proxied;
 
-	thiz = EON_ELEMENT_LABEL_STOCK(w);
+	thiz = EON_ELEMENT_LABEL_STOCK(r);
 	proxied = egueb_dom_element_external_data_get(thiz->label);
 
 	/* element attributes */
 	/* renderable attributes */
-	r = EON_RENDERABLE(w);
 	if (egueb_dom_attr_has_changed(r->halign))
 	{
 		Eon_Renderable *p_r;
@@ -167,9 +164,6 @@ static Eina_Bool _eon_element_label_stock_pre_process(Eon_Widget *w)
 
 	return EINA_TRUE;
 }
-/*----------------------------------------------------------------------------*
- *                           Renderable interface                             *
- *----------------------------------------------------------------------------*/
 static Enesim_Renderer * _eon_element_label_stock_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Label_Stock *thiz;
@@ -236,7 +230,7 @@ static Egueb_Dom_String * _eon_element_label_stock_tag_name_get(Eon_Element *e)
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_WIDGET_DESCRIPTOR,
+ENESIM_OBJECT_INSTANCE_BOILERPLATE(EON_RENDERABLE_DESCRIPTOR,
 		Eon_Element_Label_Stock, Eon_Element_Label_Stock_Class,
 		eon_element_label_stock);
 
@@ -244,19 +238,17 @@ static void _eon_element_label_stock_class_init(void *k)
 {
 	Eon_Element_Class *klass;
 	Eon_Renderable_Class *r_klass;
-	Eon_Widget_Class *w_klass;
 
 	klass = EON_ELEMENT_CLASS(k);
 	klass->tag_name_get = _eon_element_label_stock_tag_name_get;
 
 	r_klass = EON_RENDERABLE_CLASS(k);
+	r_klass->init = _eon_element_label_stock_init;
+	r_klass->pre_process = _eon_element_label_stock_pre_process;
 	r_klass->renderer_get = _eon_element_label_stock_renderer_get;
 	r_klass->size_hints_get = _eon_element_label_stock_size_hints_get;
 	r_klass->process = _eon_element_label_stock_process;
 
-	w_klass = EON_WIDGET_CLASS(k);
-	w_klass->init = _eon_element_label_stock_init;
-	w_klass->pre_process = _eon_element_label_stock_pre_process;
 }
 
 static void _eon_element_label_stock_instance_init(void *o)
