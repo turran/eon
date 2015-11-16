@@ -77,6 +77,7 @@ static void _strings_init(void)
 	EON_NAME_ATTR_ACTIVATED = egueb_dom_string_new_with_static_string("activated");
 	EON_NAME_ATTR_TITLE = egueb_dom_string_new_with_static_string("title");
 	EON_NAME_ATTR_SCALABLE = egueb_dom_string_new_with_static_string("scalable");
+	EON_NAME_ATTR_DEFAULT_VALUE = egueb_dom_string_new_with_static_string("default-value");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
@@ -93,6 +94,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_FRAME = egueb_dom_string_new_with_static_string("frame");
 	EON_NAME_ELEMENT_SEPARATOR = egueb_dom_string_new_with_static_string("separator");
 	EON_NAME_ELEMENT_IMAGE = egueb_dom_string_new_with_static_string("image");
+	EON_NAME_ELEMENT_ENTRY = egueb_dom_string_new_with_static_string("entry");
 	/* generic */
 	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
 	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
@@ -129,6 +131,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ATTR_ACTIVATED);
 	egueb_dom_string_unref(EON_NAME_ATTR_TITLE);
 	egueb_dom_string_unref(EON_NAME_ATTR_SCALABLE);
+	egueb_dom_string_unref(EON_NAME_ATTR_DEFAULT_VALUE);
 	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
@@ -145,6 +148,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_FRAME);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_SEPARATOR);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_IMAGE);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_ENTRY);
 	/* generic */
 	egueb_dom_string_unref(EON_NAME_ON);
 	egueb_dom_string_unref(EON_NAME_OFF);
@@ -183,6 +187,7 @@ Egueb_Dom_String *EON_NAME_ATTR_INACTIVE;
 Egueb_Dom_String *EON_NAME_ATTR_ACTIVATED;
 Egueb_Dom_String *EON_NAME_ATTR_TITLE;
 Egueb_Dom_String *EON_NAME_ATTR_SCALABLE;
+Egueb_Dom_String *EON_NAME_ATTR_DEFAULT_VALUE;
 Egueb_Dom_String *EON_STOCK;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
@@ -199,6 +204,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_SWITCH;
 Egueb_Dom_String *EON_NAME_ELEMENT_FRAME;
 Egueb_Dom_String *EON_NAME_ELEMENT_SEPARATOR;
 Egueb_Dom_String *EON_NAME_ELEMENT_IMAGE;
+Egueb_Dom_String *EON_NAME_ELEMENT_ENTRY;
 /* generic */
 Egueb_Dom_String *EON_NAME_ON;
 Egueb_Dom_String *EON_NAME_OFF;
