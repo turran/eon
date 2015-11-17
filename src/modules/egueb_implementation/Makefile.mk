@@ -7,6 +7,7 @@ src/modules/egueb_implementation/egueb_implementation_eon.c
 src_modules_egueb_implementation_egueb_implementation_eon_la_CPPFLAGS = \
 -I$(top_srcdir)/src/lib/ \
 -I$(top_srcdir)/src/lib/theme \
+-I$(top_srcdir)/src/lib/event \
 @EON_CFLAGS@
 
 src_modules_egueb_implementation_egueb_implementation_eon_la_LIBADD = \
