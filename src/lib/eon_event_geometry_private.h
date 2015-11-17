@@ -18,8 +18,6 @@
 #ifndef _EON_EVENT_GEOMETRY_PRIVATE_H_
 #define _EON_EVENT_GEOMETRY_PRIVATE_H_
 
-Egueb_Dom_Event * eon_event_geometry_request_new(void);
 Egueb_Dom_Event * eon_event_geometry_invalidate_new(void);
-Eina_Bool eon_event_geometry_request_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom);
 
 #endif

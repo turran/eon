@@ -18,7 +18,4 @@
 #ifndef _EON_EVENT_GEOMETRY_H_
 #define _EON_EVENT_GEOMETRY_H_
 
-EAPI void eon_event_geometry_request_geometry_set(Egueb_Dom_Event *e,
-		Eina_Rectangle *geom);
-
 #endif

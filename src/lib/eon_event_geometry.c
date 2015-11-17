@@ -50,49 +50,6 @@ Egueb_Dom_Event * eon_event_geometry_invalidate_new(void)
 {
 	return _eon_event_geometry_new(egueb_dom_string_ref(EON_EVENT_GEOMETRY_INVALIDATE));
 }
-
-Egueb_Dom_Event * eon_event_geometry_request_new(void)
-{
-	return _eon_event_geometry_new(egueb_dom_string_ref(EON_EVENT_GEOMETRY_REQUEST));
-}
-
-#if 0
-Egueb_Dom_Event * eon_event_geometry_updated(Eina_Rectangle *geometry)
-{
-	Eon_Event_Geometry *thiz;
-	Egueb_Dom_Event *e;
-
-	e = _eon_event_geometry_new(
-			egueb_dom_string_ref(EON_EVENT_GEOMETRY_UPDATED));
-	thiz = egueb_dom_event_external_data_get(e);
-	thiz->geometry = *geometry;
-	return e;
-}
-#endif
-
-Eina_Bool eon_event_geometry_request_geometry_get(Egueb_Dom_Event *e, Eina_Rectangle *geom)
-{
-	Eon_Event_Geometry *thiz;
-
-	if (!e) return EINA_FALSE;
-	thiz = egueb_dom_event_external_data_get(e);
-	if (!thiz->set) return EINA_FALSE;
-
-	*geom = thiz->geometry;
-	/* reset it */
-	thiz->set = EINA_FALSE;
-	return EINA_TRUE;
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI void eon_event_geometry_request_geometry_set(Egueb_Dom_Event *e,
-		Eina_Rectangle *geom)
-{
-	Eon_Event_Geometry *thiz;
-
-	if (!e) return;
-	thiz = egueb_dom_event_external_data_get(e);
-	thiz->geometry = *geom;
-	thiz->set = EINA_TRUE;
-}
