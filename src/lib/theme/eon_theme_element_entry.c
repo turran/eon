@@ -143,6 +143,7 @@ static void _eon_theme_element_entry_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+/* TODO remove this */
 void eon_theme_element_entry_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
 {
 	Eon_Theme_Element_Entry *thiz;
@@ -152,6 +153,10 @@ void eon_theme_element_entry_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
 		thiz->d->padding_get(thiz->data, padding);
 }
 
+/* TODO rename this to renderer_set
+ * don't call an inner class function, just keep it, we need
+ * it for the process
+ */
 void eon_theme_element_entry_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
 {
 	Eon_Theme_Element_Entry *thiz;
@@ -159,6 +164,15 @@ void eon_theme_element_entry_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
 	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
 	if (thiz->d->content_set)
 		thiz->d->content_set(thiz->data, r);
+}
+
+int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
+		Eon_Renderable_Size *size, int max_length)
+{
+	/* TODO generate the font */
+	/* TODO in case the klass needs to say something about the hints, pass it */
+	/* TODO set here the font before processing? */
+	return 0;
 }
 /*============================================================================*
  *                                   API                                      *

@@ -21,6 +21,23 @@
 
 /**
  * @{
+ * - A entry theme must define the size hints by itself.
+ * - The text renderer from the element is passed in
+ * - The position of such text renderer is set when
+ *   setting the geometry of the theme element
+ * - The theme element base class must have the font/color
+ *   attributes. It must do the setup on the size hints
+ *   and process calls
+ * - The element must set the cursor style by default
+ *   only when its inside the input area
+ * - How to define the preferred size? It should be max
+ *   number of chars available * the max width of a glyph
+ *   (xMax_Extent) for that we need the font, so we can
+ *   query it.
+ *  - Make the base class handle the size hints and the theme
+ *    add the padding
+ *  - Make the theme element request the area of the cursor change
+ *    by asking the renderer geometry
  */
 
 #define EON_THEME_ELEMENT_ENTRY_VERSION 0
