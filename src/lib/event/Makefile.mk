@@ -7,4 +7,4 @@ src/lib/event/eon_event_deactivate.c \
 src/lib/event/eon_event_deactivate_private.h
 
 dist_installed_headers_DATA += \
-src/lib/eon_event_geometry.h
+src/lib/event/eon_event_geometry.h
