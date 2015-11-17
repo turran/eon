@@ -1,4 +1,4 @@
-+ Add an image element
++ Be able to define eot elements on the eon tree
 + Add an image stock element similar to the button stock
 + Add an event handler on the theme element to replace the relative uris with absolute uris based on the path of the theme
 + Add a LTR attribute inheritable
