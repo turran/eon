@@ -18,6 +18,7 @@
 #include "eon_theme_private.h"
 #include "eon_theme_main_private.h"
 #include "eon_theme_renderable_private.h"
+#include "eon_event_geometry_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -73,4 +74,24 @@ EAPI void eon_theme_renderable_geometry_get(Egueb_Dom_Node *n, Eina_Rectangle *g
 
 	thiz = EON_THEME_RENDERABLE(egueb_dom_element_external_data_get(n));
 	*geom = thiz->geometry;
+}
+
+/*
+ * In case the theme element needs to inform the corresponding element that
+ * the size hints of the owner element must change, call this function
+ * An example use is whenever a font attribute changes on a label theme. On
+ * such case the geometry of the label element must be recalculated.
+ */
+EAPI void eon_theme_renderable_geometry_invalidate(Egueb_Dom_Node *n)
+{
+	Eon_Theme_Renderable *thiz;
+	Egueb_Dom_Event *ev;
+	Egueb_Dom_Event_Target *et;
+
+	thiz = EON_THEME_RENDERABLE(egueb_dom_element_external_data_get(n));
+	DBG_ELEMENT(n, "Invalidating geometry");
+
+	ev = eon_event_geometry_invalidate_new();
+	et = EGUEB_DOM_EVENT_TARGET((EON_THEME_ELEMENT(thiz))->n);
+	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
 }

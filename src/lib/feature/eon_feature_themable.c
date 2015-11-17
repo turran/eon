@@ -117,6 +117,13 @@ static void _eon_feature_themable_event_monitor_cb(Egueb_Dom_Event *e,
 		egueb_dom_node_event_propagate(thiz->n, e);
 		return;
 	}
+#if 0
+	else if (eon_event_is_geometry_invalidate(e))
+	{
+		DBG("Theme element requests a size invalidation");
+
+	}
+#endif
 }
 /*----------------------------------------------------------------------------*
  *                              Feature interface                             *
