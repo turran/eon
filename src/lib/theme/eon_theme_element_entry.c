@@ -19,6 +19,7 @@
 #include "eon_theme_element_entry.h"
 #include "eon_theme_main_private.h"
 #include "eon_theme_widget_private.h"
+#include "eon_theme_element_entry_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -33,6 +34,7 @@ typedef struct _Eon_Theme_Element_Entry
 	Egueb_Dom_Node *font;
 	Egueb_Dom_Node *color;
 	/* private */
+	Enesim_Renderer *text_renderer;
 	const Eon_Theme_Element_Entry_Descriptor *d;
 	void *data;
 } Eon_Theme_Element_Entry;
@@ -52,7 +54,8 @@ static Enesim_Renderer * _eon_theme_element_entry_renderer_get(Eon_Theme_Rendera
 	thiz = EON_THEME_ELEMENT_ENTRY(r);
 	if (thiz->d->renderer_get)
 		return thiz->d->renderer_get(thiz->data);
-	return NULL;
+	else
+		return enesim_rendere_ref(thiz->text_renderer);
 }
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
@@ -81,12 +84,18 @@ static void _eon_theme_element_entry_init(Eon_Theme_Element *e)
 	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->font), NULL);
 }
 
-
 static Eina_Bool _eon_theme_element_entry_process(Eon_Theme_Element *e)
 {
 	Eon_Theme_Element_Entry *thiz;
+	Enesim_Color color;
+	Enesim_Argb argb;
 
 	thiz = EON_THEME_ELEMENT_ENTRY(e);
+	/* Set the properties of the renderer */
+	egueb_dom_attr_final_get(thiz->color, &argb);
+	color = enesim_color_argb_from(argb);
+	enesim_renderer_color_set(thiz->text_renderer, color);
+	
 	if (thiz->d->process)
 		return thiz->d->process(thiz->data);
 	return EINA_TRUE;
@@ -139,6 +148,8 @@ static void _eon_theme_element_entry_instance_deinit(void *o)
 	/* attributes */
 	egueb_dom_node_unref(thiz->font);
 	egueb_dom_node_unref(thiz->color);
+	/* private */
+	enesim_renderer_unref(thiz->text_renderer);
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -153,26 +164,41 @@ void eon_theme_element_entry_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
 		thiz->d->padding_get(thiz->data, padding);
 }
 
-/* TODO rename this to renderer_set
- * don't call an inner class function, just keep it, we need
- * it for the process
- */
-void eon_theme_element_entry_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
+void eon_theme_element_entry_text_renderer_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
 {
 	Eon_Theme_Element_Entry *thiz;
 
 	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
-	if (thiz->d->content_set)
-		thiz->d->content_set(thiz->data, r);
+	enesim_renderer_unref(thiz->text_renderer);
+	thiz->text_renderer = r;
 }
 
 int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
 		Eon_Renderable_Size *size, int max_length)
 {
-	/* TODO generate the font */
+	Eon_Theme_Element_Entry *thiz;
+	Enesim_Text_Font *font;
+	Enesim_Rectangle geom;
+	int top, bottom;
+	int ret = 0;
+
+	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
+	ret |= EON_RENDERABLE_HINT_MIN_MAX;
+	size->min_height = 0;
+	size->min_width = -1;
+	/* generate the font */
+	font = egueb_css_attr_font_resolve(thiz->font, 0, 0);
+	if (font)
+	{
+		top = enesim_text_font_max_ascent_get(font);
+		bottom = enesim_text_font_max_descent_get(font);
+		size->min_height = size->max_height = top + bottom;
+	}
+	/* set here the font before processing */
+	enesim_renderer_text_span_font_set(thiz->text_renderer, font);
 	/* TODO in case the klass needs to say something about the hints, pass it */
-	/* TODO set here the font before processing? */
-	return 0;
+
+	return ret;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -212,5 +238,13 @@ EAPI void * eon_theme_element_entry_data_get(Egueb_Dom_Node *n)
 	thiz = EON_THEME_ELEMENT_ENTRY(e);
 
 	return thiz->data;
+}
+
+EAPI Enesim_Renderer * eon_theme_element_entry_text_renderer_get(Egueb_Dom_Node *n)
+{
+	Eon_Theme_Element_Entry *thiz;
+
+	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
+	return enesim_renderer_ref(thiz->text_renderer);
 }
 

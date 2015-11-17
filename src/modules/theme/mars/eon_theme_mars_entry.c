@@ -118,6 +118,7 @@ static void _eon_theme_mars_entry_padding_get(void *data, Eon_Box *padding)
 	padding->right = 15;
 }
 
+#if 0
 static void _eon_theme_mars_entry_content_set(void *data, Enesim_Renderer *r)
 {
 	Eon_Theme_Mars_Entry *thiz = data;
@@ -138,6 +139,7 @@ static void _eon_theme_mars_entry_content_set(void *data, Enesim_Renderer *r)
 		enesim_renderer_compound_layer_add(thiz->entry_content, l);
 	}
 }
+#endif
 
 static Enesim_Renderer * _eon_theme_mars_entry_renderer_get(void *data)
 {
@@ -152,7 +154,6 @@ static Eon_Theme_Element_Entry_Descriptor _descriptor = {
 	/* .tag_name_get	= */ _eon_theme_mars_entry_tag_name_get,
 	/* .process 		= */ _eon_theme_mars_entry_process,
 	/* .renderer_get	= */ _eon_theme_mars_entry_renderer_get,
-	/* .content_set		= */ _eon_theme_mars_entry_content_set,
 	/* .padding_get		= */ _eon_theme_mars_entry_padding_get,
 };
 
