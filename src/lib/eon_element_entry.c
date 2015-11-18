@@ -59,15 +59,20 @@ static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 	/* TODO trigger the focus */
 }
 
-static Eina_Bool _eon_element_entry_mutation_get_text(Egueb_Dom_Event *e,
-		Egueb_Dom_Node *us, Egueb_Dom_Node **text)
+static Eina_Bool _eon_element_entry_mutation_get_text(
+		Eon_Element_Entry *thiz,
+		Egueb_Dom_Event *e, Egueb_Dom_Node **text)
 {
 	Egueb_Dom_Node *target = NULL;
 	Egueb_Dom_Node *related = NULL;
 	Egueb_Dom_Node_Type type;
 	Eina_Bool ret = EINA_FALSE;
 
-	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_CAPTURING)
+		goto not_phase;
+
+	related = egueb_dom_event_mutation_related_get(e);
+	if (related != (EON_ELEMENT(thiz))->n)
 		goto not_us;
 
 	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(e));
@@ -80,21 +85,21 @@ static Eina_Bool _eon_element_entry_mutation_get_text(Egueb_Dom_Event *e,
 not_text:
 	egueb_dom_node_unref(target);
 not_us:
+	egueb_dom_node_unref(related);
+not_phase:
 	return ret;
 }
 
 static void _eon_element_entry_node_inserted_cb(Egueb_Dom_Event *e,
 		void *data)
 {
-	Egueb_Dom_Node *n = data;
+	Eon_Element_Entry *thiz = data;
 	Egueb_Dom_Node *text = NULL;
 
-	if (_eon_element_entry_mutation_get_text(e, n, &text))
+	if (_eon_element_entry_mutation_get_text(thiz, e, &text))
 	{
-		Eon_Element_Entry *thiz;
 		Enesim_Text_Buffer *nb = NULL;
 
-		thiz = EON_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
 		/* set the internal buffer of the entry to be the one
 		 * on the text node */
 		nb = egueb_dom_character_data_buffer_get(text);
@@ -109,15 +114,13 @@ static void _eon_element_entry_node_inserted_cb(Egueb_Dom_Event *e,
 static void _eon_element_entry_node_removed_cb(Egueb_Dom_Event *e,
 		void *data)
 {
-	Egueb_Dom_Node *n = data;
+	Eon_Element_Entry *thiz = data;
 	Egueb_Dom_Node *text = NULL;
 
-	if (_eon_element_entry_mutation_get_text(e, n, &text))
+	if (_eon_element_entry_mutation_get_text(thiz, e, &text))
 	{
-		Eon_Element_Entry *thiz;
 		Enesim_Text_Buffer *nb;
 
-		thiz = EON_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
 		nb = enesim_renderer_text_span_real_buffer_get(thiz->r);
 		egueb_dom_character_data_buffer_set(text, nb);
 		egueb_dom_node_unref(text);
@@ -150,11 +153,11 @@ static void _eon_element_entry_init(Eon_Widget *w)
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
 			_eon_element_entry_node_inserted_cb,
-			EINA_FALSE, thiz);
+			EINA_TRUE, thiz);
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
 			_eon_element_entry_node_removed_cb,
-			EINA_FALSE, thiz);
+			EINA_TRUE, thiz);
 	/* private */
 	thiz->r = enesim_renderer_text_span_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
@@ -258,8 +261,8 @@ static Eina_Bool _eon_element_entry_child_appendable(Eon_Element *e, Egueb_Dom_N
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *our_child;
 
-	/* only accept one child */
-	if (!eon_is_renderable(child))
+	/* only accept one child and of type text */
+	if (egueb_dom_node_type_get(child) != EGUEB_DOM_NODE_TYPE_TEXT)
 		return EINA_FALSE;
 
 	/* check if we already have one child */
