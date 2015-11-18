@@ -97,7 +97,15 @@ static Eina_Bool _eon_theme_element_entry_process(Eon_Theme_Element *e)
 	enesim_renderer_color_set(thiz->text_renderer, color);
 	
 	if (thiz->d->process)
+	{
 		return thiz->d->process(thiz->data);
+	}
+	else
+	{
+		Eon_Theme_Renderable *r;
+		r = EON_THEME_RENDERABLE(e);
+		enesim_renderer_origin_set(thiz->text_renderer, r->geom.x, r->geom.y);
+	}
 	return EINA_TRUE;
 }
 
@@ -171,6 +179,12 @@ void eon_theme_element_entry_text_renderer_set(Egueb_Dom_Node *n, Enesim_Rendere
 	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
 	enesim_renderer_unref(thiz->text_renderer);
 	thiz->text_renderer = r;
+}
+
+void eon_theme_element_entry_halign_set(Egueb_Dom_Node *n,
+		Eon_Horizontal_Align halign)
+{
+
 }
 
 int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
