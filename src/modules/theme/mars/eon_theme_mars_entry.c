@@ -61,6 +61,7 @@ static const char * _eon_theme_mars_entry_tag_name_get(void)
 static Eina_Bool _eon_theme_mars_entry_process(void *data)
 {
 	Eon_Theme_Mars_Entry *thiz;
+	Enesim_Renderer *text;
 	Eina_Rectangle geom;
 	Eina_Bool enabled;
 	Enesim_Argb argb;
@@ -77,6 +78,11 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	/* set the rectangle area */
 	enesim_renderer_rectangle_position_set(thiz->entry, geom.x, geom.y);
 	enesim_renderer_rectangle_size_set(thiz->entry, geom.w, geom.h);
+	text = eon_theme_element_entry_text_renderer_get(thiz->n);
+	enesim_renderer_shape_fill_renderer_set(thiz->entry,
+			enesim_renderer_ref(text));
+	enesim_renderer_origin_set(text, geom.x, geom.y);
+	enesim_renderer_unref(text);
 	/* set the border color */
 	enesim_renderer_shape_stroke_color_set(thiz->entry, border_color);
 	enesim_renderer_shape_stroke_weight_set(thiz->entry, 2);
