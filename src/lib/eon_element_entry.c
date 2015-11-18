@@ -22,9 +22,7 @@
 #include "eon_feature_themable_private.h"
 #include "eon_widget_private.h"
 #include "eon_theme_renderable_private.h"
-#include "eon_theme_element_button_private.h"
-#include "eon_event_activate_private.h"
-#include "eon_event_deactivate_private.h"
+#include "eon_theme_element_entry_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -198,27 +196,15 @@ static int _eon_element_entry_size_hints_get(Eon_Renderable *r,
 
 	thiz = EON_ELEMENT_ENTRY(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	eon_theme_element_button_padding_get(theme_element, &padding);
-	/* an entry can be of any size? */
-	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	if (size->min_width >= 0)
-		size->min_width += padding.left + padding.right;
-	if (size->min_height >= 0)
-		size->min_height += padding.top + padding.bottom;
-	size->max_width = -1;
-	size->max_height = -1;
-
-	/* get the font/color attributes of the entry text */
-	/* get the size of the input to be the preferred size */
-
-	if (ret & EON_RENDERABLE_HINT_PREFERRED)
+	if (!theme_element)
 	{
-		if (size->pref_width > 0)
-			size->pref_width += padding.left + padding.right;
-		if (size->pref_height > 0)
-			size->pref_height += padding.top + padding.bottom;
+		WARN("No theme element found");
+		return 0;
 	}
-
+	eon_theme_element_entry_text_renderer_set(theme_element,
+			enesim_renderer_ref(thiz->r));
+	ret = eon_theme_element_entry_size_hints_get(theme_element,
+			size, -1);
 	return ret;
 }
 
@@ -226,18 +212,13 @@ static Eina_Bool _eon_element_entry_process(Eon_Renderable *r)
 {
 	Eon_Element_Entry *thiz;
 	Eon_Widget *w;
-	Eon_Box padding = { 0, 0, 0, 0 };
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *child;
 	Egueb_Dom_Node *theme_element;
 	Eina_Rectangle geometry;
-	Eina_Rectangle free_space;
 	int enabled;
 
 	n = (EON_ELEMENT(r))->n;
 	thiz = EON_ELEMENT_ENTRY(r);
-
-	free_space = r->geometry;
 
 	/* get the theme */
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
@@ -246,6 +227,9 @@ static Eina_Bool _eon_element_entry_process(Eon_Renderable *r)
 		goto done;
 	}
 
+	/* Set the text renderer */
+	eon_theme_element_entry_text_renderer_set(theme_element,
+			enesim_renderer_ref(thiz->r));
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 	/* Set the enabled */
@@ -253,24 +237,11 @@ static Eina_Bool _eon_element_entry_process(Eon_Renderable *r)
 	egueb_dom_attr_final_get(w->enabled, &enabled);
 	eon_theme_widget_enabled_set(theme_element, enabled);
 
-	/* finally add our padding */
-	eon_theme_element_button_padding_get(theme_element, &padding);
-	free_space.x += padding.left;
-	free_space.y += padding.top;
-	free_space.w -= padding.left + padding.right;
-	free_space.h -= padding.bottom + padding.top;
-
-	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
-	/* Set the default text */
-	/* Set the text renderer */
-	eon_theme_element_button_content_set(theme_element, NULL);
-
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
 	egueb_dom_node_unref(theme_element);
 
 done:
-
 	return EINA_TRUE;
 }
 

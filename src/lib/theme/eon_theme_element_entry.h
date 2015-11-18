@@ -44,6 +44,8 @@
 
 typedef void (*Eon_Theme_Element_Entry_Descriptor_Padding_Get_Cb)(void *data, Eon_Box *padding);
 
+typedef int (*Eon_Theme_Element_Entry_Descriptor_Size_Hints_Get_Cb)(void *data, int hints, Eon_Renderable_Size *size);
+
 typedef struct _Eon_Theme_Element_Entry_Descriptor {
 	Eon_Theme_Element_Version_Get_Cb version_get;
 	Eon_Theme_Element_Ctor_Cb ctor;
@@ -51,6 +53,7 @@ typedef struct _Eon_Theme_Element_Entry_Descriptor {
 	Eon_Theme_Element_Tag_Name_Get_Cb tag_name_get;
 	Eon_Theme_Element_Process_Cb process;
 	Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb renderer_get;
+	Eon_Theme_Element_Entry_Descriptor_Size_Hints_Get_Cb size_hints_get;
 	Eon_Theme_Element_Entry_Descriptor_Padding_Get_Cb padding_get;
 } Eon_Theme_Element_Entry_Descriptor;
 

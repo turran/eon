@@ -39,6 +39,8 @@ static Eina_Bool eon_theme_mars_init(void)
 		return EINA_FALSE;
 	eon_theme_namespace_element_add(_namespace, "button",
 			eon_theme_mars_button_new);
+	eon_theme_namespace_element_add(_namespace, "entry",
+			eon_theme_mars_entry_new);
 	eon_theme_namespace_element_add(_namespace, "eon",
 			eon_theme_mars_eon_new);
 	eon_theme_namespace_element_add(_namespace, "switch",

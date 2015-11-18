@@ -89,7 +89,7 @@ EAPI void eon_theme_renderable_geometry_invalidate(Egueb_Dom_Node *n)
 	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_THEME_RENDERABLE(egueb_dom_element_external_data_get(n));
-	DBG_ELEMENT(n, "Invalidating geometry");
+	DBG("Invalidating geometry");
 
 	ev = eon_event_geometry_invalidate_new();
 	et = EGUEB_DOM_EVENT_TARGET((EON_THEME_ELEMENT(thiz))->n);

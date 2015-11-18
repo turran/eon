@@ -130,6 +130,7 @@ static void _eon_theme_element_entry_class_init(void *k)
 
 	e_klass = EON_THEME_ELEMENT_CLASS(k);
 	e_klass->ctor = _eon_theme_element_entry_ctor;
+	e_klass->init = _eon_theme_element_entry_init;
 	e_klass->tag_name_get = _eon_theme_element_entry_tag_name_get;
 	e_klass->process = _eon_theme_element_entry_process;
 }
@@ -205,7 +206,9 @@ int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
 	}
 	/* set here the font before processing */
 	enesim_renderer_text_span_font_set(thiz->text_renderer, font);
-	/* TODO in case the klass needs to say something about the hints, pass it */
+	/* in case the klass needs to say something about the hints, pass it */
+	if (thiz->d->size_hints_get)
+		ret = thiz->d->size_hints_get(thiz->data, ret, size);
 
 	return ret;
 }
