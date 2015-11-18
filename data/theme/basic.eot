@@ -43,5 +43,5 @@
   <mars:frame id="frame" font="Verdana 10pt bold" border-color="#ff0f3b65"/>
   <mars:separator id="separator" color="#ff0f3b65"/>
   <mars:image id="image"/>
-  <mars:entry id="entry" border-color="#ffff0000" font="Verdana 11pt" color="black"/>
+  <mars:entry id="entry" border-color="#ffff0000" font="Verdana 11pt" color="white"/>
 </eot>
