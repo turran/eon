@@ -35,6 +35,7 @@ typedef struct _Eon_Theme_Element_Entry
 	Egueb_Dom_Node *color;
 	/* private */
 	Enesim_Renderer *text_renderer;
+	Eon_Horizontal_Align halign;
 	const Eon_Theme_Element_Entry_Descriptor *d;
 	void *data;
 } Eon_Theme_Element_Entry;
@@ -54,8 +55,7 @@ static Enesim_Renderer * _eon_theme_element_entry_renderer_get(Eon_Theme_Rendera
 	thiz = EON_THEME_ELEMENT_ENTRY(r);
 	if (thiz->d->renderer_get)
 		return thiz->d->renderer_get(thiz->data);
-	else
-		return enesim_rendere_ref(thiz->text_renderer);
+	return NULL;
 }
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
@@ -97,15 +97,7 @@ static Eina_Bool _eon_theme_element_entry_process(Eon_Theme_Element *e)
 	enesim_renderer_color_set(thiz->text_renderer, color);
 	
 	if (thiz->d->process)
-	{
 		return thiz->d->process(thiz->data);
-	}
-	else
-	{
-		Eon_Theme_Renderable *r;
-		r = EON_THEME_RENDERABLE(e);
-		enesim_renderer_origin_set(thiz->text_renderer, r->geom.x, r->geom.y);
-	}
 	return EINA_TRUE;
 }
 
@@ -184,7 +176,10 @@ void eon_theme_element_entry_text_renderer_set(Egueb_Dom_Node *n, Enesim_Rendere
 void eon_theme_element_entry_halign_set(Egueb_Dom_Node *n,
 		Eon_Horizontal_Align halign)
 {
+	Eon_Theme_Element_Entry *thiz;
 
+	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
+	thiz->halign = halign;
 }
 
 int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
