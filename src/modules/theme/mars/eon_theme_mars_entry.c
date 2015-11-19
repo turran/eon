@@ -81,7 +81,8 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	text = eon_theme_element_entry_text_renderer_get(thiz->n);
 	enesim_renderer_shape_fill_renderer_set(thiz->entry,
 			enesim_renderer_ref(text));
-	enesim_renderer_origin_set(text, geom.x, geom.y);
+	enesim_renderer_origin_set(text, geom.x + EON_THEME_MARS_MARGIN,
+			geom.y + EON_THEME_MARS_MARGIN);
 	enesim_renderer_unref(text);
 	/* set the border color */
 	enesim_renderer_shape_stroke_color_set(thiz->entry, border_color);
@@ -111,10 +112,13 @@ static Enesim_Renderer * _eon_theme_mars_entry_renderer_get(void *data)
 	return enesim_renderer_ref(thiz->proxy);
 }
 
-static int _eon_theme_mars_entry_size_hints_get(void *data, int hints,
-		Eon_Renderable_Size *size)
+static void _eon_theme_mars_entry_padding_get(void *data,
+		Eon_Box *padding)
 {
-	return hints;
+	padding->left = EON_THEME_MARS_MARGIN;
+	padding->right = EON_THEME_MARS_MARGIN;
+	padding->top = EON_THEME_MARS_MARGIN;
+	padding->bottom = EON_THEME_MARS_MARGIN;
 }
 
 static Eon_Theme_Element_Entry_Descriptor _descriptor = {
@@ -124,8 +128,7 @@ static Eon_Theme_Element_Entry_Descriptor _descriptor = {
 	/* .tag_name_get	= */ _eon_theme_mars_entry_tag_name_get,
 	/* .process 		= */ _eon_theme_mars_entry_process,
 	/* .renderer_get	= */ _eon_theme_mars_entry_renderer_get,
-	/* .size_hints_get	= */ _eon_theme_mars_entry_size_hints_get,
-	/* .padding_get		= */ NULL,
+	/* .padding_get		= */ _eon_theme_mars_entry_padding_get,
 };
 
 /*============================================================================*

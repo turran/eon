@@ -155,7 +155,6 @@ static void _eon_theme_element_entry_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-/* TODO remove this */
 void eon_theme_element_entry_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
 {
 	Eon_Theme_Element_Entry *thiz;
@@ -189,17 +188,18 @@ int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
 	Eon_Theme_Element_Entry *thiz;
 	Enesim_Text_Font *font;
 	Enesim_Rectangle geom;
-	int top, bottom;
 	int ret = 0;
 
 	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	size->min_height = 0;
-	size->min_width = -1;
+	size->min_height = size->max_height = 0;
+	size->min_width = 0;
 	/* generate the font */
 	font = egueb_css_attr_font_resolve(thiz->font, 0, 0);
 	if (font)
 	{
+		int top, bottom;
+
 		top = enesim_text_font_max_ascent_get(font);
 		bottom = enesim_text_font_max_descent_get(font);
 		size->min_height = size->max_height = top + bottom;
@@ -207,9 +207,16 @@ int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
 	/* set here the font before processing */
 	enesim_renderer_text_span_font_set(thiz->text_renderer, font);
 	/* in case the klass needs to say something about the hints, pass it */
-	if (thiz->d->size_hints_get)
-		ret = thiz->d->size_hints_get(thiz->data, ret, size);
+	if (thiz->d->padding_get)
+	{
+		Eon_Box padding = { 0, 0, 0, 0 };
 
+		thiz->d->padding_get(thiz->data, &padding);
+		size->min_height += padding.top + padding.bottom;
+		size->max_height += padding.top + padding.bottom;
+		size->min_width += padding.left + padding.right;
+	}
+	
 	return ret;
 }
 /*============================================================================*

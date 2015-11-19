@@ -39,7 +39,8 @@ typedef struct _Eon_Element_Entry
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *r;
-	Enesim_Text_Buffer *buffer;
+	int cursor;
+	int offset;
 } Eon_Element_Entry;
 
 typedef struct _Eon_Element_Entry_Class
@@ -51,12 +52,57 @@ static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Entry *thiz = data;
+	Eon_Renderable *r;
+	Egueb_Dom_Node *theme_element;
+	Eon_Box padding = { 0, 0, 0, 0};
 	Egueb_Dom_Event_Target *et;
+	int x, y;
 	int value = 0;
 
 	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
-	/* TODO trigger the focus */
+	/* TODO check that it is inside the text area */
+	/* TODO change the cursor type when mouse is over the text area */
+	/* TODO trigger the focus, for this we need to provide API to
+	 * create a focus event and trigger it by ourselves, if so, what happens
+	 * with the input? as it needs to keep track of the focus nodes to forward
+	 * key events
+	 */
+	/* Check the cursor position */
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	/* FIXME we should always have a theme */
+	if (!theme_element)
+		goto done;
+
+	r = EON_RENDERABLE(thiz);
+	x = egueb_dom_event_mouse_client_x_get(e);
+	y = egueb_dom_event_mouse_client_y_get(e);
+	eon_theme_element_entry_padding_get(theme_element, &padding);
+	if ((x >= r->geometry.x) && (x < (r->geometry.x + r->geometry.w)) &&	
+			(y >= r->geometry.y) && (y < (r->geometry.y + r->geometry.h)))
+	{
+		/* TODO based on the coordinate and the offset, get the position of
+		 * the cursor
+		 */
+	}
+	egueb_dom_node_unref(theme_element);
+done:
+	return;
+}
+
+static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	Eon_Element_Entry *thiz = data;
+	Egueb_Dom_String *key;
+	Enesim_Text_Buffer *buffer;
+
+	key = egueb_dom_event_keyboard_key_get(e);
+	buffer = enesim_renderer_text_span_buffer_get(thiz->r);
+	enesim_text_buffer_string_insert(buffer,
+			egueb_dom_string_string_get(key), -1, -1);
+	egueb_dom_string_unref(key);
+	enesim_text_buffer_unref(buffer);
 }
 
 static Eina_Bool _eon_element_entry_mutation_get_text(
@@ -149,6 +195,10 @@ static void _eon_element_entry_init(Eon_Widget *w)
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MOUSE_CLICK,
 			_eon_element_entry_click_cb,
+			EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_KEY_DOWN,
+			_eon_element_entry_key_down_cb,
 			EINA_FALSE, thiz);
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
