@@ -43,5 +43,8 @@
   <mars:frame id="frame" font="Verdana 10pt bold" border-color="#ff0f3b65"/>
   <mars:separator id="separator" color="#ff0f3b65"/>
   <mars:image id="image"/>
-  <mars:entry id="entry" border-color="#ffff0000" font="Verdana 11pt" color="white"/>
+  <mars:entry id="entry" border-color="#ff0f3b65" font="Verdana 18pt" color="white">
+    <set attributeName="border-color" to="darkred" begin="focusin" dur="1s" end="focusout"/>
+    <set attributeName="border-color" to="#ff0f3b65" begin="focusout" dur="1s" end="focusin"/>
+  </mars:entry>
 </eot>
