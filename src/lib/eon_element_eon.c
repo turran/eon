@@ -155,7 +155,7 @@ static Egueb_Dom_Input * _eon_element_eon_ui_input_get(Egueb_Dom_Node *n)
 	Eon_Element_Eon *thiz;
 
 	thiz = egueb_dom_element_external_data_get(n);
-	return thiz->input;
+	return egueb_dom_input_ref(thiz->input);
 }
 
 static Egueb_Dom_Feature_UI_Descriptor 
