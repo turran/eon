@@ -167,12 +167,13 @@ static void _eon_element_object_ui_mouse_move_cb(Egueb_Dom_Event *e, void *data)
 	if (!thiz->doc || !thiz->ui)
 		return;
 
-	egueb_dom_feature_ui_input_get(thiz->ui, &input);
+	input = egueb_dom_feature_ui_input_get(thiz->ui);
 	egueb_dom_event_mouse_client_coords_get(e, &x, &y);
 	/* calculate the relative coordiantes */
 	x = x - r->geometry.x;
 	y = y - r->geometry.y;
 	egueb_dom_input_feed_mouse_move(input, x, y);
+	egueb_dom_input_unref(input);
 }
 
 static void _eon_element_object_ui_mouse_down_cb(Egueb_Dom_Event *e, void *data)
@@ -184,9 +185,10 @@ static void _eon_element_object_ui_mouse_down_cb(Egueb_Dom_Event *e, void *data)
 	if (!thiz->doc || !thiz->ui)
 		return;
 
-	egueb_dom_feature_ui_input_get(thiz->ui, &input);
+	input = egueb_dom_feature_ui_input_get(thiz->ui);
 	button = egueb_dom_event_mouse_button_get(e);
 	egueb_dom_input_feed_mouse_down(input, button);
+	egueb_dom_input_unref(input);
 }
 
 static void _eon_element_object_ui_mouse_up_cb(Egueb_Dom_Event *e, void *data)
@@ -198,9 +200,10 @@ static void _eon_element_object_ui_mouse_up_cb(Egueb_Dom_Event *e, void *data)
 	if (!thiz->doc || !thiz->ui)
 		return;
 
-	egueb_dom_feature_ui_input_get(thiz->ui, &input);
+	input = egueb_dom_feature_ui_input_get(thiz->ui);
 	button = egueb_dom_event_mouse_button_get(e);
 	egueb_dom_input_feed_mouse_up(input, button);
+	egueb_dom_input_unref(input);
 }
 
 static void _eon_element_object_data_cb(Egueb_Dom_Node *n,
