@@ -26,6 +26,8 @@ typedef struct _Eon_Theme_Mars_Entry
 	/* attributes */
 	Egueb_Dom_Node *border_color;
 	/* private */
+	Enesim_Renderer *cursor;
+	Enesim_Renderer *underline;
 	Enesim_Renderer *entry;
 	Enesim_Renderer *entry_clip;
 	Enesim_Renderer *blur;
@@ -47,7 +49,10 @@ static void _eon_theme_mars_entry_dtor(void *data)
 	/* attributes */
 	egueb_dom_node_unref(thiz->border_color);
 	/* private */
+	enesim_renderer_unref(thiz->cursor);
+	enesim_renderer_unref(thiz->underline);
 	enesim_renderer_unref(thiz->entry);
+	enesim_renderer_unref(thiz->entry_clip);
 	enesim_renderer_unref(thiz->blur);
 	enesim_renderer_unref(thiz->proxy);
 	free(thiz);
@@ -76,17 +81,24 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
 	/* set the rectangle area */
-	enesim_renderer_rectangle_position_set(thiz->entry, geom.x, geom.y);
-	enesim_renderer_rectangle_size_set(thiz->entry, geom.w, geom.h);
+	enesim_renderer_rectangle_position_set(thiz->entry_clip, geom.x, geom.y);
+	enesim_renderer_rectangle_size_set(thiz->entry_clip, geom.w, geom.h);
 	text = eon_theme_element_entry_text_renderer_get(thiz->n);
-	enesim_renderer_shape_fill_renderer_set(thiz->entry,
+	enesim_renderer_shape_fill_renderer_set(thiz->entry_clip,
 			enesim_renderer_ref(text));
 	enesim_renderer_origin_set(text, geom.x + EON_THEME_MARS_MARGIN,
 			geom.y + EON_THEME_MARS_MARGIN);
 	enesim_renderer_unref(text);
-	/* set the border color */
-	enesim_renderer_shape_stroke_color_set(thiz->entry, border_color);
-	enesim_renderer_shape_stroke_weight_set(thiz->entry, 2);
+
+	/* set the underline */
+	enesim_renderer_shape_stroke_color_set(thiz->underline, border_color);
+	enesim_renderer_line_coords_set(thiz->underline, geom.x,
+			geom.y + geom.h, geom.x + geom.w, geom.y + geom.h);
+
+	/* set the cursor */
+	enesim_renderer_shape_stroke_color_set(thiz->cursor, border_color);
+	enesim_renderer_line_coords_set(thiz->cursor, geom.x, geom.y, geom.x, geom.y + geom.h);
+	
 	/* apply the blur value */
 	if (!enabled)
 	{
@@ -142,9 +154,37 @@ Egueb_Dom_Node * eon_theme_mars_entry_new(void)
 	Enesim_Renderer_Compound_Layer *l;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Entry));
+	thiz->entry_clip = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_draw_mode_set(thiz->entry_clip,
+			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+
+	thiz->underline = enesim_renderer_line_new();
+	enesim_renderer_shape_draw_mode_set(thiz->underline,
+		ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
+	enesim_renderer_shape_stroke_weight_set(thiz->underline, EON_THEME_MARS_BORDER);
+
+	thiz->cursor = enesim_renderer_line_new();
+	enesim_renderer_shape_draw_mode_set(thiz->cursor,
+		ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
+	enesim_renderer_shape_stroke_weight_set(thiz->cursor, EON_THEME_MARS_BORDER);
+
 	/* the real entry */
-	thiz->entry = enesim_renderer_rectangle_new();
-	enesim_renderer_shape_draw_mode_set(thiz->entry, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
+	thiz->entry = enesim_renderer_compound_new();
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->entry_clip));
+	enesim_renderer_compound_layer_add(thiz->entry, l);
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->underline));
+	enesim_renderer_compound_layer_add(thiz->entry, l);
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_BLEND);
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->cursor));
+	enesim_renderer_compound_layer_add(thiz->entry, l);
 
 	/* the blur effect for disabled entrys */
 	thiz->blur = enesim_renderer_blur_new();

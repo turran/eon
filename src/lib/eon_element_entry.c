@@ -48,12 +48,25 @@ typedef struct _Eon_Element_Entry_Class
 	Eon_Widget_Class base;
 } Eon_Element_Entry_Class;
 
+
+static void _eon_element_entry_focus_in_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+}
+
+static void _eon_element_entry_focus_out_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+}
+
 static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Entry *thiz = data;
+	Eon_Element *el;
 	Eon_Renderable *r;
 	Egueb_Dom_Node *theme_element;
+	Egueb_Dom_Node *doc;
 	Eon_Box padding = { 0, 0, 0, 0};
 	Egueb_Dom_Event_Target *et;
 	int x, y;
@@ -61,29 +74,59 @@ static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 
 	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
-	/* TODO check that it is inside the text area */
-	/* TODO change the cursor type when mouse is over the text area */
-	/* TODO trigger the focus, for this we need to provide API to
-	 * create a focus event and trigger it by ourselves, if so, what happens
-	 * with the input? as it needs to keep track of the focus nodes to forward
-	 * key events
-	 */
 	/* Check the cursor position */
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	/* FIXME we should always have a theme */
 	if (!theme_element)
 		goto done;
 
+	/* trigger the focus */
+	el = EON_ELEMENT(thiz);
+	doc = egueb_dom_node_owner_document_get(el->n);
+	if (doc)
+	{
+		Egueb_Dom_Node *topmost;
+		Egueb_Dom_Feature *feature;
+
+		topmost = egueb_dom_document_document_element_get(doc);
+		feature = egueb_dom_node_feature_get(topmost, EGUEB_DOM_FEATURE_UI_NAME, NULL);
+		if (feature)
+		{
+			Egueb_Dom_Input *input;
+			input = egueb_dom_feature_ui_input_get(feature);
+			if (input)
+			{
+				egueb_dom_input_focus_set(input, egueb_dom_node_ref(el->n));
+				egueb_dom_input_unref(input);
+			}
+			egueb_dom_feature_unref(feature);
+		}
+		egueb_dom_node_unref(doc);
+		egueb_dom_node_unref(topmost);
+	}
 	r = EON_RENDERABLE(thiz);
+	/* check that it is inside the text area */
 	x = egueb_dom_event_mouse_client_x_get(e);
 	y = egueb_dom_event_mouse_client_y_get(e);
 	eon_theme_element_entry_padding_get(theme_element, &padding);
 	if ((x >= r->geometry.x) && (x < (r->geometry.x + r->geometry.w)) &&	
 			(y >= r->geometry.y) && (y < (r->geometry.y + r->geometry.h)))
 	{
-		/* TODO based on the coordinate and the offset, get the position of
-		 * the cursor
-		 */
+		int index;
+		int start;
+		int end;
+
+		if (enesim_renderer_text_span_glyph_at(thiz->r, x, y, &index, &start, &end))
+		{
+			//printf("index %d x %d y %d, start %d end %d\n", index, x, y, start, end);
+		}
+		else
+		{
+			index = -1;
+		}
+		/* TODO set the cursor position */
+		/* TODO change the cursor type when mouse is over the text area */
+		thiz->offset = index;
 	}
 	egueb_dom_node_unref(theme_element);
 done:
@@ -100,7 +143,11 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 	key = egueb_dom_event_keyboard_key_get(e);
 	buffer = enesim_renderer_text_span_buffer_get(thiz->r);
 	enesim_text_buffer_string_insert(buffer,
-			egueb_dom_string_string_get(key), -1, -1);
+			egueb_dom_string_string_get(key), -1, thiz->offset);
+	/* advance the offset */
+	if (thiz->offset > 0)
+		thiz->offset++;
+
 	egueb_dom_string_unref(key);
 	enesim_text_buffer_unref(buffer);
 }
@@ -193,6 +240,14 @@ static void _eon_element_entry_init(Eon_Widget *w)
 	/* events */
 	et = EGUEB_DOM_EVENT_TARGET(n);
 	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_FOCUS_IN,
+			_eon_element_entry_focus_in_cb,
+			EINA_TRUE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_FOCUS_OUT,
+			_eon_element_entry_focus_out_cb,
+			EINA_TRUE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MOUSE_CLICK,
 			_eon_element_entry_click_cb,
 			EINA_FALSE, thiz);
@@ -209,6 +264,7 @@ static void _eon_element_entry_init(Eon_Widget *w)
 			_eon_element_entry_node_removed_cb,
 			EINA_TRUE, thiz);
 	/* private */
+	thiz->offset = -1;
 	thiz->r = enesim_renderer_text_span_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
 	e = EON_ELEMENT(w);
