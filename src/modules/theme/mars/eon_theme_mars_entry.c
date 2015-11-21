@@ -25,6 +25,7 @@ typedef struct _Eon_Theme_Mars_Entry
 	Egueb_Dom_Node *n;
 	/* attributes */
 	Egueb_Dom_Node *border_color;
+	Egueb_Dom_Node *cursor_visible;
 	/* private */
 	Enesim_Renderer *cursor;
 	Enesim_Renderer *underline;
@@ -47,6 +48,7 @@ static void _eon_theme_mars_entry_dtor(void *data)
 	Eon_Theme_Mars_Entry *thiz = data;
 
 	/* attributes */
+	egueb_dom_node_unref(thiz->cursor_visible);
 	egueb_dom_node_unref(thiz->border_color);
 	/* private */
 	enesim_renderer_unref(thiz->cursor);
@@ -72,11 +74,13 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	Enesim_Argb argb;
 	Enesim_Color color;
 	Enesim_Color border_color;
+	int cursor_visible;
 
 	thiz = data;
 	/* get the final attributes */
 	egueb_dom_attr_final_get(thiz->border_color, &argb);
 	border_color = enesim_color_argb_from(argb);
+	egueb_dom_attr_final_get(thiz->cursor_visible, &cursor_visible);
 	/* get the inherited members */
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
@@ -98,6 +102,7 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	/* set the cursor */
 	enesim_renderer_shape_stroke_color_set(thiz->cursor, border_color);
 	enesim_renderer_line_coords_set(thiz->cursor, geom.x, geom.y, geom.x, geom.y + geom.h);
+	enesim_renderer_visibility_set(thiz->cursor, cursor_visible);
 	
 	/* apply the blur value */
 	if (!enabled)
@@ -170,6 +175,9 @@ Egueb_Dom_Node * eon_theme_mars_entry_new(void)
 
 	/* the real entry */
 	thiz->entry = enesim_renderer_compound_new();
+	enesim_renderer_compound_background_enable_set(thiz->entry, EINA_TRUE);
+	enesim_renderer_compound_background_color_set(thiz->entry, 0x00000000);
+	
 	l = enesim_renderer_compound_layer_new();
 	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 	enesim_renderer_compound_layer_renderer_set(l,
@@ -199,7 +207,11 @@ Egueb_Dom_Node * eon_theme_mars_entry_new(void)
 	s = egueb_dom_string_new_with_static_string("border-color");
 	thiz->border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
+	s = egueb_dom_string_new_with_static_string("cursor-visible");
+	thiz->cursor_visible = egueb_dom_attr_boolean_new(s, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->border_color), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->cursor_visible), NULL);
 	thiz->n = n;
 
 	return n;
