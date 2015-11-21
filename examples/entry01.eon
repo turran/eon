@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <frame title="Form">
+    <stack orientation="vertical" hexpand="true">
+      <entry>Eon</entry>
+      <entry>Egüeb</entry>
+      <entry>Enesim</entry>
+    </stack>
+  </frame>
+</eon>
