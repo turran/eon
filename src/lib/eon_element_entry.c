@@ -145,7 +145,7 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 	enesim_text_buffer_string_insert(buffer,
 			egueb_dom_string_string_get(key), -1, thiz->offset);
 	/* advance the offset */
-	if (thiz->offset > 0)
+	if (thiz->offset >= 0)
 		thiz->offset++;
 
 	egueb_dom_string_unref(key);
