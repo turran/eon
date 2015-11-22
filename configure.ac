@@ -64,7 +64,7 @@ ENESIM_VERSION="0.0.20"
 EGUEB_VERSION="0.0.23"
 
 requirements_pc="egueb-dom >= ${EGUEB_VERSION}"
-requirements_private_pc="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} egueb-smil >= ${EGUEB_VERSION} egueb-css >= ${EGUEB_VERSION}"
+requirements_private_pc="eina >= ${EINA_VERSION} enesim >= ${ENESIM_VERSION} egueb-smil >= ${EGUEB_VERSION} egueb-css >= ${EGUEB_VERSION} egueb-xlink >= ${EGUEB_VERSION}"
 PKG_CHECK_MODULES([EON], [${requirements_pc} ${requirements_private_pc}])
 
 EON_CFLAGS="${EON_CFLAGS} -DENESIM_EXTENSION"
