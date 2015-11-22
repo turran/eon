@@ -31,7 +31,7 @@ src_lib_libeon_la_CPPFLAGS = \
 -I$(top_srcdir)/src/lib/feature \
 -I$(top_srcdir)/src/lib/event \
 -DPACKAGE_LIB_DIR=\"$(libdir)\" \
--DEGUEB_DOM_BUILD \
+-DEON_BUILD \
 @EON_CFLAGS@
 
 src_lib_libeon_la_SOURCES = \
