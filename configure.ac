@@ -39,15 +39,6 @@ AC_SUBST(ACLOCAL_AMFLAGS, "-I m4 -I common/m4")
 
 AC_CANONICAL_HOST
 
-ENESIM_BUILD=""
-case "$host_os" in
-   mingw*)
-      EON_BUILD="-DEON_BUILD"
-   ;;
-esac
-AC_SUBST([EON_BUILD])
-
-
 ### Additional options to configure
 
 

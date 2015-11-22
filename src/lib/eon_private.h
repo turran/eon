@@ -28,6 +28,8 @@
 #include "Egueb_Xlink.h"
 #include "Egueb_Smil.h"
 
+#include "eon_build.h"
+
 #ifdef ERR
 # undef ERR
 #endif
