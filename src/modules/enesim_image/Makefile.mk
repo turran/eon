@@ -8,6 +8,7 @@ src_modules_enesim_image_enesim_image_eon_la_CPPFLAGS = \
 -I$(top_srcdir)/src/lib/ \
 -I$(top_srcdir)/src/lib/theme \
 -I$(top_srcdir)/src/lib/event \
+-DEON_BUILD \
 @EON_CFLAGS@
 
 src_modules_enesim_image_enesim_image_eon_la_LIBADD = \
