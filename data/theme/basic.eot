@@ -39,6 +39,8 @@
   <mars:radio id="radio" border-color="#ff0f3b65" button-color="#ff0f3b65">
     <set attributeName="button-color" to="#ff0f3b65" begin="activate" dur="1s" end="deactivate"/>
     <set attributeName="button-color" to="#00000000" begin="deactivate" dur="1s" end="activate"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" dur="1s" end="focusout"/>
+    <set attributeName="border-color" to="#ff0f3b65" begin="focusout" dur="1s" end="focusin"/>
   </mars:radio>
   <mars:frame id="frame" font="Verdana 10pt bold" border-color="#ff0f3b65"/>
   <mars:separator id="separator" color="#ff0f3b65"/>
