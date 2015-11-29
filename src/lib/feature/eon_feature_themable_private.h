@@ -24,5 +24,7 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f);
 void eon_feature_themable_event_propagate(Egueb_Dom_Feature *f,
 		Egueb_Dom_String *ev);
 
+Egueb_Dom_Node * eon_feature_themable_element_get(Egueb_Dom_Feature *f);
+
 #endif
 

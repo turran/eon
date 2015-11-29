@@ -337,6 +337,14 @@ done:
 	return egueb_dom_node_ref(thiz->theme_element);
 }
 
+Egueb_Dom_Node * eon_feature_themable_element_get(Egueb_Dom_Feature *f)
+{
+	Eon_Feature_Themable *thiz;
+
+	thiz = egueb_dom_feature_external_data_get(f);
+	return egueb_dom_node_ref(thiz->theme_element);
+}
+
 void eon_feature_themable_event_propagate(Egueb_Dom_Feature *f,
 		Egueb_Dom_String *ev)
 {
