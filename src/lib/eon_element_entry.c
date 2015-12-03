@@ -142,12 +142,25 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 
 	key = egueb_dom_event_keyboard_key_get(e);
 	buffer = enesim_renderer_text_span_buffer_get(thiz->r);
-	enesim_text_buffer_string_insert(buffer,
-			egueb_dom_string_string_get(key), -1, thiz->offset);
-	/* advance the offset */
-	if (thiz->offset >= 0)
-		thiz->offset++;
-
+	/* check if it is printable */
+	if (!egueb_dom_key_is_printable(key))
+	{
+		if (!strcmp(egueb_dom_string_string_get(key), "BackSpace"))
+		{
+			enesim_text_buffer_string_delete(buffer,
+					1, thiz->offset);
+			if (thiz->offset > 0)
+				thiz->offset--;
+		}
+	}
+	else
+	{
+		enesim_text_buffer_string_insert(buffer,
+				egueb_dom_string_string_get(key), -1, thiz->offset);
+		/* advance the offset */
+		if (thiz->offset >= 0)
+			thiz->offset++;
+	}
 	egueb_dom_string_unref(key);
 	enesim_text_buffer_unref(buffer);
 }
