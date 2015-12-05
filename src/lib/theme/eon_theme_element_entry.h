@@ -58,6 +58,7 @@ EAPI Egueb_Dom_Node * eon_theme_element_entry_new(
 		const Eon_Theme_Element_Entry_Descriptor *d, void *data);
 EAPI void * eon_theme_element_entry_data_get(Egueb_Dom_Node *n);
 EAPI Enesim_Renderer * eon_theme_element_entry_text_renderer_get(Egueb_Dom_Node *n);
+EAPI int eon_theme_element_entry_cursor_get(Egueb_Dom_Node *n);
 
 /**
  * @}

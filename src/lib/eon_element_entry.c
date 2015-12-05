@@ -39,7 +39,9 @@ typedef struct _Eon_Element_Entry
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *r;
+	/* the unicode index of the current position of the cursor */
 	int cursor;
+	/* the offset in horizontal pixels */
 	int offset;
 } Eon_Element_Entry;
 
@@ -52,6 +54,13 @@ typedef struct _Eon_Element_Entry_Class
 static void _eon_element_entry_focus_in_cb(Egueb_Dom_Event *e,
 		void *data)
 {
+	Eon_Element_Entry *thiz = data;
+	Enesim_Text_Buffer *buffer;
+
+	/* set the cursor position at the end of the string */
+	buffer = enesim_renderer_text_span_buffer_get(thiz->r);
+	thiz->cursor = enesim_text_buffer_length_get(buffer);
+	enesim_text_buffer_unref(buffer);
 }
 
 static void _eon_element_entry_focus_out_cb(Egueb_Dom_Event *e,
@@ -116,7 +125,7 @@ static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 		int start;
 		int end;
 
-		if (enesim_renderer_text_span_glyph_at(thiz->r, x, y, &index, &start, &end))
+		if (enesim_renderer_text_span_glyph_coord_at(thiz->r, x, y, &index, &start, &end))
 		{
 			//printf("index %d x %d y %d, start %d end %d\n", index, x, y, start, end);
 		}
@@ -126,7 +135,7 @@ static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 		}
 		/* TODO set the cursor position */
 		/* TODO change the cursor type when mouse is over the text area */
-		thiz->offset = index;
+		thiz->cursor = index;
 	}
 	egueb_dom_node_unref(theme_element);
 done:
@@ -138,10 +147,13 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 {
 	Eon_Element_Entry *thiz = data;
 	Egueb_Dom_String *key;
+	Egueb_Dom_Node *theme_element;
 	Enesim_Text_Buffer *buffer;
 
 	key = egueb_dom_event_keyboard_key_get(e);
 	buffer = enesim_renderer_text_span_buffer_get(thiz->r);
+
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
 	/* check if it is printable */
 	if (!egueb_dom_key_is_printable(key))
 	{
@@ -149,27 +161,50 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 		if (!strcmp(skey, "BackSpace"))
 		{
 			enesim_text_buffer_string_delete(buffer,
-					1, thiz->offset);
-			if (thiz->offset > 0)
-				thiz->offset--;
+					1, thiz->cursor);
+			if (thiz->cursor > 0)
+			{
+				thiz->cursor--;
+				eon_theme_element_entry_cursor_set(
+						theme_element, thiz->cursor);
+			}
 		}
 		else if (!strcmp(skey, "ArrowLeft"))
 		{
-			/* Move the cursor right, scroll if needed */
+			/* Move the cursor left, scroll if needed */
+			if (thiz->cursor > 0)
+			{
+				thiz->cursor--;
+				eon_theme_element_entry_cursor_set(
+						theme_element, thiz->cursor);
+			}
 		}
 		else if (!strcmp(skey, "ArrowRight"))
 		{
-			/* Move the cursor left, scroll if needed */
+			int len;
+
+			len = enesim_text_buffer_length_get(buffer);
+			/* Move the cursor right, scroll if needed */
+			if (thiz->cursor < len)
+			{
+				thiz->cursor++;
+				eon_theme_element_entry_cursor_set(
+						theme_element, thiz->cursor);
+			}
 		}
 	}
 	else
 	{
 		enesim_text_buffer_string_insert(buffer,
-				egueb_dom_string_string_get(key), -1, thiz->offset);
-		/* advance the offset */
-		if (thiz->offset >= 0)
-			thiz->offset++;
+				egueb_dom_string_string_get(key), -1, thiz->cursor);
+		/* advance the cursor */
+		if (thiz->cursor >= 0)
+		{
+			thiz->cursor++;
+			eon_theme_element_entry_cursor_set(theme_element, thiz->cursor);
+		}
 	}
+	egueb_dom_node_unref(theme_element);
 	egueb_dom_string_unref(key);
 	enesim_text_buffer_unref(buffer);
 }

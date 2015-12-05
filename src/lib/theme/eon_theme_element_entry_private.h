@@ -25,6 +25,7 @@ int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
 		Eon_Renderable_Size *size, int max_length);
 void eon_theme_element_entry_halign_set(Egueb_Dom_Node *n,
 		Eon_Horizontal_Align halign);
+void eon_theme_element_entry_cursor_set(Egueb_Dom_Node *n, int cursor);
 
 #endif
 

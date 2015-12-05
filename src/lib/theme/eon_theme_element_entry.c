@@ -34,6 +34,7 @@ typedef struct _Eon_Theme_Element_Entry
 	Egueb_Dom_Node *font;
 	Egueb_Dom_Node *color;
 	/* private */
+	int cursor;
 	Enesim_Renderer *text_renderer;
 	Eon_Horizontal_Align halign;
 	const Eon_Theme_Element_Entry_Descriptor *d;
@@ -173,6 +174,7 @@ void eon_theme_element_entry_text_renderer_set(Egueb_Dom_Node *n, Enesim_Rendere
 	thiz->text_renderer = r;
 }
 
+/* TODO not handled yet */
 void eon_theme_element_entry_halign_set(Egueb_Dom_Node *n,
 		Eon_Horizontal_Align halign)
 {
@@ -218,6 +220,14 @@ int eon_theme_element_entry_size_hints_get(Egueb_Dom_Node *n,
 	}
 	
 	return ret;
+}
+
+void eon_theme_element_entry_cursor_set(Egueb_Dom_Node *n, int cursor)
+{
+	Eon_Theme_Element_Entry *thiz;
+
+	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
+	thiz->cursor = cursor;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -265,5 +275,13 @@ EAPI Enesim_Renderer * eon_theme_element_entry_text_renderer_get(Egueb_Dom_Node 
 
 	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
 	return enesim_renderer_ref(thiz->text_renderer);
+}
+
+EAPI int eon_theme_element_entry_cursor_get(Egueb_Dom_Node *n)
+{
+	Eon_Theme_Element_Entry *thiz;
+
+	thiz = EON_THEME_ELEMENT_ENTRY(egueb_dom_element_external_data_get(n));
+	return thiz->cursor;
 }
 

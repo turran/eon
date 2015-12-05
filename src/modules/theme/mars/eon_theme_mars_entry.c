@@ -75,6 +75,8 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	Enesim_Color color;
 	Enesim_Color border_color;
 	int cursor_visible;
+	int cursor_index;
+	int cursor_start;
 
 	thiz = data;
 	/* get the final attributes */
@@ -92,7 +94,6 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 			enesim_renderer_ref(text));
 	enesim_renderer_origin_set(text, geom.x + EON_THEME_MARS_MARGIN,
 			geom.y + EON_THEME_MARS_MARGIN);
-	enesim_renderer_unref(text);
 
 	/* set the underline */
 	enesim_renderer_shape_stroke_color_set(thiz->underline, border_color);
@@ -100,8 +101,12 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 			geom.y + geom.h, geom.x + geom.w, geom.y + geom.h);
 
 	/* set the cursor */
+	cursor_index = eon_theme_element_entry_cursor_get(thiz->n);
+	if (!enesim_renderer_text_span_glyph_index_at(text, cursor_index, &cursor_start, NULL))
+		cursor_start = geom.x + EON_THEME_MARS_MARGIN;
+	enesim_renderer_unref(text);
 	enesim_renderer_shape_stroke_color_set(thiz->cursor, border_color);
-	enesim_renderer_line_coords_set(thiz->cursor, geom.x, geom.y, geom.x, geom.y + geom.h);
+	enesim_renderer_line_coords_set(thiz->cursor, cursor_start, geom.y, cursor_start, geom.y + geom.h);
 	enesim_renderer_visibility_set(thiz->cursor, cursor_visible);
 	
 	/* apply the blur value */
