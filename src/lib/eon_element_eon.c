@@ -511,19 +511,3 @@ EAPI Egueb_Dom_Node * eon_element_eon_new(void)
 	n = EON_ELEMENT_NEW(eon_element_eon);
 	return n;
 }
-
-#if 0
-EAPI void eon_document_theme_set_from_document(Egueb_Dom_Node *n, Egueb_Dom_Node *theme)
-{
-	/* iterate over every widget, check if the theme set is NULL, if so
-	 * update the instance
-	 */
-}
-
-EAPI void eon_document_theme_set_from_stream(Egueb_Dom_Node *n, Enesim_Stream *s)
-{
-	Egueb_Dom_Node *theme;
-
-	eon_document_theme_set_from_document(n, theme);
-}
-#endif
