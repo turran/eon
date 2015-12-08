@@ -79,6 +79,20 @@ static void _eon_theme_element_eot_instance_deinit(void *o)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eina_Bool eon_theme_element_is_eot(Egueb_Dom_Node *n)
+{
+	void *data;
+
+	if (!n) return EINA_FALSE;
+	if (!egueb_dom_element_is_external(n))
+		return EINA_FALSE;
+	data = egueb_dom_element_external_data_get(n);
+	if (!enesim_object_instance_inherits(ENESIM_OBJECT_INSTANCE(data),
+			eon_theme_element_eot_descriptor_get()))
+		return EINA_FALSE;
+	return EINA_TRUE;
+}
+
 Egueb_Dom_Node * eon_theme_element_eot_new(void)
 {
 	Egueb_Dom_Node *n;

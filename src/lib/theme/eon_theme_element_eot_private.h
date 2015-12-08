@@ -18,6 +18,7 @@
 #ifndef _EON_THEME_ELEMENT_EOT_H
 #define _EON_THEME_ELEMENT_EOT_H
 
+Eina_Bool eon_theme_element_is_eot(Egueb_Dom_Node *n);
 Egueb_Dom_Node * eon_theme_element_eot_new(void);
 
 #endif
