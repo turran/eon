@@ -25,7 +25,7 @@
 
 #include "eon_element_eon_private.h"
 #include "eon_event_geometry_private.h"
-#include "eon_theme_document_private.h"
+#include "eon_theme_element_eot_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -46,6 +46,7 @@ typedef struct _Eon_Element_Eon
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *compound;
 	Eina_Bool renderable_changed;
+	Eina_Bool renderable_child;
 	/* input */
 	Egueb_Dom_Input *input;
 	/* window */
@@ -438,25 +439,28 @@ static Egueb_Dom_String * _eon_element_eon_tag_name_get(Eon_Element *e)
 
 static Eina_Bool _eon_element_eon_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)
 {
+	Eon_Element_Eon *thiz;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *our_child;
 
-	/* only accept one child */
-	if (!eon_is_renderable(child))
-		return EINA_FALSE;
-
-	/* check if we already have one child */
-	n = e->n;
-	our_child = egueb_dom_element_child_first_get(n);
-	if (our_child)
+	thiz = EON_ELEMENT_EON(e);
+	/* only accept or either one renderable or many eot */
+	if (eon_theme_element_is_eot(child))
 	{
-		WARN("Only one child supported");
-		egueb_dom_node_unref(our_child);
+		return EINA_TRUE;
+	}
+	else if (!thiz->renderable_child)
+	{
+		if (!eon_is_renderable(child))
+			return EINA_FALSE;
+		thiz->renderable_child = EINA_TRUE;
+		return EINA_TRUE;
+	}
+	else
+	{
 		return EINA_FALSE;
 	}
-	return EINA_TRUE;
 }
-
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
