@@ -55,12 +55,17 @@ static void _eon_element_entry_focus_in_cb(Egueb_Dom_Event *e,
 		void *data)
 {
 	Eon_Element_Entry *thiz = data;
+	Egueb_Dom_Node *theme_element;
 	Enesim_Text_Buffer *buffer;
 
 	/* set the cursor position at the end of the string */
 	buffer = enesim_renderer_text_span_buffer_get(thiz->r);
 	thiz->cursor = enesim_text_buffer_length_get(buffer);
 	enesim_text_buffer_unref(buffer);
+
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	eon_theme_element_entry_cursor_set(theme_element, thiz->cursor);
+	egueb_dom_node_unref(theme_element);
 }
 
 static void _eon_element_entry_focus_out_cb(Egueb_Dom_Event *e,
