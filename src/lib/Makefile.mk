@@ -4,6 +4,7 @@ lib_LTLIBRARIES = src/lib/libeon.la
 installed_headersdir = $(pkgincludedir)-$(VMAJ)
 dist_installed_headers_DATA = \
 src/lib/Eon.h \
+src/lib/eon_build.h \
 src/lib/eon_document.h \
 src/lib/eon_element_button.h \
 src/lib/eon_element_button_stock.h \

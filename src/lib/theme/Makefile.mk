@@ -1,4 +1,5 @@
 dist_installed_headers_DATA += \
+src/lib/theme/eon_theme_namespace.h \
 src/lib/theme/eon_theme_element.h \
 src/lib/theme/eon_theme_renderable.h \
 src/lib/theme/eon_theme_widget.h \
