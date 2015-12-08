@@ -35,7 +35,9 @@
 #include "eon_element_image.h"
 #include "eon_element_entry.h"
 
+#include "eon_theme_namespace.h"
 #include "eon_theme_element_eot_private.h"
+#include "eon_theme_namespace_private.h"
 
 #include "eon_renderable_private.h"
 #include "eon_element_eon_private.h"
@@ -50,7 +52,7 @@ typedef struct _Eon_Document
  *                     The exernal document interface                         *
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
-		void *data, const char *ns, const char *name)
+		void *data, const char *ns_uri, const char *name)
 {
 	Egueb_Dom_Node *ret = NULL;
 
@@ -87,6 +89,17 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 		ret = eon_element_separator_new();
 	else if (!strcmp(name, "image"))
 		ret = eon_element_image_new();
+	else if (ns_uri)
+	{
+		Eon_Theme_Namespace *ns;
+		ns = eon_theme_namespace_find(ns_uri);
+		if (!ns)
+		{
+			WARN("No namespace '%s' found", ns_uri);
+			return NULL;
+		}
+		return eon_theme_namespace_element_ctor(ns, name);
+	}
 	return ret;
 }
 
