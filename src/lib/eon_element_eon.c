@@ -59,6 +59,24 @@ typedef struct _Eon_Element_Eon_Class
 	Eon_Renderable_Class base;
 } Eon_Element_Eon_Class;
 
+static Egueb_Dom_Node * _eon_element_eon_renderable_child_get(Egueb_Dom_Node *n)
+{
+	Egueb_Dom_Node *child;
+
+	child = egueb_dom_element_child_first_get(n);
+	while (child)
+	{
+		Egueb_Dom_Node *tmp;
+
+		if (eon_is_renderable(child))
+			return child;
+		tmp = egueb_dom_element_sibling_next_get(child);
+		egueb_dom_node_unref(child);
+		child = tmp;
+	}
+	return NULL;
+}
+
 /* Whenever an invalidate geometry event reaches the topmost element,
  * just enqueue the element for later processing
  */
@@ -316,7 +334,7 @@ static int _eon_element_eon_size_hints_get(Eon_Renderable *r, Eon_Renderable_Siz
 	e = EON_ELEMENT(r);
 	n = e->n;
 	/* get the hints from our child */
-	child = egueb_dom_element_child_first_get(n);
+	child = _eon_element_eon_renderable_child_get(n);
 	if (!child) return 0;
 
 	ret = eon_renderable_size_hints_get(child, size);
@@ -334,7 +352,7 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 	Egueb_Dom_Node *child = NULL;
 
 	n = (EON_ELEMENT(r))->n;
-	child = egueb_dom_element_child_first_get(n);
+	child = _eon_element_eon_renderable_child_get(n);
 	/* propagate the geometry */
 	if (child)
 	{
