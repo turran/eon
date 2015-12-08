@@ -35,6 +35,8 @@
 #include "eon_element_image.h"
 #include "eon_element_entry.h"
 
+#include "eon_theme_element_eot_private.h"
+
 #include "eon_renderable_private.h"
 #include "eon_element_eon_private.h"
 /*============================================================================*
@@ -55,6 +57,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 	DBG("Creating element '%s'", name);
 	if (!strcmp(name, "eon"))
 		ret = eon_element_eon_new();
+	else if (!strcmp(name, "eot"))
+		ret = eon_theme_element_eot_new();
 	else if (!strcmp(name, "button"))
 		ret = eon_element_button_new();
 	else if (!strcmp(name, "entry"))
