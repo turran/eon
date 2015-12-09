@@ -56,7 +56,9 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 {
 	Egueb_Dom_Node *ret = NULL;
 
-	DBG("Creating element '%s'", name);
+	/* TODO handle this correctly, ns_uris null or eon ns with same name as
+	 * a theme, like demo01:entry */
+	DBG("Creating element '%s:%s'", ns_uri, name);
 	if (!strcmp(name, "eon"))
 		ret = eon_element_eon_new();
 	else if (!strcmp(name, "eot"))
