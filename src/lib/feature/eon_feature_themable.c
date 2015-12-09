@@ -294,6 +294,7 @@ changed:
 		egueb_dom_string_unref(thiz->last_theme);
 		thiz->last_theme = egueb_dom_string_dup(curr_theme);
 
+		/* TODO be able to get the theme element from the document itself */
 		/* get the theme node */
 		DBG_ELEMENT(thiz->n, "Loading theme '%s'", egueb_dom_string_string_get(curr_theme));
 		theme_doc = eon_theme_document_load(curr_theme);
