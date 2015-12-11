@@ -59,6 +59,27 @@ static Eina_Bool _eon_attr_theme_name_value_get(Egueb_Dom_Node *n, void *data,
 
 	switch (type)
 	{
+		case EGUEB_DOM_ATTR_TYPE_STYLED:
+		egueb_dom_value_init(value, eon_value_theme_name_descriptor_get());
+		value->data.ptr = &thiz->styled;
+		value->owned = EINA_FALSE;
+		eon_theme_name_copy(&thiz->styled, value->data.ptr, EINA_FALSE);
+		break;
+
+		case EGUEB_DOM_ATTR_TYPE_BASE:
+		egueb_dom_value_init(value, eon_value_theme_name_descriptor_get());
+		value->data.ptr = &thiz->value;
+		value->owned = EINA_FALSE;
+		eon_theme_name_copy(&thiz->value, value->data.ptr, EINA_FALSE);
+		break;
+
+		case EGUEB_DOM_ATTR_TYPE_DEFAULT:
+		egueb_dom_value_init(value, eon_value_theme_name_descriptor_get());
+		value->data.ptr = &thiz->def;
+		value->owned = EINA_FALSE;
+		eon_theme_name_copy(&thiz->def, value->data.ptr, EINA_FALSE);
+		break;
+
 		default:
 		return EINA_FALSE;
 	}
@@ -72,6 +93,21 @@ static Eina_Bool _eon_attr_theme_name_value_set(Egueb_Dom_Node *n, void *data,
 
 	switch (type)
 	{
+		case EGUEB_DOM_ATTR_TYPE_STYLED:
+		eon_theme_name_reset(&thiz->styled);
+		thiz->styled = *(Eon_Theme_Name *)value->data.ptr;
+		break;
+
+		case EGUEB_DOM_ATTR_TYPE_BASE:
+		eon_theme_name_reset(&thiz->value);
+		thiz->value = *(Eon_Theme_Name *)value->data.ptr;
+		break;
+
+		case EGUEB_DOM_ATTR_TYPE_DEFAULT:
+		eon_theme_name_reset(&thiz->def);
+		thiz->def = *(Eon_Theme_Name *)value->data.ptr;
+		break;
+
 		default:
 		return EINA_FALSE;
 	}
@@ -97,12 +133,14 @@ static Egueb_Dom_Attr_External_Descriptor _descriptor = {
  *============================================================================*/
 Egueb_Dom_Node * eon_attr_theme_name_new(void)
 {
+	Eon_Theme_Name theme;
 	Egueb_Dom_Node *n;
 
 	n = egueb_dom_attr_external_new(&_descriptor);
 	egueb_dom_attr_init(n, egueb_dom_string_ref(EON_NAME_ATTR_THEME_NAME), NULL,
 			EINA_FALSE, EINA_TRUE, EINA_TRUE);
-	egueb_dom_attr_inherit(n, EGUEB_DOM_ATTR_TYPE_DEFAULT);
+	theme.type = EON_THEME_NAME_TYPE_ENVIRONMENT;
+	egueb_dom_attr_set(n, EGUEB_DOM_ATTR_TYPE_DEFAULT, &theme);
 
 	return n;
 }
