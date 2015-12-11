@@ -240,7 +240,7 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 {
 	Eon_Feature_Themable *thiz;
 	Eon_Element *e;
-	Eon_Theme_Name curr_theme;
+	Eon_Theme_Name curr_theme = { 0, 0 };
 	Egueb_Dom_Node *ret = NULL;
 	Egueb_Dom_List *curr_theme_id = NULL;
 	Eina_Bool theme_changed = EINA_FALSE;
