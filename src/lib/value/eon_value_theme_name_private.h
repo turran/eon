@@ -15,22 +15,10 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_THEME_H_
-#define _EON_THEME_H_
+#ifndef _EON_VALUE_THEME_NAME_PRIVATE_H_
+#define _EON_VALUE_THEME_NAME_PRIVATE_H_
 
-typedef enum _Eon_Theme_Type
-{
-	EON_THEME_TYPE_ENVIRONMENT,
-	EON_THEME_TYPE_CURRENT_DOCUMENT,
-	EON_THEME_TYPE_CUSTOM
-} Eon_Theme_Type;
-
-typedef struct _Eon_Theme
-{
-	Eon_Theme_Type type;
-	Egueb_Dom_String *custom;
-} Eon_Theme;
-
-EAPI void eon_theme_reset(Eon_Theme *thiz);
+const Egueb_Dom_Value_Descriptor * eon_value_theme_name_descriptor_get(void);
 
 #endif
+

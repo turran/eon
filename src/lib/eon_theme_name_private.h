@@ -15,10 +15,16 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_VALUE_THEME_PRIVATE_H_
-#define _EON_VALUE_THEME_PRIVATE_H_
+#ifndef _EON_THEME_NAME_PRIVATE_H_
+#define _EON_THEME_NAME_PRIVATE_H_
 
-const Egueb_Dom_Value_Descriptor * eon_value_theme_descriptor_get(void);
+Eina_Bool eon_theme_name_string_from(Eon_Theme_Name *paint, const char *attr);
+char * eon_theme_name_string_to(Eon_Theme_Name *thiz);
+void eon_theme_name_interpolate(Eon_Theme_Name *v,
+		Eon_Theme_Name *a, Eon_Theme_Name *b, double m,
+		Eon_Theme_Name *add, Eon_Theme_Name *acc, int mul);
+Eina_Bool eon_theme_name_is_equal(const Eon_Theme_Name *p1,
+		const Eon_Theme_Name *p2);
+void eon_theme_name_copy(const Eon_Theme_Name *thiz, Eon_Theme_Name *copy, Eina_Bool full);
 
 #endif
-

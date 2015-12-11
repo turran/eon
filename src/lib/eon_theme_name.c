@@ -16,9 +16,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
-#include "eon_theme.h"
+#include "eon_theme_name.h"
 
-#include "eon_theme_private.h"
+#include "eon_theme_name_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -28,41 +28,41 @@
 /*
  * <string>, currentDocument, environment
  */
-Eina_Bool eon_theme_string_from(Eon_Theme *paint, const char *attr)
+Eina_Bool eon_theme_name_string_from(Eon_Theme_Name *paint, const char *attr)
 {
 	/* currentDocument */
 	if (!strcmp(attr, "currentDocument"))
 	{
-		paint->type = EON_THEME_TYPE_CURRENT_DOCUMENT;
+		paint->type = EON_THEME_NAME_TYPE_CURRENT_DOCUMENT;
 	}
 	/* currentColor */
 	else if (!strcmp(attr, "environment"))
 	{
-		paint->type = EON_THEME_TYPE_ENVIRONMENT;
+		paint->type = EON_THEME_NAME_TYPE_ENVIRONMENT;
 	}
 	/* custom */
 	else
 	{
-		paint->type = EON_THEME_TYPE_CUSTOM;
+		paint->type = EON_THEME_NAME_TYPE_CUSTOM;
 		paint->custom = egueb_dom_string_new_with_string(attr);
 	}
 
 	return EINA_TRUE;
 }
 
-char * eon_theme_string_to(Eon_Theme *thiz)
+char * eon_theme_name_string_to(Eon_Theme_Name *thiz)
 {
 	switch (thiz->type)
 	{
-		case EON_THEME_TYPE_CURRENT_DOCUMENT:
+		case EON_THEME_NAME_TYPE_CURRENT_DOCUMENT:
 		return strdup("currentDocument");
 		break;
 
-		case EON_THEME_TYPE_ENVIRONMENT:
+		case EON_THEME_NAME_TYPE_ENVIRONMENT:
 		return strdup("environment");
 		break;
 
-		case EON_THEME_TYPE_CUSTOM:
+		case EON_THEME_NAME_TYPE_CUSTOM:
 		return strdup(egueb_dom_string_string_get(thiz->custom));
 		break;
 
@@ -72,14 +72,14 @@ char * eon_theme_string_to(Eon_Theme *thiz)
 	return NULL;
 }
 
-void eon_theme_interpolate(Eon_Theme *v,
-		Eon_Theme *a, Eon_Theme *b, double m,
-		Eon_Theme *add, Eon_Theme *acc, int mul)
+void eon_theme_name_interpolate(Eon_Theme_Name *v,
+		Eon_Theme_Name *a, Eon_Theme_Name *b, double m,
+		Eon_Theme_Name *add, Eon_Theme_Name *acc, int mul)
 {
 }
 
-Eina_Bool eon_theme_is_equal(const Eon_Theme *p1,
-		const Eon_Theme *p2)
+Eina_Bool eon_theme_name_is_equal(const Eon_Theme_Name *p1,
+		const Eon_Theme_Name *p2)
 {
 	/* sanity checks */
 	if (p1 == p2) return EINA_TRUE;
@@ -90,11 +90,11 @@ Eina_Bool eon_theme_is_equal(const Eon_Theme *p1,
 	/* ok, we have values and same types, now compare each type */
 	switch (p1->type)
 	{
-		case EON_THEME_TYPE_CURRENT_DOCUMENT:
-		case EON_THEME_TYPE_ENVIRONMENT:
+		case EON_THEME_NAME_TYPE_CURRENT_DOCUMENT:
+		case EON_THEME_NAME_TYPE_ENVIRONMENT:
 		return EINA_TRUE;
 
-		case EON_THEME_TYPE_CUSTOM:
+		case EON_THEME_NAME_TYPE_CUSTOM:
 		return egueb_dom_string_is_equal(p1->custom, p2->custom);
 
 		default:
@@ -102,13 +102,13 @@ Eina_Bool eon_theme_is_equal(const Eon_Theme *p1,
 	}
 }
 
-void eon_theme_copy(const Eon_Theme *thiz, Eon_Theme *copy, Eina_Bool full)
+void eon_theme_name_copy(const Eon_Theme_Name *thiz, Eon_Theme_Name *copy, Eina_Bool full)
 {
-	eon_theme_reset(copy);
+	eon_theme_name_reset(copy);
 
 	/* common */
 	copy->type = thiz->type;
-	if (thiz->type == EON_THEME_TYPE_CUSTOM)
+	if (thiz->type == EON_THEME_NAME_TYPE_CUSTOM)
 	{
 		if (thiz->custom)
 		{
@@ -123,9 +123,9 @@ void eon_theme_copy(const Eon_Theme *thiz, Eon_Theme *copy, Eina_Bool full)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI void eon_theme_reset(Eon_Theme *thiz)
+EAPI void eon_theme_name_reset(Eon_Theme_Name *thiz)
 {
-	if (thiz->type == EON_THEME_TYPE_CUSTOM)
+	if (thiz->type == EON_THEME_NAME_TYPE_CUSTOM)
 	{
 		if (thiz->custom)
 		{

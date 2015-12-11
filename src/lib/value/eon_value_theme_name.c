@@ -16,22 +16,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "eon_private.h"
-#include "eon_theme.h"
+#include "eon_theme_name.h"
 
-#include "eon_theme_private.h"
+#include "eon_theme_name_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 /*----------------------------------------------------------------------------*
  *                             Value interface                                *
  *----------------------------------------------------------------------------*/
-EGUEB_DOM_VALUE_PRIMITIVE_BOILERPLATE(eon_theme, Eon_Theme);
+EGUEB_DOM_VALUE_PRIMITIVE_BOILERPLATE(eon_theme_name, Eon_Theme_Name);
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-const Egueb_Dom_Value_Descriptor * eon_value_theme_descriptor_get(void)
+const Egueb_Dom_Value_Descriptor * eon_value_theme_name_descriptor_get(void)
 {
-	return &_eon_theme_descriptor;
+	return &_eon_theme_name_descriptor;
 }
 /*============================================================================*
  *                                   API                                      *

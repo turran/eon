@@ -23,7 +23,7 @@ src/lib/eon_element_stack.h \
 src/lib/eon_element_switch.h \
 src/lib/eon_main.h \
 src/lib/eon_renderable.h \
-src/lib/eon_theme.h \
+src/lib/eon_theme_name.h \
 src/lib/eon_stock.h
 
 src_lib_libeon_la_CPPFLAGS = \
@@ -67,8 +67,8 @@ src/lib/eon_vertical_align_private.h \
 src/lib/eon_orientation.c \
 src/lib/eon_orientation_private.h \
 src/lib/eon_stock.c \
-src/lib/eon_theme.c \
-src/lib/eon_theme_private.h \
+src/lib/eon_theme_name.c \
+src/lib/eon_theme_name_private.h \
 src/lib/eon_widget.c \
 src/lib/eon_widget_private.h
 

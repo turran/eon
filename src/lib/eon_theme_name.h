@@ -15,16 +15,22 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EON_THEME_PRIVATE_H_
-#define _EON_THEME_PRIVATE_H_
+#ifndef _EON_THEME_NAME_H_
+#define _EON_THEME_NAME_H_
 
-Eina_Bool eon_theme_string_from(Eon_Theme *paint, const char *attr);
-char * eon_theme_string_to(Eon_Theme *thiz);
-void eon_theme_interpolate(Eon_Theme *v,
-		Eon_Theme *a, Eon_Theme *b, double m,
-		Eon_Theme *add, Eon_Theme *acc, int mul);
-Eina_Bool eon_theme_is_equal(const Eon_Theme *p1,
-		const Eon_Theme *p2);
-void eon_theme_copy(const Eon_Theme *thiz, Eon_Theme *copy, Eina_Bool full);
+typedef enum _Eon_Theme_Name_Type
+{
+	EON_THEME_NAME_TYPE_ENVIRONMENT,
+	EON_THEME_NAME_TYPE_CURRENT_DOCUMENT,
+	EON_THEME_NAME_TYPE_CUSTOM
+} Eon_Theme_Name_Type;
+
+typedef struct _Eon_Theme_Name
+{
+	Eon_Theme_Name_Type type;
+	Egueb_Dom_String *custom;
+} Eon_Theme_Name;
+
+EAPI void eon_theme_name_reset(Eon_Theme_Name *thiz);
 
 #endif

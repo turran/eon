@@ -145,7 +145,7 @@ Egueb_Dom_Node * eon_element_new(Enesim_Object_Descriptor *descriptor,
 		default_theme = "basic";
 	}
 	theme = egueb_dom_string_new_with_static_string(default_theme);
-	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_THEME),
+	thiz->theme = egueb_dom_attr_string_new(egueb_dom_string_ref(EON_NAME_ATTR_THEME_NAME),
 			NULL, theme, EINA_FALSE, EINA_TRUE, EINA_TRUE);
 	thiz->theme_id = egueb_dom_attr_string_list_new(
 			egueb_dom_string_ref(EON_NAME_THEME_ID),
