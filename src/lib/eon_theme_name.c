@@ -104,8 +104,6 @@ Eina_Bool eon_theme_name_is_equal(const Eon_Theme_Name *p1,
 
 void eon_theme_name_copy(const Eon_Theme_Name *thiz, Eon_Theme_Name *copy, Eina_Bool full)
 {
-	eon_theme_name_reset(copy);
-
 	/* common */
 	copy->type = thiz->type;
 	if (thiz->type == EON_THEME_NAME_TYPE_CUSTOM)
