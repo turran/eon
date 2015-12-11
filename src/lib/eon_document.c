@@ -59,38 +59,41 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 	/* TODO handle this correctly, ns_uris null or eon ns with same name as
 	 * a theme, like demo01:entry */
 	DBG("Creating element '%s:%s'", ns_uri, name);
-	if (!strcmp(name, "eon"))
-		ret = eon_element_eon_new();
-	else if (!strcmp(name, "eot"))
-		ret = eon_theme_element_eot_new();
-	else if (!strcmp(name, "button"))
-		ret = eon_element_button_new();
-	else if (!strcmp(name, "entry"))
-		ret = eon_element_entry_new();
-	else if (!strcmp(name, "label"))
-		ret = eon_element_label_new();
-	else if (!strcmp(name, "stack"))
-		ret = eon_element_stack_new();
-	else if (!strcmp(name, "stockLabel"))
-		ret = eon_element_label_stock_new();
-	else if (!strcmp(name, "stockButton"))
-		ret = eon_element_button_stock_new();
-	else if (!strcmp(name, "object"))
-		ret = eon_element_object_new();
-	else if (!strcmp(name, "checkbox"))
-		ret = eon_element_checkbox_new();
-	else if (!strcmp(name, "switch"))
-		ret = eon_element_switch_new();
-	else if (!strcmp(name, "toggleButton"))
-		ret = eon_element_button_toggle_new();
-	else if (!strcmp(name, "radio"))
-		ret = eon_element_radio_new();
-	else if (!strcmp(name, "frame"))
-		ret = eon_element_frame_new();
-	else if (!strcmp(name, "separator"))
-		ret = eon_element_separator_new();
-	else if (!strcmp(name, "image"))
-		ret = eon_element_image_new();
+	if (!ns_uri || !strcmp(ns_uri, "http://www.eon.org/1.0/spec"))
+	{
+		if (!strcmp(name, "eon"))
+			ret = eon_element_eon_new();
+		else if (!strcmp(name, "eot"))
+			ret = eon_theme_element_eot_new();
+		else if (!strcmp(name, "button"))
+			ret = eon_element_button_new();
+		else if (!strcmp(name, "entry"))
+			ret = eon_element_entry_new();
+		else if (!strcmp(name, "label"))
+			ret = eon_element_label_new();
+		else if (!strcmp(name, "stack"))
+			ret = eon_element_stack_new();
+		else if (!strcmp(name, "stockLabel"))
+			ret = eon_element_label_stock_new();
+		else if (!strcmp(name, "stockButton"))
+			ret = eon_element_button_stock_new();
+		else if (!strcmp(name, "object"))
+			ret = eon_element_object_new();
+		else if (!strcmp(name, "checkbox"))
+			ret = eon_element_checkbox_new();
+		else if (!strcmp(name, "switch"))
+			ret = eon_element_switch_new();
+		else if (!strcmp(name, "toggleButton"))
+			ret = eon_element_button_toggle_new();
+		else if (!strcmp(name, "radio"))
+			ret = eon_element_radio_new();
+		else if (!strcmp(name, "frame"))
+			ret = eon_element_frame_new();
+		else if (!strcmp(name, "separator"))
+			ret = eon_element_separator_new();
+		else if (!strcmp(name, "image"))
+			ret = eon_element_image_new();
+	}
 	else if (ns_uri)
 	{
 		Eon_Theme_Namespace *ns;
