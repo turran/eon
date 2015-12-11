@@ -64,7 +64,7 @@ static void _strings_init(void)
 	EON_NAME_HEXPAND = egueb_dom_string_new_with_static_string("hexpand");
 	EON_NAME_VEXPAND = egueb_dom_string_new_with_static_string("vexpand");
 	EON_NAME_COLOR = egueb_dom_string_new_with_static_string("color");
-	EON_NAME_ATTR_THEME_NAME = egueb_dom_string_new_with_static_string("themeName");
+	EON_NAME_ATTR_THEME_NAME = egueb_dom_string_new_with_static_string("theme-name");
 	EON_NAME_THEME_ID = egueb_dom_string_new_with_static_string("theme-id");
 	EON_ATTR_ELLIPSIZE = egueb_dom_string_new_with_static_string("ellipsize");
 	EON_ATTR_VALIGN = egueb_dom_string_new_with_static_string("valign");
