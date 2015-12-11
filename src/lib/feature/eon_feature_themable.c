@@ -17,6 +17,7 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_theme_name.h"
 
 #include "eon_element_private.h"
 #include "eon_renderable_private.h"
@@ -35,7 +36,7 @@ typedef struct _Eon_Feature_Themable
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Feature *f;
 	Egueb_Dom_Node *theme_element;
-	Egueb_Dom_String *last_theme;
+	Eon_Theme_Name last_theme;
 } Eon_Feature_Themable;
 
 typedef struct _Eon_Feature_Themable_Class
@@ -144,7 +145,7 @@ static void _eon_feature_themable_deinit(void *data)
 
 	thiz = EON_FEATURE_THEMABLE(data);
 	egueb_dom_node_unref(thiz->theme_element);
-	egueb_dom_string_unref(thiz->last_theme);
+	eon_theme_name_reset(&thiz->last_theme);
 }
 
 static Egueb_Dom_Feature_External_Descriptor _descriptor = {
@@ -239,8 +240,8 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 {
 	Eon_Feature_Themable *thiz;
 	Eon_Element *e;
+	Eon_Theme_Name curr_theme;
 	Egueb_Dom_Node *ret = NULL;
-	Egueb_Dom_String *curr_theme = NULL;
 	Egueb_Dom_List *curr_theme_id = NULL;
 	Eina_Bool theme_changed = EINA_FALSE;
 
@@ -250,7 +251,7 @@ Egueb_Dom_Node * eon_feature_themable_load(Egueb_Dom_Feature *f)
 	/* check if the theme has changed */
 	egueb_dom_attr_final_get(e->theme, &curr_theme);
 	egueb_dom_attr_final_get(e->theme_id, &curr_theme_id);
-	if (!egueb_dom_string_is_equal(curr_theme, thiz->last_theme))
+	if (!eon_theme_name_is_equal(&curr_theme, &thiz->last_theme))
 	{
 		DBG_ELEMENT(thiz->n, "Theme changed"); 
 		theme_changed = EINA_TRUE;
@@ -291,16 +292,47 @@ changed:
 		}
 
 		/* swap */
-		egueb_dom_string_unref(thiz->last_theme);
-		thiz->last_theme = egueb_dom_string_dup(curr_theme);
+		eon_theme_name_reset(&thiz->last_theme);
+		eon_theme_name_copy(&curr_theme, &thiz->last_theme, EINA_TRUE);
 
-		/* TODO be able to get the theme element from the document itself */
 		/* get the theme node */
-		DBG_ELEMENT(thiz->n, "Loading theme '%s'", egueb_dom_string_string_get(curr_theme));
-		theme_doc = eon_theme_document_load(curr_theme);
+		switch (curr_theme.type)
+		{
+			case EON_THEME_NAME_TYPE_CURRENT_DOCUMENT:
+			DBG_ELEMENT(thiz->n, "Loading theme from current document");
+			theme_doc = egueb_dom_node_owner_document_get(thiz->n);
+			break;
+
+			case EON_THEME_NAME_TYPE_ENVIRONMENT:
+			{
+				Egueb_Dom_String *theme_name;
+				char *default_theme;
+
+				default_theme = getenv("EON_THEME");
+				if (!default_theme)
+				{
+					default_theme = "basic";
+				}
+				DBG_ELEMENT(thiz->n, "Loading theme from envvar '%s'", default_theme);
+				theme_name = egueb_dom_string_new_with_static_string(default_theme);
+				theme_doc = eon_theme_document_load(theme_name);
+				egueb_dom_string_unref(theme_name);
+			}
+			break;
+
+			case EON_THEME_NAME_TYPE_CUSTOM:
+			DBG_ELEMENT(thiz->n, "Loading custom theme'%s'",
+					egueb_dom_string_string_get(curr_theme.custom));
+			theme_doc = eon_theme_document_load(curr_theme.custom);
+			break;
+
+			default:
+			ERR_ELEMENT(thiz->n, "Invalid theme name");
+			goto done;
+		}
 		if (!theme_doc)
 		{
-			ERR_ELEMENT(thiz->n, "Theme '%s' does not exist", egueb_dom_string_string_get(curr_theme));
+			ERR_ELEMENT(thiz->n, "Theme doc does not exist");
 			goto done;
 		}
 
@@ -333,7 +365,7 @@ changed:
 				_eon_feature_themable_event_monitor_cb, thiz);
 	}
 done:
-	egueb_dom_string_unref(curr_theme);
+	eon_theme_name_reset(&curr_theme);
 	egueb_dom_list_unref(curr_theme_id);
 	return egueb_dom_node_ref(thiz->theme_element);
 }
