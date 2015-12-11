@@ -27,6 +27,7 @@ EXTRA_DIST =
 ### Library
 include src/lib/Makefile.mk
 include src/lib/theme/Makefile.mk
+include src/lib/value/Makefile.mk
 include src/lib/event/Makefile.mk
 include src/lib/feature/Makefile.mk
 
