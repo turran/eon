@@ -32,11 +32,53 @@ typedef struct _Eon_Theme_Element_Eot_Class
 	Eon_Theme_Element_Class base;
 } Eon_Theme_Element_Eot_Class;
 
+static void _eon_theme_element_eot_process_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
+		return;
+
+	DBG("Preventing a process on a child element");
+	egueb_dom_event_stop_propagation(e);
+}
+
+/* a mutation is being triggered from one of our children
+ * or a children of our children, prevent the process
+ */
+static void _eon_theme_element_eot_mutation_cb(Egueb_Dom_Event *e,
+		void *data)
+{
+	if (egueb_dom_event_phase_get(e) != EGUEB_DOM_EVENT_PHASE_BUBBLING)
+		return;
+
+	DBG("Preventing a process on a child element");
+	egueb_dom_event_mutation_process_prevent(e);
+}
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
 static void _eon_theme_element_eot_init(Eon_Theme_Element *e)
 {
+	Egueb_Dom_Event_Target *evt;
+
+	evt = EGUEB_DOM_EVENT_TARGET_CAST(e->n);
+	egueb_dom_event_target_event_listener_add(evt,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_theme_element_eot_mutation_cb,
+			EINA_FALSE, NULL);
+	egueb_dom_event_target_event_listener_add(evt,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+			_eon_theme_element_eot_mutation_cb,
+			EINA_FALSE, NULL);
+	egueb_dom_event_target_event_listener_add(evt,
+			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+			_eon_theme_element_eot_mutation_cb,
+			EINA_FALSE, NULL);
+	egueb_dom_event_target_event_listener_add(evt,
+			EGUEB_DOM_EVENT_PROCESS,
+			_eon_theme_element_eot_process_cb,
+			EINA_FALSE, NULL);
 }
 
 static Egueb_Dom_String * _eon_theme_element_eot_tag_name_get(
