@@ -87,24 +87,11 @@ static Eina_Bool _eon_theme_element_process(Egueb_Dom_Node *n, void *data)
 {
 	Eon_Theme_Element *thiz = data;
 	Eon_Theme_Element_Class *klass;
-	Egueb_Dom_Node *child;
 
 	klass = EON_THEME_ELEMENT_CLASS_GET(data);
-
 	if (klass->process)
 		if (!klass->process(thiz))
 			return EINA_FALSE;
-	/* process the children */
-	child = egueb_dom_element_child_first_get(n);
-	while (child)
-	{
-		Egueb_Dom_Node *tmp;
-
-		egueb_dom_element_process(child);
-		tmp = egueb_dom_element_sibling_next_get(child);
-		egueb_dom_node_unref(child);
-		child = tmp;
-	}
 	return EINA_TRUE;
 }
 

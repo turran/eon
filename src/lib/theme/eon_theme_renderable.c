@@ -25,6 +25,30 @@
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
+static Eina_Bool _eon_theme_renderable_process(Eon_Theme_Element *e)
+{
+	Eon_Theme_Renderable *thiz;
+	Eon_Theme_Renderable_Class *klass;
+	Egueb_Dom_Node *child;
+
+	thiz = EON_THEME_RENDERABLE(e);
+	klass = EON_THEME_RENDERABLE_CLASS_GET(thiz);
+
+	if (klass->process)
+		if (!klass->process(thiz))
+			return EINA_FALSE;
+	/* process the children */
+	child = egueb_dom_element_child_first_get(e->n);
+	while (child)
+	{
+		Egueb_Dom_Node *tmp;
+
+		egueb_dom_element_process(child);
+		tmp = egueb_dom_element_sibling_next_get(child);
+		egueb_dom_node_unref(child);
+		child = tmp;
+	}
+}
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/

@@ -37,11 +37,14 @@ typedef struct _Eon_Theme_Renderable
 	Eina_Rectangle geometry;
 } Eon_Theme_Renderable;
 
+/* Process the node */
+typedef Eina_Bool (*Eon_Theme_Renderable_Process)(Eon_Theme_Renderable *thiz);
 typedef Enesim_Renderer * (*Eon_Theme_Renderable_Renderer_Get)(Eon_Theme_Renderable *thiz);
 
 typedef struct _Eon_Theme_Renderable_Class
 {
 	Eon_Theme_Element_Class base;
+	Eon_Theme_Renderable_Process process;
 	Eon_Theme_Renderable_Renderer_Get renderer_get;
 } Eon_Theme_Renderable_Class;
 
