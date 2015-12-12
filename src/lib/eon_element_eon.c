@@ -428,7 +428,7 @@ static Egueb_Dom_Node * _eon_element_eon_element_at(Eon_Renderable *r,
 	Egueb_Dom_Node *n;
 
 	n = (EON_ELEMENT(r))->n;
-	child = egueb_dom_element_child_first_get(n);
+	child = _eon_element_eon_renderable_child_get(n);
 	if (child)
 	{
 		ret = eon_renderable_element_at(child, cursor);
