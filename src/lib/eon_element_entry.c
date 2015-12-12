@@ -141,6 +141,8 @@ static void _eon_element_entry_click_cb(Egueb_Dom_Event *e,
 		/* TODO set the cursor position */
 		/* TODO change the cursor type when mouse is over the text area */
 		thiz->cursor = index;
+		eon_theme_element_entry_cursor_set(
+				theme_element, thiz->cursor);
 	}
 	egueb_dom_node_unref(theme_element);
 done:
