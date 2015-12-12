@@ -53,6 +53,17 @@ static Enesim_Renderer * _eon_theme_element_switch_renderer_get(Eon_Theme_Render
 		return thiz->d->renderer_get(thiz->data);
 	return NULL;
 }
+
+static Eina_Bool _eon_theme_element_switch_process(Eon_Theme_Renderable *r)
+{
+	Eon_Theme_Element_Switch *thiz;
+
+	thiz = EON_THEME_ELEMENT_SWITCH(r);
+	if (thiz->d->process)
+		return thiz->d->process(thiz->data);
+	return EINA_TRUE;
+}
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -73,16 +84,6 @@ static Egueb_Dom_Node * _eon_theme_element_switch_ctor(Eon_Theme_Element *e)
 	if (thiz->d->ctor)
 		return thiz->d->ctor();
 	return NULL;
-}
-
-static Eina_Bool _eon_theme_element_switch_process(Eon_Theme_Element *e)
-{
-	Eon_Theme_Element_Switch *thiz;
-
-	thiz = EON_THEME_ELEMENT_SWITCH(e);
-	if (thiz->d->process)
-		return thiz->d->process(thiz->data);
-	return EINA_TRUE;
 }
 
 static Egueb_Dom_String * _eon_theme_element_switch_tag_name_get(Eon_Theme_Element *e)
@@ -111,12 +112,12 @@ static void _eon_theme_element_switch_class_init(void *k)
 
 	klass = EON_THEME_RENDERABLE_CLASS(k);
 	klass->renderer_get = _eon_theme_element_switch_renderer_get;
+	klass->process = _eon_theme_element_switch_process;
 
 	e_klass = EON_THEME_ELEMENT_CLASS(k);
 	e_klass->init = _eon_theme_element_switch_init;
 	e_klass->ctor = _eon_theme_element_switch_ctor;
 	e_klass->tag_name_get = _eon_theme_element_switch_tag_name_get;
-	e_klass->process = _eon_theme_element_switch_process;
 }
 
 static void _eon_theme_element_switch_instance_init(void *o)

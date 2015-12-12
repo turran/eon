@@ -58,6 +58,24 @@ static Enesim_Renderer * _eon_theme_element_entry_renderer_get(Eon_Theme_Rendera
 		return thiz->d->renderer_get(thiz->data);
 	return NULL;
 }
+
+static Eina_Bool _eon_theme_element_entry_process(Eon_Theme_Renderable *r)
+{
+	Eon_Theme_Element_Entry *thiz;
+	Enesim_Color color;
+	Enesim_Argb argb;
+
+	thiz = EON_THEME_ELEMENT_ENTRY(r);
+	/* Set the properties of the renderer */
+	egueb_dom_attr_final_get(thiz->color, &argb);
+	color = enesim_color_argb_from(argb);
+	enesim_renderer_color_set(thiz->text_renderer, color);
+
+	if (thiz->d->process)
+		return thiz->d->process(thiz->data);
+	return EINA_TRUE;
+}
+
 /*----------------------------------------------------------------------------*
  *                             Element interface                              *
  *----------------------------------------------------------------------------*/
@@ -83,23 +101,6 @@ static void _eon_theme_element_entry_init(Eon_Theme_Element *e)
 			EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->color), NULL);
 	egueb_dom_element_attribute_node_set(e->n, egueb_dom_node_ref(thiz->font), NULL);
-}
-
-static Eina_Bool _eon_theme_element_entry_process(Eon_Theme_Element *e)
-{
-	Eon_Theme_Element_Entry *thiz;
-	Enesim_Color color;
-	Enesim_Argb argb;
-
-	thiz = EON_THEME_ELEMENT_ENTRY(e);
-	/* Set the properties of the renderer */
-	egueb_dom_attr_final_get(thiz->color, &argb);
-	color = enesim_color_argb_from(argb);
-	enesim_renderer_color_set(thiz->text_renderer, color);
-	
-	if (thiz->d->process)
-		return thiz->d->process(thiz->data);
-	return EINA_TRUE;
 }
 
 static Egueb_Dom_String * _eon_theme_element_entry_tag_name_get(Eon_Theme_Element *e)
@@ -128,12 +129,12 @@ static void _eon_theme_element_entry_class_init(void *k)
 
 	klass = EON_THEME_RENDERABLE_CLASS(k);
 	klass->renderer_get = _eon_theme_element_entry_renderer_get;
+	klass->process = _eon_theme_element_entry_process;
 
 	e_klass = EON_THEME_ELEMENT_CLASS(k);
 	e_klass->ctor = _eon_theme_element_entry_ctor;
 	e_klass->init = _eon_theme_element_entry_init;
 	e_klass->tag_name_get = _eon_theme_element_entry_tag_name_get;
-	e_klass->process = _eon_theme_element_entry_process;
 }
 
 static void _eon_theme_element_entry_instance_init(void *o)

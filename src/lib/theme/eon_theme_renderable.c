@@ -48,6 +48,7 @@ static Eina_Bool _eon_theme_renderable_process(Eon_Theme_Element *e)
 		egueb_dom_node_unref(child);
 		child = tmp;
 	}
+	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
@@ -57,6 +58,8 @@ ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EON_THEME_ELEMENT_DESCRIPTOR, Eon_Theme_Rende
 
 static void _eon_theme_renderable_class_init(void *k)
 {
+	Eon_Theme_Element_Class *klass = k;
+	klass->process = _eon_theme_renderable_process;
 }
 
 static void _eon_theme_renderable_instance_init(void *o)
