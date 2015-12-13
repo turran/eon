@@ -38,6 +38,7 @@ typedef struct _Eon_Element_Entry
 	Egueb_Dom_Node *text_align;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Enesim_Renderer *proxy;
 	Enesim_Renderer *r;
 	/* the unicode index of the current position of the cursor */
 	int cursor;
@@ -329,6 +330,7 @@ static void _eon_element_entry_init(Eon_Widget *w)
 			EINA_TRUE, thiz);
 	/* private */
 	thiz->offset = -1;
+	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->r = enesim_renderer_text_span_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
 	e = EON_ELEMENT(w);
@@ -341,19 +343,9 @@ static void _eon_element_entry_init(Eon_Widget *w)
 static Enesim_Renderer * _eon_element_entry_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Entry *thiz;
-	Egueb_Dom_Node *theme_element;
-	Enesim_Renderer *ren;
 
 	thiz = EON_ELEMENT_ENTRY(r);
-	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	if (!theme_element)
-	{
-		WARN("No theme element found");
-		return NULL;
-	}
-	ren = eon_theme_renderable_renderer_get(theme_element);
-	egueb_dom_node_unref(theme_element);
-	return ren;
+	return enesim_renderer_ref(thiz->proxy);
 }
 
 static int _eon_element_entry_size_hints_get(Eon_Renderable *r,
@@ -363,6 +355,7 @@ static int _eon_element_entry_size_hints_get(Eon_Renderable *r,
 	Eon_Box padding;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
+	Enesim_Renderer *ren;
 	int ret = 0;
 
 	n = (EON_ELEMENT(r))->n;
@@ -378,6 +371,9 @@ static int _eon_element_entry_size_hints_get(Eon_Renderable *r,
 			enesim_renderer_ref(thiz->r));
 	ret = eon_theme_element_entry_size_hints_get(theme_element,
 			size, -1);
+	ren = eon_theme_renderable_renderer_get(theme_element);
+	enesim_renderer_proxy_proxied_set(thiz->proxy, ren);
+
 	return ret;
 }
 
@@ -483,6 +479,7 @@ static void _eon_element_entry_instance_deinit(void *o)
 	/* attributes */
 	egueb_dom_node_unref(thiz->default_value);
 	/* private */
+	enesim_renderer_unref(thiz->proxy);
 	enesim_renderer_unref(thiz->r);
 	egueb_dom_feature_unref(thiz->theme_feature);
 }
