@@ -17,6 +17,7 @@
  */
 #include "eon_private.h"
 #include "eon_main.h"
+#include "eon_attr_theme_name_private.h"
 #include "eon_element_private.h"
 /*============================================================================*
  *                                  Local                                     *

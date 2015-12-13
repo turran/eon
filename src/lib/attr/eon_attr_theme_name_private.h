@@ -19,6 +19,6 @@
 #ifndef _EON_ATTR_THEME_PRIVATE_H
 #define _EON_ATTR_THEME_PRIVATE_H
 
-Egueb_Dom_Node * eon_attr_theme_new(void);
+Egueb_Dom_Node * eon_attr_theme_name_new(void);
 
 #endif
