@@ -287,6 +287,9 @@ changed:
 
 		if (thiz->theme_element)
 		{
+			egueb_dom_event_target_monitor_remove(
+					EGUEB_DOM_EVENT_TARGET(thiz->theme_element),
+					_eon_feature_themable_event_monitor_cb, thiz);
 			egueb_dom_node_unref(thiz->theme_element);
 			thiz->theme_element = NULL;
 		}
@@ -299,7 +302,7 @@ changed:
 		switch (curr_theme.type)
 		{
 			case EON_THEME_NAME_TYPE_CURRENT_DOCUMENT:
-			DBG_ELEMENT(thiz->n, "Loading theme from current document");
+			INFO_ELEMENT(thiz->n, "Loading theme from current document");
 			theme_doc = egueb_dom_node_owner_document_get(thiz->n);
 			break;
 
@@ -313,7 +316,7 @@ changed:
 				{
 					default_theme = "basic";
 				}
-				DBG_ELEMENT(thiz->n, "Loading theme from envvar '%s'", default_theme);
+				INFO_ELEMENT(thiz->n, "Loading theme from envvar '%s'", default_theme);
 				theme_name = egueb_dom_string_new_with_static_string(default_theme);
 				theme_doc = eon_theme_document_load(theme_name);
 				egueb_dom_string_unref(theme_name);
@@ -321,7 +324,7 @@ changed:
 			break;
 
 			case EON_THEME_NAME_TYPE_CUSTOM:
-			DBG_ELEMENT(thiz->n, "Loading custom theme'%s'",
+			INFO_ELEMENT(thiz->n, "Loading custom theme'%s'",
 					egueb_dom_string_string_get(curr_theme.custom));
 			theme_doc = eon_theme_document_load(curr_theme.custom);
 			break;
