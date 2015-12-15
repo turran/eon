@@ -41,6 +41,7 @@ typedef struct _Eon_Element_Radio
 	Egueb_Dom_Node *activated;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Enesim_Renderer *proxy;
 	Eina_Bool first_run;
 } Eon_Element_Radio;
 
@@ -119,6 +120,7 @@ static void _eon_element_radio_init(Eon_Widget *w)
 			EINA_FALSE, thiz);
 	/* private */
 	thiz->first_run = EINA_TRUE;
+	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
 	eon_feature_themable_event_propagate(thiz->theme_feature,
 			EON_NAME_EVENT_ACTIVATE);
@@ -134,19 +136,9 @@ static void _eon_element_radio_init(Eon_Widget *w)
 static Enesim_Renderer * _eon_element_radio_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Radio *thiz;
-	Egueb_Dom_Node *theme_element;
-	Enesim_Renderer *ren;
 
 	thiz = EON_ELEMENT_RADIO(r);
-	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	if (!theme_element)
-	{
-		WARN("No theme element found");
-		return NULL;
-	}
-	ren = eon_theme_renderable_renderer_get(theme_element);
-	egueb_dom_node_unref(theme_element);
-	return ren;
+	return enesim_renderer_ref(thiz->proxy);
 }
 
 static int _eon_element_radio_size_hints_get(Eon_Renderable *r,
@@ -156,6 +148,7 @@ static int _eon_element_radio_size_hints_get(Eon_Renderable *r,
 	Eon_Box padding;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
+	Enesim_Renderer *ren;
 	int ret;
 
 	/* get the hints of the content */
@@ -188,6 +181,10 @@ static int _eon_element_radio_size_hints_get(Eon_Renderable *r,
 		if (size->pref_height > 0)
 			size->pref_height += padding.top + padding.bottom;
 	}
+	/* set the proxied renderer */
+	ren = eon_theme_renderable_renderer_get(theme_element);
+	enesim_renderer_proxy_proxied_set(thiz->proxy, ren);
+	egueb_dom_node_unref(theme_element);
 
 	return ret;
 }
@@ -331,6 +328,7 @@ static void _eon_element_radio_instance_deinit(void *o)
 	egueb_dom_node_unref(thiz->group);
 	egueb_dom_node_unref(thiz->activated);
 	/* private */
+	enesim_renderer_unref(thiz->proxy);
 	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*

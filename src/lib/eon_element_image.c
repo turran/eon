@@ -37,6 +37,7 @@ typedef struct _Eon_Element_Image
 	Egueb_Dom_Node *scalable;
 	Egueb_Dom_Node *xlink_href;
 	/* private */
+	Enesim_Renderer *proxy;
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Surface *s;
 } Eon_Element_Image;
@@ -127,6 +128,7 @@ static void _eon_element_image_init(Eon_Renderable *r)
 			_eon_element_image_attr_modified_cb,
 			EINA_FALSE, thiz);
 	/* private */
+	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
 	e = EON_ELEMENT(r);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
@@ -136,19 +138,9 @@ static void _eon_element_image_init(Eon_Renderable *r)
 static Enesim_Renderer * _eon_element_image_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Image *thiz;
-	Egueb_Dom_Node *theme_element;
-	Enesim_Renderer *ren;
 
 	thiz = EON_ELEMENT_IMAGE(r);
-	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	if (!theme_element)
-	{
-		WARN("No theme element found");
-		return NULL;
-	}
-	ren = eon_theme_renderable_renderer_get(theme_element);
-	egueb_dom_node_unref(theme_element);
-	return ren;
+	return enesim_renderer_ref(thiz->proxy);
 }
 
 static int _eon_element_image_size_hints_get(Eon_Renderable *r,
@@ -159,9 +151,17 @@ static int _eon_element_image_size_hints_get(Eon_Renderable *r,
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
 	Egueb_Dom_String *s;
+	Enesim_Renderer *ren;
 	int ret = 0;
 
 	thiz = EON_ELEMENT_IMAGE(r);
+	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return 0;
+	}
+
 	egueb_dom_attr_final_get(thiz->xlink_href, &s);
 	/* in case the xlink:href attribute has changed
 	 * request the io_data_cb from the uri and return no hints
@@ -195,6 +195,11 @@ static int _eon_element_image_size_hints_get(Eon_Renderable *r,
 			size->min_height = size->max_height = size->pref_height;
 		}
 	}
+	/* set the proxied renderer */
+	ren = eon_theme_renderable_renderer_get(theme_element);
+	enesim_renderer_proxy_proxied_set(thiz->proxy, ren);
+	egueb_dom_node_unref(theme_element);
+
 	return ret;
 }
 
@@ -264,8 +269,11 @@ static void _eon_element_image_instance_deinit(void *o)
 	Eon_Element_Image *thiz;
 
 	thiz = EON_ELEMENT_IMAGE(o);
+	/* attributes */
 	egueb_dom_node_unref(thiz->scalable);
 	egueb_dom_node_unref(thiz->xlink_href);
+	/* private */
+	enesim_renderer_unref(thiz->proxy);
 	enesim_surface_unref(thiz->s);
 }
 /*============================================================================*
