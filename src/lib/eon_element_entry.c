@@ -371,8 +371,10 @@ static int _eon_element_entry_size_hints_get(Eon_Renderable *r,
 			enesim_renderer_ref(thiz->r));
 	ret = eon_theme_element_entry_size_hints_get(theme_element,
 			size, -1);
+	/* set the proxied renderer */
 	ren = eon_theme_renderable_renderer_get(theme_element);
 	enesim_renderer_proxy_proxied_set(thiz->proxy, ren);
+	egueb_dom_node_unref(theme_element);
 
 	return ret;
 }
