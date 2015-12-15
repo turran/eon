@@ -1,4 +1,3 @@
-+ Make every element that has a renderable theme own a proxy renderer
 + Use the split version of the theme feature
 + Add an image stock element similar to the button stock
 + Add an event handler on the theme element to replace the relative uris with absolute uris based on the path of the theme
