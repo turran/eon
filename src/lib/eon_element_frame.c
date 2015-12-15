@@ -39,6 +39,7 @@ typedef struct _Eon_Element_Frame
 	Egueb_Dom_Node *title;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
+	Enesim_Renderer *proxy;
 } Eon_Element_Frame;
 
 typedef struct _Eon_Element_Frame_Class
@@ -91,6 +92,7 @@ static void _eon_element_frame_init(Eon_Renderable *r)
 			_eon_element_frame_attr_modified_cb,
 			EINA_FALSE, thiz);
 	/* private */
+	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
 	e = EON_ELEMENT(r);
 	egueb_dom_attr_string_list_append(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
@@ -123,19 +125,9 @@ static Egueb_Dom_Node * _eon_element_frame_element_at(Eon_Renderable *r,
 static Enesim_Renderer * _eon_element_frame_renderer_get(Eon_Renderable *r)
 {
 	Eon_Element_Frame *thiz;
-	Egueb_Dom_Node *theme_element;
-	Enesim_Renderer *ren;
 
 	thiz = EON_ELEMENT_FRAME(r);
-	theme_element = eon_feature_themable_load(thiz->theme_feature);
-	if (!theme_element)
-	{
-		WARN("No theme element found");
-		return NULL;
-	}
-	ren = eon_theme_renderable_renderer_get(theme_element);
-	egueb_dom_node_unref(theme_element);
-	return ren;
+	return enesim_renderer_ref(thiz->proxy);
 }
 
 static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
@@ -145,6 +137,7 @@ static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
 	Eon_Box padding;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
+	Enesim_Renderer *ren;
 	int ret = 0;
 	int minw, minh;
 
@@ -208,6 +201,11 @@ static int _eon_element_frame_size_hints_get(Eon_Renderable *r,
 				size->pref_height = minh;
 		}
 	}
+
+	/* set the proxied renderer */
+	ren = eon_theme_renderable_renderer_get(theme_element);
+	enesim_renderer_proxy_proxied_set(thiz->proxy, ren);
+	egueb_dom_node_unref(theme_element);
 
 	return ret;
 }
@@ -334,7 +332,10 @@ static void _eon_element_frame_instance_deinit(void *o)
 	Eon_Element_Frame *thiz;
 
 	thiz = EON_ELEMENT_FRAME(o);
+	/* attributes */
 	egueb_dom_node_unref(thiz->title);
+	/* private */
+	enesim_renderer_unref(thiz->proxy);
 }
 /*============================================================================*
  *                                 Global                                     *
