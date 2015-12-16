@@ -51,4 +51,5 @@
     <set attributeName="border-color" to="#ff0f3b65" begin="focusout" dur="1s" end="focusin"/>
     <animate attributeName="cursor-visible" values="true; false; true" begin="focusin" dur="1s" end="focusout" calcMode="discrete" keyTimes="0; 0.5; 1" repeatCount="indefinite" fill="remove"/>
   </mars:entry>
+  <mars:progressBar id="progressBar" color="#ff0f3b65"/>
 </eot>
