@@ -127,6 +127,7 @@ static int _eon_element_progress_bar_size_hints_get(Eon_Renderable *r,
 static Eina_Bool _eon_element_progress_bar_process(Eon_Renderable *r)
 {
 	Eon_Element_Progress_Bar *thiz;
+	Eon_Orientation orientation;
 	Egueb_Dom_Node *theme_element;
 
 	thiz = EON_ELEMENT_PROGRESS_BAR(r);
@@ -136,6 +137,9 @@ static Eina_Bool _eon_element_progress_bar_process(Eon_Renderable *r)
 		WARN("No theme element found");
 		return EINA_FALSE;
 	}
+	/* Set the orientation */
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	eon_theme_element_progress_bar_orientation_set(theme_element, orientation);
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 	/* Finally process our theme */
