@@ -25,8 +25,6 @@
 
 #define EON_THEME_ELEMENT_SEPARATOR_VERSION 0
 
-/* TODO share the eon_theme_renderable definition */
-typedef Enesim_Renderer * (*Eon_Theme_Element_Separator_Descriptor_Renderer_Get_Cb)(void *data);
 typedef int (*Eon_Theme_Element_Separator_Descriptor_Thickness_Get_Cb)(void *data);
 
 typedef struct _Eon_Theme_Element_Separator_Descriptor {
@@ -35,7 +33,7 @@ typedef struct _Eon_Theme_Element_Separator_Descriptor {
 	Eon_Theme_Element_Dtor_Cb dtor;
 	Eon_Theme_Element_Tag_Name_Get_Cb tag_name_get;
 	Eon_Theme_Element_Process_Cb process;
-	Eon_Theme_Element_Separator_Descriptor_Renderer_Get_Cb renderer_get;
+	Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb renderer_get;
 	Eon_Theme_Element_Separator_Descriptor_Thickness_Get_Cb thickness_get;
 } Eon_Theme_Element_Separator_Descriptor;
 
