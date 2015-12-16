@@ -45,6 +45,7 @@ extern "C" {
 #include "eon_element_image.h"
 #include "eon_element_label.h"
 #include "eon_element_object.h"
+#include "eon_element_progress_bar.h"
 #include "eon_element_radio.h"
 #include "eon_element_stack.h"
 #include "eon_element_separator.h"
@@ -62,6 +63,7 @@ extern "C" {
 #include "eon_theme_element_eon.h"
 #include "eon_theme_element_frame.h"
 #include "eon_theme_element_image.h"
+#include "eon_theme_element_progress_bar.h"
 #include "eon_theme_element_separator.h"
 #include "eon_theme_element_switch.h"
 
