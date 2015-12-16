@@ -30,6 +30,7 @@
     <set attributeName="inactive-color" to="black" begin="activate" dur="1s" end="deactivate"/>
     <set attributeName="active-color" to="black" begin="deactivate" dur="1s" end="activate"/>
     <set attributeName="inactive-color" to="white" begin="deactivate" dur="1s" end="activate"/>
+    <set attributeName="border-color" to="darkred" begin="focusin" end="focusout" fill="remove"/>
   </mars:switch>
   <mars:button id="toggleButton" border-color="#ff0f3b65" color="#ff0f3b65">
     <set attributeName="color" to="#ff0f3b65" begin="activate" dur="1s" end="mousedown"/>
