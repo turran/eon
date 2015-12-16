@@ -32,5 +32,6 @@ Egueb_Dom_Node * eon_theme_mars_radio_new(void);
 Egueb_Dom_Node * eon_theme_mars_frame_new(void);
 Egueb_Dom_Node * eon_theme_mars_image_new(void);
 Egueb_Dom_Node * eon_theme_mars_separator_new(void);
+Egueb_Dom_Node * eon_theme_mars_progress_bar_new(void);
 
 #endif

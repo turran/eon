@@ -53,6 +53,8 @@ static Eina_Bool eon_theme_mars_init(void)
 			eon_theme_mars_separator_new);
 	eon_theme_namespace_element_add(_namespace, "image",
 			eon_theme_mars_image_new);
+	eon_theme_namespace_element_add(_namespace, "progressBar",
+			eon_theme_mars_progress_bar_new);
 	return EINA_TRUE;
 }
 
