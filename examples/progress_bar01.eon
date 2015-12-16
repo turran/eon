@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <frame title="Progress Bar example">
+    <stack orientation="horizontal" hexpand="true">
+      <progressBar orientation="vertical"/>
+      <progressBar orientation="horizontal"/>
+    </stack>
+  </frame>
+</eon>
+
