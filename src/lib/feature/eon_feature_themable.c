@@ -48,6 +48,7 @@ typedef struct _Eon_Feature_Themable_Theme_Id_Foreach_Data
 {
 	Eon_Feature_Themable *thiz;
 	Egueb_Dom_Node *theme_doc;
+	Egueb_Dom_Node *theme_element;
 } Eon_Feature_Themable_Theme_Id_Foreach_Data;
 
 static Eina_Bool _eon_feature_themable_load_theme_id_cb(void *data, void *user_data)
@@ -65,7 +66,7 @@ static Eina_Bool _eon_feature_themable_load_theme_id_cb(void *data, void *user_d
 	{
 		DBG_ELEMENT(thiz->n, "Theme element for id '%s' found",
 				egueb_dom_string_string_get(theme_id));
-		thiz->theme_element = theme_element;
+		fdata->theme_element = theme_element;
 		return EINA_FALSE;
 	}
 	return EINA_TRUE;
@@ -270,6 +271,7 @@ changed:
 	{
 		Eon_Feature_Themable_Theme_Id_Foreach_Data theme_id_fdata;
 		Egueb_Dom_Node *theme_doc;
+		Egueb_Dom_Node *theme_element;
 		Egueb_Dom_Node *doc;
 
 		/* Make sure to process the attr to not enter again */
@@ -344,7 +346,7 @@ changed:
 		egueb_dom_list_foreach(curr_theme_id, _eon_feature_themable_load_theme_id_cb, &theme_id_fdata);
 
 		egueb_dom_node_unref(theme_doc);
-		if (!thiz->theme_element)
+		if (!theme_id_fdata.theme_element)
 		{
 			ERR_ELEMENT(thiz->n, "Theme id does not exist");
 			goto done;
@@ -354,13 +356,25 @@ changed:
 		if (!doc)
 		{
 			WARN_ELEMENT(thiz->n, "No document set");
-			egueb_dom_node_unref(thiz->theme_element);
-			thiz->theme_element = NULL;
+			egueb_dom_node_unref(theme_id_fdata.theme_element);
 			goto done;
 		}
-		thiz->theme_element = egueb_dom_node_clone(thiz->theme_element, EINA_FALSE, EINA_TRUE, NULL);
+		theme_element = egueb_dom_node_clone(theme_id_fdata.theme_element, EINA_FALSE, EINA_TRUE, NULL);
+		egueb_dom_node_unref(theme_id_fdata.theme_element);
+		if (!theme_element)
+		{
+			WARN_ELEMENT(thiz->n, "Can not clone");
+			goto done;
+
+		}
 		/* adopt it to the new document */
-		egueb_dom_document_node_adopt(doc, thiz->theme_element, NULL);
+		thiz->theme_element = egueb_dom_document_node_adopt(doc, theme_element, NULL);
+		if (!thiz->theme_element)
+		{
+			WARN_ELEMENT(thiz->n, "Can not adopt");
+			goto done;
+
+		}
 		egueb_dom_element_enqueue(egueb_dom_node_ref(thiz->theme_element));
 		egueb_dom_node_unref(doc);
 		/* add the monitor */
