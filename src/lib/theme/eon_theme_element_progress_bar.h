@@ -40,6 +40,7 @@ typedef struct _Eon_Theme_Element_Progress_Bar_Descriptor {
 EAPI Egueb_Dom_Node * eon_theme_element_progress_bar_new(
 		const Eon_Theme_Element_Progress_Bar_Descriptor *d, void *data);
 EAPI Eon_Orientation eon_theme_element_progress_bar_orientation_get(Egueb_Dom_Node *n);
+EAPI double eon_theme_element_progress_bar_progression_get(Egueb_Dom_Node *n);
 
 /**
  * @}

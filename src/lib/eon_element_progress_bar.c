@@ -63,6 +63,10 @@ static void _eon_element_progress_bar_init(Eon_Widget *w)
 	thiz->orientation = eon_orientation_attr_new();
 	egueb_dom_attr_set(thiz->orientation, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			EON_ORIENTATION_HORIZONTAL);
+	thiz->progression = egueb_dom_attr_double_new(EON_NAME_ATTR_PROGRESSION,
+			NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
+	egueb_dom_element_attribute_node_set(n,
+			egueb_dom_node_ref(thiz->progression), NULL);
 	egueb_dom_element_attribute_node_set(n,
 			egueb_dom_node_ref(thiz->orientation), NULL);
 
@@ -105,15 +109,15 @@ static int _eon_element_progress_bar_size_hints_get(Eon_Renderable *r,
 	thickness = eon_theme_element_progress_bar_thickness_get(theme_element);
 	egueb_dom_attr_final_get(thiz->orientation, &orientation);
 	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	size->min_width = size->max_width = -1;
-	size->min_height = size->max_height = -1;
 	if (orientation == EON_ORIENTATION_HORIZONTAL)
 	{
-		size->min_height = thickness;
+		size->min_height = size->max_height = thickness;
+		size->min_width = size->max_width = -1;
 	}
 	else
 	{
-		size->min_width = thickness;
+		size->min_width = size->min_width = thickness;
+		size->min_height = size->max_height = -1;
 	}
 
 	/* set the proxied renderer */
@@ -129,6 +133,7 @@ static Eina_Bool _eon_element_progress_bar_process(Eon_Renderable *r)
 	Eon_Element_Progress_Bar *thiz;
 	Eon_Orientation orientation;
 	Egueb_Dom_Node *theme_element;
+	double progression;
 
 	thiz = EON_ELEMENT_PROGRESS_BAR(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
@@ -137,9 +142,11 @@ static Eina_Bool _eon_element_progress_bar_process(Eon_Renderable *r)
 		WARN("No theme element found");
 		return EINA_FALSE;
 	}
-	/* Set the orientation */
+	/* Propagate the attributes */
 	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	egueb_dom_attr_final_get(thiz->progression, &progression);
 	eon_theme_element_progress_bar_orientation_set(theme_element, orientation);
+	eon_theme_element_progress_bar_progression_set(theme_element, progression);
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 	/* Finally process our theme */
@@ -192,6 +199,7 @@ static void _eon_element_progress_bar_instance_deinit(void *o)
 	/* attributes */
 	enesim_renderer_unref(thiz->proxy);
 	egueb_dom_node_unref(thiz->orientation);
+	egueb_dom_node_unref(thiz->progression);
 	/* private */
 	egueb_dom_feature_unref(thiz->theme_feature);
 }

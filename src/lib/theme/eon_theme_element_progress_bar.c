@@ -32,6 +32,7 @@ typedef struct _Eon_Theme_Element_Progress_Bar
 	/* attributes */
 	/* private */
 	Eon_Orientation orientation;
+	double progression;
 	const Eon_Theme_Element_Progress_Bar_Descriptor *d;
 	void *data;
 } Eon_Theme_Element_Progress_Bar;
@@ -148,6 +149,13 @@ void eon_theme_element_progress_bar_orientation_set(Egueb_Dom_Node *n, Eon_Orien
 	thiz = EON_THEME_ELEMENT_PROGRESS_BAR(egueb_dom_element_external_data_get(n));
 	thiz->orientation = o;
 }
+
+void eon_theme_element_progress_bar_progression_set(Egueb_Dom_Node *n, double progression)
+{
+	Eon_Theme_Element_Progress_Bar *thiz;
+	thiz = EON_THEME_ELEMENT_PROGRESS_BAR(egueb_dom_element_external_data_get(n));
+	thiz->progression = progression;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -177,5 +185,12 @@ EAPI Eon_Orientation eon_theme_element_progress_bar_orientation_get(Egueb_Dom_No
 	Eon_Theme_Element_Progress_Bar *thiz;
 	thiz = EON_THEME_ELEMENT_PROGRESS_BAR(egueb_dom_element_external_data_get(n));
 	return thiz->orientation;
+}
+
+EAPI double eon_theme_element_progress_bar_progression_get(Egueb_Dom_Node *n)
+{
+	Eon_Theme_Element_Progress_Bar *thiz;
+	thiz = EON_THEME_ELEMENT_PROGRESS_BAR(egueb_dom_element_external_data_get(n));
+	return thiz->progression;
 }
 

@@ -21,5 +21,6 @@
 
 int eon_theme_element_progress_bar_thickness_get(Egueb_Dom_Node *n);
 void eon_theme_element_progress_bar_orientation_set(Egueb_Dom_Node *n, Eon_Orientation o);
+void eon_theme_element_progress_bar_progression_set(Egueb_Dom_Node *n, double progression);
 
 #endif

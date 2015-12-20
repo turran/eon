@@ -77,6 +77,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ATTR_ACTIVATED;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_TITLE;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_SCALABLE;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_DEFAULT_VALUE;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_PROGRESSION;
 EAPI extern Egueb_Dom_String *EON_STOCK;
 
 EAPI extern Egueb_Dom_String *EON_NAME_ON;

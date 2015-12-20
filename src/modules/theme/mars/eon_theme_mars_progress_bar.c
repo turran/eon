@@ -26,7 +26,8 @@ typedef struct _Eon_Theme_Mars_Progress_Bar
 	/* attributes */
 	Egueb_Dom_Node *color;
 	/* private */
-	Enesim_Renderer *line;
+	Enesim_Renderer *bar;
+	Enesim_Renderer *progress;
 } Eon_Theme_Mars_Progress_Bar;
 
 /*----------------------------------------------------------------------------*
@@ -34,7 +35,7 @@ typedef struct _Eon_Theme_Mars_Progress_Bar
  *----------------------------------------------------------------------------*/
 static int _eon_theme_mars_progress_bar_version_get(void)
 {
-	return EON_THEME_ELEMENT_BUTTON_VERSION;
+	return EON_THEME_ELEMENT_PROGRESS_BAR_VERSION;
 }
 
 static void _eon_theme_mars_progress_bar_dtor(void *data)
@@ -44,7 +45,8 @@ static void _eon_theme_mars_progress_bar_dtor(void *data)
 	/* attributes */
 	egueb_dom_node_unref(thiz->color);
 	/* private */
-	enesim_renderer_unref(thiz->line);
+	enesim_renderer_unref(thiz->bar);
+	enesim_renderer_unref(thiz->progress);
 	free(thiz);
 }
 
@@ -56,11 +58,14 @@ static const char * _eon_theme_mars_progress_bar_tag_name_get(void)
 static Eina_Bool _eon_theme_mars_progress_bar_process(void *data)
 {
 	Eon_Theme_Mars_Progress_Bar *thiz;
+	Eon_Orientation orientation;
 	Eina_Rectangle geom;
 	Enesim_Argb argb;
 	Enesim_Color color;
-	Eon_Orientation orientation;
-	int x0, y0, x1, y1;
+	Eina_Bool show_progress = EINA_TRUE;
+	double progression;
+	double w, h;
+	double pw, ph;
 
 	thiz = data;
 	/* get the final attributes */
@@ -68,21 +73,40 @@ static Eina_Bool _eon_theme_mars_progress_bar_process(void *data)
 	color = enesim_color_argb_from(argb);
 	/* get the inherited members */
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
+	progression = eon_theme_element_progress_bar_progression_get(thiz->n);
 	orientation = eon_theme_element_progress_bar_orientation_get(thiz->n);
 	if (orientation == EON_ORIENTATION_HORIZONTAL)
 	{
-		x0 = geom.x + EON_THEME_MARS_MARGIN;
-		x1 = geom.x + geom.w - (EON_THEME_MARS_MARGIN * 2);
-		y0 = y1 = geom.y + (geom.h / 2);
+		pw = geom.w * progression;
+		if ((int)pw <= 0)
+			show_progress = EINA_FALSE;
+		ph = h = EON_THEME_MARS_MARGIN * 2;
+		w = geom.w;
 	}
 	else
 	{
-		y0 = geom.y + EON_THEME_MARS_MARGIN;
-		y1 = geom.y + geom.h - (EON_THEME_MARS_MARGIN * 2);
-		x0 = x1 = geom.x + (geom.w / 2);
+		pw = w = EON_THEME_MARS_MARGIN * 2;
+		ph = geom.h * progression;
+		if ((int)ph <= 0.0)
+			show_progress = EINA_FALSE;
+		h = geom.h;
 	}
-	enesim_renderer_line_coords_set(thiz->line, x0, y0, x1, y1);
-	enesim_renderer_shape_stroke_color_set(thiz->line, color);
+	enesim_renderer_rectangle_position_set(thiz->bar, geom.x, geom.y);
+	enesim_renderer_rectangle_size_set(thiz->bar, w, h);
+
+	if (!show_progress)
+	{
+		enesim_renderer_shape_draw_mode_set(thiz->bar, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
+		enesim_renderer_shape_fill_renderer_set(thiz->bar, NULL);
+	}
+	else
+	{
+		enesim_renderer_shape_draw_mode_set(thiz->bar, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
+		enesim_renderer_shape_fill_renderer_set(thiz->bar, enesim_renderer_ref(thiz->progress));
+	}
+	enesim_renderer_shape_fill_color_set(thiz->progress, color);
+	enesim_renderer_rectangle_position_set(thiz->progress, geom.x, geom.y);
+	enesim_renderer_rectangle_size_set(thiz->progress, pw, ph);
 
 	return EINA_TRUE;
 }
@@ -95,7 +119,7 @@ static int _eon_theme_mars_progress_bar_thickness_get(void *data)
 static Enesim_Renderer * _eon_theme_mars_progress_bar_renderer_get(void *data)
 {
 	Eon_Theme_Mars_Progress_Bar *thiz = data;
-	return enesim_renderer_ref(thiz->line);
+	return enesim_renderer_ref(thiz->bar);
 }
 
 static Eon_Theme_Element_Progress_Bar_Descriptor _descriptor = {
@@ -119,10 +143,12 @@ Egueb_Dom_Node * eon_theme_mars_progress_bar_new(void)
 	Enesim_Renderer_Compound_Layer *l;
 
 	thiz = calloc(1, sizeof(Eon_Theme_Mars_Progress_Bar));
-	/* the progress_bar button */
-	thiz->line = enesim_renderer_line_new();
-	enesim_renderer_shape_draw_mode_set(thiz->line, ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
-	enesim_renderer_shape_stroke_weight_set(thiz->line, EON_THEME_MARS_BORDER);
+	/* the progress */
+	thiz->progress = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_draw_mode_set(thiz->progress, ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+	/* the bar */
+	thiz->bar = enesim_renderer_rectangle_new();
+	enesim_renderer_shape_stroke_weight_set(thiz->bar, 1.0);
 
 	n = eon_theme_element_progress_bar_new(&_descriptor, thiz);
 	/* the attributes */

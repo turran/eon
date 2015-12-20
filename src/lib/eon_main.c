@@ -78,6 +78,7 @@ static void _strings_init(void)
 	EON_NAME_ATTR_TITLE = egueb_dom_string_new_with_static_string("title");
 	EON_NAME_ATTR_SCALABLE = egueb_dom_string_new_with_static_string("scalable");
 	EON_NAME_ATTR_DEFAULT_VALUE = egueb_dom_string_new_with_static_string("default-value");
+	EON_NAME_ATTR_PROGRESSION = egueb_dom_string_new_with_static_string("progression");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
@@ -133,6 +134,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ATTR_TITLE);
 	egueb_dom_string_unref(EON_NAME_ATTR_SCALABLE);
 	egueb_dom_string_unref(EON_NAME_ATTR_DEFAULT_VALUE);
+	egueb_dom_string_unref(EON_NAME_ATTR_PROGRESSION);
 	egueb_dom_string_unref(EON_STOCK);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
@@ -190,6 +192,7 @@ Egueb_Dom_String *EON_NAME_ATTR_ACTIVATED;
 Egueb_Dom_String *EON_NAME_ATTR_TITLE;
 Egueb_Dom_String *EON_NAME_ATTR_SCALABLE;
 Egueb_Dom_String *EON_NAME_ATTR_DEFAULT_VALUE;
+Egueb_Dom_String *EON_NAME_ATTR_PROGRESSION;
 Egueb_Dom_String *EON_STOCK;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
