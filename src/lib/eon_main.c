@@ -97,6 +97,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_IMAGE = egueb_dom_string_new_with_static_string("image");
 	EON_NAME_ELEMENT_ENTRY = egueb_dom_string_new_with_static_string("entry");
 	EON_NAME_ELEMENT_PROGRESS_BAR = egueb_dom_string_new_with_static_string("progressBar");
+	EON_NAME_ELEMENT_PANED = egueb_dom_string_new_with_static_string("paned");
 	/* generic */
 	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
 	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
@@ -153,6 +154,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_IMAGE);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_ENTRY);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_PROGRESS_BAR);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_PANED);
 	/* generic */
 	egueb_dom_string_unref(EON_NAME_ON);
 	egueb_dom_string_unref(EON_NAME_OFF);
@@ -211,6 +213,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_SEPARATOR;
 Egueb_Dom_String *EON_NAME_ELEMENT_IMAGE;
 Egueb_Dom_String *EON_NAME_ELEMENT_ENTRY;
 Egueb_Dom_String *EON_NAME_ELEMENT_PROGRESS_BAR;
+Egueb_Dom_String *EON_NAME_ELEMENT_PANED;
 /* generic */
 Egueb_Dom_String *EON_NAME_ON;
 Egueb_Dom_String *EON_NAME_OFF;

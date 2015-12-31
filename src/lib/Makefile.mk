@@ -17,8 +17,9 @@ src/lib/eon_element_image.h \
 src/lib/eon_element_label.h \
 src/lib/eon_element_label_stock.h \
 src/lib/eon_element_object.h \
-src/lib/eon_element_radio.h \
+src/lib/eon_element_paned.h \
 src/lib/eon_element_progress_bar.h \
+src/lib/eon_element_radio.h \
 src/lib/eon_element_separator.h \
 src/lib/eon_element_stack.h \
 src/lib/eon_element_switch.h \
@@ -52,6 +53,7 @@ src/lib/eon_element_image.c \
 src/lib/eon_element_label.c \
 src/lib/eon_element_label_stock.c \
 src/lib/eon_element_object.c \
+src/lib/eon_element_paned.c \
 src/lib/eon_element_progress_bar.c \
 src/lib/eon_element_progress_bar_private.h \
 src/lib/eon_element_radio.c \

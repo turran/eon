@@ -99,6 +99,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SEPARATOR;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_IMAGE;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_ENTRY;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_PROGRESS_BAR;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_PANED;
 
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;

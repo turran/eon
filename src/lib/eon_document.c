@@ -35,6 +35,7 @@
 #include "eon_element_image.h"
 #include "eon_element_entry.h"
 #include "eon_element_progress_bar.h"
+#include "eon_element_paned.h"
 
 #include "eon_theme_namespace.h"
 #include "eon_theme_element_eot_private.h"
@@ -96,6 +97,8 @@ static Egueb_Dom_Node * _eon_document_element_create(Egueb_Dom_Node *n,
 			ret = eon_element_image_new();
 		else if (!strcmp(name, "progressBar"))
 			ret = eon_element_progress_bar_new();
+		else if (!strcmp(name, "paned"))
+			ret = eon_element_paned_new();
 		/* the SMIL elements */
 		else if (!strcmp(name, "set"))
 			ret = egueb_smil_set_new();
