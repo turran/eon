@@ -1,3 +1,29 @@
++ Add an action element. Basically as a way to make several gui elements share the same action on activated. Like:
+  <eon>
+    <actions>
+      <action id="foo" onactivated="alert('activated')" accessKey="f"/>
+      <action id="bar" accessKey="b"/>
+    </actions>
+    <menu>
+      <menuItem label="Foo"/>
+      <separator/>
+      <menuItem label="Bar"/>
+    </menu>
+    <stack>
+      <button action="#foo">
+        <label>Foo</label>
+      </button>
+      <button action="#bar">
+        <label>Bar</label>
+      </button>
+    </stack>
+  </eon>
++ Add a menu widget
+    <menu>
+      <menuItem label="Foo"/>
+      <separator/>
+      <menuItem label="Bar"/>
+    </menu>
 + Use the split version of the theme feature
 + Add an image stock element similar to the button stock
 + Add an event handler on the theme element to replace the relative uris with absolute uris based on the path of the theme
