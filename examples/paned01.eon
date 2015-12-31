@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <frame title="Paned example">
+    <paned orientation="horizontal" hexpand="true" vexpand="true">
+      <paned orientation="vertical">
+        <button id="button01">
+          <label>Left button</label>
+        </button>
+        <button id="button02">
+          <label>Right button</label>
+        </button>
+      </paned>
+      <button id="button03">
+        <label>Bottom button</label>
+      </button>
+    </paned>
+  </frame>
+</eon>
