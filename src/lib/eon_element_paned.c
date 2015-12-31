@@ -298,7 +298,6 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 	int ch1sm, ch2sm;
 	int thickness = 0;
 	int ret = 0;
-	int minw, minh;
 
 	thiz = EON_ELEMENT_PANED(r);
 	theme_element = eon_feature_themable_load(thiz->theme_feature);
