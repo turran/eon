@@ -21,6 +21,8 @@
 
 void eon_theme_element_frame_min_size_get(Egueb_Dom_Node *n, int *w, int *h);
 void eon_theme_element_frame_title_set(Egueb_Dom_Node *n, Egueb_Dom_String *s);
+void eon_theme_element_frame_padding_get(Egueb_Dom_Node *n, Eon_Box *padding);
+void eon_theme_element_frame_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r);
 
 #endif
 
