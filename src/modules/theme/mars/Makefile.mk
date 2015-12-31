@@ -5,6 +5,7 @@ src/modules/theme/mars/eon_theme_mars_eon.c \
 src/modules/theme/mars/eon_theme_mars_frame.c \
 src/modules/theme/mars/eon_theme_mars_image.c \
 src/modules/theme/mars/eon_theme_mars_main.c \
+src/modules/theme/mars/eon_theme_mars_paned.c \
 src/modules/theme/mars/eon_theme_mars_progress_bar.c \
 src/modules/theme/mars/eon_theme_mars_radio.c \
 src/modules/theme/mars/eon_theme_mars_separator.c \
