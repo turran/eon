@@ -24,6 +24,13 @@
       <separator/>
       <menuItem label="Bar"/>
     </menu>
++ Add a pane widget, similar to what we had as a splitter
+  <paned orientation="vertical">
+    <stack>
+    </stack>
+    <stack>
+    </stack>
+  </paned>
 + Use the split version of the theme feature
 + Add an image stock element similar to the button stock
 + Add an event handler on the theme element to replace the relative uris with absolute uris based on the path of the theme
