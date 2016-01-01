@@ -3,10 +3,10 @@
   <frame title="Paned example">
     <paned orientation="horizontal">
       <paned orientation="vertical">
-        <button id="button01">
+        <button id="button01" vexpand="true" hexpand="true">
           <label>Left Top button</label>
         </button>
-        <button id="button02">
+        <button id="button02" vexpand="true" hexpand="true">
           <label>Left Bottom button</label>
         </button>
       </paned>
