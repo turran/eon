@@ -296,7 +296,7 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 	Eon_Renderable *thiz;
 	Eon_Renderable_Class *klass;
 
-	DBG_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
+	INFO_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
 			EINA_RECTANGLE_ARGS(geometry));
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
 	thiz->geometry = *geometry;
@@ -353,7 +353,7 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 	hexpand = eon_renderable_hexpand_get(n);
 	vexpand = eon_renderable_vexpand_get(n);
 
-	DBG_ELEMENT(n, "Solving free space %" EINA_RECTANGLE_FORMAT
+	INFO_ELEMENT(n, "Solving geometry, area %" EINA_RECTANGLE_FORMAT
 			" halign: %d, valign: %d, hexpand: %d, vexpand :%d",
 			EINA_RECTANGLE_ARGS(fs), halign, valign, hexpand, vexpand);
 	w = fs->w;
@@ -438,6 +438,8 @@ void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_R
 	}
 	out->w = w;
 	out->h = h;
+	INFO_ELEMENT(n, "Solved area %" EINA_RECTANGLE_FORMAT,
+			EINA_RECTANGLE_ARGS(out));
 }
 
 Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,
@@ -621,6 +623,7 @@ EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *s
 	{
 		Eon_Renderable_Class *klass;
 
+		INFO_ELEMENT(n, "Fetching size hints");
 		klass = EON_RENDERABLE_CLASS_GET(thiz);
 		if (klass->size_hints_get)
 		{
@@ -630,6 +633,18 @@ EAPI int eon_renderable_size_hints_get(Egueb_Dom_Node *n, Eon_Renderable_Size *s
 			thiz->size = *size;
 			thiz->size_hints = ret;
 			thiz->size_hints_cached = EINA_TRUE;
+			if (ret & EON_RENDERABLE_HINT_PREFERRED)
+			{
+				INFO_ELEMENT(n, "Has preferred hints, width: %d, height: %d",
+						size->pref_width, size->pref_height);
+			}
+			if (ret & EON_RENDERABLE_HINT_MIN_MAX)
+			{
+				INFO_ELEMENT(n, "Has min/max hints, min width: %d, max width: %d, "
+						"min height: %d, max height: %d",
+						size->min_width, size->max_width,
+						size->min_height, size->max_height);
+			}
 		}
 	}
 	else

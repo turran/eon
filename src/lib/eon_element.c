@@ -91,6 +91,7 @@ static Eina_Bool _eon_element_process(Egueb_Dom_Node *n, void *data)
 
 	klass = EON_ELEMENT_CLASS_GET(data);
 
+	INFO_ELEMENT(n, "Processing");
 	/* FIXME do we actually need this? */
 	/* process the inheritable attributes */
 	rel = egueb_dom_node_parent_get(n);
