@@ -82,13 +82,11 @@ void eon_layout_frame_size_geometry_set(Egueb_Dom_Node *r, Eina_Rectangle *g)
 	while (child)
 	{
 		Egueb_Dom_Node *tmp;
-		Eina_Rectangle child_g = *g;
 
 		if (!eon_is_renderable(child))
 			goto next;
 
-		eon_renderable_geometry_solve(child, g, &child_g);
-		eon_renderable_geometry_set(child, &child_g);
+		eon_renderable_geometry_set(child, g);
 		/* Finally process */
 		egueb_dom_element_process(child);
 next:

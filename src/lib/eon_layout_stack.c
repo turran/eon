@@ -131,7 +131,6 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 		Egueb_Dom_Node *weight_attr;
 		Eon_Renderable_Size child_size;
 		Eina_Rectangle child_g = *g;
-		Eina_Rectangle child_final_g;
 		int child_size_flags;
 		int weight = 0;
 
@@ -150,8 +149,7 @@ void eon_layout_stack_vertical_size_geometry_set(Egueb_Dom_Node *r,
 		child_g.h = child_size.min_height;
 		child_g.h += extra * weight;
 
-		eon_renderable_geometry_solve(child, &child_g, &child_final_g);
-		eon_renderable_geometry_set(child, &child_final_g);
+		eon_renderable_geometry_set(child, &child_g);
 
 		/* Finally process */
 		egueb_dom_element_process(child);
@@ -257,7 +255,6 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 		Egueb_Dom_Node *weight_attr;
 		Eon_Renderable_Size child_size;
 		Eina_Rectangle child_g = *g;
-		Eina_Rectangle child_final_g;
 		int child_size_flags;
 		int weight = 0;
 
@@ -276,8 +273,7 @@ void eon_layout_stack_horizontal_size_geometry_set(Egueb_Dom_Node *r,
 		child_g.w = child_size.min_width;
 		child_g.w += extra * weight;
 
-		eon_renderable_geometry_solve(child, &child_g, &child_final_g);
-		eon_renderable_geometry_set(child, &child_final_g);
+		eon_renderable_geometry_set(child, &child_g);
 		/* Finally process */
 		egueb_dom_element_process(child);
 

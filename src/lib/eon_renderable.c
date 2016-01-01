@@ -23,9 +23,117 @@
 #include "eon_vertical_align_private.h"
 #include "eon_horizontal_align_private.h"
 #include "eon_event_geometry_private.h"
+
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+/* TODO handle the expand, padding, margin or whatever other attr we decide to add */
+static void _eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_Rectangle *out)
+{
+	Eon_Vertical_Align valign;
+	Eon_Horizontal_Align halign;
+	Eon_Renderable_Size size;
+	Eina_Bool w_set = EINA_FALSE;
+	Eina_Bool h_set = EINA_FALSE;
+	Eina_Bool hexpand, vexpand;
+	int size_hints;
+	int w = -1, h = -1;
+
+	size_hints = eon_renderable_size_hints_get(n, &size);
+	valign = eon_renderable_valign_get(n);
+	halign = eon_renderable_halign_get(n);
+	hexpand = eon_renderable_hexpand_get(n);
+	vexpand = eon_renderable_vexpand_get(n);
+
+	INFO_ELEMENT(n, "Solving geometry, area %" EINA_RECTANGLE_FORMAT
+			" halign: %d, valign: %d, hexpand: %d, vexpand :%d",
+			EINA_RECTANGLE_ARGS(fs), halign, valign, hexpand, vexpand);
+	w = fs->w;
+	h = fs->h;
+	/* handle the size */
+	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		DBG_ELEMENT(n, "Has preferred hints, width: %d, height: %d",
+				size.pref_width, size.pref_height);
+		if (w > size.pref_width && size.pref_width > 0)
+		{
+			if (!hexpand)
+			{
+				w = size.pref_width;
+			}
+		}
+
+		if (h > size.pref_height && size.pref_height > 0)
+		{
+			if (!vexpand)
+			{
+				h = size.pref_height;
+			}
+		}
+	}
+
+	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		DBG_ELEMENT(n, "Has min/max hints, min width: %d, max width: %d, "
+				"min height: %d, max height: %d",
+				size.min_width, size.max_width,
+				size.min_height, size.max_height);
+		if (w < size.min_width)
+		{
+			ERR_ELEMENT(n, "Parent set a width %d less than min %d",
+					w, size.min_width);
+			w = size.min_width;
+		}
+
+		if (w > size.max_width && size.max_width > 0)
+			w = size.max_width;
+
+		if (h < size.min_height)
+		{
+			ERR_ELEMENT(n, "Parent set a height %d less than min %d",
+					h, size.min_height);
+			h = size.min_height;
+		}
+
+		if (h > size.max_height && size.max_height > 0)
+			h = size.max_height;
+	}
+
+	/* handle the position */
+	switch (halign)
+	{
+		case EON_HORIZONTAL_ALIGN_LEFT:
+		out->x = fs->x;
+		break;
+
+		case EON_HORIZONTAL_ALIGN_CENTER:
+		out->x = fs->x + ((fs->w - w) / 2);
+		break;
+
+		case EON_HORIZONTAL_ALIGN_RIGHT:
+		out->x = fs->x + (fs->w - w);
+		break;
+	}
+	switch (valign)
+	{
+		case EON_VERTICAL_ALIGN_TOP:
+		out->y = fs->y;
+		break;
+
+		case EON_VERTICAL_ALIGN_MIDDLE:
+		out->y = fs->y + ((fs->h - h) / 2);
+		break;
+
+		case EON_VERTICAL_ALIGN_BOTTOM:
+		out->y = fs->y + (fs->h - h);
+		break;
+	}
+	out->w = w;
+	out->h = h;
+	INFO_ELEMENT(n, "Solved area %" EINA_RECTANGLE_FORMAT,
+			EINA_RECTANGLE_ARGS(out));
+}
+
 static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
@@ -295,17 +403,19 @@ void eon_renderable_geometry_set(Egueb_Dom_Node *n, Eina_Rectangle *geometry)
 {
 	Eon_Renderable *thiz;
 	Eon_Renderable_Class *klass;
+	Eina_Rectangle final_geometry;
 
 	INFO_ELEMENT(n, "Setting geometry %" EINA_RECTANGLE_FORMAT,
 			EINA_RECTANGLE_ARGS(geometry));
+	_eon_renderable_geometry_solve(n, geometry, &final_geometry);
 	thiz = EON_RENDERABLE(egueb_dom_element_external_data_get(n));
-	thiz->geometry = *geometry;
+	thiz->geometry = final_geometry;
 	thiz->needs_geometry = EINA_FALSE;
 
 	klass = EON_RENDERABLE_CLASS_GET(thiz);
 	if (klass->geometry_set)
 	{
-		klass->geometry_set(thiz, geometry);
+		klass->geometry_set(thiz, &final_geometry);
 	}
 }
 
@@ -333,113 +443,6 @@ void eon_renderable_invalidate_geometry(Egueb_Dom_Node *n)
 	ev = eon_event_geometry_invalidate_new();
 	et = EGUEB_DOM_EVENT_TARGET((EON_ELEMENT(thiz))->n);
 	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
-}
-
-/* TODO handle the expand, padding, margin or whatever other attr we decide to add */
-void eon_renderable_geometry_solve(Egueb_Dom_Node *n, Eina_Rectangle *fs, Eina_Rectangle *out)
-{
-	Eon_Vertical_Align valign;
-	Eon_Horizontal_Align halign;
-	Eon_Renderable_Size size;
-	Eina_Bool w_set = EINA_FALSE;
-	Eina_Bool h_set = EINA_FALSE;
-	Eina_Bool hexpand, vexpand;
-	int size_hints;
-	int w = -1, h = -1;
-
-	size_hints = eon_renderable_size_hints_get(n, &size);
-	valign = eon_renderable_valign_get(n);
-	halign = eon_renderable_halign_get(n);
-	hexpand = eon_renderable_hexpand_get(n);
-	vexpand = eon_renderable_vexpand_get(n);
-
-	INFO_ELEMENT(n, "Solving geometry, area %" EINA_RECTANGLE_FORMAT
-			" halign: %d, valign: %d, hexpand: %d, vexpand :%d",
-			EINA_RECTANGLE_ARGS(fs), halign, valign, hexpand, vexpand);
-	w = fs->w;
-	h = fs->h;
-	/* handle the size */
-	if (size_hints & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		DBG_ELEMENT(n, "Has preferred hints, width: %d, height: %d",
-				size.pref_width, size.pref_height);
-		if (w > size.pref_width && size.pref_width > 0)
-		{
-			if (!hexpand)
-			{
-				w = size.pref_width;
-			}
-		}
-
-		if (h > size.pref_height && size.pref_height > 0)
-		{
-			if (!vexpand)
-			{
-				h = size.pref_height;
-			}
-		}
-	}
-
-	if (size_hints & EON_RENDERABLE_HINT_MIN_MAX)
-	{
-		DBG_ELEMENT(n, "Has min/max hints, min width: %d, max width: %d, "
-				"min height: %d, max height: %d",
-				size.min_width, size.max_width,
-				size.min_height, size.max_height);
-		if (w < size.min_width)
-		{
-			ERR_ELEMENT(n, "Parent set a width %d less than min %d",
-					w, size.min_width);
-			w = size.min_width;
-		}
-
-		if (w > size.max_width && size.max_width > 0)
-			w = size.max_width;
-
-		if (h < size.min_height)
-		{
-			ERR_ELEMENT(n, "Parent set a height %d less than min %d",
-					h, size.min_height);
-			h = size.min_height;
-		}
-
-		if (h > size.max_height && size.max_height > 0)
-			h = size.max_height;
-	}
-
-	/* handle the position */
-	switch (halign)
-	{
-		case EON_HORIZONTAL_ALIGN_LEFT:
-		out->x = fs->x;
-		break;
-
-		case EON_HORIZONTAL_ALIGN_CENTER:
-		out->x = fs->x + ((fs->w - w) / 2);
-		break;
-
-		case EON_HORIZONTAL_ALIGN_RIGHT:
-		out->x = fs->x + (fs->w - w);
-		break;
-	}
-	switch (valign)
-	{
-		case EON_VERTICAL_ALIGN_TOP:
-		out->y = fs->y;
-		break;
-
-		case EON_VERTICAL_ALIGN_MIDDLE:
-		out->y = fs->y + ((fs->h - h) / 2);
-		break;
-
-		case EON_VERTICAL_ALIGN_BOTTOM:
-		out->y = fs->y + (fs->h - h);
-		break;
-	}
-	out->w = w;
-	out->h = h;
-	INFO_ELEMENT(n, "Solved area %" EINA_RECTANGLE_FORMAT,
-			EINA_RECTANGLE_ARGS(out));
 }
 
 Egueb_Dom_Node * eon_renderable_element_at(Egueb_Dom_Node *n,

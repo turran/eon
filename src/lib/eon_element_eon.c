@@ -356,20 +356,7 @@ static Eina_Bool _eon_element_eon_process(Eon_Renderable *r)
 	/* propagate the geometry */
 	if (child)
 	{
-		int size_hints;
-
-		size_hints = eon_renderable_size_hints_get(child, &size);
-		if (size_hints)
-		{
-			Eina_Rectangle child_geom;
-
-			eon_renderable_geometry_solve(child, &r->geometry, &child_geom);
-			eon_renderable_geometry_set(child, &child_geom);
-		}
-		else
-		{
-			eon_renderable_geometry_set(child, &r->geometry);
-		}
+		eon_renderable_geometry_set(child, &r->geometry);
 		egueb_dom_element_process(child);
 	}
 
