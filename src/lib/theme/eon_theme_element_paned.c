@@ -166,22 +166,22 @@ void eon_theme_element_paned_padding_get(Egueb_Dom_Node *n, Eon_Box *padding)
 		thiz->d->padding_get(thiz->data, padding);
 }
 
-void eon_theme_element_paned_first_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
+void eon_theme_element_paned_first_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r, Eina_Rectangle *area)
 {
 	Eon_Theme_Element_Paned *thiz;
 
 	thiz = EON_THEME_ELEMENT_PANED(egueb_dom_element_external_data_get(n));
 	if (thiz->d->first_content_set)
-		thiz->d->first_content_set(thiz->data, r);
+		thiz->d->first_content_set(thiz->data, r, area);
 }
 
-void eon_theme_element_paned_second_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r)
+void eon_theme_element_paned_second_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r, Eina_Rectangle *area)
 {
 	Eon_Theme_Element_Paned *thiz;
 
 	thiz = EON_THEME_ELEMENT_PANED(egueb_dom_element_external_data_get(n));
 	if (thiz->d->second_content_set)
-		thiz->d->second_content_set(thiz->data, r);
+		thiz->d->second_content_set(thiz->data, r, area);
 }
 /*============================================================================*
  *                                   API                                      *

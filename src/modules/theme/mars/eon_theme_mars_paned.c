@@ -94,7 +94,7 @@ static void _eon_theme_mars_paned_padding_get(void *data, Eon_Box *padding)
 	padding->right = EON_THEME_MARS_MARGIN;
 }
 
-static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer *r)
+static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer *r, Eina_Rectangle *area)
 {
 	Eon_Theme_Mars_Paned *thiz = data;
 	Enesim_Renderer *other;
@@ -111,6 +111,9 @@ static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer 
 		enesim_renderer_compound_layer_renderer_set(l,
 				enesim_renderer_ref(thiz->content1));
 		enesim_renderer_compound_layer_add(thiz->compound, l);
+
+		enesim_renderer_rectangle_position_set(thiz->content1, area->x, area->y);
+		enesim_renderer_rectangle_size_set(thiz->content1, area->w, area->h);
 	}
 
 	/* TODO add the splitter */
@@ -128,7 +131,7 @@ static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer 
 	enesim_renderer_shape_fill_renderer_set(thiz->content1, r);
 }
 
-static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer *r)
+static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer *r, Eina_Rectangle *area)
 {
 	Eon_Theme_Mars_Paned *thiz = data;
 	Enesim_Renderer *other;
@@ -157,6 +160,9 @@ static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer
 		enesim_renderer_compound_layer_renderer_set(l,
 				enesim_renderer_ref(thiz->content2));
 		enesim_renderer_compound_layer_add(thiz->compound, l);
+
+		enesim_renderer_rectangle_position_set(thiz->content2, area->x, area->y);
+		enesim_renderer_rectangle_size_set(thiz->content2, area->w, area->h);
 	}
 	enesim_renderer_shape_fill_renderer_set(thiz->content2, r);
 }
@@ -207,6 +213,8 @@ Egueb_Dom_Node * eon_theme_mars_paned_new(void)
 			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
 	enesim_renderer_shape_fill_renderer_set(thiz->area,
 			enesim_renderer_ref(thiz->compound));
+	enesim_renderer_shape_stroke_weight_set(thiz->area,
+			EON_THEME_MARS_BORDER);
 
 	thiz->content1 = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->content1,

@@ -27,7 +27,7 @@
 
 typedef int (*Eon_Theme_Element_Paned_Descriptor_Thickness_Get_Cb)(void *data);
 typedef int (*Eon_Theme_Element_Paned_Descriptor_Min_Length_Get_Cb)(void *data);
-typedef void (*Eon_Theme_Element_Paned_Descriptor_Content_Set_Cb)(void *data, Enesim_Renderer *r);
+typedef void (*Eon_Theme_Element_Paned_Descriptor_Content_Set_Cb)(void *data, Enesim_Renderer *r, Eina_Rectangle *area);
 typedef void (*Eon_Theme_Element_Paned_Descriptor_Padding_Get_Cb)(void *data, Eon_Box *padding);
 
 typedef struct _Eon_Theme_Element_Paned_Descriptor {

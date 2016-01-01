@@ -248,21 +248,38 @@ static Egueb_Dom_Node * _eon_element_paned_element_at(Eon_Renderable *r,
 		Eina_Rectangle *cursor)
 {
 	Egueb_Dom_Node *n;
-	Egueb_Dom_Node *child;
+	Egueb_Dom_Node *ch1;
 	Egueb_Dom_Node *found;
 
 	n = (EON_ELEMENT(r))->n;
 	/* if no childs, is just inside ourselves */	
-	child = egueb_dom_element_child_first_get(n);
-	if (!child)
+	ch1 = egueb_dom_element_child_first_get(n);
+	if (!ch1)
 	{
 		return egueb_dom_node_ref(n);
 	}
 	/* is inside some child */
-	found = eon_renderable_element_at(child, cursor);
+	found = eon_renderable_element_at(ch1, cursor);
 	if (found)
 	{
+		egueb_dom_node_unref(ch1);
 		return found;
+	}
+	else
+	{
+		Egueb_Dom_Node *ch2;
+		ch2 = egueb_dom_element_sibling_next_get(ch1);
+		if (ch2)
+		{
+			found = eon_renderable_element_at(ch2, cursor);
+			if (found)
+			{
+				egueb_dom_node_unref(ch2);
+				return found;
+			}
+			egueb_dom_node_unref(ch2);
+		}
+		egueb_dom_node_unref(ch1);
 	}
 	return egueb_dom_node_ref(n);
 }
@@ -288,14 +305,14 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size *size)
 {
 	Eon_Element_Paned *thiz;
-	Eon_Renderable_Size ch1s, ch2s;
+	Eon_Renderable_Size ch1s;
 	Eon_Orientation orientation;
 	Eon_Box padding;
-	Egueb_Dom_Node *ch1, *ch2;
+	Egueb_Dom_Node *ch1;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *theme_element;
 	Enesim_Renderer *ren;
-	int ch1sm, ch2sm;
+	int ch1sm;
 	int thickness = 0;
 	int ret = 0;
 
@@ -319,42 +336,34 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 	ch1 = egueb_dom_element_child_first_get(n);
 	if (ch1)
 	{
-		Enesim_Renderer *ren;
-
-		ren = eon_renderable_renderer_get(ch1);
-		eon_theme_element_paned_first_content_set(theme_element, ren);
-
-		ch1sm = eon_renderable_size_hints_get(ch1, &ch1s);
-		ch2 = egueb_dom_element_sibling_next_get(ch1);
+		Egueb_Dom_Node *ch2;
+		Eon_Renderable_Size ch2s;
+		int ch2sm;
 
 		/* Add the padding on each hint */
+		ch1sm = eon_renderable_size_hints_get(ch1, &ch1s);
 		_eon_element_paned_calculate_child_size(&ch1s, ch1sm, orientation, &padding);
+
+		ch2 = egueb_dom_element_sibling_next_get(ch1);
 		if (ch2)
 		{
-			ren = eon_renderable_renderer_get(ch1);
-			eon_theme_element_paned_second_content_set(theme_element, ren);
-
 			ch2sm = eon_renderable_size_hints_get(ch1, &ch2s);
 			_eon_element_paned_calculate_child_size(&ch2s, ch2sm,
 					orientation, &padding);
 			ret = _eon_element_paned_calculate_size(size, orientation,
 					&ch1s, ch1sm, &ch2s, ch2sm);
+			egueb_dom_node_unref(ch2);
 		}
 		else
 		{
-			eon_theme_element_paned_second_content_set(theme_element, NULL);
 			ret = ch1sm;
 			*size = ch1s;
 		}
-	}
-	else
-	{
-		eon_theme_element_paned_first_content_set(theme_element, NULL);
-		eon_theme_element_paned_second_content_set(theme_element, NULL);
+		egueb_dom_node_unref(ch1);
 	}
 
 	/* Add the thickness on the hints */
-	_eon_element_paned_add_thickness(&ch1s, ch1sm, orientation, thickness);
+	_eon_element_paned_add_thickness(size, ret, orientation, thickness);
 
 	/* set the proxied renderer */
 	ren = eon_theme_renderable_renderer_get(theme_element);
@@ -366,23 +375,15 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 
 static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 {
-	Egueb_Dom_Node *n;
-
-	n = (EON_ELEMENT(r))->n;
-	ERR_ELEMENT(n, "Geometry %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&r->geometry));
-#if 0
 	Eon_Element_Paned *thiz;
-	Eon_Box padding = { 0, 0, 0, 0 };
-	Egueb_Dom_Node *child;
+	Eon_Renderable_Size ch1s;
 	Egueb_Dom_Node *theme_element;
-	Eina_Rectangle geometry;
-	Eina_Rectangle free_space;
-	int enabled;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *ch1;
+	int ch1sm;
+	double position = 0.5;
 
 	thiz = EON_ELEMENT_PANED(r);
-
-	free_space = r->geometry;
-
 	/* get the theme */
 	theme_element = eon_feature_themable_element_get(thiz->theme_feature);
 	if (!theme_element)
@@ -391,41 +392,131 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		return EINA_FALSE;
 	}
 
-	/* Set the geometry on the child */
+	n = (EON_ELEMENT(r))->n;
+	/* Set the geometry on the theme */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 
-	/* finally add our padding */
-	eon_theme_element_paned_padding_get(theme_element, &padding);
-	free_space.x += padding.left;
-	free_space.y += padding.top;
-	free_space.w -= padding.left + padding.right;
-	free_space.h -= padding.bottom + padding.top;
-
-	DBG_ELEMENT(n, "Free space %" EINA_RECTANGLE_FORMAT, EINA_RECTANGLE_ARGS(&free_space));
-
-	/* Set the content renderer */
-	child = egueb_dom_element_child_first_get(n);
-	if (child)
+	/* Set the geometry on every child */
+	ch1 = egueb_dom_element_child_first_get(n);
+	if (ch1)
 	{
+		Eon_Renderable_Size ch2s;
+		Eon_Box padding = { 0, 0, 0, 0 };
+		Egueb_Dom_Node *ch2;
 		Enesim_Renderer *ren;
+		Eina_Rectangle ch1fs;
+		int ch2sm;
 
-		ren = eon_renderable_renderer_get(child);
-		eon_theme_element_paned_content_set(theme_element, ren);
-		egueb_dom_node_unref(child);
+		/* Calculate the size */
+		ch1sm = eon_renderable_size_hints_get(ch1, &ch1s);
+		ch1fs = r->geometry;
+
+		eon_theme_element_paned_padding_get(theme_element, &padding);
+		ch1fs.x += padding.left;
+		ch1fs.y += padding.top;
+		ch1fs.w -= padding.left + padding.right;
+		ch1fs.h -= padding.top + padding.bottom;
+
+		ch2 = egueb_dom_element_sibling_next_get(ch1);
+		if (ch2)
+		{
+			Eon_Orientation orientation;
+			Eina_Rectangle ch2fs;
+			int thickness;
+
+			egueb_dom_attr_final_get(thiz->orientation, &orientation);
+			thickness = eon_theme_element_paned_thickness_get(theme_element);
+
+			/* Calculate the size */
+			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
+			if (orientation == EON_ORIENTATION_HORIZONTAL)
+			{
+				int ch1width = ((r->geometry.w - thickness) * position) - padding.left - padding.right;
+				int ch2width = ((r->geometry.w - thickness) - ch1width) - padding.left - padding.right;
+				/* calculate the progress limits */
+				if ((ch1sm & EON_RENDERABLE_HINT_MIN_MAX) && ch1s.min_width >= 0)
+				{
+					if (ch1width < ch1s.min_width)
+					{
+						ch1width = ch1s.min_width;
+						ch2width = ((r->geometry.w - thickness) - ch1width) - padding.left - padding.right;
+					}
+				}
+				if ((ch2sm & EON_RENDERABLE_HINT_MIN_MAX) && ch2s.min_width >= 0)
+				{
+					if (ch2width < ch2s.min_width)
+					{
+						ch2width = ch2s.min_width;
+						ch1width = ((r->geometry.w - thickness) - ch2width) - padding.left - padding.right;
+					}
+				}
+				/* set the real size now */
+				ch1fs.w = ch1width;
+				ch2fs.x = ch1fs.x + ch1fs.w + thickness;
+				ch2fs.y = ch1fs.y;
+				ch2fs.w = ch2width;
+				ch2fs.h = ch1fs.h;
+			}
+			else
+			{
+				int ch1height = ((r->geometry.h - thickness) * position) - padding.top - padding.bottom;
+				int ch2height = ((r->geometry.h - thickness) - ch1height) - padding.top - padding.bottom;
+				/* calculate the progress limits */
+				if ((ch1sm & EON_RENDERABLE_HINT_MIN_MAX) && ch1s.min_height >= 0)
+				{
+					if (ch1height < ch1s.min_height)
+					{
+						ch1height = ch1s.min_height;
+						ch2height = ((r->geometry.h - thickness) - ch1height) - padding.top - padding.bottom;
+					}
+				}
+				if ((ch2sm & EON_RENDERABLE_HINT_MIN_MAX) && ch2s.min_height >= 0)
+				{
+					if (ch2height < ch2s.min_height)
+					{
+						ch2height = ch2s.min_height;
+						ch1height = ((r->geometry.h - thickness) - ch2height) - padding.top - padding.bottom;
+					}
+				}
+				/* set the real size now */
+				ch1fs.h = ch1height;
+				ch2fs.x = ch1fs.x;
+				ch2fs.y = ch1fs.y + ch1fs.h + thickness;
+				ch2fs.w = ch1fs.w;
+				ch2fs.h = ch2height;
+			}
+
+			/* Set the renderer */
+			ren = eon_renderable_renderer_get(ch2);
+			eon_theme_element_paned_second_content_set(theme_element, ren, &ch2fs);
+			/* finally process */
+			eon_renderable_geometry_set(ch2, &ch2fs);
+			egueb_dom_element_process(ch2);
+			egueb_dom_node_unref(ch2);
+		}
+		else
+		{
+			eon_theme_element_paned_second_content_set(theme_element, NULL, NULL);
+		}
+
+		/* Set the renderer */
+		ren = eon_renderable_renderer_get(ch1);
+		eon_theme_element_paned_first_content_set(theme_element, ren, &ch1fs);
+
+		eon_renderable_geometry_set(ch1, &ch1fs);
+		egueb_dom_element_process(ch1);
+		egueb_dom_node_unref(ch1);
 	}
 	else
 	{
-		eon_theme_element_paned_content_set(theme_element, NULL);
+		eon_theme_element_paned_first_content_set(theme_element, NULL, NULL);
+		eon_theme_element_paned_second_content_set(theme_element, NULL, NULL);
 	}
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
 	egueb_dom_node_unref(theme_element);
 
-done:
-	/* Our basic paned layout algorithm */
-	eon_layout_paned_size_geometry_set(n, &free_space);
-#endif
 	return EINA_TRUE;
 }
 /*----------------------------------------------------------------------------*

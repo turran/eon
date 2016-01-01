@@ -23,7 +23,7 @@ int eon_theme_element_paned_thickness_get(Egueb_Dom_Node *n);
 void eon_theme_element_paned_orientation_set(Egueb_Dom_Node *n, Eon_Orientation o);
 int eon_theme_element_paned_min_length_get(Egueb_Dom_Node *n);
 void eon_theme_element_paned_padding_get(Egueb_Dom_Node *n, Eon_Box *padding);
-void eon_theme_element_paned_first_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r);
-void eon_theme_element_paned_second_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r);
+void eon_theme_element_paned_first_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r, Eina_Rectangle *area);
+void eon_theme_element_paned_second_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r, Eina_Rectangle *area);
 
 #endif
