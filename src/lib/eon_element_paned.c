@@ -172,24 +172,31 @@ static void _eon_element_paned_mouse_up_cb(Egueb_Dom_Event *ev,
 	ERR("mouse up");
 }
 
-static void _eon_element_paned_add_thickness(Eon_Renderable_Size *size, int hints,
-		Eon_Orientation orientation, int thickness)
+static void _eon_element_paned_sanitize_size(Eon_Renderable_Size *size, int *hints,
+		Eon_Orientation orientation, int thickness, int min_length)
 {
-	if (hints & EON_RENDERABLE_HINT_MIN_MAX)
+	/* A paned widget can be of any size */
+	*hints = *hints | EON_RENDERABLE_HINT_MIN_MAX;
+	size->max_width = size->max_height = -1;
+
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
 	{
-		if (orientation == EON_ORIENTATION_HORIZONTAL)
-		{
-			if (size->min_width >= 0)
-				size->min_width += thickness;
-		}
-		else
-		{
-			if (size->min_height >= 0)
-				size->min_height += thickness;
-		}
+		if (size->min_width >= 0)
+			size->min_width += thickness;
+		/* the length of the splitter */
+		if (size->min_height < min_length)
+			size->min_height = min_length;
+	}
+	else
+	{
+		if (size->min_height >= 0)
+			size->min_height += thickness;
+		/* the length of the splitter */
+		if (size->min_width < min_length)
+			size->min_width = min_length;
 	}
 
-	if (hints & EON_RENDERABLE_HINT_PREFERRED)
+	if (*hints & EON_RENDERABLE_HINT_PREFERRED)
 	{
 		if (orientation == EON_ORIENTATION_HORIZONTAL)
 		{
@@ -399,6 +406,7 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 	Egueb_Dom_Node *theme_element;
 	Enesim_Renderer *ren;
 	int ch1sm;
+	int min_length = 0;
 	int thickness = 0;
 	int ret = 0;
 
@@ -416,6 +424,7 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 	/* Get the theme information */
 	thickness = eon_theme_element_paned_thickness_get(theme_element);
 	eon_theme_element_paned_padding_get(theme_element, &padding);
+	min_length = eon_theme_element_paned_min_length_get(theme_element);
 
 	/* Get the children and its hints */
 	n = (EON_ELEMENT(r))->n;
@@ -448,12 +457,8 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 		egueb_dom_node_unref(ch1);
 	}
 
-	/* A paned widget can be of any size */
-	ret |= EON_RENDERABLE_HINT_MIN_MAX;
-	size->max_width = size->max_height = -1;
-
-	/* Add the thickness on the hints */
-	_eon_element_paned_add_thickness(size, ret, orientation, thickness);
+	/* Sanitize the size hints */
+	_eon_element_paned_sanitize_size(size, &ret, orientation, thickness, min_length);
 
 	/* set the proxied renderer */
 	ren = eon_theme_renderable_renderer_get(theme_element);
