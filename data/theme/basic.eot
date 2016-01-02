@@ -52,5 +52,5 @@
     <animate attributeName="cursor-visible" values="true; false; true" begin="focusin" dur="1s" end="focusout" calcMode="discrete" keyTimes="0; 0.5; 1" repeatCount="indefinite" fill="remove"/>
   </mars:entry>
   <mars:progressBar id="progressBar" color="#ff0f3b65"/>
-  <mars:paned id="paned" border-color="#ff0f3b65"/>
+  <mars:paned id="paned" border-color="#ff0f3b65" area-border-color="#00000000"/>
 </eot>

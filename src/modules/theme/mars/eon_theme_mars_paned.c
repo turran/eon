@@ -25,6 +25,7 @@ typedef struct _Eon_Theme_Mars_Paned
 	Egueb_Dom_Node *n;
 	/* attributes */
 	Egueb_Dom_Node *border_color;
+	Egueb_Dom_Node *area_border_color;
 	/* private */
 	Enesim_Renderer *area;
 	Enesim_Renderer *compound;
@@ -63,11 +64,14 @@ static Eina_Bool _eon_theme_mars_paned_process(void *data)
 	Eina_Rectangle geom;
 	Enesim_Argb argb;
 	Enesim_Color border_color;
+	Enesim_Color area_border_color;
 
 	thiz = data;
 	/* get the final attributes */
 	egueb_dom_attr_final_get(thiz->border_color, &argb);
 	border_color = enesim_color_argb_from(argb);
+	egueb_dom_attr_final_get(thiz->area_border_color, &argb);
+	area_border_color = enesim_color_argb_from(argb);
 	/* get the inherited members */
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
 
@@ -77,8 +81,22 @@ static Eina_Bool _eon_theme_mars_paned_process(void *data)
 	/* setup the splitter */
 	enesim_renderer_shape_stroke_color_set(thiz->splitter, border_color);
 	/* setup the areas */
-	enesim_renderer_shape_stroke_color_set(thiz->content1, border_color);
-	enesim_renderer_shape_stroke_color_set(thiz->content2, border_color);
+	if (!area_border_color)
+	{
+		enesim_renderer_shape_draw_mode_set(thiz->content1,
+				ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+		enesim_renderer_shape_draw_mode_set(thiz->content2,
+				ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
+	}
+	else
+	{
+		enesim_renderer_shape_draw_mode_set(thiz->content1,
+				ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
+		enesim_renderer_shape_stroke_color_set(thiz->content1, area_border_color);
+		enesim_renderer_shape_draw_mode_set(thiz->content2,
+				ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
+		enesim_renderer_shape_stroke_color_set(thiz->content2, area_border_color);
+	}
 
 	return EINA_TRUE;
 }
@@ -272,6 +290,10 @@ Egueb_Dom_Node * eon_theme_mars_paned_new(void)
 	thiz->border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->border_color), NULL);
+	s = egueb_dom_string_new_with_static_string("area-border-color");
+	thiz->area_border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->area_border_color), NULL);
 	thiz->n = n;
 
 	return n;
