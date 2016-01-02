@@ -2,7 +2,7 @@
 <eon>
   <frame title="Progress Bar example">
     <stack orientation="horizontal" hexpand="true">
-      <progressBar orientation="vertical" progression="0.5"/>
+      <progressBar orientation="vertical" progression="0.5" halign="center"/>
       <progressBar orientation="horizontal" progression="0.75"/>
     </stack>
   </frame>

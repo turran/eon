@@ -116,7 +116,7 @@ static int _eon_element_progress_bar_size_hints_get(Eon_Renderable *r,
 	}
 	else
 	{
-		size->min_width = size->min_width = thickness;
+		size->min_width = size->max_width = thickness;
 		size->min_height = size->max_height = -1;
 	}
 
