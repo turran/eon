@@ -468,8 +468,8 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 							(r->geometry.w - thickness);
 					if (ch2width - padding.left - padding.right < ch2s.min_width)
 					{
-						ch1width = ((r->geometry.w - thickness) - ch2width);
 						ch2width = ch2s.min_width + padding.left + padding.right;
+						ch1width = ((r->geometry.w - thickness) - ch2width);
 					}
 				}
 				/* set the real size now */
@@ -579,8 +579,8 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		splitter_area = r->geometry;
 	}
 
-	DBG_ELEMENT(n, "Min progression: %f Max progression: %f",
-			thiz->min_progression, thiz->max_progression);
+	DBG_ELEMENT(n, "Progression min: %f, curr: %f, max: %f",
+			thiz->min_progression, progression, thiz->max_progression);
 
 	/* Set the splitter area */
 	eon_theme_element_paned_splitter_area_set(theme_element, &splitter_area);
