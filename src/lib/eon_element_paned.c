@@ -52,6 +52,8 @@ typedef struct _Eon_Element_Paned
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *proxy;
 	Eina_Bool is_dragging;
+	double min_progression;
+	double max_progression;
 } Eon_Element_Paned;
 
 typedef struct _Eon_Element_Paned_Class
@@ -173,134 +175,34 @@ static void _eon_element_paned_mouse_up_cb(Egueb_Dom_Event *ev,
 	ERR("mouse up");
 }
 
-static void _eon_element_paned_sanitize_size(Eon_Renderable_Size *size, int *hints,
-		Eon_Orientation orientation, int thickness, int min_length)
-{
-	/* A paned widget can be of any size */
-	*hints = *hints | EON_RENDERABLE_HINT_MIN_MAX;
-	size->max_width = size->max_height = -1;
-
-	if (orientation == EON_ORIENTATION_HORIZONTAL)
-	{
-		if (size->min_width >= 0)
-			size->min_width += thickness;
-		/* the length of the splitter */
-		if (size->min_height < min_length)
-			size->min_height = min_length;
-	}
-	else
-	{
-		if (size->min_height >= 0)
-			size->min_height += thickness;
-		/* the length of the splitter */
-		if (size->min_width < min_length)
-			size->min_width = min_length;
-	}
-
-	if (*hints & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		if (orientation == EON_ORIENTATION_HORIZONTAL)
-		{
-			if (size->pref_width >= 0)
-				size->pref_width += thickness;
-		}
-		else
-		{
-			if (size->pref_height >= 0)
-				size->pref_height += thickness;
-		}
-	}
-}
-
-static void _eon_element_paned_calculate_child_size(Eon_Renderable_Size *size, int hints,
+static void _eon_element_paned_calculate_child_size(Eon_Renderable_Size *size,
+		int *hints, Eon_Renderable_Size *chs, int chsm,
 		Eon_Orientation orientation, Eon_Box *padding)
 {
-	if (hints & EON_RENDERABLE_HINT_MIN_MAX)
+	if (chsm & EON_RENDERABLE_HINT_MIN_MAX)
 	{
-		if (size->min_width >= 0)
-			size->min_width += padding->left + padding->right;
-		if (size->min_height >= 0)
-			size->min_height += padding->top + padding->bottom;
-
-	}
-	if (hints & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		if (size->pref_width >= 0)
-			size->pref_width += padding->left + padding->right;
-		if (size->pref_height >= 0)
-			size->pref_height += padding->top + padding->bottom;
-	}
-}
-
-static int _eon_element_paned_calculate_size(Eon_Renderable_Size *size,
-			Eon_Orientation orientation,
-			Eon_Renderable_Size *ch1s, int ch1sm,
-			Eon_Renderable_Size *ch2s, int ch2sm)
-{
-	int ret = 0;
-	if ((ch1sm | ch2sm) & EON_RENDERABLE_HINT_MIN_MAX)
-	{
-		ret |= EON_RENDERABLE_HINT_MIN_MAX;
-		size->min_width = size->max_width = -1;
-
-		if (ch1sm & EON_RENDERABLE_HINT_MIN_MAX)
-		{
-			if (ch1s->min_width >= 0)
-				size->min_width = ch1s->min_width;
-			if (ch1s->min_height >= 0)
-				size->min_height = ch1s->min_height;
-		}
-
 		if (orientation == EON_ORIENTATION_HORIZONTAL)
 		{
-			if (ch2sm & EON_RENDERABLE_HINT_MIN_MAX)
-			{
-				if (ch2s->min_width >= 0)
-				{
-					if (size->min_width >= 0)
-						size->min_width += ch2s->min_width;
-					else
-						size->min_width = ch2s->min_width;
-				}
-				if (ch2s->min_height >= 0)
-				{
-					if (size->min_height >= 0)
-						size->min_height = MAX(ch2s->min_height, size->min_height);
-					else
-						size->min_height = ch2s->min_height;
-				}
-			}
+			if (chs->min_width >= 0)
+				size->min_width += chs->min_width + padding->left + padding->right;
+			if (chs->min_height >= 0)
+				size->min_height = MAX(chs->min_height + padding->top + padding->bottom, size->min_height);
 		}
 		else
 		{
-			if (ch2sm & EON_RENDERABLE_HINT_MIN_MAX)
-			{
-				if (ch2s->min_height >= 0)
-				{
-					if (size->min_height >= 0)
-						size->min_height += ch2s->min_height;
-					else
-						size->min_height = ch2s->min_height;
-				}
-				if (ch2s->min_width >= 0)
-				{
-					if (size->min_width >= 0)
-						size->min_width = MAX(ch2s->min_width, size->min_width);
-					else
-						size->min_width = ch2s->min_width;
-				}
-			}
+			if (chs->min_width >= 0)
+				size->min_width = MAX(chs->min_width + padding->top + padding->bottom, size->min_width);
+			if (chs->min_height >= 0)
+				size->min_height += chs->min_height + padding->left + padding->right;
 		}
 	}
-	if ((ch1sm | ch2sm) & EON_RENDERABLE_HINT_PREFERRED)
-	{
-		ret |= EON_RENDERABLE_HINT_PREFERRED;
-		size->pref_width = size->pref_height = -1;
-		ERR("TODO");
-	}
 
-	return ret;
+	if (chsm & EON_RENDERABLE_HINT_PREFERRED)
+	{
+		ERR("TODO: Missing preferred calcs");
+	}
 }
+
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -431,6 +333,21 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 	eon_theme_element_paned_padding_get(theme_element, &padding);
 	min_length = eon_theme_element_paned_min_length_get(theme_element);
 
+	/* Initially the hints are only the splitter */
+	ret |= EON_RENDERABLE_HINT_MIN_MAX;
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		size->min_width = size->max_width = thickness;
+		size->min_height = min_length;
+		size->max_height = -1;
+	}
+	else
+	{
+		size->min_height = size->max_height = thickness;
+		size->min_width = min_length;
+		size->max_width = -1;
+	}
+
 	/* Get the children and its hints */
 	n = (EON_ELEMENT(r))->n;
 	ch1 = egueb_dom_element_child_first_get(n);
@@ -440,30 +357,24 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size ch2s;
 		int ch2sm;
 
+		/* Once we do have a child, we can be of any max size */
+		size->max_width = size->max_height = -1;
+
 		/* Add the padding on each hint */
 		ch1sm = eon_renderable_size_hints_get(ch1, &ch1s);
-		_eon_element_paned_calculate_child_size(&ch1s, ch1sm, orientation, &padding);
+		_eon_element_paned_calculate_child_size(size, &ret, &ch1s,
+				ch1sm, orientation, &padding);
 
 		ch2 = egueb_dom_element_sibling_next_get(ch1);
 		if (ch2)
 		{
-			ch2sm = eon_renderable_size_hints_get(ch1, &ch2s);
-			_eon_element_paned_calculate_child_size(&ch2s, ch2sm,
-					orientation, &padding);
-			ret = _eon_element_paned_calculate_size(size, orientation,
-					&ch1s, ch1sm, &ch2s, ch2sm);
+			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
+			_eon_element_paned_calculate_child_size(size, &ret,
+					&ch2s, ch2sm, orientation, &padding);
 			egueb_dom_node_unref(ch2);
-		}
-		else
-		{
-			ret = ch1sm;
-			*size = ch1s;
 		}
 		egueb_dom_node_unref(ch1);
 	}
-
-	/* Sanitize the size hints */
-	_eon_element_paned_sanitize_size(size, &ret, orientation, thickness, min_length);
 
 	/* set the proxied renderer */
 	ren = eon_theme_renderable_renderer_get(theme_element);
@@ -496,6 +407,9 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 
 	n = (EON_ELEMENT(r))->n;
 
+	/* Set the limits */
+	thiz->min_progression = thiz->max_progression = 0;
+
 	/* Get the needed attributes values */
 	egueb_dom_attr_final_get(thiz->orientation, &orientation);
 	egueb_dom_attr_final_get(thiz->progression, &progression);
@@ -519,15 +433,11 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		int ch2sm;
 
 		thickness = eon_theme_element_paned_thickness_get(theme_element);
+		eon_theme_element_paned_padding_get(theme_element, &padding);
+
 		/* Calculate the size */
 		ch1sm = eon_renderable_size_hints_get(ch1, &ch1s);
 		ch1fs = r->geometry;
-
-		eon_theme_element_paned_padding_get(theme_element, &padding);
-		ch1fs.x += padding.left;
-		ch1fs.y += padding.top;
-		ch1fs.w -= padding.left + padding.right;
-		ch1fs.h -= padding.top + padding.bottom;
 
 		ch2 = egueb_dom_element_sibling_next_get(ch1);
 		if (ch2)
@@ -538,23 +448,28 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
 			if (orientation == EON_ORIENTATION_HORIZONTAL)
 			{
-				int ch1width = ((r->geometry.w - thickness) * progression) - padding.left - padding.right;
-				int ch2width = ((r->geometry.w - thickness) - ch1width) - padding.left - padding.right;
+				int ch1width = ((r->geometry.w - thickness) * progression);
+				int ch2width = ((r->geometry.w - thickness) - ch1width);
+
 				/* calculate the progress limits */
 				if ((ch1sm & EON_RENDERABLE_HINT_MIN_MAX) && ch1s.min_width >= 0)
 				{
-					if (ch1width < ch1s.min_width)
+					thiz->min_progression = (double)(ch1s.min_width + padding.left + padding.right)/
+							(r->geometry.w - thickness);
+					if (ch1width - padding.left - padding.right < ch1s.min_width)
 					{
-						ch1width = ch1s.min_width;
-						ch2width = ((r->geometry.w - thickness) - ch1width) - padding.left - padding.right;
+						ch1width = ch1s.min_width + padding.left + padding.right;
+						ch2width = ((r->geometry.w - thickness) - ch1width);
 					}
 				}
 				if ((ch2sm & EON_RENDERABLE_HINT_MIN_MAX) && ch2s.min_width >= 0)
 				{
-					if (ch2width < ch2s.min_width)
+					thiz->max_progression = 1 - (double)(ch2s.min_width + padding.left + padding.right)/
+							(r->geometry.w - thickness);
+					if (ch2width - padding.left - padding.right < ch2s.min_width)
 					{
-						ch2width = ch2s.min_width;
-						ch1width = ((r->geometry.w - thickness) - ch2width) - padding.left - padding.right;
+						ch1width = ((r->geometry.w - thickness) - ch2width);
+						ch2width = ch2s.min_width + padding.left + padding.right;
 					}
 				}
 				/* set the real size now */
@@ -566,29 +481,34 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 
 				/* the splitter area */
 				splitter_area.x = ch2fs.x - thickness;
-				splitter_area.y = r->geometry.y;
+				splitter_area.y = ch1fs.y;
 				splitter_area.w = thickness;
-				splitter_area.h = r->geometry.h;
+				splitter_area.h = ch1fs.h;
 			}
 			else
 			{
-				int ch1height = ((r->geometry.h - thickness) * progression) - padding.top - padding.bottom;
-				int ch2height = ((r->geometry.h - thickness) - ch1height) - padding.top - padding.bottom;
+				int ch1height = ((r->geometry.h - thickness) * progression);
+				int ch2height = ((r->geometry.h - thickness) - ch1height);
+
 				/* calculate the progress limits */
 				if ((ch1sm & EON_RENDERABLE_HINT_MIN_MAX) && ch1s.min_height >= 0)
 				{
-					if (ch1height < ch1s.min_height)
+					thiz->min_progression = (double)(ch1s.min_height + padding.top + padding.bottom)/
+							(r->geometry.h - thickness);
+					if (ch1height - padding.top - padding.bottom < ch1s.min_height)
 					{
-						ch1height = ch1s.min_height;
-						ch2height = ((r->geometry.h - thickness) - ch1height) - padding.top - padding.bottom;
+						ch1height = ch1s.min_height + padding.top + padding.bottom;
+						ch2height = ((r->geometry.h - thickness) - ch1height);
 					}
 				}
 				if ((ch2sm & EON_RENDERABLE_HINT_MIN_MAX) && ch2s.min_height >= 0)
 				{
-					if (ch2height < ch2s.min_height)
+					thiz->max_progression = 1 - (double)(ch2s.min_height + padding.top + padding.bottom)/
+							(r->geometry.h - thickness);
+					if (ch2height - padding.top - padding.bottom < ch2s.min_height)
 					{
-						ch2height = ch2s.min_height;
-						ch1height = ((r->geometry.h - thickness) - ch2height) - padding.top - padding.bottom;
+						ch2height = ch2s.min_height + padding.top + padding.bottom;
+						ch1height = ((r->geometry.h - thickness) - ch2height);
 					}
 				}
 				/* set the real size now */
@@ -599,16 +519,21 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 				ch2fs.h = ch2height;
 
 				/* the splitter area */
-				splitter_area.x = r->geometry.x;
+				splitter_area.x = ch2fs.x;
 				splitter_area.y = ch2fs.y - thickness;
-				splitter_area.w = r->geometry.w;
+				splitter_area.w = ch2fs.w;
 				splitter_area.h = thickness;
 			}
 
 			/* Set the renderer */
 			ren = eon_renderable_renderer_get(ch2);
 			eon_theme_element_paned_second_content_set(theme_element, ren, &ch2fs);
+
 			/* finally process */
+			ch2fs.x += padding.left;
+			ch2fs.y += padding.top;
+			ch2fs.w -= padding.left + padding.right;
+			ch2fs.h -= padding.top + padding.bottom;
 			eon_renderable_geometry_set(ch2, &ch2fs);
 			egueb_dom_element_process(ch2);
 			egueb_dom_node_unref(ch2);
@@ -618,16 +543,18 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 			eon_theme_element_paned_second_content_set(theme_element, NULL, NULL);
 			if (orientation == EON_ORIENTATION_HORIZONTAL)
 			{
-				splitter_area.x = r->geometry.x + r->geometry.w - thickness;
-				splitter_area.y = r->geometry.y;
+				ch1fs.w -= thickness;
+				splitter_area.x = ch1fs.x + ch1fs.w;
+				splitter_area.y = ch1fs.y;
 				splitter_area.w = thickness;
-				splitter_area.h = r->geometry.h;
+				splitter_area.h = ch1fs.h;
 			}
 			else
 			{
-				splitter_area.x = r->geometry.x;
-				splitter_area.y = r->geometry.y + r->geometry.h - thickness;
-				splitter_area.w = r->geometry.w;
+				ch1fs.h -= thickness;
+				splitter_area.x = ch1fs.x;
+				splitter_area.y = ch1fs.y + ch1fs.h;
+				splitter_area.w = ch1fs.w;
 				splitter_area.h = thickness;
 			}
 		}
@@ -636,6 +563,11 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		ren = eon_renderable_renderer_get(ch1);
 		eon_theme_element_paned_first_content_set(theme_element, ren, &ch1fs);
 
+		/* finally process */
+		ch1fs.x += padding.left;
+		ch1fs.y += padding.top;
+		ch1fs.w -= padding.left + padding.right;
+		ch1fs.h -= padding.top + padding.bottom;
 		eon_renderable_geometry_set(ch1, &ch1fs);
 		egueb_dom_element_process(ch1);
 		egueb_dom_node_unref(ch1);
@@ -646,6 +578,8 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		eon_theme_element_paned_second_content_set(theme_element, NULL, NULL);
 		splitter_area = r->geometry;
 	}
+
+	DBG_ELEMENT(n, "Min progression: %f Max progression: %f", thiz->min_progression, thiz->max_progression);
 
 	/* Set the splitter area */
 	eon_theme_element_paned_splitter_area_set(theme_element, &splitter_area);
