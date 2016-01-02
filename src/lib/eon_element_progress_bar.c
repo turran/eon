@@ -197,10 +197,10 @@ static void _eon_element_progress_bar_instance_deinit(void *o)
 
 	thiz = EON_ELEMENT_PROGRESS_BAR(o);
 	/* attributes */
-	enesim_renderer_unref(thiz->proxy);
 	egueb_dom_node_unref(thiz->orientation);
 	egueb_dom_node_unref(thiz->progression);
 	/* private */
+	enesim_renderer_unref(thiz->proxy);
 	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
