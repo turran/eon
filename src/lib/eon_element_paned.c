@@ -181,15 +181,11 @@ static void _eon_element_paned_add_thickness(Eon_Renderable_Size *size, int hint
 		{
 			if (size->min_width >= 0)
 				size->min_width += thickness;
-			if (size->max_width >= 0)
-				size->max_width += thickness;
 		}
 		else
 		{
 			if (size->min_height >= 0)
 				size->min_height += thickness;
-			if (size->max_height >= 0)
-				size->max_height += thickness;
 		}
 	}
 
@@ -215,12 +211,8 @@ static void _eon_element_paned_calculate_child_size(Eon_Renderable_Size *size, i
 	{
 		if (size->min_width >= 0)
 			size->min_width += padding->left + padding->right;
-		if (size->max_width >= 0)
-			size->max_width += padding->left + padding->right;
 		if (size->min_height >= 0)
 			size->min_height += padding->top + padding->bottom;
-		if (size->max_height >= 0)
-			size->max_height += padding->top + padding->bottom;
 
 	}
 	if (hints & EON_RENDERABLE_HINT_PREFERRED)
@@ -242,18 +234,13 @@ static int _eon_element_paned_calculate_size(Eon_Renderable_Size *size,
 	{
 		ret |= EON_RENDERABLE_HINT_MIN_MAX;
 		size->min_width = size->max_width = -1;
-		size->min_height = size->max_height = -1;
 
 		if (ch1sm & EON_RENDERABLE_HINT_MIN_MAX)
 		{
 			if (ch1s->min_width >= 0)
 				size->min_width = ch1s->min_width;
-			if (ch1s->max_width >= 0)
-				size->max_width = ch1s->max_width;
 			if (ch1s->min_height >= 0)
 				size->min_height = ch1s->min_height;
-			if (ch1s->max_height >= 0)
-				size->max_height = ch1s->max_height;
 		}
 
 		if (orientation == EON_ORIENTATION_HORIZONTAL)
@@ -267,27 +254,12 @@ static int _eon_element_paned_calculate_size(Eon_Renderable_Size *size,
 					else
 						size->min_width = ch2s->min_width;
 				}
-				if (ch2s->max_width >= 0)
-				{
-					if (size->max_width >= 0)
-						size->max_width += ch2s->max_width;
-					else
-						size->max_width = ch2s->max_width;
-				}
-
 				if (ch2s->min_height >= 0)
 				{
 					if (size->min_height >= 0)
 						size->min_height = MAX(ch2s->min_height, size->min_height);
 					else
 						size->min_height = ch2s->min_height;
-				}
-				if (ch2s->max_height >= 0)
-				{
-					if (size->max_height >= 0)
-						size->max_height = MIN(ch2s->max_height, size->max_height);
-					else
-						size->max_height = ch2s->max_height;
 				}
 			}
 		}
@@ -302,27 +274,12 @@ static int _eon_element_paned_calculate_size(Eon_Renderable_Size *size,
 					else
 						size->min_height = ch2s->min_height;
 				}
-				if (ch2s->max_height >= 0)
-				{
-					if (size->max_height >= 0)
-						size->max_height += ch2s->max_height;
-					else
-						size->max_height = ch2s->max_height;
-				}
-
 				if (ch2s->min_width >= 0)
 				{
 					if (size->min_width >= 0)
 						size->min_width = MAX(ch2s->min_width, size->min_width);
 					else
 						size->min_width = ch2s->min_width;
-				}
-				if (ch2s->max_width >= 0)
-				{
-					if (size->max_width >= 0)
-						size->max_width = MIN(ch2s->max_width, size->max_width);
-					else
-						size->max_width = ch2s->max_width;
 				}
 			}
 		}
@@ -490,6 +447,10 @@ static int _eon_element_paned_size_hints_get(Eon_Renderable *r,
 		}
 		egueb_dom_node_unref(ch1);
 	}
+
+	/* A paned widget can be of any size */
+	ret |= EON_RENDERABLE_HINT_MIN_MAX;
+	size->max_width = size->max_height = -1;
 
 	/* Add the thickness on the hints */
 	_eon_element_paned_add_thickness(size, ret, orientation, thickness);
