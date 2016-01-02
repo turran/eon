@@ -722,6 +722,7 @@ static void _eon_element_paned_instance_deinit(void *o)
 	egueb_dom_node_unref(thiz->orientation);
 	/* private */
 	enesim_renderer_unref(thiz->proxy);
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *
