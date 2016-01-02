@@ -31,6 +31,9 @@
  * TODO:
  * + In case the position is not set, on the process calculate it
  * + Use the min length on the theme
+ * + Calculate the min/max position of the slider in the 0-1 range. This will
+ * useful when dragging the slider to know if we should enqueue or not the
+ * element
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -47,12 +50,127 @@ typedef struct _Eon_Element_Paned
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *proxy;
+	Eina_Bool is_dragging;
 } Eon_Element_Paned;
 
 typedef struct _Eon_Element_Paned_Class
 {
 	Eon_Renderable_Class base;
 } Eon_Element_Paned_Class;
+
+static void _eon_element_paned_mouse_move_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Paned *thiz = data;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	if (!thiz->is_dragging)
+		return;
+
+	ERR("mouse move");
+#if 0
+	Eon_Splitter *thiz;
+	Eon_Event_Mouse_Move *ev = event_data;
+	Eon_Element *ee;
+	double c;
+	double v = 0;
+	double length;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_splitter_get(ee);
+	if (!thiz->dragging) return;
+
+	/* get the absolute position of the event */
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		c = ev->x - thiz->offset_dragging;
+	}
+	else
+	{
+		c = ev->y - thiz->offset_dragging;
+	}
+	length = thiz->maxl - thiz->minl;
+	if (c < thiz->minl)
+		c = thiz->minl;
+	if (c > thiz->maxl)
+		c = thiz->maxl;
+	c -= thiz->minl;
+	if (length)
+		v = c / length;
+	eon_splitter_position_set(e, v);
+	/* drag stop */
+	Eon_Splitter *thiz;
+	Eon_Element *ee;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_splitter_get(ee);
+	thiz->dragging = EINA_FALSE;
+	/* drag start */
+	Eon_Splitter *thiz;
+	Eon_Event_Mouse_Drag_Start *ev = event_data;
+	Eon_Element *ee;
+	Enesim_Renderer *theme_r;
+	Enesim_Rectangle g;
+
+	ee = ender_element_object_get(e);
+	thiz = _eon_splitter_get(ee);
+	theme_r = eon_widget_theme_renderer_get(ee);
+
+	if (thiz->current.orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		eon_theme_splitter_position_get(theme_r, &g.x);
+		g.y = 0;
+		eon_theme_splitter_thickness_get(theme_r, &g.w);
+		eon_element_actual_height_get(e, &g.h);
+		thiz->offset_dragging = ev->x - g.x;
+	}
+	else
+	{
+		g.x = 0;
+		eon_theme_splitter_position_get(theme_r, &g.y);
+		eon_element_actual_width_get(e, &g.w);
+		eon_theme_splitter_thickness_get(theme_r, &g.h);
+		thiz->offset_dragging = ev->y - g.y;
+	}
+	if (enesim_rectangle_is_inside(&g, ev->rel_x, ev->rel_y))
+	{
+		thiz->dragging = EINA_TRUE;
+	}
+#endif
+}
+
+
+static void _eon_element_paned_mouse_down_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Paned *thiz = data;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	thiz->is_dragging = EINA_TRUE;
+	/* We need to capture the mouse move on the document, not on the
+	 * element. Basically because the mouse move event is triggered
+	 * only in case the cursor in over the element.
+	 * When dragging it is possible to drag outside the element
+	 * even if redrawing at a cursor move.
+	 * One possible workaround is to do something like
+	 * element.setCapture/releaseCapture, like:
+	 * https://developer.mozilla.org/en-US/docs/Web/API/Element/setCapture
+	 */
+	ERR("mouse down");
+}
+
+static void _eon_element_paned_mouse_up_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Paned *thiz = data;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	thiz->is_dragging = EINA_FALSE;
+	ERR("mouse up");
+}
 
 static void _eon_element_paned_add_thickness(Eon_Renderable_Size *size, int hints,
 		Eon_Orientation orientation, int thickness)
@@ -226,6 +344,7 @@ static void _eon_element_paned_init(Eon_Renderable *r)
 	Eon_Element_Paned *thiz;
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_ELEMENT_PANED(r);
 	/* attributes */
@@ -236,6 +355,16 @@ static void _eon_element_paned_init(Eon_Renderable *r)
 	egueb_dom_element_attribute_node_set(n,
 		egueb_dom_node_ref(thiz->orientation), NULL);
 	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_DOWN,
+			_eon_element_paned_mouse_down_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_UP,
+			_eon_element_paned_mouse_up_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_MOVE,
+			_eon_element_paned_mouse_move_cb, EINA_FALSE, thiz);
 	/* private */
 	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
@@ -381,7 +510,7 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *ch1;
 	int ch1sm;
-	double position = 0.5;
+	double position = 0.8;
 
 	thiz = EON_ELEMENT_PANED(r);
 	/* get the theme */
