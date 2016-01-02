@@ -183,6 +183,16 @@ void eon_theme_element_paned_second_content_set(Egueb_Dom_Node *n, Enesim_Render
 	if (thiz->d->second_content_set)
 		thiz->d->second_content_set(thiz->data, r, area);
 }
+
+void eon_theme_element_paned_splitter_area_set(Egueb_Dom_Node *n,
+		Eina_Rectangle *area)
+{
+	Eon_Theme_Element_Paned *thiz;
+
+	thiz = EON_THEME_ELEMENT_PANED(egueb_dom_element_external_data_get(n));
+	if (thiz->d->splitter_area_set)
+		thiz->d->splitter_area_set(thiz->data, area);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

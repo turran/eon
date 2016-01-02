@@ -30,7 +30,7 @@ typedef struct _Eon_Theme_Mars_Paned
 	Enesim_Renderer *compound;
 	Enesim_Renderer *content1;
 	Enesim_Renderer *content2;
-	/* TODO the splitter */
+	Enesim_Renderer *splitter;
 } Eon_Theme_Mars_Paned;
 /*----------------------------------------------------------------------------*
  *                              Paned interface                              *
@@ -48,6 +48,7 @@ static void _eon_theme_mars_paned_dtor(void *data)
 	enesim_renderer_unref(thiz->compound);
 	enesim_renderer_unref(thiz->content1);
 	enesim_renderer_unref(thiz->content2);
+	enesim_renderer_unref(thiz->splitter);
 	free(thiz);
 }
 
@@ -73,6 +74,8 @@ static Eina_Bool _eon_theme_mars_paned_process(void *data)
 	/* setup the whole rectangle */
 	enesim_renderer_rectangle_position_set(thiz->area, geom.x, geom.y);
 	enesim_renderer_rectangle_size_set(thiz->area, geom.w, geom.h);
+	/* setup the splitter */
+	enesim_renderer_shape_stroke_color_set(thiz->splitter, border_color);
 	/* setup the areas */
 	enesim_renderer_shape_stroke_color_set(thiz->content1, border_color);
 	enesim_renderer_shape_stroke_color_set(thiz->content2, border_color);
@@ -97,6 +100,7 @@ static void _eon_theme_mars_paned_padding_get(void *data, Eon_Box *padding)
 static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer *r, Eina_Rectangle *area)
 {
 	Eon_Theme_Mars_Paned *thiz = data;
+	Enesim_Renderer_Compound_Layer *l;
 	Enesim_Renderer *other;
 
 	enesim_renderer_compound_layer_clear(thiz->compound);
@@ -104,8 +108,6 @@ static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer 
 
 	if (r)
 	{
-		Enesim_Renderer_Compound_Layer *l;
-
 		l = enesim_renderer_compound_layer_new();
 		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 		enesim_renderer_compound_layer_renderer_set(l,
@@ -116,11 +118,14 @@ static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer 
 		enesim_renderer_rectangle_size_set(thiz->content1, area->w, area->h);
 	}
 
-	/* TODO add the splitter */
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->splitter));
+	enesim_renderer_compound_layer_add(thiz->compound, l);
+
 	if (other)
 	{
-		Enesim_Renderer_Compound_Layer *l;
-
 		l = enesim_renderer_compound_layer_new();
 		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 		enesim_renderer_compound_layer_renderer_set(l,
@@ -134,6 +139,7 @@ static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer 
 static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer *r, Eina_Rectangle *area)
 {
 	Eon_Theme_Mars_Paned *thiz = data;
+	Enesim_Renderer_Compound_Layer *l;
 	Enesim_Renderer *other;
 
 	enesim_renderer_compound_layer_clear(thiz->compound);
@@ -141,8 +147,6 @@ static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer
 
 	if (other)
 	{
-		Enesim_Renderer_Compound_Layer *l;
-
 		l = enesim_renderer_compound_layer_new();
 		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 		enesim_renderer_compound_layer_renderer_set(l,
@@ -150,11 +154,15 @@ static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer
 		enesim_renderer_compound_layer_add(thiz->compound, l);
 		enesim_renderer_unref(other);
 	}
-	/* TODO add the splitter */
+
+	l = enesim_renderer_compound_layer_new();
+	enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
+	enesim_renderer_compound_layer_renderer_set(l,
+			enesim_renderer_ref(thiz->splitter));
+	enesim_renderer_compound_layer_add(thiz->compound, l);
+
 	if (r)
 	{
-		Enesim_Renderer_Compound_Layer *l;
-
 		l = enesim_renderer_compound_layer_new();
 		enesim_renderer_compound_layer_rop_set(l, ENESIM_ROP_FILL);
 		enesim_renderer_compound_layer_renderer_set(l,
@@ -167,16 +175,39 @@ static void _eon_theme_mars_paned_second_content_set(void *data, Enesim_Renderer
 	enesim_renderer_shape_fill_renderer_set(thiz->content2, r);
 }
 
+static void _eon_theme_mars_paned_splitter_area_set(void *data, Eina_Rectangle *area)
+{
+	Eon_Theme_Mars_Paned *thiz = data;
+	Eon_Orientation orientation;
+	int x0, y0, x1, y1;
+
+	orientation = eon_theme_element_paned_orientation_get(thiz->n);
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		x0 = x1 = area->x + (area->w / 2);
+		y0 = (area->y + (area->h / 2)) - (EON_THEME_MARS_MARGIN * 4);
+		y1 = (area->y + (area->h / 2)) + (EON_THEME_MARS_MARGIN * 4);
+	}
+	else
+	{
+		y0 = y1 = area->y + (area->h / 2);
+		x0 = (area->x + (area->w / 2)) - (EON_THEME_MARS_MARGIN * 4);
+		x1 = (area->x + (area->w / 2)) + (EON_THEME_MARS_MARGIN * 4);
+	}
+	enesim_renderer_line_coords_set(thiz->splitter, x0, y0, x1, y1);
+
+}
+
 static int _eon_theme_mars_paned_min_length_get(void *data)
 {
 	Eon_Theme_Mars_Paned *thiz = data;
-	return 0;
+	return EON_THEME_MARS_MARGIN * 4;
 }
 
 static int _eon_theme_mars_paned_thickness_get(void *data)
 {
 	Eon_Theme_Mars_Paned *thiz = data;
-	return 10;
+	return EON_THEME_MARS_MARGIN * 2;
 }
 
 static Eon_Theme_Element_Paned_Descriptor _descriptor = {
@@ -188,6 +219,7 @@ static Eon_Theme_Element_Paned_Descriptor _descriptor = {
 	/* .renderer_get	= */ _eon_theme_mars_paned_renderer_get,
 	/* .first_content_set	= */ _eon_theme_mars_paned_first_content_set,
 	/* .second_content_set	= */ _eon_theme_mars_paned_second_content_set,
+	/* .splitter_area_set	= */ _eon_theme_mars_paned_splitter_area_set,
 	/* .min_length_get	= */ _eon_theme_mars_paned_min_length_get,
 	/* .thickness_get	= */ _eon_theme_mars_paned_thickness_get,
 	/* .padding_get		= */ _eon_theme_mars_paned_padding_get,
@@ -226,6 +258,12 @@ Egueb_Dom_Node * eon_theme_mars_paned_new(void)
 	enesim_renderer_shape_draw_mode_set(thiz->content2,
 			ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE_FILL);
 	enesim_renderer_shape_stroke_weight_set(thiz->content2,
+			EON_THEME_MARS_BORDER);
+
+	thiz->splitter = enesim_renderer_line_new();
+	enesim_renderer_shape_draw_mode_set(thiz->splitter,
+			ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
+	enesim_renderer_shape_stroke_weight_set(thiz->splitter,
 			EON_THEME_MARS_BORDER);
 
 	n = eon_theme_element_paned_new(&_descriptor, thiz);

@@ -29,6 +29,7 @@ typedef int (*Eon_Theme_Element_Paned_Descriptor_Thickness_Get_Cb)(void *data);
 typedef int (*Eon_Theme_Element_Paned_Descriptor_Min_Length_Get_Cb)(void *data);
 typedef void (*Eon_Theme_Element_Paned_Descriptor_Content_Set_Cb)(void *data, Enesim_Renderer *r, Eina_Rectangle *area);
 typedef void (*Eon_Theme_Element_Paned_Descriptor_Padding_Get_Cb)(void *data, Eon_Box *padding);
+typedef void (*Eon_Theme_Element_Paned_Descriptor_Splitter_Area_Set_Cb)(void *data, Eina_Rectangle *area);
 
 typedef struct _Eon_Theme_Element_Paned_Descriptor {
 	Eon_Theme_Element_Version_Get_Cb version_get;
@@ -39,6 +40,7 @@ typedef struct _Eon_Theme_Element_Paned_Descriptor {
 	Eon_Theme_Renderable_Descriptor_Renderer_Get_Cb renderer_get;
 	Eon_Theme_Element_Paned_Descriptor_Content_Set_Cb first_content_set;
 	Eon_Theme_Element_Paned_Descriptor_Content_Set_Cb second_content_set;
+	Eon_Theme_Element_Paned_Descriptor_Splitter_Area_Set_Cb splitter_area_set;
 	Eon_Theme_Element_Paned_Descriptor_Min_Length_Get_Cb min_length_get;
 	Eon_Theme_Element_Paned_Descriptor_Thickness_Get_Cb thickness_get;
 	Eon_Theme_Element_Paned_Descriptor_Padding_Get_Cb padding_get;
@@ -46,6 +48,7 @@ typedef struct _Eon_Theme_Element_Paned_Descriptor {
 
 EAPI Egueb_Dom_Node * eon_theme_element_paned_new(
 		const Eon_Theme_Element_Paned_Descriptor *d, void *data);
+EAPI Eon_Orientation eon_theme_element_paned_orientation_get(Egueb_Dom_Node *n);
 
 /**
  * @}

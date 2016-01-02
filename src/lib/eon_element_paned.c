@@ -467,9 +467,11 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 {
 	Eon_Element_Paned *thiz;
 	Eon_Renderable_Size ch1s;
+	Eon_Orientation orientation;
 	Egueb_Dom_Node *theme_element;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_Node *ch1;
+	Eina_Rectangle splitter_area;
 	int ch1sm;
 	double position = 0.8;
 
@@ -486,6 +488,10 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 	/* Set the geometry on the theme */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 
+	/* Set theme attributes */
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	eon_theme_element_paned_orientation_set(theme_element, orientation);
+
 	/* Set the geometry on every child */
 	ch1 = egueb_dom_element_child_first_get(n);
 	if (ch1)
@@ -495,8 +501,10 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		Egueb_Dom_Node *ch2;
 		Enesim_Renderer *ren;
 		Eina_Rectangle ch1fs;
+		int thickness;
 		int ch2sm;
 
+		thickness = eon_theme_element_paned_thickness_get(theme_element);
 		/* Calculate the size */
 		ch1sm = eon_renderable_size_hints_get(ch1, &ch1s);
 		ch1fs = r->geometry;
@@ -510,12 +518,7 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		ch2 = egueb_dom_element_sibling_next_get(ch1);
 		if (ch2)
 		{
-			Eon_Orientation orientation;
 			Eina_Rectangle ch2fs;
-			int thickness;
-
-			egueb_dom_attr_final_get(thiz->orientation, &orientation);
-			thickness = eon_theme_element_paned_thickness_get(theme_element);
 
 			/* Calculate the size */
 			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
@@ -546,6 +549,12 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 				ch2fs.y = ch1fs.y;
 				ch2fs.w = ch2width;
 				ch2fs.h = ch1fs.h;
+
+				/* the splitter area */
+				splitter_area.x = ch2fs.x - thickness;
+				splitter_area.y = r->geometry.y;
+				splitter_area.w = thickness;
+				splitter_area.h = r->geometry.h;
 			}
 			else
 			{
@@ -574,6 +583,12 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 				ch2fs.y = ch1fs.y + ch1fs.h + thickness;
 				ch2fs.w = ch1fs.w;
 				ch2fs.h = ch2height;
+
+				/* the splitter area */
+				splitter_area.x = r->geometry.x;
+				splitter_area.y = ch2fs.y - thickness;
+				splitter_area.w = r->geometry.w;
+				splitter_area.h = thickness;
 			}
 
 			/* Set the renderer */
@@ -587,6 +602,20 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 		else
 		{
 			eon_theme_element_paned_second_content_set(theme_element, NULL, NULL);
+			if (orientation == EON_ORIENTATION_HORIZONTAL)
+			{
+				splitter_area.x = r->geometry.x + r->geometry.w - thickness;
+				splitter_area.y = r->geometry.y;
+				splitter_area.w = thickness;
+				splitter_area.h = r->geometry.h;
+			}
+			else
+			{
+				splitter_area.x = r->geometry.x;
+				splitter_area.y = r->geometry.y + r->geometry.h - thickness;
+				splitter_area.w = r->geometry.w;
+				splitter_area.h = thickness;
+			}
 		}
 
 		/* Set the renderer */
@@ -601,7 +630,11 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 	{
 		eon_theme_element_paned_first_content_set(theme_element, NULL, NULL);
 		eon_theme_element_paned_second_content_set(theme_element, NULL, NULL);
+		splitter_area = r->geometry;
 	}
+
+	/* Set the splitter area */
+	eon_theme_element_paned_splitter_area_set(theme_element, &splitter_area);
 
 	/* Finally process our theme */
 	egueb_dom_element_process(theme_element);
