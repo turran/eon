@@ -47,6 +47,7 @@ typedef struct _Eon_Element_Paned
 	Eon_Renderable base;
 	/* attributes */
 	Egueb_Dom_Node *orientation;
+	Egueb_Dom_Node *progression;
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *proxy;
@@ -315,9 +316,13 @@ static void _eon_element_paned_init(Eon_Renderable *r)
 	thiz->orientation = eon_orientation_attr_new();
 	egueb_dom_attr_set(thiz->orientation, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			EON_ORIENTATION_HORIZONTAL);
+	thiz->progression = egueb_dom_attr_double_new(EON_NAME_ATTR_PROGRESSION,
+			NULL, EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	n = (EON_ELEMENT(r))->n;
 	egueb_dom_element_attribute_node_set(n,
-		egueb_dom_node_ref(thiz->orientation), NULL);
+			egueb_dom_node_ref(thiz->orientation), NULL);
+	egueb_dom_element_attribute_node_set(n,
+			egueb_dom_node_ref(thiz->progression), NULL);
 	/* events */
 	et = EGUEB_DOM_EVENT_TARGET(n);
 	egueb_dom_event_target_event_listener_add(et,
@@ -478,7 +483,7 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 	Egueb_Dom_Node *ch1;
 	Eina_Rectangle splitter_area;
 	int ch1sm;
-	double position = 0.8;
+	double progression;
 
 	thiz = EON_ELEMENT_PANED(r);
 	/* get the theme */
@@ -490,11 +495,15 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 	}
 
 	n = (EON_ELEMENT(r))->n;
+
+	/* Get the needed attributes values */
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	egueb_dom_attr_final_get(thiz->progression, &progression);
+
 	/* Set the geometry on the theme */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
 
 	/* Set theme attributes */
-	egueb_dom_attr_final_get(thiz->orientation, &orientation);
 	eon_theme_element_paned_orientation_set(theme_element, orientation);
 
 	/* Set the geometry on every child */
@@ -529,7 +538,7 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
 			if (orientation == EON_ORIENTATION_HORIZONTAL)
 			{
-				int ch1width = ((r->geometry.w - thickness) * position) - padding.left - padding.right;
+				int ch1width = ((r->geometry.w - thickness) * progression) - padding.left - padding.right;
 				int ch2width = ((r->geometry.w - thickness) - ch1width) - padding.left - padding.right;
 				/* calculate the progress limits */
 				if ((ch1sm & EON_RENDERABLE_HINT_MIN_MAX) && ch1s.min_width >= 0)
@@ -563,7 +572,7 @@ static Eina_Bool _eon_element_paned_process(Eon_Renderable *r)
 			}
 			else
 			{
-				int ch1height = ((r->geometry.h - thickness) * position) - padding.top - padding.bottom;
+				int ch1height = ((r->geometry.h - thickness) * progression) - padding.top - padding.bottom;
 				int ch2height = ((r->geometry.h - thickness) - ch1height) - padding.top - padding.bottom;
 				/* calculate the progress limits */
 				if ((ch1sm & EON_RENDERABLE_HINT_MIN_MAX) && ch1s.min_height >= 0)
@@ -720,6 +729,7 @@ static void _eon_element_paned_instance_deinit(void *o)
 	thiz = EON_ELEMENT_PANED(o);
 	/* attributes */
 	egueb_dom_node_unref(thiz->orientation);
+	egueb_dom_node_unref(thiz->progression);
 	/* private */
 	enesim_renderer_unref(thiz->proxy);
 	egueb_dom_feature_unref(thiz->theme_feature);
