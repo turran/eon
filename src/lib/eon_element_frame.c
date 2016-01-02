@@ -336,6 +336,7 @@ static void _eon_element_frame_instance_deinit(void *o)
 	egueb_dom_node_unref(thiz->title);
 	/* private */
 	enesim_renderer_unref(thiz->proxy);
+	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *
