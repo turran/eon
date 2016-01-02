@@ -2,7 +2,7 @@
 <eon>
   <frame title="Paned example">
     <paned orientation="horizontal">
-      <paned orientation="vertical">
+      <paned orientation="vertical" progression="0.8">
         <button id="button01" vexpand="true" hexpand="true">
           <label>Left Top button</label>
         </button>
