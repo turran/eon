@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <frame title="Expander example">
+    <expander>
+      <label>Expander title</label>
+      <label>Expander content</label>
+    </expander>
+  </frame>
+</eon>
