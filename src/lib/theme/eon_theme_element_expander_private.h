@@ -16,24 +16,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EON_THEME_MARS_MAIN_PRIVATE_H_
-#define _EON_THEME_MARS_MAIN_PRIVATE_H_
+#ifndef _EON_THEME_ELEMENT_EXPANDER_PRIVATE_H
+#define _EON_THEME_ELEMENT_EXPANDER_PRIVATE_H
 
-/* Some helpful defines */
-#define EON_THEME_MARS_MARGIN 5
-#define EON_THEME_MARS_BORDER 2
-
-/* The constructors for the registration */
-Egueb_Dom_Node * eon_theme_mars_eon_new(void);
-Egueb_Dom_Node * eon_theme_mars_entry_new(void);
-Egueb_Dom_Node * eon_theme_mars_button_new(void);
-Egueb_Dom_Node * eon_theme_mars_switch_new(void);
-Egueb_Dom_Node * eon_theme_mars_radio_new(void);
-Egueb_Dom_Node * eon_theme_mars_frame_new(void);
-Egueb_Dom_Node * eon_theme_mars_image_new(void);
-Egueb_Dom_Node * eon_theme_mars_separator_new(void);
-Egueb_Dom_Node * eon_theme_mars_progress_bar_new(void);
-Egueb_Dom_Node * eon_theme_mars_paned_new(void);
-Egueb_Dom_Node * eon_theme_mars_expander_new(void);
+void eon_theme_element_expander_first_padding_get(Egueb_Dom_Node *n, Eon_Box *padding);
+void eon_theme_element_expander_second_padding_get(Egueb_Dom_Node *n, Eon_Box *padding);
+void eon_theme_element_expander_first_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r, Eina_Rectangle *area);
+void eon_theme_element_expander_second_content_set(Egueb_Dom_Node *n, Enesim_Renderer *r, Eina_Rectangle *area);
 
 #endif
+

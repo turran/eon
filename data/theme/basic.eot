@@ -53,4 +53,5 @@
   </mars:entry>
   <mars:progressBar id="progressBar" color="#ff0f3b65"/>
   <mars:paned id="paned" border-color="#ff0f3b65" area-border-color="#00000000"/>
+  <mars:expander id="expander" border-color="#ff0f3b65" area-border-color="#ff0f3b65"/>
 </eot>

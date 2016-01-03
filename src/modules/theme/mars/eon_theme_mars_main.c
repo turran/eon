@@ -57,6 +57,8 @@ static Eina_Bool eon_theme_mars_init(void)
 			eon_theme_mars_progress_bar_new);
 	eon_theme_namespace_element_add(_namespace, "paned",
 			eon_theme_mars_paned_new);
+	eon_theme_namespace_element_add(_namespace, "expander",
+			eon_theme_mars_expander_new);
 	return EINA_TRUE;
 }
 

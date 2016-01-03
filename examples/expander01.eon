@@ -2,8 +2,8 @@
 <eon>
   <frame title="Expander example">
     <expander>
-      <label>Expander title</label>
-      <label>Expander content</label>
+      <label id="title">Expander title</label>
+      <label id="content">Expander content</label>
     </expander>
   </frame>
 </eon>
