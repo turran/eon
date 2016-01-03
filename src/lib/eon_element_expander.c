@@ -320,6 +320,19 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 			{
 				ch2fs.h += h;
 			}
+			free_space.h = 0;
+		}
+
+		if (free_space.h)
+		{
+			int h = free_space.h / 2;
+
+			ch1fs.h += h;
+			if (ch2)
+			{
+				ch2fs.y += h;
+				ch2fs.h += h;
+			}
 		}
 
 		/* finally process */
