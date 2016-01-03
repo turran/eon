@@ -30,10 +30,6 @@
 /*
  * TODO:
  * + In case the position is not set, on the process calculate it
- * + Use the min length on the theme
- * + Calculate the min/max position of the slider in the 0-1 range. This will
- * useful when dragging the slider to know if we should enqueue or not the
- * element
  */
 /*============================================================================*
  *                                  Local                                     *
