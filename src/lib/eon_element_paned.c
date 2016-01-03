@@ -177,9 +177,9 @@ static void _eon_element_paned_calculate_child_size(Eon_Renderable_Size *size,
 		else
 		{
 			if (chs->min_width >= 0)
-				size->min_width = MAX(chs->min_width + padding->top + padding->bottom, size->min_width);
+				size->min_width = MAX(chs->min_width + padding->left + padding->right, size->min_width);
 			if (chs->min_height >= 0)
-				size->min_height += chs->min_height + padding->left + padding->right;
+				size->min_height += chs->min_height + padding->top + padding->bottom;
 		}
 	}
 
