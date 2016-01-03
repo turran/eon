@@ -80,6 +80,7 @@ static void _strings_init(void)
 	EON_NAME_ATTR_DEFAULT_VALUE = egueb_dom_string_new_with_static_string("default-value");
 	EON_NAME_ATTR_PROGRESSION = egueb_dom_string_new_with_static_string("progression");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
+	EON_NAME_ATTR_EXPANDED = egueb_dom_string_new_with_static_string("expanded");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
@@ -98,6 +99,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_ENTRY = egueb_dom_string_new_with_static_string("entry");
 	EON_NAME_ELEMENT_PROGRESS_BAR = egueb_dom_string_new_with_static_string("progressBar");
 	EON_NAME_ELEMENT_PANED = egueb_dom_string_new_with_static_string("paned");
+	EON_NAME_ELEMENT_EXPANDER = egueb_dom_string_new_with_static_string("expander");
 	/* generic */
 	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
 	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
@@ -137,6 +139,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ATTR_DEFAULT_VALUE);
 	egueb_dom_string_unref(EON_NAME_ATTR_PROGRESSION);
 	egueb_dom_string_unref(EON_STOCK);
+	egueb_dom_string_unref(EON_NAME_ATTR_EXPANDED);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
@@ -155,6 +158,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_ENTRY);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_PROGRESS_BAR);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_PANED);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_EXPANDER);
 	/* generic */
 	egueb_dom_string_unref(EON_NAME_ON);
 	egueb_dom_string_unref(EON_NAME_OFF);
@@ -196,6 +200,7 @@ Egueb_Dom_String *EON_NAME_ATTR_SCALABLE;
 Egueb_Dom_String *EON_NAME_ATTR_DEFAULT_VALUE;
 Egueb_Dom_String *EON_NAME_ATTR_PROGRESSION;
 Egueb_Dom_String *EON_STOCK;
+Egueb_Dom_String *EON_NAME_ATTR_EXPANDED;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
@@ -214,6 +219,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_IMAGE;
 Egueb_Dom_String *EON_NAME_ELEMENT_ENTRY;
 Egueb_Dom_String *EON_NAME_ELEMENT_PROGRESS_BAR;
 Egueb_Dom_String *EON_NAME_ELEMENT_PANED;
+Egueb_Dom_String *EON_NAME_ELEMENT_EXPANDER;
 /* generic */
 Egueb_Dom_String *EON_NAME_ON;
 Egueb_Dom_String *EON_NAME_OFF;
