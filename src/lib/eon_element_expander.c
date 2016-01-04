@@ -58,9 +58,15 @@ static void _eon_element_expander_calculate_child_hints(Eon_Renderable_Size *siz
 	if (chsm & EON_RENDERABLE_HINT_MIN_MAX)
 	{
 		if (chs->min_width >= 0)
-			size->min_width = MAX(chs->min_width + padding->top + padding->bottom, size->min_width);
+			size->min_width = MAX(chs->min_width + padding->left + padding->right, size->min_width);
+		if (chs->max_width >= 0)
+			size->max_width = MAX(chs->max_width + padding->left + padding->right, size->max_width);
 		if (chs->min_height >= 0)
-			size->min_height += chs->min_height + padding->left + padding->right;
+			size->min_height += chs->min_height + padding->top + padding->bottom;
+		if (chs->max_height >= 0)
+			size->max_height += chs->max_height + padding->top + padding->bottom;
+
+		*hints |= EON_RENDERABLE_HINT_MIN_MAX;
 	}
 
 	if (chsm & EON_RENDERABLE_HINT_PREFERRED)
@@ -167,10 +173,6 @@ static int _eon_element_expander_size_hints_get(Eon_Renderable *r,
 		Eon_Renderable_Size ch1s;
 		Eon_Box ch1p;
 		Egueb_Dom_Node *ch2;
-
-		/* Once we do have a child, we can be of any max size */
-		ret |= EON_RENDERABLE_HINT_MIN_MAX;
-		size->max_width = size->max_height = -1;
 
 		/* Get the related theme information */
 		eon_theme_element_expander_first_padding_get(theme_element, &ch1p);
@@ -323,10 +325,12 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 			free_space.h = 0;
 		}
 
+		/* FIXME do we actually need this? */
 		if (free_space.h)
 		{
 			int h = free_space.h / 2;
 
+			ERR_ELEMENT(n, "We still have %d of free space", free_space.h);
 			ch1fs.h += h;
 			if (ch2)
 			{
