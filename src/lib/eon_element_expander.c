@@ -28,6 +28,8 @@
  * + Add an "expanded" = "true|false" attribute
  * + Add an "orientation" attribute to expand to the right
  *   or down
+ * + In case the second child request a process and we are not
+ *   expanded, do not propagate
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -103,6 +105,39 @@ static Eina_Bool _eon_element_expander_calculate_child_size(Eina_Rectangle *size
 	}
 	return done;
 }
+
+static void _eon_element_paned_mouse_click_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Expander *thiz = data;
+	int expanded;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	egueb_dom_attr_final_get(thiz->expanded, &expanded);
+	ERR("Expanded %d", expanded);
+	expanded = !expanded;
+	egueb_dom_attr_set(thiz->expanded, EGUEB_DOM_ATTR_TYPE_BASE, expanded);
+}
+
+static void _eon_element_paned_attr_modified_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Expander *thiz = data;
+	Egueb_Dom_Node *attr;
+
+	/* check if we are at the target */
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* check if the attribute is the width or the height */
+	attr = egueb_dom_event_mutation_related_get(ev);
+	if (thiz->expanded == attr)
+	{
+		ERR_ELEMENT((EON_ELEMENT(thiz))->n, "Expanded modified");
+		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
+	}
+	egueb_dom_node_unref(attr);
+}
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -124,6 +159,12 @@ static void _eon_element_expander_init(Eon_Renderable *r)
 			egueb_dom_node_ref(thiz->expanded), NULL);
 	/* events */
 	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_eon_element_paned_mouse_click_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_element_paned_attr_modified_cb, EINA_FALSE, thiz);
 	/* private */
 	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
@@ -135,7 +176,41 @@ static void _eon_element_expander_init(Eon_Renderable *r)
 static Egueb_Dom_Node * _eon_element_expander_element_at(Eon_Renderable *r,
 		Eina_Rectangle *cursor)
 {
-	return NULL;
+	Egueb_Dom_Node *n;
+	Egueb_Dom_Node *ch1;
+	Egueb_Dom_Node *found;
+
+	n = (EON_ELEMENT(r))->n;
+	/* if no childs, is just inside ourselves */	
+	ch1 = egueb_dom_element_child_first_get(n);
+	if (!ch1)
+	{
+		return egueb_dom_node_ref(n);
+	}
+	/* is inside some child */
+	found = eon_renderable_element_at(ch1, cursor);
+	if (found)
+	{
+		egueb_dom_node_unref(ch1);
+		return found;
+	}
+	else
+	{
+		Egueb_Dom_Node *ch2;
+		ch2 = egueb_dom_element_sibling_next_get(ch1);
+		if (ch2)
+		{
+			found = eon_renderable_element_at(ch2, cursor);
+			if (found)
+			{
+				egueb_dom_node_unref(ch2);
+				return found;
+			}
+			egueb_dom_node_unref(ch2);
+		}
+		egueb_dom_node_unref(ch1);
+	}
+	return egueb_dom_node_ref(n);
 }
 
 static Enesim_Renderer * _eon_element_expander_renderer_get(Eon_Renderable *r)
@@ -172,7 +247,7 @@ static int _eon_element_expander_size_hints_get(Eon_Renderable *r,
 	{
 		Eon_Renderable_Size ch1s;
 		Eon_Box ch1p;
-		Egueb_Dom_Node *ch2;
+		int expanded;
 
 		/* Get the related theme information */
 		eon_theme_element_expander_first_padding_get(theme_element, &ch1p);
@@ -182,19 +257,25 @@ static int _eon_element_expander_size_hints_get(Eon_Renderable *r,
 		_eon_element_expander_calculate_child_hints(size, &ret, &ch1s,
 				ch1sm, &ch1p);
 
-		ch2 = egueb_dom_element_sibling_next_get(ch1);
-		if (ch2)
+		egueb_dom_attr_final_get(thiz->expanded, &expanded);
+		if (expanded)
 		{
-			Eon_Renderable_Size ch2s;
-			Eon_Box ch2p;
-			int ch2sm;
+			Egueb_Dom_Node *ch2;
 
-			/* Get the related theme information */
-			eon_theme_element_expander_second_padding_get(theme_element, &ch2p);
-			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
-			_eon_element_expander_calculate_child_hints(size, &ret,
-					&ch2s, ch2sm, &ch2p);
-			egueb_dom_node_unref(ch2);
+			ch2 = egueb_dom_element_sibling_next_get(ch1);
+			if (ch2)
+			{
+				Eon_Renderable_Size ch2s;
+				Eon_Box ch2p;
+				int ch2sm;
+
+				/* Get the related theme information */
+				eon_theme_element_expander_second_padding_get(theme_element, &ch2p);
+				ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
+				_eon_element_expander_calculate_child_hints(size, &ret,
+						&ch2s, ch2sm, &ch2p);
+				egueb_dom_node_unref(ch2);
+			}
 		}
 		egueb_dom_node_unref(ch1);
 	}
@@ -237,13 +318,15 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 		Eon_Renderable_Size ch2s;
 		Eon_Box ch1p = { 0, 0, 0, 0 };
 		Eon_Box ch2p = { 0, 0, 0, 0 };
-		Egueb_Dom_Node *ch2;
+		Egueb_Dom_Node *ch2 = NULL;
 		Enesim_Renderer *ren;
 		Eina_Rectangle ch1fs, ch2fs;
 		Eina_Rectangle free_space;
 		Eina_Bool ch1done, ch2done = EINA_FALSE;
 		int notdone = 0;
+		int numchild = 2;
 		int ch2sm;
+		int expanded;
 
 		eon_theme_element_expander_first_padding_get(theme_element, &ch1p);
 
@@ -271,35 +354,45 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 		if (!ch1done)
 			notdone++;
 
-		ch2 = egueb_dom_element_sibling_next_get(ch1);
-		if (ch2)
+		egueb_dom_attr_final_get(thiz->expanded, &expanded);
+		if (expanded)
 		{
-			eon_theme_element_expander_second_padding_get(theme_element, &ch2p);
-
-			/* Calculate the size */
-			ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
-
-			ch2done = _eon_element_expander_calculate_child_size(&free_space, &ch2fs,
-					&ch2s, ch2sm, &ch2p);
-
-			/* In case it did not suceeded (no hints at all, or infinite), save for later
-			 * othersize, advance */
-			if (ch2done)
+			ch2 = egueb_dom_element_sibling_next_get(ch1);
+			if (ch2)
 			{
-				Eina_Bool vexpand;
+				eon_theme_element_expander_second_padding_get(theme_element, &ch2p);
 
-				free_space.h -= ch1fs.h;
+				/* Calculate the size */
+				ch2sm = eon_renderable_size_hints_get(ch2, &ch2s);
 
-				vexpand = eon_renderable_vexpand_get(ch2);
-				/* in case it can grow, go ahead and mark it for later */
-				if (vexpand)
-					ch2done = EINA_FALSE;
+				ch2done = _eon_element_expander_calculate_child_size(&free_space, &ch2fs,
+						&ch2s, ch2sm, &ch2p);
+
+				/* In case it did not suceeded (no hints at all, or infinite), save for later
+				 * othersize, advance */
+				if (ch2done)
+				{
+					Eina_Bool vexpand;
+
+					free_space.h -= ch1fs.h;
+
+					vexpand = eon_renderable_vexpand_get(ch2);
+					/* in case it can grow, go ahead and mark it for later */
+					if (vexpand)
+						ch2done = EINA_FALSE;
+				}
+				if (!ch2done)
+					notdone++;
 			}
-			if (!ch2done)
-				notdone++;
+			else
+			{
+				numchild = 1;
+				eon_theme_element_expander_second_content_set(theme_element, NULL, NULL);
+			}
 		}
 		else
 		{
+			numchild = 1;
 			eon_theme_element_expander_second_content_set(theme_element, NULL, NULL);
 		}
 
@@ -328,7 +421,7 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 		/* FIXME do we actually need this? */
 		if (free_space.h)
 		{
-			int h = free_space.h / 2;
+			int h = free_space.h / numchild;
 
 			ERR_ELEMENT(n, "We still have %d of free space", free_space.h);
 			ch1fs.h += h;
@@ -340,20 +433,23 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 		}
 
 		/* finally process */
-		if (ch2)
+		if (expanded)
 		{
-			/* Set the renderer */
-			ren = eon_renderable_renderer_get(ch2);
-			eon_theme_element_expander_second_content_set(theme_element, ren, &ch2fs);
+			if (ch2)
+			{
+				/* Set the renderer */
+				ren = eon_renderable_renderer_get(ch2);
+				eon_theme_element_expander_second_content_set(theme_element, ren, &ch2fs);
 
-			/* finally process */
-			ch2fs.x += ch2p.left;
-			ch2fs.y += ch2p.top;
-			ch2fs.w -= ch2p.left + ch2p.right;
-			ch2fs.h -= ch2p.top + ch2p.bottom;
-			eon_renderable_geometry_set(ch2, &ch2fs);
-			egueb_dom_element_process(ch2);
-			egueb_dom_node_unref(ch2);
+				/* finally process */
+				ch2fs.x += ch2p.left;
+				ch2fs.y += ch2p.top;
+				ch2fs.w -= ch2p.left + ch2p.right;
+				ch2fs.h -= ch2p.top + ch2p.bottom;
+				eon_renderable_geometry_set(ch2, &ch2fs);
+				egueb_dom_element_process(ch2);
+				egueb_dom_node_unref(ch2);
+			}
 		}
 
 		/* Set the renderer */
