@@ -289,7 +289,7 @@ static Eina_Bool _eon_renderable_process(Eon_Element *e)
 	thiz = EON_RENDERABLE(e);
 	klass = EON_RENDERABLE_CLASS_GET(e);
 
-	DBG_ELEMENT(e->n, "Processing renderable (needs geometry: %d size hints cached: %d)",
+	INFO_ELEMENT(e->n, "Processing renderable (needs geometry: %d size hints cached: %d)",
 			thiz->needs_geometry, thiz->size_hints_cached);
 	if (klass->pre_process)
 	{
