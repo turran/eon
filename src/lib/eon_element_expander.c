@@ -25,11 +25,8 @@
 
 /*
  * TODO:
- * + Add an "expanded" = "true|false" attribute
  * + Add an "orientation" attribute to expand to the right
  *   or down
- * + In case the second child request a process and we are not
- *   expanded, do not propagate
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -53,6 +50,87 @@ typedef struct _Eon_Element_Expander_Class
 	Eon_Renderable_Class base;
 } Eon_Element_Expander_Class;
 
+static void _eon_element_expander_content_skip_mutation_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Egueb_Dom_Node *n = data;
+	if (egueb_dom_event_phase_get(ev) == EGUEB_DOM_EVENT_PHASE_CAPTURING)
+		return;
+
+	DBG_ELEMENT(n, "Preventing a process on the content");
+	egueb_dom_event_mutation_process_prevent(ev);
+}
+
+static void _eon_element_expander_content_skip_process_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Egueb_Dom_Node *n = data;
+	if (egueb_dom_event_phase_get(ev) == EGUEB_DOM_EVENT_PHASE_CAPTURING)
+		return;
+
+	DBG_ELEMENT(n, "Preventing a process on the content");
+	egueb_dom_event_stop_propagation(ev);
+}
+
+static void _eon_element_expander_content_events_setup(Egueb_Dom_Node *n,
+		Egueb_Dom_Node *c)
+{
+	Egueb_Dom_Event_Target *et;
+
+	et = EGUEB_DOM_EVENT_TARGET(c);
+	DBG_ELEMENT(n, "Setting up content events");
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_CHARACTER_DATA_MODIFIED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_PROCESS,
+			_eon_element_expander_content_skip_process_cb,
+			EINA_FALSE, n);
+}
+
+static void _eon_element_expander_content_events_cleanup(Egueb_Dom_Node *n,
+		Egueb_Dom_Node *c)
+{
+	Egueb_Dom_Event_Target *et;
+
+	et = EGUEB_DOM_EVENT_TARGET(c);
+	DBG_ELEMENT(n, "Cleaning up content events");
+	egueb_dom_event_target_event_listener_remove(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_remove(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_remove(et,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_remove(et,
+			EGUEB_DOM_EVENT_MUTATION_CHARACTER_DATA_MODIFIED,
+			_eon_element_expander_content_skip_mutation_cb,
+			EINA_FALSE, n);
+	egueb_dom_event_target_event_listener_remove(et,
+			EGUEB_DOM_EVENT_PROCESS,
+			_eon_element_expander_content_skip_process_cb,
+			EINA_FALSE, n);
+}
+
+
 static void _eon_element_expander_calculate_child_hints(Eon_Renderable_Size *size,
 		int *hints, Eon_Renderable_Size *chs, int chsm,
 		Eon_Box *padding)
@@ -62,12 +140,26 @@ static void _eon_element_expander_calculate_child_hints(Eon_Renderable_Size *siz
 		if (chs->min_width >= 0)
 			size->min_width = MAX(chs->min_width + padding->left + padding->right, size->min_width);
 		if (chs->max_width >= 0)
-			size->max_width = MAX(chs->max_width + padding->left + padding->right, size->max_width);
+		{
+			if (size->max_width >= 0)
+				size->max_width = MAX(chs->max_width + padding->left + padding->right, size->max_width);
+		}
+		else
+		{
+			size->max_width = -1;
+		}
+
 		if (chs->min_height >= 0)
 			size->min_height += chs->min_height + padding->top + padding->bottom;
 		if (chs->max_height >= 0)
-			size->max_height += chs->max_height + padding->top + padding->bottom;
-
+		{
+			if (size->max_height >= 0)
+				size->max_height += chs->max_height + padding->top + padding->bottom;
+		}
+		else
+		{
+			size->max_height = -1;
+		}
 		*hints |= EON_RENDERABLE_HINT_MIN_MAX;
 	}
 
@@ -106,7 +198,7 @@ static Eina_Bool _eon_element_expander_calculate_child_size(Eina_Rectangle *size
 	return done;
 }
 
-static void _eon_element_paned_mouse_click_cb(Egueb_Dom_Event *ev,
+static void _eon_element_expander_mouse_click_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
 	Eon_Element_Expander *thiz = data;
@@ -115,12 +207,11 @@ static void _eon_element_paned_mouse_click_cb(Egueb_Dom_Event *ev,
 	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
 	egueb_dom_attr_final_get(thiz->expanded, &expanded);
-	ERR("Expanded %d", expanded);
 	expanded = !expanded;
 	egueb_dom_attr_set(thiz->expanded, EGUEB_DOM_ATTR_TYPE_BASE, expanded);
 }
 
-static void _eon_element_paned_attr_modified_cb(Egueb_Dom_Event *ev,
+static void _eon_element_expander_attr_modified_cb(Egueb_Dom_Event *ev,
 		void *data)
 {
 	Eon_Element_Expander *thiz = data;
@@ -129,14 +220,101 @@ static void _eon_element_paned_attr_modified_cb(Egueb_Dom_Event *ev,
 	/* check if we are at the target */
 	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
+
 	/* check if the attribute is the width or the height */
 	attr = egueb_dom_event_mutation_related_get(ev);
 	if (thiz->expanded == attr)
 	{
-		ERR_ELEMENT((EON_ELEMENT(thiz))->n, "Expanded modified");
-		eon_renderable_invalidate_geometry((EON_ELEMENT(thiz))->n);
+		Egueb_Dom_Node *n;
+		Egueb_Dom_Node *child;
+
+		n = (EON_ELEMENT(thiz))->n;
+		child = egueb_dom_element_child_first_get(n);
+		if (child)
+		{
+ 			Egueb_Dom_Node *content;
+
+			content = egueb_dom_element_sibling_next_get(child);
+			if (content)
+			{
+				const Egueb_Dom_Value *v;
+
+				/* TODO do something cleaner here */
+				egueb_dom_event_mutation_value_new_get(ev, &v);
+				if (v->data.i32)
+					_eon_element_expander_content_events_cleanup(n, content);
+				else
+					_eon_element_expander_content_events_setup(n, content);
+				egueb_dom_node_unref(content);
+			}
+			egueb_dom_node_unref(child);
+		}
+
+		DBG_ELEMENT(n, "Expanded modified");
+		eon_renderable_invalidate_geometry(n);
 	}
 	egueb_dom_node_unref(attr);
+}
+
+static void _eon_element_expander_node_inserted_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Expander *thiz = data;
+	Egueb_Dom_Node *parent;
+	int expanded;
+
+	egueb_dom_attr_final_get(thiz->expanded, &expanded);
+	if (expanded)
+		return;
+
+	parent = egueb_dom_event_mutation_related_get(ev);
+	if (parent == (EON_ELEMENT(thiz))->n)
+	{
+		Egueb_Dom_Node *prev;
+		Egueb_Dom_Node *child;
+
+		child = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
+		prev = egueb_dom_element_sibling_previous_get(child);
+		if (prev)
+		{
+			DBG_ELEMENT(parent, "Content added, registering events to skip");
+			_eon_element_expander_content_events_setup(parent, child);
+			egueb_dom_event_mutation_process_prevent(ev);
+			egueb_dom_node_unref(prev);
+		}
+		egueb_dom_node_unref(child);
+	}
+	egueb_dom_node_unref(parent);
+}
+
+static void _eon_element_expander_node_removed_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Expander *thiz = data;
+	Egueb_Dom_Node *parent;
+	int expanded;
+
+	egueb_dom_attr_final_get(thiz->expanded, &expanded);
+	if (expanded)
+		return;
+
+	parent = egueb_dom_event_mutation_related_get(ev);
+	if (parent == (EON_ELEMENT(thiz))->n)
+	{
+		Egueb_Dom_Node *prev;
+		Egueb_Dom_Node *child;
+
+		child = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
+		prev = egueb_dom_element_sibling_previous_get(child);
+		if (prev)
+		{
+			DBG_ELEMENT(parent, "Content removed, unregistering events to skip");
+			_eon_element_expander_content_events_cleanup(parent, child);
+			egueb_dom_node_unref(prev);
+		}
+		egueb_dom_node_unref(child);
+	}
+	egueb_dom_node_unref(parent);
 }
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
@@ -161,10 +339,16 @@ static void _eon_element_expander_init(Eon_Renderable *r)
 	et = EGUEB_DOM_EVENT_TARGET(n);
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MOUSE_CLICK,
-			_eon_element_paned_mouse_click_cb, EINA_FALSE, thiz);
+			_eon_element_expander_mouse_click_cb, EINA_FALSE, thiz);
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
-			_eon_element_paned_attr_modified_cb, EINA_FALSE, thiz);
+			_eon_element_expander_attr_modified_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_INSERTED,
+			_eon_element_expander_node_inserted_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_NODE_REMOVED,
+			_eon_element_expander_node_removed_cb, EINA_FALSE, thiz);
 	/* private */
 	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
@@ -239,6 +423,9 @@ static int _eon_element_expander_size_hints_get(Eon_Renderable *r,
 		WARN("No theme element found");
 		return 0;
 	}
+
+	/* FIXME we are setting the initial hints to -1 for max width/height */
+	size->max_width = size->max_height = 0;
 
 	/* Get the children and its hints */
 	n = (EON_ELEMENT(r))->n;
