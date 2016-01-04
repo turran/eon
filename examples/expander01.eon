@@ -1,13 +1,12 @@
 <?xml version="1.0" standalone="no"?>
 <eon>
   <frame title="Expander example">
-    <expander expanded="false">
-      <button id="title" valign="bottom">
-        <label id="titlel">Expander title</label>
-      </button>
-      <button id="content" valign="top">
-        <label id="contentl">Expander content</label>
-      </button>
+    <expander expanded="false" halign="left" valign="top">
+      <label halign="left">Expander title</label>
+      <expander expanded="false" halign="left" valign="top">
+        <label halign="left">Expander content 1</label>
+        <label halign="left">Expander content 2</label>
+      </expander>
     </expander>
   </frame>
 </eon>
