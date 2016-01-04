@@ -315,7 +315,7 @@ static Eina_Bool _eon_element_label_process(Eon_Renderable *r)
 		Egueb_Dom_Node *theme_element;
 
 		/* if it is not set, get the theme and use the default one */
-		theme_element = eon_feature_themable_load(thiz->theme_feature);
+		theme_element = eon_feature_themable_element_get(thiz->theme_feature);
 		if (theme_element)
 		{
 			color_node = egueb_dom_element_attribute_node_get(

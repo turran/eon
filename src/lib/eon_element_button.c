@@ -142,7 +142,7 @@ static Eina_Bool _eon_element_button_process(Eon_Renderable *r)
 	free_space = r->geometry;
 
 	/* get the theme */
-	theme_element = eon_feature_themable_load(thiz->theme_feature);
+	theme_element = eon_feature_themable_element_get(thiz->theme_feature);
 	if (!theme_element)
 	{
 		goto done;
