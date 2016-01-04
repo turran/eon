@@ -147,6 +147,7 @@ static void _eon_renderable_attr_modified_cb(Egueb_Dom_Event *ev,
 		return;
 	/* check if the attribute is the width or the height */
 	attr = egueb_dom_event_mutation_related_get(ev);
+	/* TODO only request a process */
 	if ((thiz->hexpand == attr) || (thiz->vexpand == attr))
 	{
 		DBG_ELEMENT((EON_ELEMENT(thiz))->n, "Renderable attr modified");
