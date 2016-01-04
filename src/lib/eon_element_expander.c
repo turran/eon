@@ -374,7 +374,7 @@ static Eina_Bool _eon_element_expander_process(Eon_Renderable *r)
 				{
 					Eina_Bool vexpand;
 
-					free_space.h -= ch1fs.h;
+					free_space.h -= ch2fs.h;
 
 					vexpand = eon_renderable_vexpand_get(ch2);
 					/* in case it can grow, go ahead and mark it for later */
