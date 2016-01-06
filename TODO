@@ -1,5 +1,5 @@
 + Make the radio clickable area theme dependent
-+ Rename radio to group selection or any other multi selection
++ Rename radio to group selection or any other exclusive selection
 + Add an action element. Basically as a way to make several gui elements share the same action on activated. Like:
   <eon>
     <actions>
