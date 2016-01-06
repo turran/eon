@@ -2,20 +2,20 @@
 <eon>
   <frame title="Stack of radio buttons">
     <stack orientation="vertical" vexpand="true" hexpand="true">
-      <radio id="radio01" group="rg01">
+      <radio id="radio01" halign="left" group="rg01">
         <label>Option 1</label>
       </radio>
-      <radio id="radio02" activated="false" enabled="false" group="rg01">
+      <radio id="radio02" activated="false" enabled="false" halign="left" group="rg01">
         <label>Option 2</label>
       </radio>
-      <radio id="radio03" group="rg01">
+      <radio id="radio03" halign="left" group="rg01">
         <label>Option 3</label>
       </radio>
       <separator/>
-      <radio id="radio04" group="rg02">
+      <radio id="radio04" halign="left" group="rg02">
         <label>Option 4</label>
       </radio>
-      <radio id="radio05" group="rg02">
+      <radio id="radio05" halign="left" group="rg02">
         <label>Option 5</label>
       </radio>
     </stack>
