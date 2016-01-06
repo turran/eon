@@ -385,8 +385,6 @@ static Eina_Bool _eon_element_radio_process(Eon_Renderable *r)
 	{
 		int activated;
 
-		_eon_element_radio_group_add(thiz);
-
 		egueb_dom_attr_final_get(thiz->activated, &activated);
 		_eon_element_radio_dispatch(thiz, activated);
 		thiz->first_run = EINA_FALSE;
