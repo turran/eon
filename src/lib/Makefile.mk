@@ -59,6 +59,7 @@ src/lib/eon_element_paned.c \
 src/lib/eon_element_progress_bar.c \
 src/lib/eon_element_progress_bar_private.h \
 src/lib/eon_element_radio.c \
+src/lib/eon_element_radio_private.h \
 src/lib/eon_element_separator.c \
 src/lib/eon_element_stack.c \
 src/lib/eon_element_switch.c \

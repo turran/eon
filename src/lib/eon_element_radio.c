@@ -19,6 +19,7 @@
 #include "eon_main.h"
 #include "eon_element_radio.h"
 
+#include "eon_element_radio_private.h"
 #include "eon_feature_themable_private.h"
 #include "eon_widget_private.h"
 #include "eon_theme_renderable_private.h"
@@ -40,6 +41,7 @@ typedef struct _Eon_Element_Radio
 	Egueb_Dom_Node *group;
 	Egueb_Dom_Node *activated;
 	/* private */
+	Egueb_Dom_String *prev_group;
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *proxy;
 	Eina_Bool first_run;
@@ -50,9 +52,86 @@ typedef struct _Eon_Element_Radio_Class
 	Eon_Widget_Class base;
 } Eon_Element_Radio_Class;
 
+typedef struct _Eon_Element_Radio_Group
+{
+	Egueb_Dom_Node *current;
+	int count;
+} Eon_Element_Radio_Group;
+
 /* TODO handle the deletion of the hash */
 /* Used to keep track of every group */
 static Eina_Hash *_groups = NULL;
+
+static void _eon_element_radio_group_free(Eon_Element_Radio_Group *g)
+{
+	free(g);
+}
+
+static void _eon_element_radio_group_add(Eon_Element_Radio *thiz)
+{
+	Eon_Element_Radio_Group *g;
+	Egueb_Dom_String *group;
+	const char *name;
+
+	egueb_dom_attr_final_get(thiz->group, &group);
+	egueb_dom_string_unref(thiz->prev_group);
+	thiz->prev_group = egueb_dom_string_dup(group);
+
+	name = egueb_dom_string_string_get(group);
+	if (!name)
+	{
+		egueb_dom_string_unref(group);
+		return;
+	}
+
+	ERR("Adding group '%s'", name);
+	g = eina_hash_find(_groups, name);
+	if (!g)
+	{
+		g = calloc(1, sizeof(Eon_Element_Radio));
+		eina_hash_add(_groups, name, g);
+	}
+	g->count++;
+	egueb_dom_string_unref(group);
+}
+
+static void _eon_element_radio_group_remove(Eon_Element_Radio *thiz)
+{
+	Eon_Element_Radio_Group *g;
+	const char *name;
+
+	name = egueb_dom_string_string_get(thiz->prev_group);
+	if (!name)
+		return;
+
+	ERR("Removing group '%s'", name);
+	g = eina_hash_find(_groups, name);
+	if (g)
+	{
+		Egueb_Dom_Node *n;
+
+		n = (EON_ELEMENT(thiz))->n;
+		/* do not activate anything and deactivate ourselves */
+		if (g->current == n)
+		{
+			Egueb_Dom_Event *deactivate;
+			Egueb_Dom_Event_Target *et;
+
+			deactivate = eon_event_deactivate_new();
+			et = EGUEB_DOM_EVENT_TARGET(n);
+			egueb_dom_event_target_event_dispatch(
+					EGUEB_DOM_EVENT_TARGET(et),
+					deactivate, NULL, NULL);
+			g->current = NULL;
+		}
+		g->count--;
+		if (!g->count)
+		{
+			eina_hash_del(_groups, name, g);
+			_eon_element_radio_group_free(g);
+		}
+	}
+}
 
 static void _eon_element_radio_dispatch(
 		Eon_Element_Radio *thiz, Eina_Bool activated)
@@ -65,13 +144,66 @@ static void _eon_element_radio_dispatch(
 	et = EGUEB_DOM_EVENT_TARGET(n);
 	if (activated)
 	{
+		Eon_Element_Radio_Group *g;
+		Egueb_Dom_String *group;
+
 		ev = eon_event_activate_new();
+		/* Get the group this radio belongs to and deactivate the
+		 * current activated item
+		 */
+		egueb_dom_attr_final_get(thiz->group, &group);
+		g = eina_hash_find(_groups, egueb_dom_string_string_get(group));
+		if (g)
+		{
+ 			if (g->current)
+			{
+				Eon_Element_Radio *current;
+
+				current = EON_ELEMENT_RADIO(
+						egueb_dom_element_external_data_get(g->current));
+				egueb_dom_attr_set(current->activated,
+						EGUEB_DOM_ATTR_TYPE_BASE,
+						EINA_FALSE);
+			}
+			g->current = n;
+		}
+		egueb_dom_string_unref(group);
 	}
 	else
 	{
 		ev = eon_event_deactivate_new();
 	}
 	egueb_dom_event_target_event_dispatch(et, ev, NULL, NULL);
+}
+
+static void _eon_element_radio_attr_modified_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Radio *thiz = data;
+	Egueb_Dom_Node *attr;
+
+	/* check if we are at the target */
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	/* check if the attribute is the group or the activated */
+	attr = egueb_dom_event_mutation_related_get(ev);
+	if (thiz->group == attr)
+	{
+		/* in case of the group, make sure to register to the new
+		 * group and unregister from the old one
+		 */
+		_eon_element_radio_group_remove(thiz);
+		_eon_element_radio_group_add(thiz);
+	}
+	else if (thiz->activated == attr)
+	{
+		const Egueb_Dom_Value *v;
+
+		/* trigger the events */
+		egueb_dom_event_mutation_value_new_get(ev, &v);
+		_eon_element_radio_dispatch(thiz, v->data.i32);
+	}
+	egueb_dom_node_unref(attr);
 }
 
 static void _eon_element_radio_click_cb(Egueb_Dom_Event *e,
@@ -84,9 +216,11 @@ static void _eon_element_radio_click_cb(Egueb_Dom_Event *e,
 		return;
 	/* first set the new value */
 	egueb_dom_attr_final_get(thiz->activated, &activated);
-	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_BASE, !activated);
-	/* trigger the events */
-	_eon_element_radio_dispatch(thiz, !activated);
+	if (activated)
+		return;
+
+	egueb_dom_attr_set(thiz->activated, EGUEB_DOM_ATTR_TYPE_BASE,
+			EINA_TRUE);
 }
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
@@ -102,9 +236,8 @@ static void _eon_element_radio_init(Eon_Widget *w)
 
 	/* attributes */
 	thiz->group = egueb_dom_attr_string_new(
-			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVE), NULL,
-			egueb_dom_string_ref(EON_NAME_ON),
-			EINA_TRUE, EINA_TRUE, EINA_FALSE);
+			egueb_dom_string_ref(EON_NAME_ATTR_GROUP), NULL,
+			NULL, EINA_FALSE, EINA_FALSE, EINA_FALSE);
 	thiz->activated = egueb_dom_attr_boolean_new(
 			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVATED),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
@@ -116,8 +249,10 @@ static void _eon_element_radio_init(Eon_Widget *w)
 	et = EGUEB_DOM_EVENT_TARGET(n);
 	egueb_dom_event_target_event_listener_add(et,
 			EGUEB_DOM_EVENT_MOUSE_CLICK,
-			_eon_element_radio_click_cb,
-			EINA_FALSE, thiz);
+			_eon_element_radio_click_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MUTATION_ATTR_MODIFIED,
+			_eon_element_radio_attr_modified_cb, EINA_FALSE, thiz);
 	/* private */
 	thiz->first_run = EINA_TRUE;
 	thiz->proxy = enesim_renderer_proxy_new();
@@ -250,6 +385,8 @@ static Eina_Bool _eon_element_radio_process(Eon_Renderable *r)
 	{
 		int activated;
 
+		_eon_element_radio_group_add(thiz);
+
 		egueb_dom_attr_final_get(thiz->activated, &activated);
 		_eon_element_radio_dispatch(thiz, activated);
 		thiz->first_run = EINA_FALSE;
@@ -328,12 +465,23 @@ static void _eon_element_radio_instance_deinit(void *o)
 	egueb_dom_node_unref(thiz->group);
 	egueb_dom_node_unref(thiz->activated);
 	/* private */
+	egueb_dom_string_unref(thiz->prev_group);
 	enesim_renderer_unref(thiz->proxy);
 	egueb_dom_feature_unref(thiz->theme_feature);
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void eon_element_radio_init(void)
+{
+	_groups = eina_hash_string_superfast_new(
+			EINA_FREE_CB(_eon_element_radio_group_free));
+}
+
+void eon_element_radio_shutdown(void)
+{
+	eina_hash_free(_groups);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

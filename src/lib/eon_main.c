@@ -20,6 +20,7 @@
 #include "eon_document.h"
 
 #include "eon_main_private.h"
+#include "eon_element_radio_private.h"
 
 #include "eon_theme_main_private.h"
 /*============================================================================*
@@ -81,6 +82,7 @@ static void _strings_init(void)
 	EON_NAME_ATTR_PROGRESSION = egueb_dom_string_new_with_static_string("progression");
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	EON_NAME_ATTR_EXPANDED = egueb_dom_string_new_with_static_string("expanded");
+	EON_NAME_ATTR_GROUP = egueb_dom_string_new_with_static_string("group");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
@@ -140,6 +142,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ATTR_PROGRESSION);
 	egueb_dom_string_unref(EON_STOCK);
 	egueb_dom_string_unref(EON_NAME_ATTR_EXPANDED);
+	egueb_dom_string_unref(EON_NAME_ATTR_GROUP);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
@@ -201,6 +204,7 @@ Egueb_Dom_String *EON_NAME_ATTR_DEFAULT_VALUE;
 Egueb_Dom_String *EON_NAME_ATTR_PROGRESSION;
 Egueb_Dom_String *EON_STOCK;
 Egueb_Dom_String *EON_NAME_ATTR_EXPANDED;
+Egueb_Dom_String *EON_NAME_ATTR_GROUP;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
@@ -239,6 +243,7 @@ EAPI int eon_init(void)
 	{
 		Egueb_Dom_Implementation *i;
 
+		/* our dependencies */
 		eina_init();
 		eon_main_log = eina_log_domain_register("eon", NULL);
 		egueb_dom_init();
@@ -246,7 +251,9 @@ EAPI int eon_init(void)
 		egueb_css_init();
 		egueb_smil_init();
 		_strings_init();
+		/* our internal globals */
 		eon_theme_init();
+		eon_element_radio_init();
 		/* register our own source */
 		i = egueb_dom_implementation_new(&_impl_descriptor);
 		egueb_dom_registry_implementation_add(i);
@@ -262,8 +269,11 @@ EAPI int eon_shutdown(void)
 	if (--_init_count != 0)
 		return _init_count;
 
+	/* our internal globals */
+	eon_element_radio_shutdown();
 	eon_theme_shutdown();
 	_strings_shutdown();
+	/* our dependencies */
 	egueb_smil_shutdown();
 	egueb_css_shutdown();
 	egueb_xlink_shutdown();
