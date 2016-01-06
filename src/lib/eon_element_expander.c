@@ -221,7 +221,9 @@ static void _eon_element_expander_attr_modified_cb(Egueb_Dom_Event *ev,
 	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
 		return;
 
-	/* check if the attribute is the width or the height */
+	/* check if the attribute is the expanded in order register or
+	 * unregister on the second child events
+	 */
 	attr = egueb_dom_event_mutation_related_get(ev);
 	if (thiz->expanded == attr)
 	{
