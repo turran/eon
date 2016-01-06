@@ -244,6 +244,7 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 	Eon_Element_Label *thiz;
 	Enesim_Text_Font *font;
 	Enesim_Rectangle geom;
+	int top, bottom;
 
 	thiz = EON_ELEMENT_LABEL(r);
 	/* Get the font */
@@ -281,19 +282,19 @@ static int _eon_element_label_size_hints_get(Eon_Renderable *r,
 	}
 
 	/* Set the font */
+	top = enesim_text_font_max_ascent_get(font);
+	bottom = enesim_text_font_max_descent_get(font);
 	enesim_renderer_text_span_font_set(thiz->r, font);
 	/* If the tree has changed add replace the text */
 	_eon_element_label_renderer_propagate(r);
 
+	size->min_height = size->pref_height = size->max_height = top + bottom;
 	/* Get the bounds of the text, return it */
 	if (enesim_renderer_bounds_get(thiz->r, &geom, NULL))
 	{
 		size->min_width = geom.w;
-		size->min_height = geom.h;
 		size->max_width = geom.w;
-		size->max_height = geom.h;
 		size->pref_width = geom.w;
-		size->pref_height = geom.h;
 		return EON_RENDERABLE_HINT_MIN_MAX | EON_RENDERABLE_HINT_PREFERRED;
 	}
 
