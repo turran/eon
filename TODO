@@ -1,3 +1,7 @@
++ Add a <def> element similar to svg, this will ease the creation of reusable widgets
++ Add a <use> element similar to svg, so we can use the def by its id
+  How to make childs "inherit" (or be set directly) a particular attribute?
++ We need to make every stylable attribute be inheritable by concept too
 + Make the radio clickable area theme dependent
 + Rename radio to group selection or any other exclusive selection
 + Add an action element. Basically as a way to make several gui elements share the same action on activated. Like:
