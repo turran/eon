@@ -272,7 +272,7 @@ next:
  *----------------------------------------------------------------------------*/
 static Egueb_Dom_String * _eon_element_stack_tag_name_get(Eon_Element *e)
 {
-	return egueb_dom_string_ref(EON_ELEMENT_STACK);
+	return egueb_dom_string_ref(EON_NAME_ELEMENT_STACK);
 }
 
 static Eina_Bool _eon_element_stack_child_appendable(Eon_Element *e, Egueb_Dom_Node *child)

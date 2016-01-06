@@ -91,7 +91,7 @@ static Egueb_Dom_Value_Descriptor _descriptor = {
  *============================================================================*/
 Egueb_Dom_Node * eon_vertical_align_attr_new(void)
 {
-	return egueb_dom_attr_enum_new(egueb_dom_string_ref(EON_ATTR_VALIGN),
+	return egueb_dom_attr_enum_new(egueb_dom_string_ref(EON_NAME_ATTR_VALIGN),
 			EINA_FALSE, EINA_FALSE, EINA_FALSE,
 			&_descriptor);
 }
