@@ -84,7 +84,7 @@ static void _eon_element_radio_group_add(Eon_Element_Radio *thiz)
 		return;
 	}
 
-	ERR("Adding group '%s'", name);
+	DBG("Adding group '%s'", name);
 	g = eina_hash_find(_groups, name);
 	if (!g)
 	{
@@ -104,7 +104,7 @@ static void _eon_element_radio_group_remove(Eon_Element_Radio *thiz)
 	if (!name)
 		return;
 
-	ERR("Removing group '%s'", name);
+	DBG("Removing group '%s'", name);
 	g = eina_hash_find(_groups, name);
 	if (g)
 	{
