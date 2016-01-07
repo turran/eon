@@ -41,13 +41,6 @@ void eon_theme_init(void)
 	if (!_init++)
 	{
  		EON_THEME_NAME_ELEMENT_EOT = egueb_dom_string_new_with_static_string("eot");
-
- 		EON_THEME_ELEMENT_EON_THEME = egueb_dom_string_new_with_static_string("ender");
- 		EON_THEME_ELEMENT_INSTANCE = egueb_dom_string_new_with_static_string("instance");
- 		EON_THEME_ELEMENT_OBJECT = egueb_dom_string_new_with_static_string("object");
- 		EON_THEME_ELEMENT_SCENE = egueb_dom_string_new_with_static_string("scene");
- 		EON_THEME_ELEMENT_STATES = egueb_dom_string_new_with_static_string("states");
- 		EON_THEME_ELEMENT_STATE = egueb_dom_string_new_with_static_string("state");
 		eon_theme_log_dom = eina_log_domain_register("eon-theme", NULL);
 		eon_theme_namespace_init();
 		eon_theme_document_init();
@@ -62,13 +55,6 @@ void eon_theme_shutdown(void)
 		eon_theme_namespace_shutdown();
 		eina_log_domain_unregister(eon_theme_log_dom);
 		egueb_dom_string_unref(EON_THEME_NAME_ELEMENT_EOT);
-
-		egueb_dom_string_unref(EON_THEME_ELEMENT_EON_THEME);
-		egueb_dom_string_unref(EON_THEME_ELEMENT_INSTANCE);
-		egueb_dom_string_unref(EON_THEME_ELEMENT_OBJECT);
-		egueb_dom_string_unref(EON_THEME_ELEMENT_SCENE);
-		egueb_dom_string_unref(EON_THEME_ELEMENT_STATES);
-		egueb_dom_string_unref(EON_THEME_ELEMENT_STATE);
 	}
 	_init--;
 }
