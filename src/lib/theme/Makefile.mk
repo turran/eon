@@ -11,6 +11,7 @@ src/lib/theme/eon_theme_element_frame.h \
 src/lib/theme/eon_theme_element_image.h \
 src/lib/theme/eon_theme_element_paned.h \
 src/lib/theme/eon_theme_element_progress_bar.h \
+src/lib/theme/eon_theme_element_scale.h \
 src/lib/theme/eon_theme_element_separator.h \
 src/lib/theme/eon_theme_element_switch.h
 
@@ -38,6 +39,8 @@ src/lib/theme/eon_theme_element_paned.c \
 src/lib/theme/eon_theme_element_paned_private.h \
 src/lib/theme/eon_theme_element_progress_bar.c \
 src/lib/theme/eon_theme_element_progress_bar_private.h \
+src/lib/theme/eon_theme_element_scale.c \
+src/lib/theme/eon_theme_element_scale_private.h \
 src/lib/theme/eon_theme_element_separator.c \
 src/lib/theme/eon_theme_element_separator_private.h \
 src/lib/theme/eon_theme_element_switch.c \

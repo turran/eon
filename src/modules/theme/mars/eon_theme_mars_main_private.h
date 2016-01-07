@@ -35,5 +35,6 @@ Egueb_Dom_Node * eon_theme_mars_separator_new(void);
 Egueb_Dom_Node * eon_theme_mars_progress_bar_new(void);
 Egueb_Dom_Node * eon_theme_mars_paned_new(void);
 Egueb_Dom_Node * eon_theme_mars_expander_new(void);
+Egueb_Dom_Node * eon_theme_mars_scale_new(void);
 
 #endif

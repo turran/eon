@@ -9,6 +9,7 @@ src/modules/theme/mars/eon_theme_mars_main.c \
 src/modules/theme/mars/eon_theme_mars_paned.c \
 src/modules/theme/mars/eon_theme_mars_progress_bar.c \
 src/modules/theme/mars/eon_theme_mars_radio.c \
+src/modules/theme/mars/eon_theme_mars_scale.c \
 src/modules/theme/mars/eon_theme_mars_separator.c \
 src/modules/theme/mars/eon_theme_mars_switch.c
 

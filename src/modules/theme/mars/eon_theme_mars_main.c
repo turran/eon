@@ -59,6 +59,8 @@ static Eina_Bool eon_theme_mars_init(void)
 			eon_theme_mars_paned_new);
 	eon_theme_namespace_element_add(_namespace, "expander",
 			eon_theme_mars_expander_new);
+	eon_theme_namespace_element_add(_namespace, "scale",
+			eon_theme_mars_scale_new);
 	return EINA_TRUE;
 }
 

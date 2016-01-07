@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <frame title="Scale example">
+    <stack orientation="horizontal" hexpand="true">
+      <scale orientation="vertical" halign="center" min="0" max="100" value="50"/>
+      <scale orientation="horizontal" value="0.5"/>
+    </stack>
+  </frame>
+</eon>
+

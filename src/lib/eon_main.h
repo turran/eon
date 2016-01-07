@@ -88,6 +88,9 @@ EAPI extern Egueb_Dom_String *EON_NAME_ATTR_DEFAULT_VALUE;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_PROGRESSION;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_EXPANDED;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_GROUP;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_VALUE;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_MIN;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_MAX;
 EAPI extern Egueb_Dom_String *EON_STOCK;
 
 EAPI extern Egueb_Dom_String *EON_NAME_ON;
@@ -111,6 +114,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_ENTRY;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_PROGRESS_BAR;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_PANED;
 EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_EXPANDER;
+EAPI extern Egueb_Dom_String *EON_NAME_ELEMENT_SCALE;
 
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_REQUEST;
 EAPI extern Egueb_Dom_String *EON_EVENT_GEOMETRY_INVALIDATE;

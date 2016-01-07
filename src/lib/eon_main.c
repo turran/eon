@@ -83,6 +83,9 @@ static void _strings_init(void)
 	EON_STOCK = egueb_dom_string_new_with_static_string("stock");
 	EON_NAME_ATTR_EXPANDED = egueb_dom_string_new_with_static_string("expanded");
 	EON_NAME_ATTR_GROUP = egueb_dom_string_new_with_static_string("group");
+	EON_NAME_ATTR_VALUE = egueb_dom_string_new_with_static_string("value");
+	EON_NAME_ATTR_MIN = egueb_dom_string_new_with_static_string("min");
+	EON_NAME_ATTR_MAX = egueb_dom_string_new_with_static_string("max");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
@@ -102,6 +105,7 @@ static void _strings_init(void)
 	EON_NAME_ELEMENT_PROGRESS_BAR = egueb_dom_string_new_with_static_string("progressBar");
 	EON_NAME_ELEMENT_PANED = egueb_dom_string_new_with_static_string("paned");
 	EON_NAME_ELEMENT_EXPANDER = egueb_dom_string_new_with_static_string("expander");
+	EON_NAME_ELEMENT_SCALE = egueb_dom_string_new_with_static_string("scale");
 	/* generic */
 	EON_NAME_ON = egueb_dom_string_new_with_static_string("On");
 	EON_NAME_OFF = egueb_dom_string_new_with_static_string("Off");
@@ -143,6 +147,9 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_STOCK);
 	egueb_dom_string_unref(EON_NAME_ATTR_EXPANDED);
 	egueb_dom_string_unref(EON_NAME_ATTR_GROUP);
+	egueb_dom_string_unref(EON_NAME_ATTR_VALUE);
+	egueb_dom_string_unref(EON_NAME_ATTR_MIN);
+	egueb_dom_string_unref(EON_NAME_ATTR_MAX);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
@@ -162,6 +169,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ELEMENT_PROGRESS_BAR);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_PANED);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EXPANDER);
+	egueb_dom_string_unref(EON_NAME_ELEMENT_SCALE);
 	/* generic */
 	egueb_dom_string_unref(EON_NAME_ON);
 	egueb_dom_string_unref(EON_NAME_OFF);
@@ -205,6 +213,9 @@ Egueb_Dom_String *EON_NAME_ATTR_PROGRESSION;
 Egueb_Dom_String *EON_STOCK;
 Egueb_Dom_String *EON_NAME_ATTR_EXPANDED;
 Egueb_Dom_String *EON_NAME_ATTR_GROUP;
+Egueb_Dom_String *EON_NAME_ATTR_VALUE;
+Egueb_Dom_String *EON_NAME_ATTR_MIN;
+Egueb_Dom_String *EON_NAME_ATTR_MAX;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;
@@ -224,6 +235,7 @@ Egueb_Dom_String *EON_NAME_ELEMENT_ENTRY;
 Egueb_Dom_String *EON_NAME_ELEMENT_PROGRESS_BAR;
 Egueb_Dom_String *EON_NAME_ELEMENT_PANED;
 Egueb_Dom_String *EON_NAME_ELEMENT_EXPANDER;
+Egueb_Dom_String *EON_NAME_ELEMENT_SCALE;
 /* generic */
 Egueb_Dom_String *EON_NAME_ON;
 Egueb_Dom_String *EON_NAME_OFF;

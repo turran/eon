@@ -49,8 +49,9 @@ extern "C" {
 #include "eon_element_paned.h"
 #include "eon_element_progress_bar.h"
 #include "eon_element_radio.h"
-#include "eon_element_stack.h"
+#include "eon_element_scale.h"
 #include "eon_element_separator.h"
+#include "eon_element_stack.h"
 #include "eon_element_switch.h"
 #include "eon_renderable.h"
 #include "eon_event_geometry.h"
@@ -68,6 +69,7 @@ extern "C" {
 #include "eon_theme_element_image.h"
 #include "eon_theme_element_paned.h"
 #include "eon_theme_element_progress_bar.h"
+#include "eon_theme_element_scale.h"
 #include "eon_theme_element_separator.h"
 #include "eon_theme_element_switch.h"
 
