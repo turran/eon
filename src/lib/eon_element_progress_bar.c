@@ -216,12 +216,20 @@ EAPI Egueb_Dom_Node * eon_element_progress_bar_new(void)
 	return n;
 }
 
-EAPI void eon_element_progress_bar_progression_set(Egueb_Dom_Node *n, double progression)
+EAPI void eon_element_progress_bar_progression_set(Egueb_Dom_Node *n, double v)
 {
+	Eon_Element_Progress_Bar *thiz;
 
+	thiz = EON_ELEMENT_PROGRESS_BAR(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_set(thiz->progression, EGUEB_DOM_ATTR_TYPE_BASE, v);
 }
 
 EAPI double eon_element_progress_bar_progression_get(Egueb_Dom_Node *n)
 {
+	Eon_Element_Progress_Bar *thiz;
+	double v;
 
+	thiz = EON_ELEMENT_PROGRESS_BAR(egueb_dom_element_external_data_get(n));
+	egueb_dom_attr_final_get(thiz->progression, &v);
+	return v;
 }
