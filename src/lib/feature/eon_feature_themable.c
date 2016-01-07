@@ -343,6 +343,7 @@ changed:
 
 		theme_id_fdata.thiz = thiz;
 		theme_id_fdata.theme_doc = theme_doc;
+		theme_id_fdata.theme_element = NULL;
 		egueb_dom_list_foreach(curr_theme_id, _eon_feature_themable_load_theme_id_cb, &theme_id_fdata);
 
 		egueb_dom_node_unref(theme_doc);
