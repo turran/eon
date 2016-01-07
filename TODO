@@ -1,3 +1,6 @@
++ Add the min length on the progress bar and the separator themes
++ Add a special campound layer on the enesim compund renderer
+  for effects on the theme side
 + Add a <def> element similar to svg, this will ease the creation of reusable widgets
 + Add a <use> element similar to svg, so we can use the def by its id
   How to make childs "inherit" (or be set directly) a particular attribute?
