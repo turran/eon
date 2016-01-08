@@ -24,6 +24,11 @@
 #include "eon_theme_renderable_private.h"
 #include "eon_theme_element_scale_private.h"
 #include "eon_orientation_private.h"
+
+/* TODO
+ * Ask the theme where is the knob
+ * Ask the theme where is area clickable
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -42,6 +47,7 @@ typedef struct _Eon_Element_Scale
 	/* private */
 	Egueb_Dom_Feature *theme_feature;
 	Enesim_Renderer *proxy;
+	Eina_Bool is_dragging;
 } Eon_Element_Scale;
 
 typedef struct _Eon_Element_Scale_Class
@@ -49,6 +55,111 @@ typedef struct _Eon_Element_Scale_Class
 	Eon_Widget_Class base;
 } Eon_Element_Scale_Class;
 
+static double _eon_element_scale_value_sanitize(Eon_Element_Scale *thiz, double value,
+		double min, double max)
+{
+	Egueb_Dom_Node *n;
+
+	n = (EON_ELEMENT(thiz))->n;
+	DBG_ELEMENT(n, "Min: %g, Current: %g, Max: %g", min, value, max);
+	/* sanitize the value */
+	if (value < min)
+		value = min;
+	if (value > max)
+		value = max;
+
+	if (min == max)
+		value = 0;
+	else
+		value = (value - min)/(max - min);
+	DBG_ELEMENT(n, "Finally setting %f", value);
+	return value;
+}
+
+static void _eon_element_scale_mouse_move_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Scale *thiz = data;
+	Eon_Orientation orientation;
+	Eon_Renderable *r;
+	Egueb_Dom_Node *theme_element;
+	double value;
+	double curr_value;
+	double min;
+	double max;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+
+	if (!thiz->is_dragging)
+		return;
+
+	ERR("Dragging");
+
+	egueb_dom_attr_final_get(thiz->orientation, &orientation);
+	egueb_dom_attr_final_get(thiz->min, &min);
+	egueb_dom_attr_final_get(thiz->max, &max);
+
+	r = (Eon_Renderable *)thiz;
+	if (orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		int x;
+		
+		x = egueb_dom_event_mouse_client_x_get(ev) - r->geometry.x; // - thiz->offset_dragging;
+		value = (double)x/(r->geometry.w); // - thickness);
+	}
+	else
+	{
+		int y;
+		y = egueb_dom_event_mouse_client_y_get(ev) - r->geometry.y; // - thiz->offset_dragging;
+		value = (double)y/(r->geometry.h); // - thickness);
+	}
+	value = _eon_element_scale_value_sanitize(thiz, value, min, max);
+	egueb_dom_attr_final_get(thiz->value, &curr_value);
+	if (value != curr_value)
+	{
+		Egueb_Dom_Node *n;
+
+		n = (EON_ELEMENT(r))->n;
+		DBG_ELEMENT(n, "Setting value to: %f, was: %f", value, curr_value);
+		egueb_dom_attr_set(thiz->value, EGUEB_DOM_ATTR_TYPE_BASE, value);
+	}
+	/* get the theme */
+#if 0
+	theme_element = eon_feature_themable_element_get(thiz->theme_feature);
+	if (!theme_element)
+	{
+		WARN("No theme element found");
+		return;
+	}
+	thickness = eon_theme_element_scale_thickness_get(theme_element);
+	egueb_dom_node_unref(theme_element);
+
+#endif
+}
+
+static void _eon_element_scale_mouse_down_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Scale *thiz = data;
+	Eon_Orientation orientation;
+	Eina_Rectangle cursor;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+
+	thiz->is_dragging = EINA_TRUE;
+}
+
+static void _eon_element_scale_mouse_up_cb(Egueb_Dom_Event *ev,
+		void *data)
+{
+	Eon_Element_Scale *thiz = data;
+
+	if (egueb_dom_event_phase_get(ev) != EGUEB_DOM_EVENT_PHASE_AT_TARGET)
+		return;
+	thiz->is_dragging = EINA_FALSE;
+}
 /*----------------------------------------------------------------------------*
  *                             Widget interface                               *
  *----------------------------------------------------------------------------*/
@@ -57,6 +168,7 @@ static void _eon_element_scale_init(Eon_Widget *w)
 	Eon_Element_Scale *thiz;
 	Eon_Element *e;
 	Egueb_Dom_Node *n;
+	Egueb_Dom_Event_Target *et;
 
 	thiz = EON_ELEMENT_SCALE(w);
 
@@ -82,6 +194,17 @@ static void _eon_element_scale_init(Eon_Widget *w)
 	egueb_dom_element_attribute_node_set(n,
 			egueb_dom_node_ref(thiz->max), NULL);
 
+	/* events */
+	et = EGUEB_DOM_EVENT_TARGET(n);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_DOWN,
+			_eon_element_scale_mouse_down_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_UP,
+			_eon_element_scale_mouse_up_cb, EINA_FALSE, thiz);
+	egueb_dom_event_target_event_listener_add(et,
+			EGUEB_DOM_EVENT_MOUSE_MOVE,
+			_eon_element_scale_mouse_move_cb, EINA_FALSE, thiz);
 	/* private */
 	thiz->proxy = enesim_renderer_proxy_new();
 	thiz->theme_feature = eon_feature_themable_add(n);
@@ -170,21 +293,9 @@ static Eina_Bool _eon_element_scale_process(Eon_Renderable *r)
 	egueb_dom_attr_final_get(thiz->value, &value);
 	egueb_dom_attr_final_get(thiz->min, &min);
 	egueb_dom_attr_final_get(thiz->max, &max);
+	value = _eon_element_scale_value_sanitize(thiz, value, min, max);
 
-	n = (EON_ELEMENT(r))->n;
-	DBG_ELEMENT(n, "Min: %g, Current: %g, Max: %g", min, value, max);
 	eon_theme_element_scale_orientation_set(theme_element, orientation);
-	/* sanitize the value */
-	if (value < min)
-		value = min;
-	if (value > max)
-		value = max;
-
-	if (min == max)
-		value = 0;
-	else
-		value = (value - min)/(max - min);
-	DBG_ELEMENT(n, "Finally setting %f", value);
 	eon_theme_element_scale_value_set(theme_element, value);
 	/* Set the geometry on the child */
 	eon_theme_renderable_geometry_set(theme_element, &r->geometry);
