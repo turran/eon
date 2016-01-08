@@ -109,10 +109,7 @@ static Enesim_Renderer * _eon_theme_mars_paned_renderer_get(void *data)
 
 static void _eon_theme_mars_paned_padding_get(void *data, Eon_Box *padding)
 {
-	padding->top = EON_THEME_MARS_MARGIN;
-	padding->bottom = EON_THEME_MARS_MARGIN;
-	padding->left = EON_THEME_MARS_MARGIN;
-	padding->right = EON_THEME_MARS_MARGIN;
+	padding->top = padding->bottom = padding->left = padding->right = 0;
 }
 
 static void _eon_theme_mars_paned_first_content_set(void *data, Enesim_Renderer *r, Eina_Rectangle *area)
