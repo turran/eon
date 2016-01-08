@@ -1,0 +1,58 @@
+<?xml version="1.0" standalone="no"?>
+<eon>
+  <!-- The main window division -->
+  <stack orientation="horizontal" vexpand="true" hexpand="true">
+    <!-- on the top we divide on three zones -->
+    <stack orientation="horizontal" hexpand="true">
+      <!-- the first zone for combobox, entry, expander -->
+      <frame title="Entries" vexpand="true" valign="top">
+        <stack orientation="vertical" hexpand="true" vexpand="true">
+          <entry>Entry</entry>
+          <expander expanded="false" halign="left" valign="top">
+            <label halign="left">Expander title</label>
+            <label halign="left">Expander content</label>
+          </expander>
+        </stack>
+      </frame>
+      <separator orientation="vertical"/>
+      <!-- the second zone for paned -->
+      <paned orientation="horizontal" valign="top">
+        <!-- the left side for buttons -->
+        <frame title="Buttons">
+          <stack orientation="vertical" hexpand="true">
+            <button id="button01" hexpand="true">
+              <label>Button</label>
+            </button>
+            <button id="button02" hexpand="true" enabled="false">
+              <label>Button</label>
+            </button>
+          </stack>
+        </frame>
+        <!-- the right side for bars -->
+        <frame title="Bars" valign="top">
+          <stack orientation="vertical" hexpand="true">
+            <progressBar orientation="horizontal" progression="0.75"/>
+            <progressBar orientation="vertical" progression="0.5" halign="center"/>
+            <scale orientation="vertical" halign="center" min="0" max="100" value="50"/>
+            <scale orientation="horizontal" value="0.5"/>
+          </stack>
+        </frame>
+      </paned>
+      <separator orientation="vertical"/>
+      <frame title="Selectors" valign="top" vexpand="true">
+        <stack orientation="vertical" vexpand="true" hexpand="true">
+          <radio id="radio01" halign="left" group="rg01">
+            <label>Option 1</label>
+          </radio>
+          <radio id="radio02" activated="false" enabled="false" halign="left" group="rg01">
+            <label>Option 2</label>
+          </radio>
+          <radio id="radio03" halign="left" group="rg01">
+            <label>Option 3</label>
+          </radio>
+      </frame>
+    </stack>
+    <separator orientation="horizontal"/>
+  </stack>
+</eon>
+
