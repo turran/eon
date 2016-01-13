@@ -313,7 +313,7 @@ static int _eon_layout_array_vertical_size_hints_get(Eon_Layout_Array *thiz,
 	return ret;
 }
 
-static void _eon_layout_array_horizontal_geometry_set(Eon_Layout_Array *thiz,
+static void _eon_layout_array_horizontal_homogeneous_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
 	Eon_Box chp;
@@ -345,7 +345,7 @@ static void _eon_layout_array_horizontal_geometry_set(Eon_Layout_Array *thiz,
 	}
 }
 
-static void _eon_layout_array_vertical_geometry_set(Eon_Layout_Array *thiz,
+static void _eon_layout_array_vertical_homogeneous_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
 	Eon_Box chp;
@@ -377,15 +377,21 @@ static void _eon_layout_array_vertical_geometry_set(Eon_Layout_Array *thiz,
 	}
 }
 
-static void _eon_layout_array_horizontal_homogeneous_geometry_set(Eon_Layout_Array *thiz,
+static void _eon_layout_array_horizontal_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
 }
 
-static void _eon_layout_array_vertical_homogeneous_geometry_set(Eon_Layout_Array *thiz,
+static void _eon_layout_array_vertical_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
-
+	/* set every min height */
+	/* add the missing to a list */
+	/* calculate the free space */
+	/* give the free space on every child */
+	/* do not give more space that it can receive */
+	/* calculate again the free space */
+	/* and go processing it */
 }
 /*----------------------------------------------------------------------------*
  *                              Layout interface                              *
@@ -433,7 +439,6 @@ static void _eon_layout_array_geometry_set(Eon_Layout *l, Eina_Rectangle *area)
 		else
 			_eon_layout_array_vertical_geometry_set(thiz, area);
 	}
-
 }
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
