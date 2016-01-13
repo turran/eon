@@ -36,6 +36,7 @@ src_lib_libeon_la_CPPFLAGS = \
 -I$(top_srcdir)/src/lib/attr \
 -I$(top_srcdir)/src/lib/value \
 -I$(top_srcdir)/src/lib/feature \
+-I$(top_srcdir)/src/lib/layout \
 -I$(top_srcdir)/src/lib/event \
 -DPACKAGE_LIB_DIR=\"$(libdir)\" \
 -DEON_BUILD \
@@ -65,6 +66,8 @@ src/lib/eon_element_scale.c \
 src/lib/eon_element_separator.c \
 src/lib/eon_element_stack.c \
 src/lib/eon_element_switch.c \
+src/lib/eon_layout.c \
+src/lib/eon_layout_private.h \
 src/lib/eon_layout_frame.c \
 src/lib/eon_layout_stack.c \
 src/lib/eon_layout_frame_private.h \

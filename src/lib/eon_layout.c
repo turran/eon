@@ -18,27 +18,50 @@
 
 /*
  * A layout must be a generic interface to create layout algorithms.
- * A possible interface would be:
- * eon_layout_size_hints_get(Eon_Layout *thiz, Eon_Renderable *r);
- * eon_layout_geometry_set(Eon_Layout, Eon_Renderable *r, Eina_Rectangle *area);
- * with a possible interface like:
- *
- * typedef Egueb_Dom_Node * (*Eon_Layout_Array_Child_Next)(Egueb_Dom_Node *current,
- *   Eon_Box *padding);
- * typedef void (*Eon_Layout_Array_Child_Process)(Egueb_Dom_Node *child,
- *   Eina_Rectangle *area);
- *
- * typedef void (*Eon_Layout_Array_Child_Process)(void *child,
- *   Eina_Rectangle *area);
- * typedef void * (*Eon_Layout_Array_Child_Next)(void *current,
- *   Eon_Box *padding, Eon_Layout_Array_Child_Process *process);
  */
+#include "eon_private.h"
+#include "eon_main.h"
+
+#include "eon_renderable_private.h"
+#include "eon_layout_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+/*----------------------------------------------------------------------------*
+ *                              Object interface                              *
+ *----------------------------------------------------------------------------*/
+ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EGUEB_DOM_EVENT_TARGET_DESCRIPTOR,
+		Eon_Layout, Eon_Layout_Class, egueb_dom_node);
+
+static void _egueb_dom_node_class_init(void *k)
+{
+}
+
+static void _egueb_dom_node_instance_init(void *o)
+{
+}
+
+static void _egueb_dom_node_instance_deinit(void *o)
+{
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+int eon_layout_size_hints_get(Eon_Layout *thiz, Eon_Renderable_Size *size)
+{
+	Eon_Layout_Class *klass;
+
+	klass = EON_LAYOUT_CLASS_GET(thiz);
+	return klass->size_hints_get(thiz, size);
+}
+
+void eon_layout_geometry_set(Eon_Layout *thiz, Eina_Rectangle *area)
+{
+	Eon_Layout_Class *klass;
+
+	klass = EON_LAYOUT_CLASS_GET(thiz);
+	klass->geometry_set(thiz, area);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

@@ -15,12 +15,18 @@
  * License along with this library.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+#include "eon_private.h"
+#include "eon_main.h"
+
+#include "eon_renderable_private.h"
+#include "eon_layout_private.h"
+#include "eon_layout_array_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 #define EON_LAYOUT_ARRAY_DESCRIPTOR eon_layout_array_descriptor_get()
 #define EON_LAYOUT_ARRAY(o) ENESIM_OBJECT_INSTANCE_CHECK(o,			\
-		Eon_Element_Button, EON_LAYOUT_ARRAY_DESCRIPTOR)
+		Eon_Layout_Array, EON_LAYOUT_ARRAY_DESCRIPTOR)
 
 typedef struct _Eon_Layout_Array
 {
@@ -41,7 +47,7 @@ typedef struct _Eon_Layout_Array_Class
 /*----------------------------------------------------------------------------*
  *                              Layout interface                              *
  *----------------------------------------------------------------------------*/
-static int _eon_layout_array_hints_get(Eon_Layout *l, Eon_Renderable_Size *size)
+static int _eon_layout_array_size_hints_get(Eon_Layout *l, Eon_Renderable_Size *size)
 {
 
 }
@@ -102,7 +108,7 @@ void eon_layout_array_padding_set(Eon_Layout *l, Eon_Box *padding)
 	Eon_Layout_Array *thiz;
 
 	thiz = EON_LAYOUT_ARRAY(l);
-	thiz->padding = padding;
+	thiz->padding = *padding;
 }
 
 void eon_layout_array_orientation_set(Eon_Layout *l, Eon_Orientation orientation)
