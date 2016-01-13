@@ -35,6 +35,9 @@ typedef struct _Eon_Layout_Array
 	int spacing;
 	Eon_Box padding;
 	Eon_Orientation orientation;
+	Eina_Bool homogeneous;
+	/* private */
+	int count;
 	/* the external interface */
 	Eon_Layout_Array_Descriptor *descriptor;
 	void *data;
@@ -44,16 +47,392 @@ typedef struct _Eon_Layout_Array_Class
 {
 	Eon_Layout_Class base;
 } Eon_Layout_Array_Class;
+
+static int _eon_layout_array_homogeneous_size_hints_get(Eon_Layout_Array *thiz,
+		Eon_Renderable_Size *size)
+{
+	Eon_Box chp;
+	Eon_Renderable_Size chs;
+	int chm;
+	int ret = 0;
+	int count = 0;
+	void *child = NULL;
+
+	/* iterate over the children */
+	while ((child = thiz->descriptor->next(child, &chp, &chm, &chs, NULL)))
+	{
+		if (chm & EON_RENDERABLE_HINT_MIN_MAX)
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+
+			if (chs.min_width >= 0)
+				size->min_width = MAX(chs.min_width + chp.left + chp.right, size->min_width);
+			if (size->max_width >= 0)
+			{
+				if (chs.max_width >= 0)
+					size->max_width = MAX(chs.max_width + chp.left + chp.right, size->max_width);
+				else
+					size->max_width = -1;
+			}
+
+			if (chs.min_height >= 0)
+				size->min_height = MAX(chs.min_height + chp.top + chp.bottom, size->min_height);
+			if (size->max_height >= 0)
+			{
+				if (chs.max_height >= 0)
+					size->max_height = MAX(chs.max_height + chp.top + chp.bottom, size->max_height);
+				else
+					size->max_height = -1;
+			}
+		}
+
+		if (chm & EON_RENDERABLE_HINT_PREFERRED)
+		{
+			ERR("TODO: Missing preferred calcs");
+		}
+		count++;
+	}
+
+	thiz->count = count;
+	return ret;
+}
+
+static int _eon_layout_array_horizontal_homogeneous_size_hints_get(Eon_Layout_Array *thiz,
+		Eon_Renderable_Size *size)
+{
+	int ret;
+
+	ret = _eon_layout_array_homogeneous_size_hints_get(thiz, size);
+
+	/* add the general padding and the inner spacing */
+	if (ret & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		if (size->min_width >= 0)
+		{
+			size->min_width = size->min_width * thiz->count;
+			size->min_width += thiz->spacing * (thiz->count - 1);
+			size->min_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->max_width >= 0)
+		{
+			size->max_width = size->max_width * thiz->count;
+			size->max_width += thiz->spacing * (thiz->count - 1);
+			size->max_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->min_height >= 0)
+		{
+			size->min_height += thiz->padding.top + thiz->padding.bottom;
+		}
+		if (size->max_height >= 0)
+		{
+			size->max_height += thiz->padding.top + thiz->padding.bottom;
+		}
+	}
+
+	return ret;
+}
+
+static int _eon_layout_array_vertical_homogeneous_size_hints_get(Eon_Layout_Array *thiz,
+		Eon_Renderable_Size *size)
+{
+	int ret;
+
+	ret = _eon_layout_array_homogeneous_size_hints_get(thiz, size);
+
+	/* add the general padding and the inner spacing */
+	if (ret & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		if (size->min_width >= 0)
+		{
+			size->min_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->max_width >= 0)
+		{
+			size->max_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->min_height >= 0)
+		{
+			size->min_height = size->min_height * thiz->count;
+			size->min_height += thiz->spacing * (thiz->count - 1);
+			size->min_height += thiz->padding.top + thiz->padding.bottom;
+		}
+		if (size->max_height >= 0)
+		{
+			size->max_height = size->max_height * thiz->count;
+			size->max_height += thiz->spacing * (thiz->count - 1);
+			size->max_height += thiz->padding.top + thiz->padding.bottom;
+		}
+	}
+
+	return ret;
+}
+
+static int _eon_layout_array_horizontal_size_hints_get(Eon_Layout_Array *thiz,
+		Eon_Renderable_Size *size)
+{
+	Eon_Box chp;
+	Eon_Renderable_Size chs;
+	int chm;
+	int ret = 0;
+	int count = 0;
+	void *child = NULL;
+
+	/* iterate over the children */
+	while ((child = thiz->descriptor->next(child, &chp, &chm, &chs, NULL)))
+	{
+		if (chm & EON_RENDERABLE_HINT_MIN_MAX)
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+
+			if (chs.min_width >= 0)
+				size->min_width += chs.min_width + chp.left + chp.right;
+			if (size->max_width >= 0)
+			{
+				if (chs.max_width >= 0)
+					size->max_width += chs.max_width + chp.left + chp.right;
+				else
+					size->max_width = -1;
+			}
+
+			if (chs.min_height >= 0)
+				size->min_height = MAX(chs.min_height + chp.top + chp.bottom, size->min_height);
+			if (size->max_height >= 0)
+			{
+				if (chs.max_height >= 0)
+					size->max_height = MAX(chs.max_height + chp.top + chp.bottom, size->max_height);
+				else
+					size->max_height = -1;
+			}
+		}
+
+		if (chm & EON_RENDERABLE_HINT_PREFERRED)
+		{
+			ERR("TODO: Missing preferred calcs");
+		}
+		count++;
+	}
+
+	/* add the general padding and the inner spacing */
+	if (ret & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		if (size->min_width >= 0)
+		{
+			size->min_width += thiz->spacing * (count - 1);
+			size->min_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->max_width >= 0)
+		{
+			size->max_width += thiz->spacing * (count - 1);
+			size->max_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->min_height >= 0)
+		{
+			size->min_height += thiz->padding.top + thiz->padding.bottom;
+		}
+		if (size->max_height >= 0)
+		{
+			size->max_height += thiz->padding.top + thiz->padding.bottom;
+		}
+	}
+	thiz->count = count;
+
+	return ret;
+}
+
+static int _eon_layout_array_vertical_size_hints_get(Eon_Layout_Array *thiz,
+		Eon_Renderable_Size *size)
+{
+	Eon_Box chp;
+	Eon_Renderable_Size chs;
+	int chm;
+	int ret = 0;
+	int count = 0;
+	void *child = NULL;
+
+	/* FIXME we are setting the initial hints to -1 for max width/height */
+	//size->max_width = size->max_height = 0;
+	/* iterate over the children */
+	while ((child = thiz->descriptor->next(child, &chp, &chm, &chs, NULL)))
+	{
+		if (chm & EON_RENDERABLE_HINT_MIN_MAX)
+		{
+			ret |= EON_RENDERABLE_HINT_MIN_MAX;
+
+			if (chs.min_width >= 0)
+				size->min_width = MAX(chs.min_width + chp.left + chp.right, size->min_width);
+			if (size->max_width >= 0)
+			{
+				if (chs.max_width >= 0)
+					size->max_width = MAX(chs.max_width + chp.left + chp.right, size->max_width);
+				else
+					size->max_width = -1;
+			}
+
+			if (chs.min_height >= 0)
+				size->min_height += chs.min_height + chp.top + chp.bottom;
+			if (size->max_height >= 0)
+			{
+				if (chs.max_height >= 0)
+					size->max_height += chs.max_height + chp.top + chp.bottom;
+				else
+					size->max_height = -1;
+			}
+		}
+
+		if (chm & EON_RENDERABLE_HINT_PREFERRED)
+		{
+			ERR("TODO: Missing preferred calcs");
+		}
+		count++;
+	}
+
+	/* add the general padding and the inner spacing */
+	if (ret & EON_RENDERABLE_HINT_MIN_MAX)
+	{
+		if (size->min_width >= 0)
+		{
+			size->min_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->max_width >= 0)
+		{
+			size->max_width += thiz->padding.left + thiz->padding.right;
+		}
+		if (size->min_height >= 0)
+		{
+			size->min_height += thiz->spacing * (count - 1);
+			size->min_height += thiz->padding.top + thiz->padding.bottom;
+		}
+		if (size->max_height >= 0)
+		{
+			size->max_height += thiz->spacing * (count - 1);
+			size->max_height += thiz->padding.top + thiz->padding.bottom;
+		}
+	}
+	thiz->count = count;
+
+	return ret;
+}
+
+static void _eon_layout_array_horizontal_geometry_set(Eon_Layout_Array *thiz,
+		Eina_Rectangle *area)
+{
+	Eon_Box chp;
+	Eon_Layout_Array_Child_Geometry_Set_Cb geometry_set;
+	int ret = 0;
+	int x, width;
+	void *child = NULL;
+
+	/* remove the padding */
+	area->x += thiz->padding.left;
+	area->w -= thiz->padding.left + thiz->padding.right;
+	area->y += thiz->padding.top;
+	area->h -= thiz->padding.top + thiz->padding.bottom;
+
+	width = (area->w - ((thiz->count - 1) * thiz->spacing))/(thiz->count);
+	x = area->x;
+
+	/* iterate over the children */
+	while ((child = thiz->descriptor->next(child, &chp, NULL, NULL, &geometry_set)))
+	{
+		Eina_Rectangle cha;
+
+		cha.x = x + chp.left;
+		cha.y = area->y + chp.top;
+		cha.w = width - chp.left - chp.right;
+		cha.h = area->h - chp.top - chp.bottom;
+		geometry_set(child, &cha);
+		x += width;
+	}
+}
+
+static void _eon_layout_array_vertical_geometry_set(Eon_Layout_Array *thiz,
+		Eina_Rectangle *area)
+{
+	Eon_Box chp;
+	Eon_Layout_Array_Child_Geometry_Set_Cb geometry_set;
+	int ret = 0;
+	int y, height;
+	void *child = NULL;
+
+	/* remove the padding */
+	area->x += thiz->padding.left;
+	area->w -= thiz->padding.left + thiz->padding.right;
+	area->y += thiz->padding.top;
+	area->h -= thiz->padding.top + thiz->padding.bottom;
+
+	height = (area->h - ((thiz->count - 1) * thiz->spacing))/(thiz->count);
+	y = area->y;
+
+	/* iterate over the children */
+	while ((child = thiz->descriptor->next(child, &chp, NULL, NULL, &geometry_set)))
+	{
+		Eina_Rectangle cha;
+
+		cha.x = area->x + chp.left;
+		cha.w = area->w - chp.left - chp.right;
+		cha.y = y + chp.top;
+		cha.h = height - chp.top - chp.bottom;
+		geometry_set(child, &cha);
+		y += height;
+	}
+}
+
+static void _eon_layout_array_horizontal_homogeneous_geometry_set(Eon_Layout_Array *thiz,
+		Eina_Rectangle *area)
+{
+}
+
+static void _eon_layout_array_vertical_homogeneous_geometry_set(Eon_Layout_Array *thiz,
+		Eina_Rectangle *area)
+{
+
+}
 /*----------------------------------------------------------------------------*
  *                              Layout interface                              *
  *----------------------------------------------------------------------------*/
 static int _eon_layout_array_size_hints_get(Eon_Layout *l, Eon_Renderable_Size *size)
 {
+	Eon_Layout_Array *thiz;
 
+	thiz = EON_LAYOUT_ARRAY(l);
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		if (thiz->homogeneous)
+			return _eon_layout_array_horizontal_homogeneous_size_hints_get(thiz, size);
+		else
+			return _eon_layout_array_horizontal_size_hints_get(thiz, size);
+	}
+	else
+	{
+		if (thiz->homogeneous)
+			return _eon_layout_array_vertical_homogeneous_size_hints_get(thiz, size);
+		else
+			return _eon_layout_array_vertical_size_hints_get(thiz, size);
+	}
 }
 
 static void _eon_layout_array_geometry_set(Eon_Layout *l, Eina_Rectangle *area)
 {
+	Eon_Layout_Array *thiz;
+
+	thiz = EON_LAYOUT_ARRAY(l);
+	if (!thiz->count)
+		return;
+
+	if (thiz->orientation == EON_ORIENTATION_HORIZONTAL)
+	{
+		if (thiz->homogeneous)
+			_eon_layout_array_horizontal_homogeneous_geometry_set(thiz, area);
+		else
+			_eon_layout_array_horizontal_geometry_set(thiz, area);
+	}
+	else
+	{
+		if (thiz->homogeneous)
+			_eon_layout_array_vertical_homogeneous_geometry_set(thiz, area);
+		else
+			_eon_layout_array_vertical_geometry_set(thiz, area);
+	}
 
 }
 /*----------------------------------------------------------------------------*
@@ -117,6 +496,14 @@ void eon_layout_array_orientation_set(Eon_Layout *l, Eon_Orientation orientation
 
 	thiz = EON_LAYOUT_ARRAY(l);
 	thiz->orientation = orientation;
+}
+
+void eon_layout_array_homogeneous_set(Eon_Layout *l, Eina_Bool homogeneous)
+{
+	Eon_Layout_Array *thiz;
+
+	thiz = EON_LAYOUT_ARRAY(l);
+	thiz->homogeneous = homogeneous;
 }
 /*============================================================================*
  *                                   API                                      *
