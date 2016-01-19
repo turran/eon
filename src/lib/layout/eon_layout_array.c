@@ -37,7 +37,16 @@ typedef struct _Eon_Layout_Array
 	Eon_Orientation orientation;
 	Eina_Bool homogeneous;
 	/* private */
+	/* how many childs */
 	int count;
+	/* how many childs dont have a minsize set */
+	int nmincount;
+	/* how many childs have a min size set */
+	int mincount;
+	/* how many childs have a preferred size set */
+	int prefcount;
+	/* how many childs have a max size set */
+	int maxcount;
 	/* the external interface */
 	Eon_Layout_Array_Descriptor *descriptor;
 	void *data;
@@ -48,11 +57,21 @@ typedef struct _Eon_Layout_Array_Class
 	Eon_Layout_Class base;
 } Eon_Layout_Array_Class;
 
+typedef struct _Eon_Layout_Array_Child
+{
+	Eon_Layout_Array_Child_Geometry_Set_Cb geometry_set;
+	Eon_Renderable_Size chs;
+	Eon_Box chp;
+	int chm;
+	void *child;
+	int sofar;
+} Eon_Layout_Array_Child;
+
 static int _eon_layout_array_homogeneous_size_hints_get(Eon_Layout_Array *thiz,
 		Eon_Renderable_Size *size)
 {
-	Eon_Box chp;
 	Eon_Renderable_Size chs;
+	Eon_Box chp;
 	int chm;
 	int ret = 0;
 	int count = 0;
@@ -170,8 +189,8 @@ static int _eon_layout_array_vertical_homogeneous_size_hints_get(Eon_Layout_Arra
 static int _eon_layout_array_horizontal_size_hints_get(Eon_Layout_Array *thiz,
 		Eon_Renderable_Size *size)
 {
-	Eon_Box chp;
 	Eon_Renderable_Size chs;
+	Eon_Box chp;
 	int chm;
 	int ret = 0;
 	int count = 0;
@@ -242,8 +261,8 @@ static int _eon_layout_array_horizontal_size_hints_get(Eon_Layout_Array *thiz,
 static int _eon_layout_array_vertical_size_hints_get(Eon_Layout_Array *thiz,
 		Eon_Renderable_Size *size)
 {
-	Eon_Box chp;
 	Eon_Renderable_Size chs;
+	Eon_Box chp;
 	int chm;
 	int ret = 0;
 	int count = 0;
@@ -316,8 +335,8 @@ static int _eon_layout_array_vertical_size_hints_get(Eon_Layout_Array *thiz,
 static void _eon_layout_array_horizontal_homogeneous_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
-	Eon_Box chp;
 	Eon_Layout_Array_Child_Geometry_Set_Cb geometry_set;
+	Eon_Box chp;
 	int ret = 0;
 	int x, width;
 	void *child = NULL;
@@ -341,15 +360,15 @@ static void _eon_layout_array_horizontal_homogeneous_geometry_set(Eon_Layout_Arr
 		cha.w = width - chp.left - chp.right;
 		cha.h = area->h - chp.top - chp.bottom;
 		geometry_set(child, &cha);
-		x += width;
+		x += width + thiz->spacing;
 	}
 }
 
 static void _eon_layout_array_vertical_homogeneous_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
-	Eon_Box chp;
 	Eon_Layout_Array_Child_Geometry_Set_Cb geometry_set;
+	Eon_Box chp;
 	int ret = 0;
 	int y, height;
 	void *child = NULL;
@@ -373,7 +392,7 @@ static void _eon_layout_array_vertical_homogeneous_geometry_set(Eon_Layout_Array
 		cha.y = y + chp.top;
 		cha.h = height - chp.top - chp.bottom;
 		geometry_set(child, &cha);
-		y += height;
+		y += height + thiz->spacing;
 	}
 }
 
@@ -385,9 +404,82 @@ static void _eon_layout_array_horizontal_geometry_set(Eon_Layout_Array *thiz,
 static void _eon_layout_array_vertical_geometry_set(Eon_Layout_Array *thiz,
 		Eina_Rectangle *area)
 {
+	Eon_Layout_Array_Child_Geometry_Set_Cb geometry_set;
+	Eon_Renderable_Size chs;
+	Eon_Box chp;
+	Eina_List *pending = NULL;
+	int chm;
+	int y, height;
+	void *child = NULL;
+
+	/* remove the padding */
+	area->x += thiz->padding.left;
+	area->w -= thiz->padding.left + thiz->padding.right;
+	area->y += thiz->padding.top;
+	area->h -= thiz->padding.top + thiz->padding.bottom;
+
+	height = area->h;
+	y = area->y;
+
 	/* set every min height */
-	/* add the missing to a list */
+	while ((child = thiz->descriptor->next(child, &chp, &chm, &chs, &geometry_set)))
+	{
+		Eina_Rectangle cha;
+
+		cha.x = area->x + chp.left;
+		cha.w = area->w - chp.left - chp.right;
+
+		if (chm & EON_RENDERABLE_HINT_MIN_MAX)
+		{
+			if (chs.min_height < 0)
+			{
+				Eon_Layout_Array_Child *achild;
+
+				achild = calloc(1, sizeof(Eon_Layout_Array_Child));
+				achild->child = child;
+				achild->chm = chm;
+				achild->chp = chp;
+				achild->chs = chs;
+				achild->geometry_set = geometry_set;
+				/* add the missing to a list */
+				pending = eina_list_append(pending, child);	
+			}
+			else
+			{
+				cha.y = y + chp.top;
+				cha.h = chs.min_height;
+				geometry_set(child, &cha);
+				y += chp.top + chs.min_height + chp.bottom + thiz->spacing;
+			}
+		}
+	}
 	/* calculate the free space */
+	height = height - (y - area->y);
+	if (pending)
+	{
+		Eon_Layout_Array_Child *achild;
+		int count = eina_list_count(pending);
+		int cheight = height / count;
+
+		/* set the size of the childs with non-set minimum size */
+		EINA_LIST_FREE(pending, achild)
+		{
+			Eina_Rectangle cha;
+
+			y = achild->sofar;
+			cha.x = area->x + achild->chp.left;
+			cha.w = area->w - achild->chp.left - achild->chp.right;
+			cha.y = y + achild->chp.top;
+			cha.h = cheight - achild->chp.bottom;
+
+			y += achild->chp.top + cheight + thiz->spacing;
+			free(child);
+			count--;
+		}
+	}
+	/* distribute the free space on every child taking into account their max size */
+
+
 	/* give the free space on every child */
 	/* do not give more space that it can receive */
 	/* calculate again the free space */
