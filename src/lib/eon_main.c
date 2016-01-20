@@ -86,6 +86,7 @@ static void _strings_init(void)
 	EON_NAME_ATTR_VALUE = egueb_dom_string_new_with_static_string("value");
 	EON_NAME_ATTR_MIN = egueb_dom_string_new_with_static_string("min");
 	EON_NAME_ATTR_MAX = egueb_dom_string_new_with_static_string("max");
+	EON_NAME_ATTR_HOMOGENEOUS = egueb_dom_string_new_with_static_string("homogeneous");
 	/* elements */
 	EON_NAME_ELEMENT_EON = egueb_dom_string_new_with_static_string("eon");
 	EON_NAME_ELEMENT_BUTTON = egueb_dom_string_new_with_static_string("button");
@@ -150,6 +151,7 @@ static void _strings_shutdown(void)
 	egueb_dom_string_unref(EON_NAME_ATTR_VALUE);
 	egueb_dom_string_unref(EON_NAME_ATTR_MIN);
 	egueb_dom_string_unref(EON_NAME_ATTR_MAX);
+	egueb_dom_string_unref(EON_NAME_ATTR_HOMOGENEOUS);
 	/* elements */
 	egueb_dom_string_unref(EON_NAME_ELEMENT_EON);
 	egueb_dom_string_unref(EON_NAME_ELEMENT_BUTTON);
@@ -216,6 +218,7 @@ Egueb_Dom_String *EON_NAME_ATTR_GROUP;
 Egueb_Dom_String *EON_NAME_ATTR_VALUE;
 Egueb_Dom_String *EON_NAME_ATTR_MIN;
 Egueb_Dom_String *EON_NAME_ATTR_MAX;
+Egueb_Dom_String *EON_NAME_ATTR_HOMOGENEOUS;
 /* elements */
 Egueb_Dom_String *EON_NAME_ELEMENT_EON;
 Egueb_Dom_String *EON_NAME_ELEMENT_BUTTON;

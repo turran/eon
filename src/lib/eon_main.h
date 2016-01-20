@@ -91,6 +91,7 @@ EAPI extern Egueb_Dom_String *EON_NAME_ATTR_GROUP;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_VALUE;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_MIN;
 EAPI extern Egueb_Dom_String *EON_NAME_ATTR_MAX;
+EAPI extern Egueb_Dom_String *EON_NAME_ATTR_HOMOGENEOUS;
 EAPI extern Egueb_Dom_String *EON_STOCK;
 
 EAPI extern Egueb_Dom_String *EON_NAME_ON;
