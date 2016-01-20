@@ -62,6 +62,11 @@ void eon_layout_geometry_set(Eon_Layout *thiz, Eina_Rectangle *area)
 	klass = EON_LAYOUT_CLASS_GET(thiz);
 	klass->geometry_set(thiz, area);
 }
+
+void eon_layout_free(Eon_Layout *thiz)
+{
+	enesim_object_instance_free(ENESIM_OBJECT_INSTANCE(thiz));
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

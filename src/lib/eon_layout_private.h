@@ -46,5 +46,6 @@ typedef struct _Eon_Layout_Class
 Enesim_Object_Descriptor * eon_layout_descriptor_get(void);
 int eon_layout_size_hints_get(Eon_Layout *thiz, Eon_Renderable_Size *size);
 void eon_layout_geometry_set(Eon_Layout *thiz, Eina_Rectangle *area);
+void eon_layout_free(Eon_Layout *thiz);
 
 #endif

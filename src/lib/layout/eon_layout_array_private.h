@@ -25,6 +25,10 @@ typedef Eina_Bool (*Eon_Layout_Array_Child_Geometry_Set_Cb)(void *child,
 typedef void * (*Eon_Layout_Array_Descriptor_Child_Next_Cb)(void *current,
 		Eon_Box *padding, int *shints, Eon_Renderable_Size *size,
 		Eon_Layout_Array_Child_Geometry_Set_Cb *process);
+#if 0
+typedef Egueb_Dom_Node * (*Eon_Layout_Array_Descriptor_Child_Next_Cb)(
+		void *data, Egueb_Dom_Node *current);
+#endif
 
 typedef struct _Eon_Layout_Array_Descriptor
 {

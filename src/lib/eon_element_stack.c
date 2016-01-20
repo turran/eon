@@ -36,6 +36,7 @@ typedef struct _Eon_Element_Stack
 	Egueb_Dom_Node *orientation;
 	Egueb_Dom_Node *homogeneous;
 	/* private */
+	Eon_Layout *layout;
 	Enesim_Renderer *r;
 	int weights;
 	int min_length;
@@ -111,7 +112,33 @@ static void _eon_element_stack_node_removed_cb(Egueb_Dom_Event *e,
 #endif	
 	egueb_dom_node_unref(target);
 }
+/*----------------------------------------------------------------------------*
+ *                          Array layout interface                            *
+ *----------------------------------------------------------------------------*/
+#if 0
+static Egueb_Dom_Node * _eon_element_stack_child_next_cb(void *data,
+		Egueb_Dom_Node *current)
+{
+	Eon_Element_Stack *thiz = data;
+	Egueb_Dom_Node *n;
 
+	n = (EON_ELEMENT(thiz))->n
+	if (!current)
+	{
+		return egueb_dom_element_child_first_get(n);
+	}
+	else
+	{
+		n = egueb_dom_element_sibling_next_get(current);
+		egueb_dom_node_unref(current);
+		return n;
+	}
+}
+
+Eon_Layout_Array_Descriptor _array_descriptor = {
+	/* .child_next 	= */ _eon_element_stack_child_next_cb;
+}
+#endif
 /*----------------------------------------------------------------------------*
  *                           Renderable interface                             *
  *----------------------------------------------------------------------------*/
@@ -221,12 +248,12 @@ static void _eon_element_stack_init(Eon_Renderable *r)
 	/* attributes */
 	thiz->orientation = eon_orientation_attr_new();
 	thiz->homogeneous = egueb_dom_attr_boolean_new(
-			egueb_dom_string_ref(EON_NAME_ATTR_ACTIVATED),
+			egueb_dom_string_ref(EON_NAME_ATTR_HOMOGENEOUS),
 			EINA_TRUE, EINA_TRUE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->orientation, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			EON_ORIENTATION_HORIZONTAL);
 	egueb_dom_attr_set(thiz->homogeneous, EGUEB_DOM_ATTR_TYPE_DEFAULT,
-			EINA_FALSE);
+			EINA_TRUE);
 	egueb_dom_element_attribute_node_set(n,
 		egueb_dom_node_ref(thiz->orientation), NULL);
 	egueb_dom_element_attribute_node_set(n,
