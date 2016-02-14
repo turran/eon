@@ -20,6 +20,7 @@
 #include "eon_element_stack.h"
 
 #include "eon_renderable_private.h"
+#include "eon_layout_private.h"
 #include "eon_layout_stack_private.h"
 #include "eon_orientation_private.h"
 /*============================================================================*
