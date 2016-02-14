@@ -44,7 +44,7 @@ Eina_Bool eon_theme_name_string_from(Eon_Theme_Name *paint, const char *attr)
 	else
 	{
 		paint->type = EON_THEME_NAME_TYPE_CUSTOM;
-		paint->custom = egueb_dom_string_new_with_string(attr);
+		paint->custom = egueb_dom_string_new_with_chars(attr);
 	}
 
 	return EINA_TRUE;
@@ -63,7 +63,7 @@ char * eon_theme_name_string_to(Eon_Theme_Name *thiz)
 		break;
 
 		case EON_THEME_NAME_TYPE_CUSTOM:
-		return strdup(egueb_dom_string_string_get(thiz->custom));
+		return strdup(egueb_dom_string_chars_get(thiz->custom));
 		break;
 
 		default:

@@ -61,11 +61,11 @@ static Eina_Bool _eon_feature_themable_load_theme_id_cb(void *data, void *user_d
 
 	theme_element = egueb_dom_document_element_get_by_id(theme_doc, theme_id, NULL);
 	DBG_ELEMENT(thiz->n, "Loading theme id '%s'",
-			egueb_dom_string_string_get(theme_id));
+			egueb_dom_string_chars_get(theme_id));
 	if (theme_element)
 	{
 		DBG_ELEMENT(thiz->n, "Theme element for id '%s' found",
-				egueb_dom_string_string_get(theme_id));
+				egueb_dom_string_chars_get(theme_id));
 		fdata->theme_element = theme_element;
 		return EINA_FALSE;
 	}
@@ -319,7 +319,7 @@ changed:
 					default_theme = "basic";
 				}
 				INFO_ELEMENT(thiz->n, "Loading theme from envvar '%s'", default_theme);
-				theme_name = egueb_dom_string_new_with_static_string(default_theme);
+				theme_name = egueb_dom_string_new_with_static_chars(default_theme);
 				theme_doc = eon_theme_document_load(theme_name);
 				egueb_dom_string_unref(theme_name);
 			}
@@ -327,7 +327,7 @@ changed:
 
 			case EON_THEME_NAME_TYPE_CUSTOM:
 			INFO_ELEMENT(thiz->n, "Loading custom theme'%s'",
-					egueb_dom_string_string_get(curr_theme.custom));
+					egueb_dom_string_chars_get(curr_theme.custom));
 			theme_doc = eon_theme_document_load(curr_theme.custom);
 			break;
 

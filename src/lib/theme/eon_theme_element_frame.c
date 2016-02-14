@@ -100,7 +100,7 @@ static Egueb_Dom_String * _eon_theme_element_frame_tag_name_get(Eon_Theme_Elemen
 	{
 		const char *name;
 		name = thiz->d->tag_name_get();
-		return egueb_dom_string_new_with_static_string(name);
+		return egueb_dom_string_new_with_static_chars(name);
 	}
 	return NULL;
 }
@@ -156,7 +156,7 @@ void eon_theme_element_frame_title_set(Egueb_Dom_Node *n, Egueb_Dom_String *s)
 	Eon_Theme_Element_Frame *thiz;
 
 	thiz = EON_THEME_ELEMENT_FRAME(egueb_dom_element_external_data_get(n));
-	thiz->d->title_set(thiz->data, egueb_dom_string_string_get(s));
+	thiz->d->title_set(thiz->data, egueb_dom_string_chars_get(s));
 	egueb_dom_string_unref(s);
 }
 

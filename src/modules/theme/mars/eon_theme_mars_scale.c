@@ -186,11 +186,11 @@ Egueb_Dom_Node * eon_theme_mars_scale_new(void)
 
 	n = eon_theme_element_scale_new(&_descriptor, thiz);
 	/* the attributes */
-	s = egueb_dom_string_new_with_static_string("inactive-color");
+	s = egueb_dom_string_new_with_static_chars("inactive-color");
 	thiz->icolor = egueb_css_attr_color_new(s, NULL, EINA_TRUE, EINA_TRUE,
 			EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->icolor), NULL);
-	s = egueb_dom_string_new_with_static_string("active-color");
+	s = egueb_dom_string_new_with_static_chars("active-color");
 	thiz->acolor = egueb_css_attr_color_new(s, NULL, EINA_TRUE, EINA_TRUE,
 			EINA_FALSE);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->acolor), NULL);

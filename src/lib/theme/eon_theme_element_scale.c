@@ -94,7 +94,7 @@ static Egueb_Dom_String * _eon_theme_element_scale_tag_name_get(Eon_Theme_Elemen
 	{
 		const char *name;
 		name = thiz->d->tag_name_get();
-		return egueb_dom_string_new_with_static_string(name);
+		return egueb_dom_string_new_with_static_chars(name);
 	}
 	return NULL;
 }

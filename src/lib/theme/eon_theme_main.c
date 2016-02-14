@@ -40,7 +40,7 @@ void eon_theme_init(void)
 {
 	if (!_init++)
 	{
- 		EON_THEME_NAME_ELEMENT_EOT = egueb_dom_string_new_with_static_string("eot");
+ 		EON_THEME_NAME_ELEMENT_EOT = egueb_dom_string_new_with_static_chars("eot");
 		eon_theme_log_dom = eina_log_domain_register("eon-theme", NULL);
 		eon_theme_namespace_init();
 		eon_theme_document_init();

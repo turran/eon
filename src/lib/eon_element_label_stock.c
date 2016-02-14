@@ -199,7 +199,7 @@ static int _eon_element_label_stock_size_hints_get(Eon_Renderable *r,
 		egueb_dom_attr_string_list_prepend(e->theme_id, EGUEB_DOM_ATTR_TYPE_DEFAULT,
 			egueb_dom_string_ref(EON_NAME_ELEMENT_LABEL_STOCK));
 		/* prepend the stock */
-		if (asprintf(&name, "stockLabel-%s", egueb_dom_string_string_get(s)) < 0)
+		if (asprintf(&name, "stockLabel-%s", egueb_dom_string_chars_get(s)) < 0)
 		{
 			egueb_dom_string_unref(s);
 			return 0;

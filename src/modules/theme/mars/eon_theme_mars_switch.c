@@ -332,16 +332,16 @@ Egueb_Dom_Node * eon_theme_mars_switch_new(void)
 
 	n = eon_theme_element_switch_new(&_descriptor, thiz);
 	/* the attributes */
-	s = egueb_dom_string_new_with_static_string("level");
+	s = egueb_dom_string_new_with_static_chars("level");
 	thiz->level = egueb_dom_attr_int_new(s, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
-	s = egueb_dom_string_new_with_static_string("active-color");
+	s = egueb_dom_string_new_with_static_chars("active-color");
 	thiz->active_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
-	s = egueb_dom_string_new_with_static_string("inactive-color");
+	s = egueb_dom_string_new_with_static_chars("inactive-color");
 	thiz->inactive_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
-	s = egueb_dom_string_new_with_static_string("border-color");
+	s = egueb_dom_string_new_with_static_chars("border-color");
 	thiz->border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
 	/* FIXME the level can be on the theme element switch itself? */

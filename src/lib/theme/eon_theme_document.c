@@ -128,7 +128,7 @@ Egueb_Dom_Node * eon_theme_document_load(Egueb_Dom_String *name)
 	const char *theme_path;
 	char path[PATH_MAX];
 
-	ret = eina_hash_find(_docs, egueb_dom_string_string_get(name));
+	ret = eina_hash_find(_docs, egueb_dom_string_chars_get(name));
 	if (ret) return egueb_dom_node_ref(ret);
 		
 	/* load the file based from the fs */
@@ -137,14 +137,14 @@ Egueb_Dom_Node * eon_theme_document_load(Egueb_Dom_String *name)
 	{
 		theme_path = "/usr/local/share/eon/themes";
 	}
-	snprintf(path, PATH_MAX, "%s/%s.eot", theme_path, egueb_dom_string_string_get(name));
+	snprintf(path, PATH_MAX, "%s/%s.eot", theme_path, egueb_dom_string_chars_get(name));
 	DBG("Loading theme at '%s'", path);
 	s = enesim_stream_file_new(path, "r");
 	if (!s) return NULL;
 
 	ret = eon_theme_document_new();
 	egueb_dom_parser_parse(s, &ret);
-	eina_hash_add(_docs, egueb_dom_string_string_get(name),
+	eina_hash_add(_docs, egueb_dom_string_chars_get(name),
 			egueb_dom_node_ref(ret));
 	return ret;
 }

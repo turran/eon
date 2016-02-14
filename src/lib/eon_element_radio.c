@@ -77,7 +77,7 @@ static void _eon_element_radio_group_add(Eon_Element_Radio *thiz)
 	egueb_dom_string_unref(thiz->prev_group);
 	thiz->prev_group = egueb_dom_string_dup(group);
 
-	name = egueb_dom_string_string_get(group);
+	name = egueb_dom_string_chars_get(group);
 	if (!name)
 	{
 		egueb_dom_string_unref(group);
@@ -100,7 +100,7 @@ static void _eon_element_radio_group_remove(Eon_Element_Radio *thiz)
 	Eon_Element_Radio_Group *g;
 	const char *name;
 
-	name = egueb_dom_string_string_get(thiz->prev_group);
+	name = egueb_dom_string_chars_get(thiz->prev_group);
 	if (!name)
 		return;
 
@@ -152,7 +152,7 @@ static void _eon_element_radio_dispatch(
 		 * current activated item
 		 */
 		egueb_dom_attr_final_get(thiz->group, &group);
-		g = eina_hash_find(_groups, egueb_dom_string_string_get(group));
+		g = eina_hash_find(_groups, egueb_dom_string_chars_get(group));
 		if (g)
 		{
  			if (g->current)

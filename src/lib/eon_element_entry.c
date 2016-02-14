@@ -165,7 +165,7 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 	/* check if it is printable */
 	if (!egueb_dom_key_is_printable(key))
 	{
-		const char *skey = egueb_dom_string_string_get(key);
+		const char *skey = egueb_dom_string_chars_get(key);
 		if (!strcmp(skey, "BackSpace"))
 		{
 			enesim_text_buffer_string_delete(buffer,
@@ -204,7 +204,7 @@ static void _eon_element_entry_key_down_cb(Egueb_Dom_Event *e,
 	else
 	{
 		enesim_text_buffer_string_insert(buffer,
-				egueb_dom_string_string_get(key), -1, thiz->cursor);
+				egueb_dom_string_chars_get(key), -1, thiz->cursor);
 		/* advance the cursor */
 		if (thiz->cursor >= 0)
 		{

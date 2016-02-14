@@ -341,7 +341,7 @@ static Eina_Bool _eon_element_object_pre_process(Eon_Renderable *r)
 				return EINA_FALSE;
 			}
 
-			DBG_ELEMENT(n, "Requesting data load on '%s'", egueb_dom_string_string_get(uri));
+			DBG_ELEMENT(n, "Requesting data load on '%s'", egueb_dom_string_chars_get(uri));
 			e = egueb_dom_event_io_data_new(&u, _eon_element_object_data_cb);
 			egueb_dom_event_target_event_dispatch(
 					EGUEB_DOM_EVENT_TARGET(n), e, NULL,
