@@ -30,18 +30,18 @@
 /*----------------------------------------------------------------------------*
  *                              Object interface                              *
  *----------------------------------------------------------------------------*/
-ENESIM_OBJECT_ABSTRACT_BOILERPLATE(EGUEB_DOM_EVENT_TARGET_DESCRIPTOR,
-		Eon_Layout, Eon_Layout_Class, egueb_dom_node);
+ENESIM_OBJECT_ABSTRACT_BOILERPLATE(ENESIM_OBJECT_DESCRIPTOR,
+		Eon_Layout, Eon_Layout_Class, eon_layout);
 
-static void _egueb_dom_node_class_init(void *k)
+static void _eon_layout_class_init(void *k)
 {
 }
 
-static void _egueb_dom_node_instance_init(void *o)
+static void _eon_layout_instance_init(void *o)
 {
 }
 
-static void _egueb_dom_node_instance_deinit(void *o)
+static void _eon_layout_instance_deinit(void *o)
 {
 }
 /*============================================================================*
